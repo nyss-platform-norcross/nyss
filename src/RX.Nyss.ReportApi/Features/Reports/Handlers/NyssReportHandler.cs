@@ -168,28 +168,27 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var timestamp = parsedQueryString[TimestampParameterName];
                 var text = parsedQueryString[TextParameterName].Trim();
                 var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
+                var apiKey = parsedQueryString[ApiKeyParameterName];
 
                 var receivedAt = _reportValidationService.ParseTimestamp(timestamp);
                 _reportValidationService.ValidateReceivalTime(receivedAt);
                 rawReport.ReceivedAt = receivedAt;
 
-                var dataCollector = await ValidateDataCollector(dataCollectorId);
+                var gatewaySetting = await _reportValidationService.ValidateGatewaySetting(apiKey);
+
+                var dataCollector = await ValidateDataCollector(dataCollectorId, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
-                rawReport.NationalSociety = dataCollector.Project.NationalSociety;
-                rawReport.IsTraining = dataCollector.IsInTrainingMode;
-                rawReport.Village = dataCollector.DataCollectorLocations.Count == 1
+                rawReport.NationalSociety = dataCollector?.Project.NationalSociety ?? gatewaySetting.NationalSociety;
+                rawReport.IsTraining = dataCollector?.IsInTrainingMode ?? false;
+                rawReport.Village = dataCollector?.DataCollectorLocations.Count == 1
                     ? dataCollector.DataCollectorLocations.First().Village
                     : null;
-                rawReport.Zone = dataCollector.DataCollectorLocations.Count == 1
+                rawReport.Zone = dataCollector?.DataCollectorLocations.Count == 1
                     ? dataCollector.DataCollectorLocations.First().Zone
                     : null;
 
                 var parsedReport = await _reportMessageService.ParseReport(text);
-                var projectHealthRisk = await _reportValidationService.ValidateReport(parsedReport, dataCollector);
-                var gatewaySetting = await _nyssContext.GatewaySettings
-                    .Include(gs => gs.Modems)
-                    .Where(gs => gs.NationalSocietyId == dataCollector.Project.NationalSocietyId)
-                    .FirstOrDefaultAsync();
+                var projectHealthRisk = await _reportValidationService.ValidateReport(parsedReport, dataCollector, gatewaySetting.NationalSocietyId);
 
                 return new ReportValidationResult
                 {
@@ -216,7 +215,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task HandleFeedbackMessageToDataCollector(DataCollector dataCollector, GatewaySetting gatewaySetting, Report report, int? modemNumber, bool sentByHeadSupervisor, int? utcOffset)
         {
-            if (string.IsNullOrEmpty(dataCollector.PhoneNumber))
+            if (dataCollector == null || string.IsNullOrEmpty(dataCollector.PhoneNumber))
             {
                 return;
             }
@@ -252,7 +251,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task<DataCollector> ValidateDataCollector(int dataCollectorId)
+        private async Task<DataCollector> ValidateDataCollector(int dataCollectorId, int nationalSocietyId)
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
@@ -266,9 +265,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .Where(dc => dc.Id == dataCollectorId)
                 .SingleOrDefaultAsync();
 
-            if (dataCollector == null)
+            if (dataCollector.Project.NationalSocietyId != nationalSocietyId)
             {
-                throw new ReportValidationException($"A data collector with id: {dataCollectorId} does not exist", ReportErrorType.DataCollectorNotFound);
+                throw new ReportValidationException($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
+                    $"is different from SMS Gateway's ('{nationalSocietyId}').");
             }
 
             return dataCollector;

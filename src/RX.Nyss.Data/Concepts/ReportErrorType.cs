@@ -4,7 +4,6 @@ namespace RX.Nyss.Data.Concepts
     {
         FormatError,
         HealthRiskNotFound,
-        DataCollectorNotFound,
         TooLong,
         GlobalHealthRiskCodeNotFound,
         DataCollectorUsedCollectionPointFormat,

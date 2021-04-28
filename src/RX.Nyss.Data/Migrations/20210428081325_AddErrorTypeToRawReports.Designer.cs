@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20210426112959_AddErrorTypeToRawReport")]
-    partial class AddErrorTypeToRawReport
+    [Migration("20210428081325_AddErrorTypeToRawReports")]
+    partial class AddErrorTypeToRawReports
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2463,7 +2463,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DataCollectorId")
+                    b.Property<int?>("DataCollectorId")
                         .HasColumnType("int");
 
                     b.Property<int>("EpiWeek")
@@ -3198,8 +3198,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")
                         .WithMany("Reports")
                         .HasForeignKey("DataCollectorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Reports")

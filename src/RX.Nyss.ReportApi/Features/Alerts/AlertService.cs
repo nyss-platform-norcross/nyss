@@ -50,6 +50,15 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task<AlertData> ReportAdded(Report report)
         {
+            if (report.DataCollector == null)
+            {
+                return new AlertData
+                {
+                    Alert = null,
+                    IsExistingAlert = false
+                };
+            }
+
             var dataCollectorIsNotHuman = report.DataCollector.DataCollectorType != DataCollectorType.Human;
             var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
             var healthRiskTypeIsActivity = report.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity;

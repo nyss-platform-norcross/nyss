@@ -2461,7 +2461,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DataCollectorId")
+                    b.Property<int?>("DataCollectorId")
                         .HasColumnType("int");
 
                     b.Property<int>("EpiWeek")
@@ -3196,8 +3196,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")
                         .WithMany("Reports")
                         .HasForeignKey("DataCollectorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Reports")

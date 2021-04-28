@@ -14,9 +14,10 @@ namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportValidationService
     {
-        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector);
+        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, int nationalSocietyId);
         DateTime ParseTimestamp(string timestamp);
         void ValidateReceivalTime(DateTime receivedAt);
+        Task<GatewaySetting> ValidateGatewaySetting(string apiKey);
     }
 
     public class ReportValidationService : IReportValidationService
@@ -32,42 +33,51 @@ namespace RX.Nyss.ReportApi.Features.Reports
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
+        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, int nationalSocietyId)
         {
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
-                .SingleOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
-                    phr.Project.Id == dataCollector.Project.Id);
+                .FirstOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
+                    ((dataCollector != null && phr.Project.Id == dataCollector.Project.Id) || phr.Project.NationalSocietyId == nationalSocietyId));
 
             if (projectHealthRisk == null)
             {
-                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.",
+                if (dataCollector != null)
+                {
+                    throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.",
+                        ReportErrorType.HealthRiskNotFound);
+                }
+
+                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in national society with id '{nationalSocietyId}'.",
                     ReportErrorType.HealthRiskNotFound);
             }
 
-            switch (dataCollector.DataCollectorType)
+            if (dataCollector != null)
             {
-                case DataCollectorType.Human:
-                    if (parsedReport.ReportType != ReportType.Single &&
-                        parsedReport.ReportType != ReportType.Aggregate &&
-                        parsedReport.ReportType != ReportType.Event)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.", ReportErrorType.DataCollectorUsedCollectionPointFormat);
-                    }
+                switch (dataCollector.DataCollectorType)
+                {
+                    case DataCollectorType.Human:
+                        if (parsedReport.ReportType != ReportType.Single &&
+                            parsedReport.ReportType != ReportType.Aggregate &&
+                            parsedReport.ReportType != ReportType.Event)
+                        {
+                            throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
+                                $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.", ReportErrorType.DataCollectorUsedCollectionPointFormat);
+                        }
 
-                    break;
-                case DataCollectorType.CollectionPoint:
-                    if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        parsedReport.ReportType != ReportType.Event)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.", ReportErrorType.CollectionPointUsedDataCollectorFormat);
-                    }
+                        break;
+                    case DataCollectorType.CollectionPoint:
+                        if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
+                            parsedReport.ReportType != ReportType.Event)
+                        {
+                            throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
+                                $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.", ReportErrorType.CollectionPointUsedDataCollectorFormat);
+                        }
 
-                    break;
-                default:
-                    throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
+                        break;
+                    default:
+                        throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
+                }
             }
 
             switch (parsedReport.ReportType)
@@ -150,6 +160,26 @@ namespace RX.Nyss.ReportApi.Features.Reports
             {
                 throw new ReportValidationException("The receival time cannot be in the future.", ReportErrorType.Gateway);
             }
+        }
+
+        public async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
+        {
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.NationalSociety)
+                .Include(gs => gs.Modems)
+                .SingleOrDefaultAsync(gs => gs.ApiKey == apiKey);
+
+            if (gatewaySetting == null)
+            {
+                throw new ReportValidationException($"A gateway setting with API key '{apiKey}' does not exist.", ReportErrorType.Gateway);
+            }
+
+            if (gatewaySetting.GatewayType != GatewayType.SmsEagle)
+            {
+                throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.", ReportErrorType.Gateway);
+            }
+
+            return gatewaySetting;
         }
     }
 }
