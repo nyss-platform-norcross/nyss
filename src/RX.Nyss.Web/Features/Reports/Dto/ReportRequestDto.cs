@@ -6,6 +6,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public class ReportRequestDto
     {
         public DateTime Date { get; set; }
+        public int DataCollectorId { get; set; }
         public int HealthRiskId { get; set; }
         public int CountMalesBelowFive { get; set; }
         public int CountMalesAtLeastFive { get; set; }
@@ -20,6 +21,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
             public Validator()
             {
                 RuleFor(hr => hr.Date).GreaterThan(DateTime.MinValue);
+                RuleFor(hr => hr.DataCollectorId).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.HealthRiskId).GreaterThan(0);
                 RuleFor(hr => hr.CountMalesBelowFive).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.CountMalesAtLeastFive).GreaterThanOrEqualTo(0);

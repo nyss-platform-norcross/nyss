@@ -40,7 +40,7 @@ export const getIncorrectList = {
 export const openEdition = {
   invoke: (projectId, reportId) => ({ type: OPEN_REPORT_EDITION.INVOKE, projectId, reportId }),
   request: () => ({ type: OPEN_REPORT_EDITION.REQUEST }),
-  success: (data, healthRisks) => ({ type: OPEN_REPORT_EDITION.SUCCESS, data, healthRisks }),
+  success: (data, healthRisks, dataCollectors) => ({ type: OPEN_REPORT_EDITION.SUCCESS, data, healthRisks, dataCollectors }),
   failure: (message) => ({ type: OPEN_REPORT_EDITION.FAILURE, message })
 };
 

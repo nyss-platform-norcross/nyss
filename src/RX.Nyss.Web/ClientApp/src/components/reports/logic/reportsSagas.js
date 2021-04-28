@@ -135,10 +135,18 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
 function* openReportEdition({ projectId, reportId }) {
   yield put(actions.openEdition.request());
   try {
+    const filters = {
+      area: null,
+      sex: null,
+      supervisorId: null,
+      trainingStatus: null,
+      name: null
+    };
     const humanHealthRisksforProject = yield call(http.get, `/api/report/humanHealthRisksForProject/${projectId}/get`);
+    const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
     const response = yield call(http.get, `/api/report/${reportId}/get`);
     yield openReportsModule(projectId);
-    yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks));
+    yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks, dataCollectors.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }

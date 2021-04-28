@@ -72,6 +72,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(r => new ReportResponseDto
                 {
                     Id = r.Id,
+                    DataCollectorId = r.DataCollector.Id,
                     ReportType = r.ReportType,
                     Date = r.ReceivedAt.Date,
                     HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
@@ -218,12 +219,38 @@ namespace RX.Nyss.Web.Features.Reports
             var report = await _nyssContext.Reports
                 .Include(r => r.RawReport)
                 .Include(r => r.ProjectHealthRisk)
+                .Include(r => r.DataCollector)
                 .ThenInclude(phr => phr.Project)
                 .SingleOrDefaultAsync(r => r.Id == reportId);
 
             if (report == null)
             {
                 return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
+            }
+
+            if (report.DataCollector.Id != reportRequestDto.DataCollectorId)
+            {
+                var newDataCollector = await _nyssContext.DataCollectors
+                    .Where(dc => dc.Id == reportRequestDto.DataCollectorId)
+                    .SingleOrDefaultAsync();
+
+                if (newDataCollector == null)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderDoesNotExist);
+                }
+
+                if (newDataCollector.DataCollectorType != report.DataCollector.DataCollectorType)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderEditError);
+                }
+
+                if (report.Status != ReportStatus.New)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.OnlyNewReportsEditable);
+                }
+
+                report = SetNewDataCollectorOnReport(report, newDataCollector);
+
             }
 
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
@@ -369,7 +396,8 @@ namespace RX.Nyss.Web.Features.Reports
             return Success();
         }
 
-        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId)
+        {
             if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
@@ -397,6 +425,30 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByReportType(filter.ReportType);
+        }
+
+        private static Report SetNewDataCollectorOnReport(Report report, DataCollector newDataCollector)
+        {
+            var locationSet = newDataCollector.DataCollectorLocations != null;
+            var multipleLocations = locationSet && newDataCollector.DataCollectorLocations.Count > 1;
+
+            report.DataCollector = newDataCollector;
+            report.Location = locationSet ? (multipleLocations ? null : newDataCollector.DataCollectorLocations.First().Location) : null;
+            report.PhoneNumber = newDataCollector.PhoneNumber;
+            report.RawReport.Sender = newDataCollector.PhoneNumber;
+            report.RawReport.DataCollector = newDataCollector;
+            report.RawReport.Village = locationSet ? (multipleLocations ? null : newDataCollector.DataCollectorLocations.First().Village) : null;
+            report.RawReport.Zone = locationSet
+                ? (multipleLocations
+                    ? null
+                    : newDataCollector.DataCollectorLocations.First().Zone)
+                : null;
+            report.RawReport.ModemNumber = newDataCollector.RawReports != null ?
+                newDataCollector.RawReports.Where(rawReport => rawReport.ReportId == report.Id)
+                .Select(rawReport => rawReport.ModemNumber)
+                .SingleOrDefault() : null;
+
+            return report;
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>

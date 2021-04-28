@@ -1,11 +1,13 @@
 ﻿using System;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Features.Reports.Dto
 {
     public class ReportResponseDto
     {
         public int Id { get; set; }
+        public int DataCollectorId { get; set; }
         public DateTime Date { get; set; }
         public int HealthRiskId { get; set; }
         public int CountMalesBelowFive { get; set; }

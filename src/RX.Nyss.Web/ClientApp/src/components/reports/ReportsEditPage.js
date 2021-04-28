@@ -34,6 +34,7 @@ const ReportsEditPageComponent = (props) => {
         const fields = {
             id: props.data.id,
             date: dayjs(props.data.date),
+            dataCollectorId: props.data.dataCollectorId.toString(),
             healthRiskId: props.data.healthRiskId.toString(),
             countMalesBelowFive: props.data.countMalesBelowFive.toString(),
             countMalesAtLeastFive: props.data.countMalesAtLeastFive.toString(),
@@ -46,6 +47,7 @@ const ReportsEditPageComponent = (props) => {
 
         const validation = {
             date: [validators.required],
+            dataCollectorId: [validators.required],
             healthRiskId: [validators.required],
             countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
             countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
@@ -69,6 +71,7 @@ const ReportsEditPageComponent = (props) => {
         const values = form.getValues();
         props.edit(props.projectId, props.reportId, {
             date: values.date.format('YYYY-MM-DDTHH:mm:ss'),
+            dataCollectorId: parseInt(values.dataCollectorId),
             healthRiskId: parseInt(values.healthRiskId),
             countMalesBelowFive: parseInt(values.countMalesBelowFive),
             countMalesAtLeastFive: parseInt(values.countMalesAtLeastFive),
@@ -87,7 +90,23 @@ const ReportsEditPageComponent = (props) => {
     return (
         <Fragment>
             {props.error && <ValidationMessage message={props.error} />}
+            <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSection)}</div>
             <Form onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <SelectField
+                      label={strings(stringKeys.reports.form.dataCollector)}
+                      name="dataCollectorId"
+                      field={form.fields.dataCollectorId}
+                    >
+                      {props.dataCollectors.map(dataCollector => (
+                        <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
+                          {dataCollector.name}
+                        </MenuItem>
+                      ))}
+                    </SelectField>
+                  </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DateInputField
@@ -206,7 +225,8 @@ const mapStateToProps = (state, ownProps) => ({
     isSaving: state.reports.formSaving,
     data: state.reports.formData,
     error: state.reports.formError,
-    healthRisks: state.reports.formHealthRisks
+    healthRisks: state.reports.editReport.formHealthRisks,
+    dataCollectors: state.reports.editReport.formDataCollectors
 });
 
 const mapDispatchToProps = {

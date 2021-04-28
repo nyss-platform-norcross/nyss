@@ -767,6 +767,8 @@ export const stringKeys = {
     },
     form: {
       title: "reports.form.editionTitle",
+      senderSection: "reports.form.senderSectionTitle",
+      dataCollector: "reports.form.dataCollector",
       date: "reports.form.date",
       healthRisk: "reports.form.healthRisk",
       malesBelowFive: "reports.form.malesBelowFive",
