@@ -181,7 +181,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized} />
+                      condition={!row.isAnonymized || filters.reportsType === ReportListType.unknownSender } />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
