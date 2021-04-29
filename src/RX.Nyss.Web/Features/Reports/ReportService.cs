@@ -73,6 +73,7 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     Id = r.Id,
                     DataCollectorId = r.DataCollector.Id,
+                    DataCollectorType = r.DataCollector.DataCollectorType,
                     ReportType = r.ReportType,
                     Date = r.ReceivedAt.Date,
                     HealthRiskId = r.ProjectHealthRisk.HealthRiskId,

@@ -1,3 +1,4 @@
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
@@ -17,5 +18,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Name { get; set; }
 
         public int PageNumber { get; set; }
+
+        public DataCollectorType? DataCollectorType { get; set; }
     }
 }

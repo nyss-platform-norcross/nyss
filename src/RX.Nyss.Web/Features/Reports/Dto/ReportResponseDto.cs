@@ -8,6 +8,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     {
         public int Id { get; set; }
         public int DataCollectorId { get; set; }
+        public DataCollectorType DataCollectorType { get; set; }
         public DateTime Date { get; set; }
         public int HealthRiskId { get; set; }
         public int CountMalesBelowFive { get; set; }

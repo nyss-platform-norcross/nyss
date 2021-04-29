@@ -287,7 +287,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
                 .FilterByDeployedMode(dataCollectorsFilters.DeployedMode)
-                .FilterByName(dataCollectorsFilters.Name);
+                .FilterByName(dataCollectorsFilters.Name)
+                .FilterByType(dataCollectorsFilters.DataCollectorType);
 
             var dataCollectors = await dataCollectorsQuery
                 .Select(dc => new DataCollectorResponseDto
