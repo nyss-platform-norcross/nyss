@@ -177,7 +177,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       items={getRowMenu(row)}
                     />
                     <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId, row.reportType)}
+                      onClick={() => goToEdition(projectId, row.reportId)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}

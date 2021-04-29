@@ -23,7 +23,7 @@ const ReportsEditPageComponent = (props) => {
     const [form, setForm] = useState(null);
 
     useMount(() => {
-        props.openEdition(props.projectId, props.reportId, props.reportType);
+        props.openEdition(props.projectId, props.reportId);
     });
 
     useEffect(() => {
