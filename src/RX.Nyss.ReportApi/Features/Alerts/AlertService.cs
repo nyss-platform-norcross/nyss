@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
@@ -24,6 +23,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
         Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId);
+        Task<AlertData> RecalculateAlertForReport(int reportId);
     }
 
     public class AlertService : IAlertService
@@ -126,6 +126,23 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var message = await CreateNotificationMessageForExistingAlert(alert);
 
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
+        }
+
+        public async Task<AlertData> RecalculateAlertForReport(int reportId)
+        {
+            var report = await _nyssContext.Reports
+                .Include(r => r.DataCollector)
+                .Include(r => r.ProjectHealthRisk).ThenInclude(phr => phr.HealthRisk)
+                .Where(r => r.Id == reportId)
+                .SingleAsync();
+
+            if (report == null)
+            {
+                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                return null;
+            }
+
+            return await ReportAdded(report);
         }
 
         public async Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId)

@@ -6,6 +6,7 @@ namespace RX.Nyss.Common.Configuration
         string ReportDismissalQueue { get; set; }
         string ReportResetQueue { get; set; }
         string CheckAlertQueue { get; set; }
+        string ReportEditQueue { get; set; }
         string SendSmsQueue { get; set; }
     }
 
@@ -15,6 +16,7 @@ namespace RX.Nyss.Common.Configuration
         public string ReportDismissalQueue { get; set; }
         public string ReportResetQueue { get; set; }
         public string CheckAlertQueue { get; set; }
+        public string ReportEditQueue { get; set; }
         public string SendSmsQueue { get; set; }
     }
 }

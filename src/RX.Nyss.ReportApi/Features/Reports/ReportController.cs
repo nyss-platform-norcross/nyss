@@ -20,5 +20,12 @@ namespace RX.Nyss.ReportApi.Features.Reports
             await _reportService.ReceiveReport(report)
                 ? (StatusCodeResult)new OkResult()
                 : new BadRequestResult();
+
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditReport(int reportId) =>
+            await _reportService.EditReport(reportId)
+                ? (StatusCodeResult)new OkResult()
+                : new BadRequestResult();
+
     }
 }

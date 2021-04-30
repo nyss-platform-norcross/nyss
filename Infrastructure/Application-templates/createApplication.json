@@ -90,6 +90,7 @@
     "sendEmailQueueName": "[concat('nrx-cbs-nyss-bus-send-email-queue-', parameters('env'))]",
     "sendSmsQueueName": "[concat('nrx-cbs-nyss-bus-send-sms-queue-', parameters('env'))]",
     "reportDismissalQueue": "[concat('nrx-cbs-nyss-bus-report-dismissal-queue-', parameters('env'))]",
+    "reportEditQueue": "[concat('nrx-cbs-nyss-bus-report-edit-queue-', parameters('env'))]",
     "checkAlertQueue": "[concat('nrx-cbs-nyss-bus-check-alert-queue-', parameters('env'))]",
     "reportResetQueue": "[concat('nrx-cbs-nyss-bus-report-reset-queue-', parameters('env'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
@@ -580,6 +581,7 @@
             "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
             "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
             "SERVICEBUS_REPORTDISMISSALQUEUE": "[variables('reportDismissalQueue')]",
+            "SERVICEBUS_REPORTEDIT": "[variables('reportEditQueue')]",
             "SERVICEBUS_CHECKALERTQUEUE": "[variables('checkAlertQueue')]",
             "SERVICEBUS_REPORTRESETQUEUE": "[variables('reportResetQueue')]"
           }
