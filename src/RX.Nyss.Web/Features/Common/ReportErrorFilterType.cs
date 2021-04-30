@@ -1,14 +1,11 @@
 namespace RX.Nyss.Web.Features.Common
 {
-    public enum ReportingStatusFilterType
+    public enum ReportErrorFilterType
     {
         All,
-        Correct,
-        CorrectAndError,
-        CorrectAndNotReporting,
-        Error,
-        ErrorAndNotReporting,
-        NotReporting,
-        None
+        HealthRiskNotFound,
+        WrongFormat,
+        GatewayError,
+        Other
     }
 }

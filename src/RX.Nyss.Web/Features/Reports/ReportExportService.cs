@@ -65,9 +65,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByTrainingMode(filter.IsTraining)
                 .FilterByReportType(filter.ReportsType)
                 .FilterByArea(ReportService.MapToArea(filter.Area))
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                .FilterByFormatCorrectness(filter.FormatCorrect)
                 .Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,

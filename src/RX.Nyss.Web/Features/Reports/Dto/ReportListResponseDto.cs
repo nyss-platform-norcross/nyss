@@ -47,6 +47,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public bool IsActivityReport { get; set; }
         public ReportStatus Status { get; set; }
         public ReportListAlert Alert { get; set; }
+        public ReportErrorType? ReportErrorType { get; set; }
     }
 
     public class ReportListAlert

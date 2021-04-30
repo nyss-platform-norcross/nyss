@@ -168,7 +168,8 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    Status = r.Report.Status
+                    Status = r.Report.Status,
+                    ReportErrorType = r.ErrorType
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -386,9 +387,8 @@ namespace RX.Nyss.Web.Features.Reports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByReportType(filter.ReportsType)
                     .FilterByHealthRisk(filter.HealthRiskId)
-                    .Where(r => filter.Status
-                        ? r.Report != null && !r.Report.MarkedAsError
-                        : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                    .FilterByFormatCorrectness(filter.FormatCorrect)
+                    .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(MapToArea(filter.Area));
             }
 
@@ -398,9 +398,8 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByTrainingMode(filter.IsTraining)
                 .FilterByReportType(filter.ReportsType)
                 .FilterByArea(MapToArea(filter.Area))
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || r.Report.MarkedAsError);
+                .FilterByFormatCorrectness(filter.FormatCorrect)
+                .FilterByErrorType(filter.ErrorType);
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
