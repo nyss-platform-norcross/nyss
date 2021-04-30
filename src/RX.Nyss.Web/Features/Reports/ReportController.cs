@@ -104,8 +104,8 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="reportRequestDto">A report</param>
         [HttpPost("{reportId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
-        public async Task<Result> Edit(int reportId, [FromBody] ReportRequestDto reportRequestDto) =>
-            await _reportService.Edit(reportId, reportRequestDto);
+        public async Task<Result> Edit(int reportId, int projectId, [FromBody] ReportRequestDto reportRequestDto) =>
+            await _reportService.Edit(reportId, projectId, reportRequestDto);
 
         /// <summary>
         /// Sends a report for testing purposes.

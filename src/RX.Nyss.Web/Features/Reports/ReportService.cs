@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.Reports
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
         Task<Result<ReportListFilterResponseDto>> GetFilters(int nationalSocietyId);
         Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId);
-        Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
+        Task<Result> Edit(int reportId, int projectId, ReportRequestDto reportRequestDto);
         Task<Result> MarkAsError(int reportId);
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
         IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
@@ -77,7 +77,7 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     Id = r.Id,
                     DataCollectorId = r.DataCollector.Id,
-                    DataCollectorType = r.DataCollector.DataCollectorType,
+                    DataCollectorType = r.ReportType == ReportType.DataCollectionPoint ? DataCollectorType.CollectionPoint : DataCollectorType.Human,
                     ReportType = r.ReportType,
                     Date = r.ReceivedAt.Date,
                     HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
@@ -219,7 +219,7 @@ namespace RX.Nyss.Web.Features.Reports
             return Success(dto);
         }
 
-        public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
+        public async Task<Result> Edit(int reportId, int projectId, ReportRequestDto reportRequestDto)
         {
             var report = await _nyssContext.Reports
                 .Include(r => r.RawReport)
@@ -232,12 +232,12 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
             }
 
-            // FIX: for reports with unknown sender we dont know the project...
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
-                .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
+                .SingleOrDefaultAsync(
+                    phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
                     phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
-                    phr.Project.Id == report.ProjectHealthRisk.Project.Id);
+                    phr.Project.Id == projectId);
 
             if (projectHealthRisk == null)
             {
@@ -269,10 +269,12 @@ namespace RX.Nyss.Web.Features.Reports
             report.ModifiedAt = _dateTimeProvider.UtcNow;
             report.ModifiedBy = _authorizationService.GetCurrentUserName();
 
-            if (report.DataCollector.Id != reportRequestDto.DataCollectorId)
+            if (report.DataCollector == null ||
+                report.DataCollector.Id != reportRequestDto.DataCollectorId)
             {
                 var newDataCollector = await _nyssContext.DataCollectors
-                    .Include(dc => dc.DataCollectorLocations)
+                    .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Village)
+                    .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Zone)
                     .Where(dc => dc.Id == reportRequestDto.DataCollectorId)
                     .SingleOrDefaultAsync();
 
@@ -281,7 +283,8 @@ namespace RX.Nyss.Web.Features.Reports
                     return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderDoesNotExist);
                 }
 
-                if (newDataCollector.DataCollectorType != report.DataCollector.DataCollectorType)
+                if (newDataCollector.DataCollectorType == DataCollectorType.CollectionPoint &&
+                    report.ReportType != ReportType.DataCollectionPoint)
                 {
                     return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderEditError);
                 }
@@ -440,10 +443,19 @@ namespace RX.Nyss.Web.Features.Reports
             var locationSet = newDataCollector.DataCollectorLocations != null;
             var multipleLocations = locationSet && newDataCollector.DataCollectorLocations.Count > 1;
 
+            // Values to keep from the unknown sender
+            report.PhoneNumber = report.DataCollector != null
+                ? newDataCollector.PhoneNumber
+                : report.PhoneNumber;
+            report.RawReport.Sender = report.PhoneNumber;
+            report.RawReport.ModemNumber = (report.DataCollector != null && newDataCollector.RawReports != null) ?
+                newDataCollector.RawReports.Where(rawReport => rawReport.ReportId == report.Id)
+                    .Select(rawReport => rawReport.ModemNumber)
+                    .SingleOrDefault() : report.RawReport.ModemNumber;
+
+            // Values to take from the new data collector
             report.DataCollector = newDataCollector;
             report.Location = locationSet ? (multipleLocations ? null : newDataCollector.DataCollectorLocations.First().Location) : null;
-            report.PhoneNumber = newDataCollector.PhoneNumber;
-            report.RawReport.Sender = newDataCollector.PhoneNumber;
             report.RawReport.DataCollector = newDataCollector;
             report.RawReport.Village = locationSet ? (multipleLocations ? null : newDataCollector.DataCollectorLocations.First().Village) : null;
             report.RawReport.Zone = locationSet
@@ -451,10 +463,6 @@ namespace RX.Nyss.Web.Features.Reports
                     ? null
                     : newDataCollector.DataCollectorLocations.First().Zone)
                 : null;
-            report.RawReport.ModemNumber = newDataCollector.RawReports != null ?
-                newDataCollector.RawReports.Where(rawReport => rawReport.ReportId == report.Id)
-                .Select(rawReport => rawReport.ModemNumber)
-                .SingleOrDefault() : null;
 
             return report;
         }

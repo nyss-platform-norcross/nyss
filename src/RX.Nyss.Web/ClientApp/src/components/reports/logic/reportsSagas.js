@@ -156,7 +156,7 @@ function* openReportEdition({ projectId, reportId }) {
 function* editReport({ projectId, reportId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/report/${reportId}/edit`, data);
+    const response = yield call(http.post, `/api/report/${reportId}/edit?projectId=${projectId}`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.reports.list.editedSuccesfully));
