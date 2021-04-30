@@ -38,7 +38,7 @@ import { DataCollectorsMapOverviewPage } from '../dataCollectors/DataCollectorsM
 import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreatePage';
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
 import { NationalSocietyStructurePage } from '../nationalSocietyStructure/NationalSocietyStructurePage';
-import { ReportsListPage } from '../reports/ReportsListPage';
+import { CorrectReportsListPage } from '../reports/CorrectReportsListPage';
 import { ReportsEditPage } from '../reports/ReportsEditPage';
 import { ProjectDashboardPage } from '../projectDashboard/ProjectsDashboardPage';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -62,6 +62,7 @@ import { SmsTranslationsListPage } from '../translations/SmsTranslationsListPage
 import { ProjectAlertNotificationsPage } from '../projects/ProjectAlertNotificationPage';
 import { ProjectAlertRecipientsCreatePage } from '../projectAlertRecipients/ProjectAlertRecipientsCreatePage';
 import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/ProjectAlertRecipientsEditPage';
+import { IncorrectReportsListPage } from '../reports/IncorrectReportsListPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -112,13 +113,13 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
           <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
 
-          <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
 
           <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
           <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
           <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
 
+          <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
+          <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/performance' component={DataCollectorsPerformancePage} roles={accessMap.dataCollectors.performanceList} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
@@ -131,7 +132,9 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
           <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
 
-          <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
+          <Redirect exact from='/projects/:projectId/reports' to='/projects/:projectId/reports/correct' />
+          <AuthRoute exact path='/projects/:projectId/reports/correct' component={CorrectReportsListPage} roles={accessMap.reports.list} />
+          <AuthRoute exact path='/projects/:projectId/reports/incorrect' component={IncorrectReportsListPage} roles={accessMap.reports.list} />
           <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />
 
           <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />

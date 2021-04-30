@@ -27,7 +27,7 @@ import {
 } from "@material-ui/core";
 import { alertStatus } from '../alerts/logic/alertsConstants';
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
+export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, projectIsClosed,
   goToAlert, acceptReport, dismissReport }) => {
 
@@ -217,9 +217,9 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
   );
 }
 
-ReportsTable.propTypes = {
+CorrectReportsTable.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
-export default ReportsTable;
+export default CorrectReportsTable;

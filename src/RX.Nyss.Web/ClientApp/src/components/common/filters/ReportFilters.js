@@ -16,9 +16,9 @@ import {
 } from '@material-ui/core';
 import { AreaFilter } from "./AreaFilter";
 import { strings, stringKeys } from "../../../strings";
-import { ReportListType } from './logic/reportFilterConstsants'
+import { reportErrorFilterTypes, ReportListType } from './logic/reportFilterConstsants';
 
-export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showTrainingFilter, showUnknownSenderOption }) => {
+export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showTrainingFilter, showCorrectReportFilters }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -35,20 +35,20 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
+    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }));
   }
 
   const handleHealthRiskChange = event =>
-    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
+    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }));
 
   const handleReportsTypeChange = event =>
-    onChange(updateValue({ reportsType: event.target.value }))
+    onChange(updateValue({ reportsType: event.target.value }));
 
   const handleIsTrainingChange = event =>
-    onChange(updateValue({ isTraining: event.target.value === "true" }))
+    onChange(updateValue({ isTraining: event.target.value === "true" }));
 
-  const handleStatusChange = event =>
-    onChange(updateValue({ status: event.target.value === "true" }))
+  const handleErrorTypeChange = event =>
+    onChange(updateValue({ errorType: event.target.value }));
 
   if (!value) {
     return null;
@@ -67,35 +67,15 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
           </Grid>
 
           <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.filters.report.healthRisk)}
-              onChange={handleHealthRiskChange}
-              value={value.healthRiskId || 0}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value={0}>{strings(stringKeys.filters.report.healthRiskAll)}</MenuItem>
-
-              {healthRisks.map(healthRisk => (
-                <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
-                  {healthRisk.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item>
             <FormControl className={styles.filterItem}>
               <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>
               <Select
                 onChange={handleReportsTypeChange}
                 value={filters.reportsType}
               >
-                {showUnknownSenderOption &&
                 <MenuItem value={ReportListType.unknownSender}>
                   {strings(stringKeys.filters.report.unknownSenderReportListType)}
                 </MenuItem>
-                }
                 <MenuItem value={ReportListType.main}>
                   {strings(stringKeys.filters.report.mainReportsListType)}
                 </MenuItem>
@@ -106,17 +86,44 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
             </FormControl>
           </Grid>
 
-          <Grid item>
-            <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.status)}</InputLabel>
-            <RadioGroup
-              value={filters.status}
-              onChange={handleStatusChange}
-              className={styles.filterRadioGroup}
-            >
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.success)} value={true} />
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.error)} value={false} />
-            </RadioGroup>
-          </Grid>
+          {showCorrectReportFilters && (
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.filters.report.healthRisk)}
+                onChange={handleHealthRiskChange}
+                value={value.healthRiskId || 0}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value={0}>{strings(stringKeys.filters.report.healthRiskAll)}</MenuItem>
+
+                {healthRisks.map(healthRisk => (
+                  <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
+                    {healthRisk.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          )}
+
+          {!showCorrectReportFilters && (
+            <Grid item>
+              <FormControl className={styles.filterItem}>
+                <InputLabel>{strings(stringKeys.filters.report.selectErrorType)}</InputLabel>
+                <Select
+                  onChange={handleErrorTypeChange}
+                  value={filters.errorType}
+                >
+                  {reportErrorFilterTypes.map(errorType => (
+                    <MenuItem value={errorType} key={`errorfilter_${errorType}`}>
+                      {strings(stringKeys.filters.report.errorTypes[errorType])}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
 
           {showTrainingFilter &&
             <Grid item>

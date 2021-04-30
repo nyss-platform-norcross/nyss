@@ -1,7 +1,9 @@
 import { action } from "../../../utils/actions";
 
-export const OPEN_REPORTS_LIST = action("OPEN_REPORTS_LIST");
-export const GET_REPORTS = action("GET_REPORTS");
+export const OPEN_CORRECT_REPORTS_LIST = action("OPEN_CORRECT_REPORTS_LIST");
+export const OPEN_INCORRECT_REPORTS_LIST = action("OPEN_INCORRECT_REPORTS_LIST");
+export const GET_CORRECT_REPORTS = action("GET_CORRECT_REPORTS");
+export const GET_INCORRECT_REPORTS = action("GET_INCORRECT_REPORTS");
 export const OPEN_REPORT_EDITION = action("OPEN_REPORT_EDITION");
 export const EDIT_REPORT = action("EDIT_REPORT");
 export const EXPORT_TO_CSV = action("EXPORT_TO_CSV");
@@ -21,3 +23,30 @@ export const reportStatus = {
   rejected: 'Rejected',
   closed: 'Closed'
 }
+
+export const ReportErrorType = {
+  formatError: 'FormatError',
+  healthRiskNotFound: 'HealthRiskNotFound',
+  tooLong: 'TooLong',
+  globalHealthRiskNotFound: 'GlobalHealthRiskCodeNotFound',
+  dataCollectorUsedCollectionPointFormat: 'DataCollectorUsedCollectionPointFormat',
+  collectionPointUsedDataCollectorFormat: 'CollectionPointUsedDataCollectorFormat',
+  collectionPointNonHumanHealthRisk: 'CollectionPointNonHumanHealthRisk',
+  singleReportNonHumanHealthRisk: 'SingleReportNonHumanHealthRisk',
+  aggregateReportNonHumanHealthRisk: 'AggregateReportNonHumanHealthRisk',
+  eventReportHumanHealthRisk: 'EventReportHumanHealthRisk',
+  genderAndAgeNonHumanHealthRisk: 'GenderAndAgeNonHumanHealthRisk',
+  gateway: 'Gateway',
+  other: 'Other'
+}
+
+export const reportDetailedFormatErrors = [
+  ReportErrorType.genderAndAgeNonHumanHealthRisk,
+  ReportErrorType.singleReportNonHumanHealthRisk,
+  ReportErrorType.eventReportHumanHealthRisk,
+  ReportErrorType.dataCollectorUsedCollectionPointFormat,
+  ReportErrorType.collectionPointUsedDataCollectorFormat,
+  ReportErrorType.collectionPointNonHumanHealthRisk,
+  ReportErrorType.aggregateReportNonHumanHealthRisk,
+  ReportErrorType.tooLong
+];

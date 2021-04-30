@@ -280,19 +280,23 @@ export const initialState = {
   reports: {
     listFetching: false,
     listRemoving: {},
-    listStale: true,
+    correctReportsListStale: true,
+    incorrectReportsListStale: true,
     listProjectId: null,
-    paginatedListData: null,
     markingAsError: false,
+    sendReport: {
+      dataCollectors: []
+    },
+    formHealthRisks: [],
     filtersData: {
       healthRisks: []
     },
-    filters: null,
-    sorting: null,
-    formHealthRisks: [],
-    sendReport: {
-      dataCollectors: []
-    }
+    correctReportsPaginatedListData: null,
+    correctReportsFilters: null,
+    correctReportsSorting: null,
+    incorrectReportsPaginatedListData: null,
+    incorrectReportsFilters: null,
+    incorrectReportsSorting: null
   },
   nationalSocietyReports: {
     listFetching: false,
