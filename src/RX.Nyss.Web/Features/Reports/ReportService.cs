@@ -11,6 +11,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
@@ -48,6 +49,7 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAlertReportService _alertReportService;
 
         public ReportService(INyssContext nyssContext,
             IUserService userService,
@@ -55,7 +57,8 @@ namespace RX.Nyss.Web.Features.Reports
             INyssWebConfig config,
             IAuthorizationService authorizationService,
             IStringsResourcesService stringsResourcesService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IAlertReportService alertReportService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -64,6 +67,7 @@ namespace RX.Nyss.Web.Features.Reports
             _authorizationService = authorizationService;
             _stringsResourcesService = stringsResourcesService;
             _dateTimeProvider = dateTimeProvider;
+            _alertReportService = alertReportService;
         }
 
         public async Task<Result<ReportResponseDto>> Get(int reportId)
@@ -220,8 +224,7 @@ namespace RX.Nyss.Web.Features.Reports
             var report = await _nyssContext.Reports
                 .Include(r => r.RawReport)
                 .Include(r => r.ProjectHealthRisk)
-                .Include(r => r.DataCollector)
-                .ThenInclude(phr => phr.Project)
+                .Include(r => r.DataCollector).ThenInclude(phr => phr.Project)
                 .SingleOrDefaultAsync(r => r.Id == reportId);
 
             if (report == null)
@@ -229,31 +232,7 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
             }
 
-            if (report.DataCollector.Id != reportRequestDto.DataCollectorId)
-            {
-                var newDataCollector = await _nyssContext.DataCollectors
-                    .Where(dc => dc.Id == reportRequestDto.DataCollectorId)
-                    .SingleOrDefaultAsync();
-
-                if (newDataCollector == null)
-                {
-                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderDoesNotExist);
-                }
-
-                if (newDataCollector.DataCollectorType != report.DataCollector.DataCollectorType)
-                {
-                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderEditError);
-                }
-
-                if (report.Status != ReportStatus.New)
-                {
-                    return Error<ReportResponseDto>(ResultKey.Report.Edit.OnlyNewReportsEditable);
-                }
-
-                report = SetNewDataCollectorOnReport(report, newDataCollector);
-
-            }
-
+            // FIX: for reports with unknown sender we dont know the project...
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
@@ -289,6 +268,34 @@ namespace RX.Nyss.Web.Features.Reports
 
             report.ModifiedAt = _dateTimeProvider.UtcNow;
             report.ModifiedBy = _authorizationService.GetCurrentUserName();
+
+            if (report.DataCollector.Id != reportRequestDto.DataCollectorId)
+            {
+                var newDataCollector = await _nyssContext.DataCollectors
+                    .Include(dc => dc.DataCollectorLocations)
+                    .Where(dc => dc.Id == reportRequestDto.DataCollectorId)
+                    .SingleOrDefaultAsync();
+
+                if (newDataCollector == null)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderDoesNotExist);
+                }
+
+                if (newDataCollector.DataCollectorType != report.DataCollector.DataCollectorType)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderEditError);
+                }
+
+                if (report.Status != ReportStatus.New && report.Status != ReportStatus.Pending)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.OnlyNewReportsEditable);
+                }
+
+                report = SetNewDataCollectorOnReport(report, newDataCollector);
+
+                await _alertReportService.EditReport(report.Id);
+
+            }
 
             await _nyssContext.SaveChangesAsync();
 
