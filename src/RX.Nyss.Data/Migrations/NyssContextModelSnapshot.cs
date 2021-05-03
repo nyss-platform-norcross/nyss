@@ -2458,6 +2458,12 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("AcceptedById")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("CorrectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CorrectedById")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2529,6 +2535,8 @@ namespace RX.Nyss.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AcceptedById");
+
+                    b.HasIndex("CorrectedById");
 
                     b.HasIndex("CreatedAt");
 
@@ -3191,6 +3199,11 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.User", "AcceptedBy")
                         .WithMany()
                         .HasForeignKey("AcceptedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.User", "CorrectedBy")
+                        .WithMany()
+                        .HasForeignKey("CorrectedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")

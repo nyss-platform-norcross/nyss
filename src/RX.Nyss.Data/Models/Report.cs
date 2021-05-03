@@ -52,6 +52,8 @@ namespace RX.Nyss.Data.Models
         public Guid ReportGroupLabel { get; set; }
 
         public bool MarkedAsError { get; set; }
+        public DateTime? CorrectedAt { get; set; }
+        public virtual User CorrectedBy { get; set; }
 
         public virtual RawReport RawReport { get; set; }
 
