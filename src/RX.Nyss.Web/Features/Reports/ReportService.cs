@@ -222,6 +222,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> Edit(int reportId, int projectId, ReportRequestDto reportRequestDto)
         {
+            var dataCollectorChanged = false;
             var report = await _nyssContext.Reports
                 .Include(r => r.RawReport)
                 .Include(r => r.ProjectHealthRisk)
@@ -296,12 +297,16 @@ namespace RX.Nyss.Web.Features.Reports
                 }
 
                 report = SetNewDataCollectorOnReport(report, newDataCollector);
-
-                await _alertReportService.EditReport(report.Id);
+                dataCollectorChanged = true;
 
             }
 
             await _nyssContext.SaveChangesAsync();
+
+            if (dataCollectorChanged)
+            {
+                await _alertReportService.EditReport(report.Id);
+            }
 
             return SuccessMessage(ResultKey.Report.Edit.EditSuccess);
         }
