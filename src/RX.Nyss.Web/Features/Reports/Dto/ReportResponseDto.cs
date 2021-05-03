@@ -19,5 +19,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int DeathCount { get; set; }
         public int FromOtherVillagesCount { get; set; }
         public ReportType ReportType { get; set; }
+        public ReportStatus ReportStatus { get; set; }
     }
 }

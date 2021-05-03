@@ -79,6 +79,7 @@ namespace RX.Nyss.Web.Features.Reports
                     DataCollectorId = r.DataCollector.Id,
                     DataCollectorType = r.ReportType == ReportType.DataCollectionPoint ? DataCollectorType.CollectionPoint : DataCollectorType.Human,
                     ReportType = r.ReportType,
+                    ReportStatus = r.Status,
                     Date = r.ReceivedAt.Date,
                     HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
                     CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive.Value,
@@ -289,7 +290,7 @@ namespace RX.Nyss.Web.Features.Reports
                     return Error<ReportResponseDto>(ResultKey.Report.Edit.SenderEditError);
                 }
 
-                if (report.Status != ReportStatus.New && report.Status != ReportStatus.Pending)
+                if (report.Status != ReportStatus.New)
                 {
                     return Error<ReportResponseDto>(ResultKey.Report.Edit.OnlyNewReportsEditable);
                 }

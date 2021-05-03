@@ -98,6 +98,7 @@ const ReportsEditPageComponent = (props) => {
                       label={strings(stringKeys.reports.form.dataCollector)}
                       name="dataCollectorId"
                       field={form.fields.dataCollectorId}
+                      disabled={props.data.reportStatus !== "New"}
                     >
                       {props.dataCollectors.map(dataCollector => (
                         <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
