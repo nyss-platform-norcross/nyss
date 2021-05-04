@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Services
     public interface IExcelExportService
     {
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
-        ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListType reportListType);
+        ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType);
         ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title);
     }
 
@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Services
             return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
         }
 
-        public ExcelPackage ToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListType reportListType)
+        public ExcelPackage ToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType)
         {
             var package = new ExcelPackage();
             package.Workbook.Properties.Title = title;
@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 19].Value = data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
                 worksheet.Cells[columnIndex, 20].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive + data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
 
-                if (reportListType == ReportListType.FromDcp)
+                if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
                 {
                     worksheet.Cells[columnIndex, 21].Value = data.ReferredCount;
                     worksheet.Cells[columnIndex, 22].Value = data.DeathCount;
@@ -112,7 +112,7 @@ namespace RX.Nyss.Web.Services
             worksheet.Column(2).Width = 12; //Date
             worksheet.Column(11).Width = 20; //HealthRiskName
 
-            if (reportListType == ReportListType.FromDcp)
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 worksheet.Column(24).Width = 20; //DcpName
                 worksheet.Column(25).Width = 20; //PhoneNr

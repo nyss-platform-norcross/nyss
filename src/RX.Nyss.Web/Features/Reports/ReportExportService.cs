@@ -62,8 +62,9 @@ namespace RX.Nyss.Web.Features.Reports
             var reportsQuery = _nyssContext.RawReports
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByTrainingMode(filter.IsTraining)
-                .FilterByReportType(filter.ReportsType)
+                .FilterByReportType(filter.ReportType)
+                .FilterByDataCollectorType(filter.DataCollectorType)
+                .FilterByReportStatus(filter.ReportStatus)
                 .FilterByArea(ReportService.MapToArea(filter.Area))
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .Select(r => new ExportReportListResponseDto
@@ -122,15 +123,15 @@ namespace RX.Nyss.Web.Features.Reports
             ReportService.AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
             return useExcelFormat
-                ? GetExcelData(reports, stringResources, filter.ReportsType)
-                : GetCsvData(reports, stringResources, filter.ReportsType);
+                ? GetExcelData(reports, stringResources, filter.DataCollectorType)
+                : GetCsvData(reports, stringResources, filter.DataCollectorType);
         }
 
-        private byte[] GetCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private byte[] GetCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
         {
-            var columnLabels = GetColumnLabels(stringResources, reportListType);
+            var columnLabels = GetColumnLabels(stringResources, reportListDataCollectorType);
 
-            if (reportListType == ReportListType.FromDcp)
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 var dcpReportData = reports.Select(r =>
                 {
@@ -226,11 +227,11 @@ namespace RX.Nyss.Web.Features.Reports
                     .Value
                 : key;
 
-        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
         {
             var documentTitle = GetStringResource(stringResources, "reports.export.title");
-            var columnLabels = GetColumnLabels(stringResources, reportListType);
-            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle, reportListType);
+            var columnLabels = GetColumnLabels(stringResources, reportListDataCollectorType);
+            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle, reportListDataCollectorType);
             return excelDoc.GetAsByteArray();
         }
 
@@ -243,9 +244,9 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
         {
-            if (reportListType == ReportListType.FromDcp)
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 return new List<string>
                 {

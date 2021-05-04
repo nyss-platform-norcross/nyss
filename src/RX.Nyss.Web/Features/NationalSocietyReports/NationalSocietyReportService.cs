@@ -64,12 +64,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
-                .FilterByReportType(filter.ReportsType)
-                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                .FilterByArea(MapToArea(filter.Area));
+                .FilterByDataCollectorType(filter.DataCollectorType)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByFormatCorrectness(filter.FormatCorrect)
+                .FilterByArea(MapToArea(filter.Area))
+                .FilterByReportType(filter.ReportType)
+                .FilterByReportStatus(filter.ReportStatus);
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {
@@ -102,7 +102,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+                    Status = r.Report.Status,
+                    ErrorType = r.ErrorType
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending)

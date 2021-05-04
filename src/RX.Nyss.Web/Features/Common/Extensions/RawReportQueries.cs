@@ -22,12 +22,12 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 reports
             };
 
-        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> reports, ReportListType reportType) =>
-            reportType switch
+        public static IQueryable<RawReport> FilterByDataCollectorType(this IQueryable<RawReport> reports, ReportListDataCollectorType reportDataCollectorType) =>
+            reportDataCollectorType switch
             {
-                ReportListType.Main => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
-                ReportListType.FromDcp => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
-                ReportListType.UnknownSender => reports.Where(r => r.DataCollector == null),
+                ReportListDataCollectorType.Human => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+                ReportListDataCollectorType.CollectionPoint => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+                ReportListDataCollectorType.UnknownSender => reports.Where(r => r.DataCollector == null),
                 _ => reports
             };
 
@@ -104,5 +104,20 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 ReportErrorFilterType.Other => rawReports.Where(r => r.ErrorType == ReportErrorType.Other),
                 _ => rawReports
             };
+
+        public static IQueryable<RawReport> FilterByReportStatus(this IQueryable<RawReport> rawReports, ReportStatusFilterDto filterDto) =>
+            filterDto != null
+                ? rawReports.Where(r => (filterDto.Kept && r.Report != null && r.Report.Status == ReportStatus.Accepted)
+                    || (filterDto.Dismissed && r.Report != null && r.Report.Status == ReportStatus.Rejected)
+                    || (filterDto.NotCrossChecked && r.Report != null && (r.Report.Status == ReportStatus.New || r.Report.Status == ReportStatus.Pending))
+                    || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
+                : rawReports;
+
+        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> rawReports, ReportTypeFilterDto filterDto) =>
+            filterDto != null
+                ? rawReports.Where(r => (filterDto.Real && r.Report != null)
+                    || (filterDto.Corrected && r.Report != null && r.Report.CorrectedAt.HasValue)
+                    || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
+                : rawReports;
     }
 }

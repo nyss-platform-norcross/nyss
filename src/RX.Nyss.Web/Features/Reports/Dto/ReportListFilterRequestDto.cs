@@ -7,12 +7,13 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public class ReportListFilterRequestDto
     {
         public static readonly string DateColumnName = "date";
-        public ReportListType ReportsType { get; set; } = ReportListType.Main;
+        public ReportListDataCollectorType DataCollectorType { get; set; } = ReportListDataCollectorType.Human;
         public ReportErrorFilterType? ErrorType { get; set; }
         public AreaDto Area { get; set; }
         public int? HealthRiskId { get; set; }
         public bool FormatCorrect { get; set; }
-        public bool IsTraining { get; set; }
+        public ReportStatusFilterDto ReportStatus { get; set; }
+        public ReportTypeFilterDto ReportType { get; set; }
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
         public int UtcOffset { get; set; }
@@ -21,7 +22,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         {
             public Validator()
             {
-                RuleFor(f => f.ReportsType).IsInEnum();
+                RuleFor(f => f.DataCollectorType).IsInEnum();
                 RuleFor(f => f.HealthRiskId).GreaterThan(0).When(f => f.HealthRiskId.HasValue);
                 RuleFor(f => f.OrderBy).Equal(DateColumnName);
                 RuleFor(f => f.Area).SetValidator(new AreaDto.Validator());

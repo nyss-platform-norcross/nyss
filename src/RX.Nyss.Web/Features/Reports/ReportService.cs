@@ -179,7 +179,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
 
-            if(filter.ReportsType != ReportListType.UnknownSender)
+            if(filter.DataCollectorType != ReportListDataCollectorType.UnknownSender)
             {
                 AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
             }
@@ -376,7 +376,7 @@ namespace RX.Nyss.Web.Features.Reports
         }
 
         private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
-            if(filter.ReportsType == ReportListType.UnknownSender)
+            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
                     .Where(p => p.Id == projectId)
@@ -385,21 +385,24 @@ namespace RX.Nyss.Web.Features.Reports
 
                 return _nyssContext.RawReports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
-                    .FilterByReportType(filter.ReportsType)
+                    .FilterByDataCollectorType(filter.DataCollectorType)
                     .FilterByHealthRisk(filter.HealthRiskId)
                     .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
-                    .FilterByArea(MapToArea(filter.Area));
+                    .FilterByArea(MapToArea(filter.Area))
+                    .FilterByReportStatus(filter.ReportStatus)
+                    .FilterByReportType(filter.ReportType);
             }
 
             return _nyssContext.RawReports
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByTrainingMode(filter.IsTraining)
-                .FilterByReportType(filter.ReportsType)
+                .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByArea(MapToArea(filter.Area))
                 .FilterByFormatCorrectness(filter.FormatCorrect)
-                .FilterByErrorType(filter.ErrorType);
+                .FilterByErrorType(filter.ErrorType)
+                .FilterByReportStatus(filter.ReportStatus)
+                .FilterByReportType(filter.ReportType);
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
