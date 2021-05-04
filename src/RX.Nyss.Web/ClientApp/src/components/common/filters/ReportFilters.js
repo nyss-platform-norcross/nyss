@@ -115,7 +115,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
                   filter={value.reportStatus}
                   onChange={handleReportStatusChange}
                   correctReports={showCorrectReportFilters}
-                  showTraninigFilter={showTrainingFilter}
+                  showTrainingFilter={showTrainingFilter}
                 />
               </Grid>
             </Fragment>
@@ -143,7 +143,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
                 <ReportTypeFilter
                   filter={value.reportType}
                   onChange={handleReportTypeChange}
-                  showTraninigFilter={showTrainingFilter}
+                  showTrainingFilter={showTrainingFilter}
                 />
               </Grid>
             </Fragment>

@@ -3,7 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@
 import { Fragment } from 'react';
 import { stringKeys, strings } from '../../../strings';
 
-export const ReportStatusFilter = ({ filter, onChange, correctReports, showTraninigFilter }) => {
+export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrainingFilter }) => {
 
   return (
     <Fragment>
@@ -24,7 +24,7 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrani
                 control={<Checkbox checked={filter.notCrossChecked} onChange={onChange} name='notCrossChecked' color='primary' />}
                 label={strings(stringKeys.filters.report.notCrossChecked)}
               />
-              {showTraninigFilter && (
+              {showTrainingFilter && (
                 <FormControlLabel
                   control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
                   label={strings(stringKeys.filters.report.trainingReports)}
@@ -39,7 +39,7 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrani
                 control={<Checkbox checked={filter.real} onChange={onChange} name='real' color='primary' />}
                 label={strings(stringKeys.filters.report.nonTrainingReports)}
               />
-              {showTraninigFilter && (
+              {showTrainingFilter && (
                 <FormControlLabel
                   control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
                   label={strings(stringKeys.filters.report.trainingReports)}

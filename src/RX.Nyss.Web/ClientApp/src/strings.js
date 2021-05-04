@@ -836,9 +836,8 @@ export const stringKeys = {
       referredCount: "nationalSocietyReports.list.referredCount",
       deathCount: "nationalSocietyReports.list.deathCount",
       fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
-      success: "nationalSocietyReports.list.success",
-      error: "nationalSocietyReports.list.error",
-      markedAsError: "nationalSocietyReports.list.markedAsError"
+      markedAsError: "nationalSocietyReports.list.markedAsError",
+      errorType: "nationalSocietyReports.list.errorType"
     },
     title: "nationalSocietyReports.title"
   },

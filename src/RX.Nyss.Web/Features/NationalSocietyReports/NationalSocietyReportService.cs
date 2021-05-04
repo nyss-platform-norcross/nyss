@@ -69,7 +69,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByArea(MapToArea(filter.Area))
                 .FilterByReportType(filter.ReportType)
-                .FilterByReportStatus(filter.ReportStatus);
+                .FilterByReportStatus(filter.ReportStatus)
+                .FilterByErrorType(filter.ErrorType);
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {

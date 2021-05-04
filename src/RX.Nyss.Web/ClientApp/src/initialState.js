@@ -301,14 +301,19 @@ export const initialState = {
   nationalSocietyReports: {
     listFetching: false,
     listRemoving: {},
-    listStale: true,
+    correctReportsListStale: true,
+    incorrectReportsListStale: true,
     listNationalSocietyId: null,
     paginatedListData: null,
     filtersData: {
       healthRisks: []
     },
-    filters: null,
-    sorting: null
+    correctReportsPaginatedListData: null,
+    correctReportsFilters: null,
+    correctReportsSorting: null,
+    incorrectReportsPaginatedListData: null,
+    incorrectReportsFilters: null,
+    incorrectReportsSorting: null
   },
   alerts: {
     listFetching: false,

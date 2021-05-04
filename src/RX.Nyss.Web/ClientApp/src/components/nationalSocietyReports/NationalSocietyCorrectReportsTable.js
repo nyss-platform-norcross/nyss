@@ -19,7 +19,7 @@ import {
   TableSortLabel,
 } from "@material-ui/core";
 
-export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort }) => {
+export const NationalSocietyCorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort }) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -128,9 +128,9 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
   );
 }
 
-NationalSocietyReportsTable.propTypes = {
+NationalSocietyCorrectReportsTable.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
-export default NationalSocietyReportsTable;
+export default NationalSocietyCorrectReportsTable;

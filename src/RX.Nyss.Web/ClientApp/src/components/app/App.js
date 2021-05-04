@@ -45,7 +45,6 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
 import { AlertsListPage } from '../alerts/AlertsListPage';
 import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
-import { NationalSocietyReportsListPage } from '../nationalSocietyReports/NationalSocietyReportsListPage';
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
 import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
@@ -63,6 +62,8 @@ import { ProjectAlertNotificationsPage } from '../projects/ProjectAlertNotificat
 import { ProjectAlertRecipientsCreatePage } from '../projectAlertRecipients/ProjectAlertRecipientsCreatePage';
 import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/ProjectAlertRecipientsEditPage';
 import { IncorrectReportsListPage } from '../reports/IncorrectReportsListPage';
+import { NationalSocietyCorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyCorrectReportsListPage';
+import { NationalSocietyIncorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyIncorrectReportsListPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -86,7 +87,9 @@ export const App = ({ history }) => (
           <Redirect exact from='/nationalsocieties/:nationalSocietyId' to='/nationalsocieties/:nationalSocietyId/dashboard' />
           <Redirect exact from='/nationalsocieties/:nationalSocietyId/settings' to='/nationalsocieties/:nationalSocietyId/overview' />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports' component={NationalSocietyReportsListPage} roles={accessMap.nationalSocietyReports.list} />
+          <Redirect exact from='/nationalsocieties/:nationalSocietyId/reports' to='/nationalsocieties/:nationalSocietyId/reports/correct' />
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/correct' component={NationalSocietyCorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/incorrect' component={NationalSocietyIncorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
 
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
