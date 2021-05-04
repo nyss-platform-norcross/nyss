@@ -32,7 +32,8 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? FromOtherVillagesCount { get; set; }
         public int EpiWeek { get; set; }
         public int EpiYear { get; set; }
-        public string ReportStatus { get; set; }
         public int? ReportAlertId { get; set; }
+        public string ErrorType { get; set; }
+        public bool Corrected { get; set; }
     }
 }
