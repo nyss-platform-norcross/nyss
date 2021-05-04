@@ -1,7 +1,7 @@
-export const ReportListType = {
+export const DataCollectorType = {
     unknownSender: 'unknownSender',
-    main: 'main',
-    fromDcp: 'fromDcp'
+    human: 'human',
+    collectionPoint: 'collectionPoint'
 }
 
 export const ReportErrorFilterType = {

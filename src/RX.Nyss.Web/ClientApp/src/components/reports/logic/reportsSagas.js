@@ -6,7 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
-import { ReportErrorFilterType, ReportListType } from '../../common/filters/logic/reportFilterConstsants'
+import { ReportErrorFilterType, DataCollectorType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
 import { formatDate, getUtcOffset } from "../../../utils/date";
 
@@ -65,12 +65,19 @@ function* openIncorrectReportsList({ projectId }) {
 function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
   const requestFilters = filters || (yield select(state => state.reports.correctReportsFilters)) ||
   {
-    reportsType: ReportListType.main,
+    dataCollectorType: DataCollectorType.human,
     errorType: null,
     area: null,
     healthRiskId: null,
     formatCorrect: true,
     isTraining: false,
+    reportStatus: {
+      kept: true,
+      dismissed: true,
+      notCrossChecked: true,
+      training: false
+    },
+    reportType: null,
     utcOffset: getUtcOffset()
   };
 
@@ -94,12 +101,18 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
 function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
   const requestFilters = filters || (yield select(state => state.reports.incorrectReportsFilters)) ||
   {
-    reportsType: ReportListType.main,
+    dataCollectorType: DataCollectorType.human,
     errorType: ReportErrorFilterType.all,
     area: null,
     healthRiskId: null,
     formatCorrect: false,
     isTraining: false,
+    reportStatus: null,
+    reportType: {
+      real: true,
+      training: false,
+      corrected: false
+    },
     utcOffset: getUtcOffset()
   };
   const requestSorting = sorting || (yield select(state => state.reports.incorrectReportsSorting)) ||

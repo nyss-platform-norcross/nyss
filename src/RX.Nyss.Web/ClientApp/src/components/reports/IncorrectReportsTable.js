@@ -1,17 +1,17 @@
 import styles from '../common/table/Table.module.scss';
 
 import React, { Fragment, useState } from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import TablePager from '../common/tablePagination/TablePager';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import EditIcon from '@material-ui/icons/Edit';
 import { accessMap } from '../../authentication/accessMap';
-import { ReportListType } from '../common/filters/logic/reportFilterConstsants';
+import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
 import { DateColumnName, ReportErrorType, reportDetailedFormatErrors } from './logic/reportsConstants';
 import {
   Typography,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed }) => {
@@ -39,7 +39,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
   };
 
   const dashIfEmpty = (text, ...args) => {
-    return [text || "-", ...args].filter(x => !!x).join(", ");
+    return [text || '-', ...args].filter(x => !!x).join(', ');
   };
 
   const createSortHandler = column => event => {
@@ -78,7 +78,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: "6%", minWidth: "80px" }}>
+              <TableCell style={{ width: '6%', minWidth: '80px' }}>
                 <TableSortLabel
                   active={sorting.orderBy === DateColumnName}
                   direction={sorting.sortAscending ? 'asc' : 'desc'}
@@ -87,11 +87,11 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                   {strings(stringKeys.reports.list.date)}
                 </TableSortLabel>
               </TableCell>
-              <TableCell style={{ width: "30%" }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
-              <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.message)}</TableCell>
-              <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: "20%" }}>{strings(stringKeys.reports.list.location)}</TableCell>
-              <TableCell style={{ width: "3%" }} />
+              <TableCell style={{ width: '30%' }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
+              <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
+              <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+              <TableCell style={{ width: '20%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: '3%' }} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -104,8 +104,8 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                 </TableCell>
                 <TableCell>
                   {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ""}
-                  {(!row.isAnonymized || filters.reportsType === ReportListType.unknownSender) && row.phoneNumber}
+                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
+                  {(!row.isAnonymized || filters.dataCollectorType === DataCollectorType.unknownSender) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>
@@ -115,7 +115,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && !projectIsClosed && (row.reportType === "Aggregate" || row.reportType === "DataCollectionPoint")} />
+                      condition={!row.isAnonymized && !projectIsClosed && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>

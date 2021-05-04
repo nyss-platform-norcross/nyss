@@ -4,7 +4,7 @@ import * as actions from "./nationalSocietyReportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
+import { DataCollectorType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './nationalSocietyReportsConstants'
 import { getUtcOffset } from "../../../utils/date";
 
@@ -23,10 +23,17 @@ function* openNationalSocietyReportsList({ nationalSocietyId }) {
     const filtersData = yield call(http.get, `/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
     const filters = (yield select(state => state.nationalSocietyReports.filters)) ||
     {
-      reportsType: ReportListType.main,
+      dataCollectorType: DataCollectorType.human,
       area: null,
       healthRiskId: null,
       status: true,
+      formatCorrect: true,
+      reportStatus: {
+        kept: true,
+        dismissed: true,
+        notCrossChecked: true,
+        training: false
+      },
       utcOffset: getUtcOffset()
     };
     const sorting = (yield select(state => state.nationalSocietyReports.sorting)) ||

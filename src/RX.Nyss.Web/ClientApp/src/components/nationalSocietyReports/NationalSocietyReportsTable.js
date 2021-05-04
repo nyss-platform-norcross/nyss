@@ -7,7 +7,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
-import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
+import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/nationalSocietyReportsConstants'
 import {
   Typography,
@@ -77,7 +77,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
             <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
             <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
-            {reportsType === ReportListType.fromDcp &&
+            {reportsType === DataCollectorType.collectionPoint &&
               <Fragment>
                 <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
                 <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
@@ -93,9 +93,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
                 <span>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</span>
               </TableCell>
               <TableCell>
-                {row.isMarkedAsError
-                  ? strings(stringKeys.nationalSocietyReports.list.markedAsError)
-                  : row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}
+                {strings(stringKeys.reports.status[row.status])}
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
               <TableCell>
@@ -114,7 +112,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
-              {reportsType === ReportListType.fromDcp &&
+              {reportsType === DataCollectorType.collectionPoint &&
                 <Fragment>
                   <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
                   <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>

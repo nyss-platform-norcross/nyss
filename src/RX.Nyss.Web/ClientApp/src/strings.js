@@ -806,7 +806,14 @@ export const stringKeys = {
       "GenderAndAgeNonHumanHealthRisk": "report.errorType.genderAndAgeNonHumanHealthRisk",
       "Gateway": "report.errorType.gateway",
       "Other": "report.errorType.other"
-    }
+    },
+    status: {
+      "New": "report.status.new",
+      "Rejected": "report.status.rejected",
+      "Accepted": "report.status.accepted",
+      "Pending": "report.status.pending",
+      "Closed": "report.status.closed"
+    },
   },
   nationalSocietyReports: {
     list: {
@@ -976,6 +983,10 @@ export const stringKeys = {
       reportType: "filters.report.reportType",
       trainingReports: "filters.report.trainingReports",
       nonTrainingReports: "filters.report.nonTrainingReports",
+      correctedReports: "filters.report.correctedReports",
+      kept: "filters.report.keptReports",
+      dismissed: "filters.report.dismissedReports",
+      notCrossChecked: "filters.report.notCrossCheckedReports",
       selectErrorType: "filters.report.selectErrorType",
       errorTypes: {
         "All": "filters.report.errorTypeAll",

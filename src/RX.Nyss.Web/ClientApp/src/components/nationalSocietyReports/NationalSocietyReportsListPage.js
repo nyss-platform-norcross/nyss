@@ -36,8 +36,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
-          showUnknownSenderOption={true}
-          showTrainingFilter={false}
+          showCorrectReportFilters={true}
         />
       </div>
 
