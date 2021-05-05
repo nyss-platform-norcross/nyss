@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { Select, FormControl, FormHelperText, InputLabel } from "@material-ui/core";
 import { createFieldComponent } from "./FieldBase";
 
-const SelectInput = ({ error, name, label, value, onChange, controlProps, customProps, children }) => {
+const SelectInput = ({ error, disabledLabel, name, label, value, onChange, controlProps, customProps, children }) => {
   return (
-    <FormControl error={!!error} {...customProps} fullWidth>
+    <FormControl error={!!error} disabledLabel={!!disabledLabel} {...customProps} fullWidth>
       <InputLabel htmlFor={name} shrink>{label}</InputLabel>
       <Select
         value={value}
@@ -22,6 +22,7 @@ const SelectInput = ({ error, name, label, value, onChange, controlProps, custom
         {children}
       </Select>
       {error && <FormHelperText>{error}</FormHelperText>}
+      {disabledLabel && <FormHelperText>{disabledLabel}</FormHelperText>}
     </FormControl>
   );
 };
