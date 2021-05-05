@@ -71,7 +71,14 @@ const ReportsEditPageComponent = (props) => {
 
         const newForm = createForm(fields, validation);
 
-        newForm.fields.dataCollectorId.subscribe(({ newValue }) => setDataCollector(props.dataCollectors.find(dc => dc.id.toString() === newValue.toString())));
+        newForm.fields.dataCollectorId.subscribe(({ newValue }) => {
+          const newDataCollector = props.dataCollectors.find(dc => dc.id.toString() === newValue.toString())
+          setDataCollector(newDataCollector);
+          if (newDataCollector.locations.length === 1) {
+            setLocation(newDataCollector.locations[0]);
+          }
+        }
+        );
         setDataCollector(props.dataCollectors.find(dc => dc.id.toString() === newForm.fields.dataCollectorId.value));
         newForm.fields.location.subscribe(({ newValue }) => setLocation(newValue));
 
@@ -129,7 +136,8 @@ const ReportsEditPageComponent = (props) => {
                     </SelectField>
                   </Grid>
                 </Grid>
-                  <Grid container spacing={2}>
+                  { selectedDataCollector.locations.length > 1 &&
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <SelectField
                       label={strings(stringKeys.reports.form.dataCollectorLocations)}
@@ -146,6 +154,7 @@ const ReportsEditPageComponent = (props) => {
                     </SelectField>
                   </Grid>
                 </Grid>
+                }
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DateInputField
