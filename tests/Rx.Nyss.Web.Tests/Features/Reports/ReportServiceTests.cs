@@ -322,42 +322,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, bool? isTraining = false)
-        {
-            var reports = ids
-                .Select(i => new Report
-                {
-                    Id = i,
-                    DataCollector = dataCollector,
-                    Status = ReportStatus.Pending,
-                    ProjectHealthRisk = projectHealthRisk,
-                    ReportedCase = new ReportCase(),
-                    DataCollectionPointCase = new DataCollectionPointCase(),
-                    CreatedAt = new DateTime(2020, 1, 1),
-                    IsTraining = isTraining ?? false,
-                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint
-                        ? ReportType.DataCollectionPoint
-                        : ReportType.Single
-                })
-                .ToList();
-            return reports;
-        }
-
-        private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone, NationalSociety nationalSociety) =>
-            reports.Select(r => new RawReport
-                {
-                    Id = r.Id,
-                    Report = r,
-                    ReportId = r.Id,
-                    Sender = r.PhoneNumber,
-                    DataCollector = r.DataCollector,
-                    ReceivedAt = r.ReceivedAt,
-                    IsTraining = r.IsTraining,
-                    Village = village,
-                    Zone = zone,
-                    NationalSociety = nationalSociety
-                })
-                .ToList();
 
         [Fact]
         public async Task List_ShouldReturnPagedResultsFromSpecifiedProject()
@@ -381,9 +345,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.FromDcp,
-                IsTraining = false,
-                Status = true
+                DataCollectorType = ReportListDataCollectorType.CollectionPoint,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
             });
 
             //assert
@@ -396,9 +366,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(2, 2, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.Main,
-                IsTraining = false,
-                Status = true
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
             });
 
             //assert
@@ -411,9 +387,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.Main,
-                IsTraining = true,
-                Status = true
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = false,
+                    Dismissed = false,
+                    NotCrossChecked = false,
+                    Training = true
+                }
             });
 
             //assert
@@ -427,9 +409,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.FromDcp,
-                IsTraining = false,
-                Status = true
+                DataCollectorType = ReportListDataCollectorType.CollectionPoint,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
             });
 
             //assert
@@ -443,9 +431,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.Main,
-                IsTraining = false,
-                Status = true
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
             });
 
             //assert
@@ -459,9 +453,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.Main,
-                IsTraining = false,
-                Status = true,
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                },
                 Area = new AreaDto
                 {
                     Id = 2,
@@ -480,17 +480,23 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
-                ReportsType = ReportListType.Main,
-                IsTraining = false,
-                Status = true,
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                    Training = false
+                },
                 HealthRiskId = 2
             });
+
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
             result.Value.TotalRows.ShouldBe(11);
         }
-
         [Fact]
         public async Task AcceptReport_WhenErrorReport_ShouldNotBeAllowed()
         {
@@ -682,5 +688,42 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Report.CannotCrossCheckErrorReport);
         }
+
+        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, bool? isTraining = false)
+        {
+            var reports = ids
+                .Select(i => new Report
+                {
+                    Id = i,
+                    DataCollector = dataCollector,
+                    Status = ReportStatus.Pending,
+                    ProjectHealthRisk = projectHealthRisk,
+                    ReportedCase = new ReportCase(),
+                    DataCollectionPointCase = new DataCollectionPointCase(),
+                    CreatedAt = new DateTime(2020, 1, 1),
+                    IsTraining = isTraining ?? false,
+                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? ReportType.DataCollectionPoint
+                        : ReportType.Single
+                })
+                .ToList();
+            return reports;
+        }
+
+        private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone, NationalSociety nationalSociety) =>
+            reports.Select(r => new RawReport
+                {
+                    Id = r.Id,
+                    Report = r,
+                    ReportId = r.Id,
+                    Sender = r.PhoneNumber,
+                    DataCollector = r.DataCollector,
+                    ReceivedAt = r.ReceivedAt,
+                    IsTraining = r.IsTraining,
+                    Village = village,
+                    Zone = zone,
+                    NationalSociety = nationalSociety
+                })
+                .ToList();
     }
 }

@@ -43,59 +43,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
         }
 
         [Fact]
-        public void ValidateGatewaySetting_WhenApiKeyExists_ShouldNotThrowException()
-        {
-            // Arrange
-            var apiKey = "api-key";
-            var gatewaySettings = new List<GatewaySetting>
-            {
-                new GatewaySetting
-                {
-                    ApiKey = apiKey,
-                    GatewayType = GatewayType.SmsEagle
-                }
-            };
-            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
-
-            // Assert
-            Should.NotThrow(() => _smsEagleHandler.ValidateGatewaySetting(apiKey));
-        }
-
-        [Fact]
-        public void ValidateGatewaySetting_WhenGatewayTypeDoesNotExist_ShouldThrowException()
-        {
-            // Arrange
-            var apiKey = "api-key";
-            var gatewaySettings = new List<GatewaySetting>();
-            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
-
-            // Assert
-            Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateGatewaySetting(apiKey));
-        }
-
-        [Fact]
-        public void ValidateGatewaySetting_WhenGatewayTypeIsNotSmsEagle_ShouldThrowException()
-        {
-            // Arrange
-            var apiKey = "api-key";
-            var gatewaySettings = new List<GatewaySetting>
-            {
-                new GatewaySetting
-                {
-                    ApiKey = apiKey,
-                    GatewayType = GatewayType.Unknown
-                }
-            };
-            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
-
-            // Assert
-            Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateGatewaySetting(apiKey));
-        }
-
-        [Fact]
         public void ValidateDataCollector_WhenDataCollectorExists_ShouldNotThrowException()
         {
             // Arrange
@@ -131,7 +78,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
             Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateDataCollector(phoneNumber, gatewayNationalSocietyId));
         }
 
-        [Fact]
+        [Fact(Skip = "A Data Collector can now be registered without a phonenumber")]
         public void ValidateDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
             // Arrange

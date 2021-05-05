@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
         public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> rawReports, ReportTypeFilterDto filterDto) =>
             filterDto != null
-                ? rawReports.Where(r => (filterDto.Real && r.Report != null)
+                ? rawReports.Where(r => (filterDto.Real && (!r.IsTraining.HasValue || !r.IsTraining.Value))
                     || (filterDto.Corrected && r.Report != null && r.Report.CorrectedAt.HasValue)
                     || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
                 : rawReports;
