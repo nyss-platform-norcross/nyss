@@ -21,6 +21,8 @@ import dayjs from "dayjs";
 
 const ReportsEditPageComponent = (props) => {
     const [form, setForm] = useState(null);
+    const [selectedDataCollector, setDataCollector] = useState(null);
+    const [selectedLocation, setLocation] = useState(null)
 
     useMount(() => {
         props.openEdition(props.projectId, props.reportId);
@@ -31,11 +33,19 @@ const ReportsEditPageComponent = (props) => {
             return;
         }
 
+        let reportLocation;
+        if (props.data.dataCollectorId !== 0) {
+          reportLocation = props.dataCollectors.find(dc => dc.id.toString() === props.data.dataCollectorId.toString())
+            .locations.find(lc => (lc.villageId === props.data.reportVillageId && lc.zoneId === props.data.reportZoneId));
+          setLocation(reportLocation);
+        }
+
         const fields = {
             id: props.data.id,
             date: dayjs(props.data.date),
             dataCollectorId: props.data.dataCollectorId.toString(),
             healthRiskId: props.data.healthRiskId.toString(),
+            location: reportLocation,
             countMalesBelowFive: props.data.countMalesBelowFive.toString(),
             countMalesAtLeastFive: props.data.countMalesAtLeastFive.toString(),
             countFemalesBelowFive: props.data.countFemalesBelowFive.toString(),
@@ -48,6 +58,7 @@ const ReportsEditPageComponent = (props) => {
         const validation = {
             date: [validators.required],
             dataCollectorId: [validators.required],
+            location: [validators.required],
             healthRiskId: [validators.required],
             countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
             countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
@@ -58,7 +69,13 @@ const ReportsEditPageComponent = (props) => {
             fromOtherVillagesCount: [validators.integer, validators.nonNegativeNumber]
         };
 
-        setForm(createForm(fields, validation));
+        const newForm = createForm(fields, validation);
+
+        newForm.fields.dataCollectorId.subscribe(({ newValue }) => setDataCollector(props.dataCollectors.find(dc => dc.id.toString() === newValue.toString())));
+        setDataCollector(props.dataCollectors.find(dc => dc.id.toString() === newForm.fields.dataCollectorId.value));
+        newForm.fields.location.subscribe(({ newValue }) => setLocation(newValue));
+
+        setForm(newForm);
     }, [props.data, props.match]);
 
     const handleSubmit = (e) => {
@@ -72,6 +89,7 @@ const ReportsEditPageComponent = (props) => {
         props.edit(props.projectId, props.reportId, {
             date: values.date.format('YYYY-MM-DDTHH:mm:ss'),
             dataCollectorId: parseInt(values.dataCollectorId),
+            dataCollectorLocation: selectedLocation,
             healthRiskId: parseInt(values.healthRiskId),
             countMalesBelowFive: parseInt(values.countMalesBelowFive),
             countMalesAtLeastFive: parseInt(values.countMalesAtLeastFive),
@@ -99,12 +117,32 @@ const ReportsEditPageComponent = (props) => {
                       name="dataCollectorId"
                       field={form.fields.dataCollectorId}
                       disabled={props.data.reportStatus !== "New"}
+                      disabledLabel={props.data.reportStatus !== "New" ?
+                        strings(stringKeys.reports.form.reportPartOfAlertLabel)
+                        : ""}
                     >
                       {props.dataCollectors.map(dataCollector => (
                         <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
                           {dataCollector.name}
                         </MenuItem>
                       ))}
+                    </SelectField>
+                  </Grid>
+                </Grid>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <SelectField
+                      label={strings(stringKeys.reports.form.dataCollectorLocations)}
+                      name="location"
+                      field={form.fields.location}
+                      disabled={props.data.reportStatus !== "New" || !selectedDataCollector}
+                    >
+                      { selectedDataCollector &&
+                        selectedDataCollector.locations.map(location => (
+                          <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={location}>
+                            {location.village + (location.zone ? (" > " + location.zone) : "")}
+                          </MenuItem>
+                        ))}
                     </SelectField>
                   </Grid>
                 </Grid>

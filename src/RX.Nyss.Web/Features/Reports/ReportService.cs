@@ -80,6 +80,8 @@ namespace RX.Nyss.Web.Features.Reports
                     DataCollectorType = r.ReportType == ReportType.DataCollectionPoint ? DataCollectorType.CollectionPoint : DataCollectorType.Human,
                     ReportType = r.ReportType,
                     ReportStatus = r.Status,
+                    ReportVillageId = r.RawReport.Village.Id,
+                    ReportZoneId = r.RawReport.Zone.Id,
                     Date = r.ReceivedAt.Date,
                     HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
                     CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive.Value,
@@ -223,8 +225,10 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<Result> Edit(int reportId, int projectId, ReportRequestDto reportRequestDto)
         {
             var dataCollectorChanged = false;
+            var locationChanged = false;
+
             var report = await _nyssContext.Reports
-                .Include(r => r.RawReport)
+                .Include(r => r.RawReport).ThenInclude(raw => raw.Zone)
                 .Include(r => r.ProjectHealthRisk)
                 .Include(r => r.DataCollector).ThenInclude(phr => phr.Project)
                 .SingleOrDefaultAsync(r => r.Id == reportId);
@@ -301,9 +305,30 @@ namespace RX.Nyss.Web.Features.Reports
 
             }
 
+            if (reportRequestDto.DataCollectorLocation != null && LocationNeedsUpdate(report, reportRequestDto))
+            {
+                var newDataCollector = await _nyssContext.DataCollectors
+                    .Include(dc => dc.DataCollectorLocations).ThenInclude(lc => lc.Village)
+                    .Include(dc => dc.DataCollectorLocations).ThenInclude(lc => lc.Zone)
+                    .Where(dc => dc.Id == reportRequestDto.DataCollectorId)
+                    .SingleOrDefaultAsync();
+
+                var newLocation = newDataCollector.DataCollectorLocations
+                    .FirstOrDefault(location => (location.Village.Id == reportRequestDto.DataCollectorLocation.VillageId &&
+                                                (location.Zone == null || location.Zone.Id == reportRequestDto.DataCollectorLocation.ZoneId)));
+
+
+                report.Location = newLocation.Location;
+                report.RawReport.Village = newLocation.Village;
+                report.RawReport.Zone = newLocation.Zone;
+
+                locationChanged = true;
+
+            }
+
             await _nyssContext.SaveChangesAsync();
 
-            if (dataCollectorChanged)
+            if (dataCollectorChanged || locationChanged)
             {
                 await _alertReportService.EditReport(report.Id);
             }
@@ -442,6 +467,21 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByReportType(filter.ReportType);
+        }
+
+        private static bool LocationNeedsUpdate(Report report, ReportRequestDto reportRequestDto)
+        {
+            if (report.RawReport.Village == null || report.RawReport.Zone == null)
+            {
+                return true;
+            }
+
+            if (report.RawReport.Village.Id == reportRequestDto.DataCollectorLocation.VillageId && report.RawReport.Zone.Id == reportRequestDto.DataCollectorLocation.ZoneId)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static Report SetNewDataCollectorOnReport(Report report, DataCollector newDataCollector)

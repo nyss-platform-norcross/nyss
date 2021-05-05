@@ -307,7 +307,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         {
                             Region = dcl.Village.District.Region.Name,
                             District = dcl.Village.District.Name,
-                            Village = dcl.Village.Name
+                            Village = dcl.Village.Name,
+                            VillageId = dcl.Village.Id,
+                            ZoneId = dcl.Zone.Id,
+                            Zone = dcl.Zone.Name
                         })
                 })
                 .OrderBy(dc => dc.Name)
