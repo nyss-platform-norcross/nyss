@@ -220,12 +220,12 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var timestamp = parsedQueryString[TimestampParameterName];
                 var text = parsedQueryString[TextParameterName].Trim();
 
+                gatewaySetting = await _reportValidationService.ValidateGatewaySetting(apiKey);
+                rawReport.NationalSociety = gatewaySetting.NationalSociety;
+
                 var receivedAt = _reportValidationService.ParseTimestamp(timestamp);
                 _reportValidationService.ValidateReceivalTime(receivedAt);
                 rawReport.ReceivedAt = receivedAt;
-
-                gatewaySetting = await _reportValidationService.ValidateGatewaySetting(apiKey);
-                rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
                 dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
