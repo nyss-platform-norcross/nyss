@@ -242,7 +242,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(
                     phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
-                    phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
                     phr.Project.Id == projectId);
 
             if (projectHealthRisk == null)
@@ -255,11 +254,13 @@ namespace RX.Nyss.Web.Features.Reports
             report.RawReport.ReceivedAt = updatedReceivedAt;
             report.ReceivedAt = updatedReceivedAt;
             report.ProjectHealthRisk = projectHealthRisk;
-            report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
-            report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
-            report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
-            report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
-
+            if (report.ReportType != ReportType.Event)
+            {
+                report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
+                report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
+                report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
+                report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
+            }
             report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
                 reportRequestDto.CountMalesAtLeastFive +
                 reportRequestDto.CountFemalesBelowFive +
