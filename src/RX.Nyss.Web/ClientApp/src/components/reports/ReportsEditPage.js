@@ -136,7 +136,7 @@ const ReportsEditPageComponent = (props) => {
                     </SelectField>
                   </Grid>
                 </Grid>
-                  { selectedDataCollector.locations.length > 1 &&
+                { selectedDataCollector.locations.length > 1 &&
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <SelectField
@@ -155,105 +155,111 @@ const ReportsEditPageComponent = (props) => {
                   </Grid>
                 </Grid>
                 }
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <DateInputField
-                            className={styles.fullWidth}
-                            label={strings(stringKeys.reports.form.date)}
-                            name="date"
-                            field={form.fields.date}
-                        />
+                { (props.data.reportType === "DataCollectionPoint" || props.data.reportType === "Aggregate") && (
+                  <Fragment>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <DateInputField
+                                className={styles.fullWidth}
+                                label={strings(stringKeys.reports.form.date)}
+                                name="date"
+                                field={form.fields.date}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <SelectField
-                            label={strings(stringKeys.reports.form.healthRisk)}
-                            name="healthRiskId"
-                            field={form.fields.healthRiskId}
-                        >
-                            {props.healthRisks.map(healthRisk => (
-                                <MenuItem key={`healthRisk_${healthRisk.id}`} value={healthRisk.id.toString()}>
-                                    {healthRisk.name}
-                                </MenuItem>
-                            ))}
-                        </SelectField>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <SelectField
+                                label={strings(stringKeys.reports.form.healthRisk)}
+                                name="healthRiskId"
+                                field={form.fields.healthRiskId}
+                            >
+                                {props.healthRisks.map(healthRisk => (
+                                    <MenuItem key={`healthRisk_${healthRisk.id}`} value={healthRisk.id.toString()}>
+                                        {healthRisk.name}
+                                    </MenuItem>
+                                ))}
+                            </SelectField>
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.malesBelowFive)}
-                            name="countMalesBelowFive"
-                            field={form.fields.countMalesBelowFive}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.malesBelowFive)}
+                                name="countMalesBelowFive"
+                                field={form.fields.countMalesBelowFive}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.malesAtLeastFive)}
-                            name="countMalesAtLeastFive"
-                            field={form.fields.countMalesAtLeastFive}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.malesAtLeastFive)}
+                                name="countMalesAtLeastFive"
+                                field={form.fields.countMalesAtLeastFive}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.femalesBelowFive)}
-                            name="countFemalesBelowFive"
-                            field={form.fields.countFemalesBelowFive}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.femalesBelowFive)}
+                                name="countFemalesBelowFive"
+                                field={form.fields.countFemalesBelowFive}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.femalesAtLeastFive)}
-                            name="countFemalesAtLeastFive"
-                            field={form.fields.countFemalesAtLeastFive}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.femalesAtLeastFive)}
+                                name="countFemalesAtLeastFive"
+                                field={form.fields.countFemalesAtLeastFive}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.referredCount)}
-                            name="referredCount"
-                            field={form.fields.referredCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
+                  </Fragment>
+                )}
+                { props.data.reportType === "DataCollectionPoint" && (
+                  <Fragment>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.referredCount)}
+                                name="referredCount"
+                                field={form.fields.referredCount}
+                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.deathCount)}
-                            name="deathCount"
-                            field={form.fields.deathCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.deathCount)}
+                                name="deathCount"
+                                field={form.fields.deathCount}
+                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
-                            name="fromOtherVillagesCount"
-                            field={form.fields.fromOtherVillagesCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextInputField
+                                label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
+                                name="fromOtherVillagesCount"
+                                field={form.fields.fromOtherVillagesCount}
+                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-
+                  </Fragment>
+                )}
                 <FormActions>
                     <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
                     <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
