@@ -58,6 +58,17 @@ namespace RX.Nyss.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"
+                UPDATE [nyss].[RawReports]
+                SET [ReportId]=NULL
+                WHERE [ReportId] IS NOT NULL AND [DataCollectorId] IS NULL
+            ");
+
+            migrationBuilder.Sql(@"
+                DELETE FROM [nyss].[Reports]
+                WHERE [DataCollectorId] IS NULL
+            ");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_Reports_Users_CorrectedById",
                 schema: "nyss",
