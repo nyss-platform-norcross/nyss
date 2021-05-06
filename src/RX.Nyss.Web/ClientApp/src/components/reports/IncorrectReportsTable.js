@@ -115,7 +115,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && !projectIsClosed && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
+                      condition={!row.isAnonymized && !projectIsClosed} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
