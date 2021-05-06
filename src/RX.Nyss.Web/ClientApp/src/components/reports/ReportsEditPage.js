@@ -40,6 +40,7 @@ const ReportsEditPageComponent = (props) => {
           setLocation(reportLocation);
         }
 
+
         const fields = {
             id: props.data.id,
             date: dayjs(props.data.date),
@@ -74,7 +75,7 @@ const ReportsEditPageComponent = (props) => {
         newForm.fields.dataCollectorId.subscribe(({ newValue }) => {
           const newDataCollector = props.dataCollectors.find(dc => dc.id.toString() === newValue.toString())
           setDataCollector(newDataCollector);
-          if (newDataCollector.locations.length === 1) {
+          if (newDataCollector?.locations.length === 1) {
             setLocation(newDataCollector.locations[0]);
           }
         }
@@ -115,8 +116,9 @@ const ReportsEditPageComponent = (props) => {
     return (
         <Fragment>
             {props.error && <ValidationMessage message={props.error} />}
-            <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSection)}</div>
+
             <Form onSubmit={handleSubmit}>
+                <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSectionTitle)}</div>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <SelectField
@@ -136,7 +138,7 @@ const ReportsEditPageComponent = (props) => {
                     </SelectField>
                   </Grid>
                 </Grid>
-                { selectedDataCollector.locations.length > 1 &&
+
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <SelectField
@@ -144,9 +146,9 @@ const ReportsEditPageComponent = (props) => {
                       name="location"
                       field={form.fields.location}
                       disabled={props.data.reportStatus !== "New" || !selectedDataCollector}
+                      disabledLabel={(!selectedDataCollector) ? strings(stringKeys.reports.form.selectDcFirst) : ""}
                     >
-                      { selectedDataCollector &&
-                        selectedDataCollector.locations.map(location => (
+                      { selectedDataCollector && selectedDataCollector.locations.map(location => (
                           <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={location}>
                             {location.village + (location.zone ? (" > " + location.zone) : "")}
                           </MenuItem>
@@ -154,7 +156,7 @@ const ReportsEditPageComponent = (props) => {
                     </SelectField>
                   </Grid>
                 </Grid>
-                }
+
                 { (props.data.reportType === "DataCollectionPoint" || props.data.reportType === "Aggregate") && (
                   <Fragment>
                     <Grid container spacing={2}>
@@ -182,7 +184,7 @@ const ReportsEditPageComponent = (props) => {
                             </SelectField>
                         </Grid>
                     </Grid>
-
+                    <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.contentSectionTitle)}</div>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextInputField
