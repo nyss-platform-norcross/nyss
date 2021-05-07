@@ -17,9 +17,9 @@ import {
 import * as roles from '../../authentication/roles';
 import useDebounce from "../../utils/debounce";
 import { shallowEqual } from "react-redux";
-import { initialState } from "../../initialState";
 
-export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange, callingUserRoles }) => {
+export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange, callingUserRoles, filters }) => {
+  
   const [filter, setFilter] = useReducer((state, action) => {
     const newState = { ...state.value, ...action };
     if (!shallowEqual(newState, state.value)) {
@@ -27,7 +27,7 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
     } else {
       return state
     }
-  }, { value: initialState.dataCollectors.filters, changed: false });
+  }, { value: filters, changed: false });
 
   const [selectedArea, setSelectedArea] = useState(null);
   const [name, setName] = useReducer((state, action) => {
