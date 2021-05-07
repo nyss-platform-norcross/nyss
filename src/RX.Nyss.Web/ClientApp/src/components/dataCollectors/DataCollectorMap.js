@@ -10,7 +10,10 @@ import { stringKeys, strings } from '../../strings';
 const MapEventHandler = ({ onMarkerClick, onChange, onZoomChange }) => {
   useMapEvent('click', onMarkerClick);
   useMapEvent('click', onChange);
-  useMapEvent('zoomend', onZoomChange);
+  const map = useMapEvent('zoomend', (e) => {
+    const center = map.getCenter();
+    onZoomChange(e, center);
+  });
   return null;
 }
 
@@ -71,7 +74,7 @@ export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocati
   const [zoomLevel, setZoomLevel] = useState(zoom || 13);
 
   useEffect(() => {
-    if (!location?.lat || !location?.lng) {
+    if (!location) {
       setMarkerLocation(null);
       return;
     }
@@ -96,7 +99,10 @@ export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocati
   const handleLocationFound = e =>
     !clickedMyLocationButton(e) && setMarkerLocation(e.latlng);
 
-  const handleZoomChange = (e) => setZoomLevel(e.target._zoom);
+  const handleZoomChange = (e, center) => {
+    setZoomLevel(e.target._zoom);
+    setCenterLocation(center);
+  }
 
   return !!centerLocation && (
     <MapContainer
