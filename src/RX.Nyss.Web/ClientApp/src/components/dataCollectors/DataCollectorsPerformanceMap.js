@@ -68,6 +68,17 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
   const handleMarkerClick = e =>
     getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
 
+  const combineStatus = (dataCollectorList, dc) => {
+    let current = dataCollectorList[0];
+    current.countNotReporting += dc.countNotReporting;
+    current.countReportingWithErrors += dc.countReportingWithErrors;
+    current.countReportingCorrectly += dc.countReportingCorrectly;
+    return [current];
+  }
+
+  const distinctLocations = (dataCollectors) =>
+    dataCollectors.reduce((a, c) => a.some(dc => dc.location.latitude === c.location.latitude && dc.location.longitude === c.location.longitude) ? combineStatus(a, c) : [...a, c], []);
+
   return (!!center || !!bounds) && (
     <MapContainer
       center={center}
@@ -84,7 +95,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       <MarkerClusterGroup
         showCoverageOnHover={false}
         iconCreateFunction={createClusterIcon}>
-        {dataCollectorLocations.map((dc, i) => (
+        {distinctLocations(dataCollectorLocations).map((dc, i) => (
           <Marker
             className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
             key={`marker_${i}`}
