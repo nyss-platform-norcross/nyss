@@ -18,11 +18,13 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import dayjs from "dayjs";
+import {reportStatus} from "./logic/reportsConstants";
 
 const ReportsEditPageComponent = (props) => {
     const [form, setForm] = useState(null);
     const [selectedDataCollector, setDataCollector] = useState(null);
     const [selectedLocation, setLocation] = useState(null)
+    const [availableReportStatus, setAvailableReportStatus] = useState(null)
 
     useMount(() => {
         props.openEdition(props.projectId, props.reportId);
@@ -40,11 +42,22 @@ const ReportsEditPageComponent = (props) => {
           setLocation(reportLocation);
         }
 
+        if (props.data.reportStatus === 'New') {
+          setAvailableReportStatus([reportStatus.new, reportStatus.accepted, reportStatus.rejected]);
+        }
+        if (props.data.reportStatus !== 'New' && props.data.reportStatus !== 'Closed') {
+          setAvailableReportStatus([reportStatus.pending, reportStatus.accepted, reportStatus.rejected]);
+        }
+        if (props.data.reportStatus === 'Closed') {
+          setAvailableReportStatus([reportStatus.closed]);
+        }
+
 
         const fields = {
             id: props.data.id,
             date: dayjs(props.data.date),
             dataCollectorId: props.data.dataCollectorId.toString(),
+            reportStatus: props.data.reportStatus,
             healthRiskId: props.data.healthRiskId.toString(),
             location: reportLocation,
             countMalesBelowFive: props.data.countMalesBelowFive.toString(),
@@ -59,6 +72,7 @@ const ReportsEditPageComponent = (props) => {
         const validation = {
             date: [validators.required],
             dataCollectorId: [validators.required],
+            reportStatus: [validators.required],
             location: [validators.required],
             healthRiskId: [validators.required],
             countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
@@ -98,6 +112,7 @@ const ReportsEditPageComponent = (props) => {
             date: values.date.format('YYYY-MM-DDTHH:mm:ss'),
             dataCollectorId: parseInt(values.dataCollectorId),
             dataCollectorLocation: selectedLocation,
+            reportStatus: values.reportStatus,
             healthRiskId: parseInt(values.healthRiskId),
             countMalesBelowFive: parseInt(values.countMalesBelowFive),
             countMalesAtLeastFive: parseInt(values.countMalesAtLeastFive),
@@ -118,45 +133,67 @@ const ReportsEditPageComponent = (props) => {
             {props.error && <ValidationMessage message={props.error} />}
 
             <Form onSubmit={handleSubmit}>
-                <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSectionTitle)}</div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <SelectField
-                      label={strings(stringKeys.reports.form.dataCollector)}
-                      name="dataCollectorId"
-                      field={form.fields.dataCollectorId}
-                      disabled={props.data.reportStatus !== "New"}
-                      disabledLabel={props.data.reportStatus !== "New" ?
-                        strings(stringKeys.reports.form.reportPartOfAlertLabel)
-                        : ""}
-                    >
-                      {props.dataCollectors.map(dataCollector => (
-                        <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
-                          {dataCollector.name}
-                        </MenuItem>
-                      ))}
-                    </SelectField>
-                  </Grid>
-                </Grid>
-
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <SelectField
-                      label={strings(stringKeys.reports.form.dataCollectorLocations)}
-                      name="location"
-                      field={form.fields.location}
-                      disabled={props.data.reportStatus !== "New" || !selectedDataCollector}
-                      disabledLabel={(!selectedDataCollector) ? strings(stringKeys.reports.form.selectDcFirst) : ""}
-                    >
-                      { selectedDataCollector && selectedDataCollector.locations.map(location => (
-                          <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={location}>
-                            {location.village + (location.zone ? (" > " + location.zone) : "")}
+                <Fragment>
+                  <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSectionTitle)}</div>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <SelectField
+                        label={strings(stringKeys.reports.form.dataCollector)}
+                        name="dataCollectorId"
+                        field={form.fields.dataCollectorId}
+                        disabled={props.data.reportStatus !== "New"}
+                        disabledLabel={props.data.reportStatus !== "New" ?
+                          strings(stringKeys.reports.form.reportPartOfAlertLabel)
+                          : ""}
+                      >
+                        {props.dataCollectors.map(dataCollector => (
+                          <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
+                            {dataCollector.name}
                           </MenuItem>
                         ))}
-                    </SelectField>
+                      </SelectField>
+                    </Grid>
                   </Grid>
-                </Grid>
 
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <SelectField
+                        label={strings(stringKeys.reports.form.dataCollectorLocations)}
+                        name="location"
+                        field={form.fields.location}
+                        disabled={props.data.reportStatus !== "New" || !selectedDataCollector}
+                        disabledLabel={(!selectedDataCollector) ? strings(stringKeys.reports.form.selectDcFirst) : ""}
+                      >
+                        { selectedDataCollector && selectedDataCollector.locations.map(location => (
+                            <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={location}>
+                              {location.village + (location.zone ? (" > " + location.zone) : "")}
+                            </MenuItem>
+                          ))}
+                      </SelectField>
+                    </Grid>
+                  </Grid>
+                </Fragment>
+                { (props.data.reportType !== "DataCollectionPoint" && props.data.reportType !== "Aggregate") && (
+                  <Fragment>
+                    <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.statusSectionTitle)}</div>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <SelectField
+                          label={strings(stringKeys.reports.form.reportStatus)}
+                          name="reportStatus"
+                          field={form.fields.reportStatus}
+                          disabled={props.data.reportStatus === "Closed" || !selectedDataCollector || !selectedLocation}
+                        >
+                          {availableReportStatus.map(status => (
+                            <MenuItem key={`status_${status}`} value={status}>
+                              {strings(stringKeys.reports.status[status])}
+                            </MenuItem>
+                          ))}
+                        </SelectField>
+                      </Grid>
+                    </Grid>
+                  </Fragment>
+                )}
                 { (props.data.reportType === "DataCollectionPoint" || props.data.reportType === "Aggregate") && (
                   <Fragment>
                     <Grid container spacing={2}>

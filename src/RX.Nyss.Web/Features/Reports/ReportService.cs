@@ -306,6 +306,12 @@ namespace RX.Nyss.Web.Features.Reports
 
             }
 
+            if (report.ReportType != ReportType.DataCollectionPoint &&
+                report.ReportType != ReportType.Aggregate)
+            {
+                report.Status = reportRequestDto.ReportStatus;
+            }
+
             if (reportRequestDto.DataCollectorLocation != null && LocationNeedsUpdate(report, reportRequestDto))
             {
                 var newDataCollector = await _nyssContext.DataCollectors

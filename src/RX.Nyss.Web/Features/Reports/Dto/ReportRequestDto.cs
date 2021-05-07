@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentValidation;
 using Microsoft.CodeAnalysis;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 
@@ -11,6 +12,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public DateTime Date { get; set; }
         public int DataCollectorId { get; set; }
         public DataCollectorLocationRequestDto DataCollectorLocation { get; set; }
+        public ReportStatus ReportStatus { get; set; }
         public int HealthRiskId { get; set; }
         public int CountMalesBelowFive { get; set; }
         public int CountMalesAtLeastFive { get; set; }
