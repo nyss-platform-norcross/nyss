@@ -32,12 +32,13 @@ export const dataCollectorsSagas = () => [
 function* openDataCollectorsList({ projectId }) {
   const listStale = yield select(state => state.dataCollectors.listStale);
   const listProjectId = yield select(state => state.dataCollectors.projectId);
+  const filtersStale = yield select(state => state.dataCollectors.filtersStale);
 
   yield put(actions.openList.request());
   try {
     yield openDataCollectorsModule(projectId);
 
-    const filtersData = listProjectId !== projectId
+    const filtersData = listProjectId !== projectId || filtersStale
       ? (yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`)).value
       : yield select(state => state.dataCollectors.filtersData);
 

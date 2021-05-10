@@ -1,5 +1,6 @@
 import * as actions from "./dataCollectorsConstants";
 import * as projectsActions from "../../projects/logic/projectsConstants";
+import * as nationalSocietyUsersActions from '../../nationalSocietyUsers/logic/nationalSocietyUsersConstants';
 import { initialState } from "../../../initialState";
 import { setProperty, removeProperty, assignInArray } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
@@ -26,13 +27,13 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, filters: action.projectId === state.projectId ? state.filters : initialState.dataCollectors.filters, listData: action.projectId === state.projectId ? state.listData : { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
-      return { ...state, projectId: action.projectId, filtersData: action.filtersData };
+      return { ...state, projectId: action.projectId, filtersData: action.filtersData, filtersStale: false };
 
     case actions.GET_DATA_COLLECTORS.REQUEST:
       return { ...state, listFetching: true };
 
     case actions.GET_DATA_COLLECTORS.SUCCESS:
-      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false, listSelectedAll: false };
+      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false, listSelectedAll: false  };
 
     case actions.GET_DATA_COLLECTORS.FAILURE:
       return { ...state, listFetching: false };
@@ -152,6 +153,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.SET_DATA_COLLECTORS_DEPLOYED_STATE.FAILURE:
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector) };
+
+    case nationalSocietyUsersActions.CREATE_NATIONAL_SOCIETY_USER.SUCCESS: // set filters stale when creating a user
+      return { ...state, filtersStale: true };
+
+    case nationalSocietyUsersActions.EDIT_NATIONAL_SOCIETY_USER.SUCCESS: // set filters stale when editing a user
+      return { ...state, filtersStale: true };
+
+    case nationalSocietyUsersActions.REMOVE_NATIONAL_SOCIETY_USER.SUCCESS: // set filters stale when removing a user
+      return { ...state, filtersStale: true };
 
     default:
       return state;
