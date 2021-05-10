@@ -13,7 +13,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
-import { DateColumnName, reportStatus } from './logic/reportsConstants';
+import { DateColumnName, reportStatus, ReportType } from './logic/reportsConstants';
 import {
   Table,
   TableBody,
@@ -80,6 +80,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && report.isValid
     && !report.isMarkedAsError
     && !report.isActivityReport
+    && report.reportType !== ReportType.dataCollectionPoint
     && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
 
   const getRowMenu = (row) => [
@@ -87,7 +88,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
       title: strings(stringKeys.reports.list.markAsError),
       roles: accessMap.reports.markAsError,
       disabled: !canMarkAsError(row),
-      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.id, isMarkedAsError: row.isMarkedAsError })
     },
     {
       title: strings(stringKeys.reports.list.goToAlert),
@@ -177,7 +178,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       items={getRowMenu(row)}
                     />
                     <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId)}
+                      onClick={() => goToEdition(projectId, row.id)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}

@@ -18,7 +18,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import dayjs from 'dayjs';
-import { reportAges, reportCountToSexAge, reportSexes, reportStatus } from './logic/reportsConstants';
+import { reportAges, reportCountToSexAge, reportSexes, reportStatus, ReportType } from './logic/reportsConstants';
 
 const ReportsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);

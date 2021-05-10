@@ -92,8 +92,20 @@ export function reportsReducer(state = initialState.reports, action) {
     case actions.ACCEPT_REPORT.REQUEST:
       return { ...state, listFetching: true };
 
+    case actions.ACCEPT_REPORT.SUCCESS:
+      return { ...state, listFetching: false };
+
+    case actions.ACCEPT_REPORT.FAILURE:
+      return { ...state, listFetching: false };
+
     case actions.DISMISS_REPORT.REQUEST:
       return { ...state, listFetching: true };
+
+    case actions.DISMISS_REPORT.SUCCESS:
+      return { ...state, listFetching: false };
+
+    case actions.DISMISS_REPORT.FAILURE:
+      return { ...state, listFetching: false };
 
     default:
       return state;
