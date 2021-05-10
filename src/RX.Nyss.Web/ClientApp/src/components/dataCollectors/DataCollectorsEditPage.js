@@ -232,6 +232,7 @@ const DataCollectorsEditPageComponent = (props) => {
               location={location}
               locationNumber={location.number}
               isLastLocation={i === locations.length - 1}
+              isOnlyLocation={locations.length === 1}
               defaultLocation={centerLocation}
               regions={props.data.formData.regions}
               initialDistricts={location.initialFormData.districts}

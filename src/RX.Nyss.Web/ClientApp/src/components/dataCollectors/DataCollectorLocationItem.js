@@ -3,7 +3,6 @@ import { Button, Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typo
 import { useState, useReducer, useEffect } from 'react';
 import { stringKeys, strings } from '../../strings';
 import { useMount } from '../../utils/lifecycle';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import TextInputField from '../forms/TextInputField';
 import { DataCollectorMap } from './DataCollectorMap';
 import { validators } from '../../utils/forms';
@@ -13,7 +12,7 @@ import SelectField from '../forms/SelectField';
 import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts, removeLocation }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation }) => {
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -104,10 +103,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     setVillages([]);
     setZones([]);
 
-    getFormDistricts(regionId, (districts) => {
-      setDistricts(districts);
-      setInitialDistricts(districts);
-    });
+    getFormDistricts(regionId, setDistricts);
   }
 
   const onDistrictChange = (event) => {
@@ -276,7 +272,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                     inputMode={'decimal'}
                   />
                 </Grid>
-                <Button className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
+
+                {!isOnlyLocation && (
+                  <Button className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
+                )}
               </Grid>
             </Grid>
           </ConditionalCollapse>
