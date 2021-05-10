@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
@@ -64,6 +65,10 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
                 RuleFor(dc => dc.Deployed)
                     .NotNull();
+
+                RuleFor(dc => dc.Locations)
+                    .NotNull()
+                    .Must(locations => locations.Any());
 
                 RuleForEach(dc => dc.Locations)
                     .Must(dcl => dcl.VillageId > 0
