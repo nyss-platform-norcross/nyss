@@ -205,6 +205,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string LinkedToOrganization = "report.linkedToOrganization";
             public const string AlreadyCrossChecked = "report.alreadyCrossChecked";
             public const string CannotCrossCheckErrorReport = "report.cannotCrossCheckErrorReport";
+            public const string CannotCrossCheckDcpReport = "report.cannotCrossCheckDcpReport";
 
             public static class Status
             {
