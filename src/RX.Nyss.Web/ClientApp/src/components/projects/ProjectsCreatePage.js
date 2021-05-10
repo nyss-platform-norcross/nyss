@@ -156,12 +156,14 @@ const ProjectsCreatePageComponent = (props) => {
           }
 
           {selectedHealthRisks.map(selectedHealthRisk => (
-            <ProjectsHealthRiskItem
-              key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}
-              form={form}
-              projectHealthRisk={{ id: null }}
-              healthRisk={selectedHealthRisk}
-            />
+            <Grid item xs={12} key={`healthRisk.${selectedHealthRisk.healthRiskId}`}>
+              <ProjectsHealthRiskItem
+                key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}
+                form={form}
+                projectHealthRisk={{ id: null }}
+                healthRisk={selectedHealthRisk}
+              />
+            </Grid>
           ))}
         </Grid>
 

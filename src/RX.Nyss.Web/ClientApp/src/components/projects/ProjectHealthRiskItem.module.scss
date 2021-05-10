@@ -1,0 +1,15 @@
+.content {
+  margin-top: 10px;
+}
+
+.header {
+  display: inline;
+
+  &.healthRiskName {
+    margin-left: 10px !important;
+  }
+}
+
+.disabled {
+  color: #a0a0a0 !important;
+}
