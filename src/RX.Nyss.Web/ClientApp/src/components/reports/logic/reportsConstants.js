@@ -24,6 +24,26 @@ export const reportStatus = {
   closed: 'Closed'
 }
 
+export const reportSexes = {
+  male: 'male',
+  female: 'female',
+  unspecified: 'unspecified'
+}
+
+export const reportAges = {
+  belowFive : 'belowFive',
+  aboveFour : 'aboveFour',
+  unspecified: 'unspecified'
+}
+
+export const reportCountToSexAge = {
+  countMalesAtLeastFive: [reportSexes.male, reportAges.aboveFour],
+  countMalesBelowFive: [reportSexes.male, reportAges.belowFive],
+  countFemalesAtLeastFive: [reportSexes.female, reportAges.aboveFour],
+  countFemalesBelowFive: [reportSexes.female, reportAges.belowFive],
+  countUnspecifiedSexAndAge: [reportSexes.unspecified, reportAges.unspecified]
+}
+
 export const ReportErrorType = {
   formatError: 'FormatError',
   healthRiskNotFound: 'HealthRiskNotFound',
