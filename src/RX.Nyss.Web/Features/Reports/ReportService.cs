@@ -88,6 +88,7 @@ namespace RX.Nyss.Web.Features.Reports
                     CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive.Value,
                     CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive.Value,
                     CountFemalesAtLeastFive = r.ReportedCase.CountFemalesAtLeastFive.Value,
+                    CountUnspecifiedSexAndAge = r.ReportedCase.CountUnspecifiedSexAndAge.Value,
                     ReferredCount = r.DataCollectionPointCase.ReferredCount.Value,
                     DeathCount = r.DataCollectionPointCase.DeathCount.Value,
                     FromOtherVillagesCount = r.DataCollectionPointCase.FromOtherVillagesCount.Value
@@ -260,6 +261,7 @@ namespace RX.Nyss.Web.Features.Reports
                 report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
                 report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
                 report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
+                report.ReportedCase.CountUnspecifiedSexAndAge = reportRequestDto.CountUnspecifiedSexAndAge;
             }
             report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
                 reportRequestDto.CountMalesAtLeastFive +
