@@ -63,7 +63,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
             var healthRiskTypeIsActivity = report.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity;
 
-            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
+            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity || report.Location == null)
             {
                 return new AlertData
                 {
