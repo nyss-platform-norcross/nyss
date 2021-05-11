@@ -34,6 +34,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
                 RuleFor(hr => hr.CountMalesAtLeastFive).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.CountFemalesBelowFive).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.CountFemalesAtLeastFive).GreaterThanOrEqualTo(0);
+                RuleFor(hr => hr.CountUnspecifiedSexAndAge).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.ReferredCount).GreaterThanOrEqualTo(0).When(hr => hr.ReferredCount.HasValue);
                 RuleFor(hr => hr.DeathCount).GreaterThanOrEqualTo(0).When(hr => hr.DeathCount.HasValue);
                 RuleFor(hr => hr.FromOtherVillagesCount).GreaterThanOrEqualTo(0).When(hr => hr.FromOtherVillagesCount.HasValue);
