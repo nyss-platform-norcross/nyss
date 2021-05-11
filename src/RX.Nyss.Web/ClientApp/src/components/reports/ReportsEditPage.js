@@ -1,7 +1,7 @@
-import styles from "./ReportsEditPage.module.scss";
+import styles from './ReportsEditPage.module.scss';
 
 import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as reportsActions from './logic/reportsActions';
@@ -10,15 +10,15 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import DateInputField from "../forms/DateInputField";
+import DateInputField from '../forms/DateInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Button, Grid } from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import dayjs from "dayjs";
-import {reportAges, reportCountToSexAge, reportSexes, reportStatus} from "./logic/reportsConstants";
+import dayjs from 'dayjs';
+import {reportAges, reportCountToSexAge, reportSexes, reportStatus} from './logic/reportsConstants';
 
 const ReportsEditPageComponent = (props) => {
     const [form, setForm] = useState(null);
@@ -57,10 +57,10 @@ const ReportsEditPageComponent = (props) => {
         const fields = {
             id: props.data.id,
             date: dayjs(props.data.date),
-            dataCollectorId: props.data.dataCollectorId.toString(),
+            dataCollectorId: props.data.dataCollectorId.toString() !== '0' ? props.data.dataCollectorId.toString() : '',
             reportStatus: props.data.reportStatus,
             healthRiskId: props.data.healthRiskId.toString(),
-            location: reportLocation?.village + (reportLocation?.zone ? (" > " + reportLocation?.zone) : ""),
+            location: reportLocation ? (reportLocation.village + (reportLocation.zone ? (' > ' + reportLocation.zone) : '')) : '',
             reportSex: findSexAgeHelper(props.data)[0],
             reportAge: findSexAgeHelper(props.data)[1],
             countMalesBelowFive: props.data.countMalesBelowFive.toString(),
@@ -78,8 +78,8 @@ const ReportsEditPageComponent = (props) => {
             dataCollectorId: [validators.required],
             reportStatus: [validators.required],
             location: [validators.required],
-            reportSex: [validators.required],
-            reportAge: [validators.required],
+            reportSex: [validators.required, validators.sexAgeValidator(reportSexes.unspecified)],
+            reportAge: [validators.required, validators.sexAgeValidator(reportAges.unspecified)],
             healthRiskId: [validators.required],
             countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
             countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
@@ -122,8 +122,8 @@ const ReportsEditPageComponent = (props) => {
         const values = form.getValues();
 
         if (props.data.reportType === 'Single') {
-          Object.keys(reportCountToSexAge).map(comb => values[comb] = "0");
-          values[findSexAgeCombinationHelper()] = "1";
+          Object.keys(reportCountToSexAge).map(comb => values[comb] = '0');
+          values[findSexAgeCombinationHelper()] = '1';
         }
 
         props.edit(props.projectId, props.reportId, {
@@ -137,9 +137,9 @@ const ReportsEditPageComponent = (props) => {
           countFemalesBelowFive: parseInt(values.countFemalesBelowFive),
           countFemalesAtLeastFive: parseInt(values.countFemalesAtLeastFive),
           countUnspecifiedSexAndAge: parseInt(values.countUnspecifiedSexAndAge),
-          referredCount: values.referredCount === "" ? null : parseInt(values.referredCount),
-          deathCount: values.deathCount === "" ? null : parseInt(values.deathCount),
-          fromOtherVillagesCount: values.fromOtherVillagesCount === "" ? null : parseInt(values.fromOtherVillagesCount)
+          referredCount: values.referredCount === '' ? null : parseInt(values.referredCount),
+          deathCount: values.deathCount === '' ? null : parseInt(values.deathCount),
+          fromOtherVillagesCount: values.fromOtherVillagesCount === '' ? null : parseInt(values.fromOtherVillagesCount)
         });
     };
 
@@ -175,12 +175,12 @@ const ReportsEditPageComponent = (props) => {
                     <Grid item xs={12}>
                       <SelectField
                         label={strings(stringKeys.reports.form.dataCollector)}
-                        name="dataCollectorId"
+                        name='dataCollectorId'
                         field={form.fields.dataCollectorId}
-                        disabled={props.data.reportStatus !== "New"}
-                        disabledLabel={props.data.reportStatus !== "New" ?
+                        disabled={props.data.reportStatus !== reportStatus.new}
+                        disabledLabel={props.data.reportStatus !== reportStatus.new ?
                           strings(stringKeys.reports.form.reportPartOfAlertLabel)
-                          : ""}
+                          : ''}
                       >
                         {props.dataCollectors.map(dataCollector => (
                           <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
@@ -195,30 +195,31 @@ const ReportsEditPageComponent = (props) => {
                     <Grid item xs={12}>
                       <SelectField
                         label={strings(stringKeys.reports.form.dataCollectorLocations)}
-                        name="location"
+                        name='location'
                         field={form.fields.location}
-                        disabled={props.data.reportStatus !== "New" || !selectedDataCollector}
-                        disabledLabel={(!selectedDataCollector) ? strings(stringKeys.reports.form.selectDcFirst) : ""}
+                        disabled={props.data.reportStatus !== reportStatus.new || !selectedDataCollector}
+                        disabledLabel={(!selectedDataCollector) ? strings(stringKeys.reports.form.selectDcFirst) : ''}
                       >
                         { selectedDataCollector && selectedDataCollector.locations.map(location => (
-                            <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={(location.village + (location.zone ? (" > " + location.zone) : ""))}>
-                              {location.village + (location.zone ? (" > " + location.zone) : "")}
+                            <MenuItem key={`dataCollectorLocations_${location.villageId}_${location.zoneId}`} value={(location.village + (location.zone ? (' > ' + location.zone) : ''))}>
+                              {location.village + (location.zone ? (' > ' + location.zone) : '')}
                             </MenuItem>
                           ))}
                       </SelectField>
                     </Grid>
                   </Grid>
                 </Fragment>
-                { (props.data.reportType !== "DataCollectionPoint" && props.data.reportType !== "Aggregate") && (
+                { (props.data.reportType !== 'DataCollectionPoint' && props.data.reportType !== 'Aggregate') && (
                   <Fragment>
                     <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.statusSectionTitle)}</div>
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
                         <SelectField
                           label={strings(stringKeys.reports.form.reportStatus)}
-                          name="reportStatus"
+                          name='reportStatus'
                           field={form.fields.reportStatus}
-                          disabled={props.data.reportStatus === "Closed" || !selectedDataCollector || !selectedLocation}
+                          disabled={props.data.reportStatus === reportStatus.closed || !selectedDataCollector || !selectedLocation}
+                          disabledLabel={(!selectedDataCollector || !selectedLocation) ? strings(stringKeys.reports.form.selectDcAndLocationFirst) : false}
                         >
                           {availableReportStatus.map(status => (
                             <MenuItem key={`status_${status}`} value={status.toString()}>
@@ -230,15 +231,18 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                   </Fragment>
                 )}
-                <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.contentSectionTitle)}</div>
+                {(props.data.reportType !== 'Event') &&
+                (
+                  <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.contentSectionTitle)}</div>
+                )}
                 {
-                  (props.data.reportType === "Single") && (
+                  (props.data.reportType === 'Single') && (
                     <Fragment>
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
                           <SelectField
-                            label={strings(stringKeys.reports.form.sex)}
-                            name="reportSex"
+                            label={strings(stringKeys.reports.form.reportSex)}
+                            name='reportSex'
                             field={form.fields.reportSex}
                           >
                             { Object.keys(reportSexes).map(sex => (
@@ -252,8 +256,8 @@ const ReportsEditPageComponent = (props) => {
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
                           <SelectField
-                            label={strings(stringKeys.reports.form.age)}
-                            name="reportAge"
+                            label={strings(stringKeys.reports.form.reportAge)}
+                            name='reportAge'
                             field={form.fields.reportAge}
                           >
                             { Object.keys(reportAges).map(age => (
@@ -266,14 +270,14 @@ const ReportsEditPageComponent = (props) => {
                       </Grid>
                     </Fragment>
                 )}
-                { (props.data.reportType === "DataCollectionPoint" || props.data.reportType === "Aggregate") && (
+                { (props.data.reportType === 'DataCollectionPoint' || props.data.reportType === 'Aggregate') && (
                   <Fragment>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <DateInputField
                                 className={styles.fullWidth}
                                 label={strings(stringKeys.reports.form.date)}
-                                name="date"
+                                name='date'
                                 field={form.fields.date}
                             />
                         </Grid>
@@ -282,7 +286,7 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <SelectField
                                 label={strings(stringKeys.reports.form.healthRisk)}
-                                name="healthRiskId"
+                                name='healthRiskId'
                                 field={form.fields.healthRiskId}
                             >
                                 {props.healthRisks.map(healthRisk => (
@@ -297,7 +301,7 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.malesBelowFive)}
-                                name="countMalesBelowFive"
+                                name='countMalesBelowFive'
                                 field={form.fields.countMalesBelowFive}
                             />
                         </Grid>
@@ -307,7 +311,7 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.malesAtLeastFive)}
-                                name="countMalesAtLeastFive"
+                                name='countMalesAtLeastFive'
                                 field={form.fields.countMalesAtLeastFive}
                             />
                         </Grid>
@@ -317,7 +321,7 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.femalesBelowFive)}
-                                name="countFemalesBelowFive"
+                                name='countFemalesBelowFive'
                                 field={form.fields.countFemalesBelowFive}
                             />
                         </Grid>
@@ -327,22 +331,22 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.femalesAtLeastFive)}
-                                name="countFemalesAtLeastFive"
+                                name='countFemalesAtLeastFive'
                                 field={form.fields.countFemalesAtLeastFive}
                             />
                         </Grid>
                     </Grid>
                   </Fragment>
                 )}
-                { props.data.reportType === "DataCollectionPoint" && (
+                { props.data.reportType === 'DataCollectionPoint' && (
                   <Fragment>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.referredCount)}
-                                name="referredCount"
+                                name='referredCount'
                                 field={form.fields.referredCount}
-                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                                disabled={props.data.reportType !== 'DataCollectionPoint'}
                             />
                         </Grid>
                     </Grid>
@@ -351,9 +355,9 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.deathCount)}
-                                name="deathCount"
+                                name='deathCount'
                                 field={form.fields.deathCount}
-                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                                disabled={props.data.reportType !== 'DataCollectionPoint'}
                             />
                         </Grid>
                     </Grid>
@@ -362,9 +366,9 @@ const ReportsEditPageComponent = (props) => {
                         <Grid item xs={12}>
                             <TextInputField
                                 label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
-                                name="fromOtherVillagesCount"
+                                name='fromOtherVillagesCount'
                                 field={form.fields.fromOtherVillagesCount}
-                                disabled={props.data.reportType !== "DataCollectionPoint"}
+                                disabled={props.data.reportType !== 'DataCollectionPoint'}
                             />
                         </Grid>
                     </Grid>

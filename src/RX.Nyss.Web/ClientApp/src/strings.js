@@ -771,10 +771,13 @@ export const stringKeys = {
       contentSectionTitle: "reports.form.contentSectionTitle",
       statusSectionTitle: "reports.form.statusSectionTitle",
       reportStatus: "reports.form.reportStatus",
+      reportSex: "reports.form.reportSex",
+      reportAge: "reports.form.reportAge",
       dataCollector: "reports.form.dataCollector",
       reportPartOfAlertLabel: "reports.form.reportPartOfAlertLabel",
       dataCollectorLocations: "reports.form.dataCollectorLocations",
       selectDcFirst: "reports.form.selectDcFirst",
+      selectDcAndLocationFirst: "reports.form.selectDcAndLocationFirst",
       date: "reports.form.date",
       healthRisk: "reports.form.healthRisk",
       malesBelowFive: "reports.form.malesBelowFive",
@@ -1047,7 +1050,8 @@ export const stringKeys = {
     invalidModuloTen: "validation.invalidModuloTen",
     valueCannotBeNegative: "validation.valueCannotBeNegative",
     inRange: "validation.valueMustBeInRange",
-    invalidTimeFormat: "validation.invalidTimeFormat"
+    invalidTimeFormat: "validation.invalidTimeFormat",
+    sexOrAgeUnspecified: "validation.sexOrAgeUnspecified"
   },
   nationalSocietyConsents: {
     title: "headManagerConsents.title",
