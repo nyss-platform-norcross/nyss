@@ -34,15 +34,26 @@ namespace RX.Nyss.Data.MigrationApp
                 ("Manager", "BF23D073-A543-4C26-B83C-3BFF7227E65C", "Marcelle Manager", "+1234565", 3),
                 ("Manager", "6608C52B-9677-43CD-A4BB-CDECF1B05DDE", "Marc Manager", "+12345653", 4),
                 ("Supervisor", "E2E5B1DB-C31A-41CB-87A2-FE4BD892A2D9", "Sylvain Supervisor", "+1234536", 4),
-                ("Supervisor", "9FEA556F-8965-4588-9009-BF70700D8FA3", "Stéphanie Supervisor", "+12345667", 4)
+                ("Supervisor", "9FEA556F-8965-4588-9009-BF70700D8FA3", "Stéphanie Supervisor", "+12345667", 4),
+                ("DataConsumer", "D4657D86-6C86-46F9-ABF0-01209678D308", "Andrés DataConsumer", "+2234561", 5),
+                ("Coordinator", "118B1B0A-AEF2-4D0D-B199-A9B8B1B459F4", "Carlos Coordinator", "+223456278", 5),
+                ("Supervisor", "09F153AB-E0D6-4315-91CE-29F3969A81CA", "Sergio Supervisor", "+2234563", 5),
+                ("Supervisor", "E5C0A4BC-AEB3-4995-BA46-1DC81F4F9686", "Sofia Supervisor", "+2234566", 5),
+                ("TechnicalAdvisor", "4E87746D-925F-46A0-8515-E00CA8A1961E", "Juan TechnicalAdvisor", "+2234564", 5),
+                ("Manager", "92C804DD-A3DC-43EF-8CD5-6532AFA827FE", "Juana Manager", "+2234565", 5),
+                ("Manager", "6A842190-1FF4-4CCF-97A4-41CB85F1B534", "Maria Manager", "+22345653", 6),
+                ("Supervisor", "528D807B-4DC2-4F42-A85D-BEDCE7FCF160", "Paola Supervisor", "+2234536", 6),
+                ("Supervisor", "12A420F5-BF48-479D-A391-4EA32118ADFE", "Silvia Supervisor", "+22345667", 6)
             };
 
             var englishUsersToCreate = usersToCreate.Take(10).ToArray();
-            var frenchUsersToCreate = usersToCreate.TakeLast(9).ToArray();
+            var frenchUsersToCreate = usersToCreate.Skip(10).Take(9).ToArray();
+            var spanishUsersToCreate = usersToCreate.TakeLast(9).ToArray();
 
             SeedIdentityUsers(dbConnectionString, usersToCreate, password);
             SeedEnglishNyssDemoData(dbConnectionString, englishUsersToCreate);
             SeedFrenchNyssDemoData(dbConnectionString, frenchUsersToCreate);
+            SeedSpanishNyssDemoData(dbConnectionString, spanishUsersToCreate);
         }
 
         private static void SeedIdentityUsers(string dbConnectionString, (string roleName, string id, string name, string phone, int organizationId)[] usersToCreate, string password)
@@ -315,6 +326,115 @@ namespace RX.Nyss.Data.MigrationApp
             }
 
             Console.WriteLine("Successfully added french NyssContext demo data");
+        }
+
+        private static void SeedSpanishNyssDemoData(string dbConnectionString, (string roleName, string id, string name, string phone, int organizationId)[] usersToCreate)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<NyssContext>();
+            optionsBuilder.UseSqlServer(dbConnectionString, x => x.UseNetTopologySuite());
+
+            using (var context = new NyssContext(optionsBuilder.Options))
+            {
+                context.NationalSocieties.Add(new NationalSociety
+                {
+                    ContentLanguage = context.ContentLanguages.First(cl => cl.LanguageCode == "es"),
+                    Country = new Country
+                    {
+                        Name = "Mandawi",
+                        CountryCode = "MI"
+                    },
+                    Name = "Mandawi ejemplo Sociedad Nacional",
+                    StartDate = DateTime.UtcNow,
+                    Organizations = new List<Organization>
+                    {
+                        new Organization { Name = "Organización de la demostración" },
+                        new Organization { Name = "Un otro organización" }
+                    }
+                });
+                context.SaveChanges();
+
+                context.NationalSocieties.First(ns => ns.Id == 3).DefaultOrganization = context.Organizations.First(o => o.Id == 5);
+
+                context.Projects.Add(new Project
+                {
+                    Name = "Mandawi - Proyecto de test",
+                    NationalSociety = context.NationalSocieties.First(ns => ns.Id == 3),
+                    StartDate = DateTime.UtcNow,
+                    State = ProjectState.Open,
+                    AllowMultipleOrganizations = true
+                });
+                context.SaveChanges();
+
+                context.ProjectOrganizations.AddRange(context.Organizations.Where(o => o.NationalSocietyId == 3).Select(o => new ProjectOrganization
+                {
+                    OrganizationId = o.Id,
+                    ProjectId = context.Projects.First(p => p.NationalSocietyId == 3).Id
+                }));
+
+                context.Users.AddRange(usersToCreate.Select(user =>
+                {
+                    User nyssUser = null;
+                    var (roleName, id, name, phone, organizationId) = user;
+
+                    switch (roleName)
+                    {
+                        case "Supervisor":
+                            nyssUser = new SupervisorUser
+                            {
+                                Role = Role.Supervisor,
+                                CurrentProject = context.Projects.First(p => p.NationalSocietyId == 3),
+                                Sex = Sex.Other,
+                                DecadeOfBirth = 1980
+                            };
+                            break;
+                        case "DataConsumer":
+                            nyssUser = new DataConsumerUser();
+                            break;
+                        case "Coordinator":
+                            nyssUser = new CoordinatorUser();
+                            break;
+                        case "Manager":
+                            nyssUser = new ManagerUser();
+                            break;
+                        case "TechnicalAdvisor":
+                            nyssUser = new TechnicalAdvisorUser();
+                            break;
+                    }
+
+                    nyssUser.Name = $"{name}";
+                    nyssUser.PhoneNumber = phone;
+                    nyssUser.IdentityUserId = id;
+                    nyssUser.ApplicationLanguage = context.ApplicationLanguages.First(al => al.LanguageCode == "es");
+                    nyssUser.EmailAddress = $"{user.name.Replace(" ", "_")}@example.com".ToLower();
+                    nyssUser.IsFirstLogin = false;
+
+                    return nyssUser;
+                }));
+
+                context.SaveChanges();
+
+                context.SupervisorUserProjects.AddRange(context.Users.Where(u => u.Role == Role.Supervisor && !context.SupervisorUserProjects.Any(sup => sup.SupervisorUserId == u.Id))
+                    .Select(sup => new SupervisorUserProject
+                    {
+                        Project = context.Projects.First(p => p.NationalSocietyId == 3),
+                        SupervisorUser = (SupervisorUser)sup
+                    })
+                );
+
+                context.UserNationalSocieties.AddRange(usersToCreate.Where(x => x.roleName != "GlobalCoordinator").Select(user => new UserNationalSociety
+                {
+                    NationalSocietyId = 3,
+                    UserId = context.Users.First(u => u.Name == user.name).Id,
+                    Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First(o => o.Id == user.organizationId)
+                }));
+
+                context.NationalSocieties.First(ns => ns.Id == 3).Organizations.First(o => o.Id == 5).HeadManager = context.Users.First(u => u.EmailAddress.Contains("juana"));
+                context.NationalSocieties.First(ns => ns.Id == 3).Organizations.First(o => o.Id == 6).HeadManager = context.Users.First(u => u.EmailAddress.Contains("maria"));
+
+                context.SaveChanges();
+            }
+
+            Console.WriteLine("Successfully added spanish NyssContext demo data");
         }
     }
 }
