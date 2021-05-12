@@ -231,6 +231,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                 filter={value.reportStatus}
                 showTrainingFilter
                 correctReports
+                showDismissedFilter
                 onChange={handleReportStatusChange}
               />
             </Grid>
