@@ -90,8 +90,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
               <TableCell style={{ width: '30%' }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: '20%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
-              <TableCell style={{ width: '3%' }} />
+              <TableCell style={{ width: '23%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -108,16 +107,6 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                   {(!row.isAnonymized || filters.dataCollectorType === DataCollectorType.unknownSender) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
-                <TableCell>
-                  <TableRowActions>
-                    <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId)}
-                      icon={<EditIcon />}
-                      title={strings(stringKeys.reports.list.editReport)}
-                      roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && !projectIsClosed} />
-                  </TableRowActions>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
