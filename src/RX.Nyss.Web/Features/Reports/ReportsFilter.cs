@@ -1,6 +1,7 @@
 ﻿using System;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Reports
 {
@@ -22,7 +23,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public DataCollectorType? DataCollectorType { get; set; }
 
-        public bool IsTraining { get; set; }
+        public ReportStatusFilterDto ReportStatus { get; set; }
 
         public int UtcOffset { get; set; }
     }

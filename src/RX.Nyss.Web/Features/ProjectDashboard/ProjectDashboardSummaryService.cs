@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterByArea(filters.Area)
                 .FilterByType(filters.DataCollectorType)
                 .FilterByProject(filters.ProjectId.Value)
-                .FilterByTrainingMode(filters.IsTraining)
+                .FilterByTrainingMode(filters.ReportStatus.Training)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
     }

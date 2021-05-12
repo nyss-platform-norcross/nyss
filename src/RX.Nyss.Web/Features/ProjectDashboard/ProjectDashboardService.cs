@@ -125,7 +125,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
                 ReportsGroupedByFeatures = GetReportsGroupedByFeatures(reportsByFeaturesAndDate),
-                DataCollectionPointReportsGroupedByDate = filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.DataCollectionPoint
+                DataCollectionPointReportsGroupedByDate = filtersDto.DataCollectorType == FiltersRequestDto.DataCollectorTypeFilterDto.DataCollectionPoint
                     ? await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(filters, filtersDto.GroupingType)
                     : Enumerable.Empty<DataCollectionPointsReportsByDateDto>()
             };
@@ -166,16 +166,16 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         AreaId = filtersDto.Area.Id
                     },
                 ProjectId = projectId,
-                DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
-                IsTraining = filtersDto.IsTraining,
+                DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
+                ReportStatus = filtersDto.ReportStatus,
                 UtcOffset = filtersDto.UtcOffset
             };
 
-        private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>
-            reportsType switch
+        private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.DataCollectorTypeFilterDto dataCollectorTypeFilter) =>
+            dataCollectorTypeFilter switch
             {
-                FiltersRequestDto.ReportsTypeDto.DataCollector => DataCollectorType.Human,
-                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
+                FiltersRequestDto.DataCollectorTypeFilterDto.DataCollector => DataCollectorType.Human,
+                FiltersRequestDto.DataCollectorTypeFilterDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
             };
     }

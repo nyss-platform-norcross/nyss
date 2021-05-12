@@ -136,16 +136,16 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                         AreaType = filtersDto.Area.Type,
                         AreaId = filtersDto.Area.Id
                     },
-                DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
-                IsTraining = filtersDto.IsTraining,
+                DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
+                ReportStatus = filtersDto.ReportStatus,
                 UtcOffset = filtersDto.UtcOffset
             };
 
-        private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto nationalSocietyReportsType) =>
-            nationalSocietyReportsType switch
+        private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto nationalSocietyDataCollectorType) =>
+            nationalSocietyDataCollectorType switch
             {
-                NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto.DataCollector => DataCollectorType.Human,
-                NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
+                NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollector => DataCollectorType.Human,
+                NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
             };
     }

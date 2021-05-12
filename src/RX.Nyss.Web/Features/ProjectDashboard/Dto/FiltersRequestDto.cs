@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class FiltersRequestDto
     {
-        public enum ReportsTypeDto
+        public enum DataCollectorTypeFilterDto
         {
             All,
             DataCollector,
@@ -23,9 +23,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public DatesGroupingType GroupingType { get; set; }
 
-        public ReportsTypeDto ReportsType { get; set; }
+        public DataCollectorTypeFilterDto DataCollectorType { get; set; }
 
-        public bool IsTraining { get; set; }
+        public ReportStatusFilterDto ReportStatus { get; set; }
 
         public int? OrganizationId { get; set; }
 
