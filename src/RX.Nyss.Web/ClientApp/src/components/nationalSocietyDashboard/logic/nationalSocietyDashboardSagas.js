@@ -33,8 +33,13 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
       startDate: endDate.add(-7, "day"),
       endDate: endDate,
       groupingType: "Day",
-      isTraining: false,
-      reportsType: "all",
+      reportStatus: {
+        kept: true,
+        dismissed: false,
+        notCrossChecked: true,
+        training: false
+      },
+      dataCollectorType: "all",
       utcOffset: utcOffset
     };
 

@@ -8,10 +8,7 @@ import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import DateRange from '@material-ui/icons/DateRange';
 import {
-  Switch,
-  FormControl,
   LinearProgress,
-  FormLabel,
   Chip,
   IconButton,
   Grid,
@@ -21,7 +18,14 @@ import {
   useMediaQuery,
   CardContent,
   CardHeader,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  RadioGroup,
+  Radio,
 } from "@material-ui/core";
+import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
+import { Fragment } from "react";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);
@@ -58,11 +62,11 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
   const handleGroupingTypeChange = event =>
     onChange(updateValue({ groupingType: event.target.value }))
 
-  const handleReportsTypeChange = event =>
-    onChange(updateValue({ reportsType: event.target.value }))
+  const handleDataCollectorTypeChange = event =>
+    onChange(updateValue({ dataCollectorType: event.target.value }))
 
-  const handleIsTrainingChange = () =>
-    onChange(updateValue({ isTraining: !value.isTraining }))
+  const handleReportStatusChange = event =>
+    onChange(updateValue({ reportStatus: { ...value.reportStatus, [event.target.name]: event.target.checked } }));
 
   const collectionsTypes = {
     "all": strings(stringKeys.project.dashboard.filters.allReportsType),
@@ -83,19 +87,26 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             <Grid item>
               <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} />
             </Grid>
-            <Grid item>
-              <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
-            </Grid>
-            <Grid item>
-              <Chip onClick={() => setIsFilterExpanded(!isFilterExpanded)} label={
-                value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
-              } />
-            </Grid>
-            {selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {value.reportsType !== "all" && (<Grid item><Chip label={collectionsTypes[value.reportsType]} onDelete={() => onChange(updateValue({ reportsType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {value.isTraining && (<Grid item><Chip label={strings(stringKeys.project.dashboard.filters.inTraining)} onDelete={handleIsTrainingChange} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && (
+              <Fragment>
+                <Grid item>
+                  <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+                </Grid>
+                <Grid item>
+                  <Chip onClick={() => setIsFilterExpanded(!isFilterExpanded)} label={
+                    value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
+                  } />
+                </Grid>
+              </Fragment>
+            )}
+            {!isFilterExpanded && selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.dataCollectorType !== "all" && (<Grid item><Chip label={collectionsTypes[value.dataCollectorType]} onDelete={() => onChange(updateValue({ dataCollectorType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.reportStatus.kept && (<Grid item><Chip label={strings(stringKeys.filters.report.kept)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, kept: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.reportStatus.dismissed && (<Grid item><Chip label={strings(stringKeys.filters.report.dismissed)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, dismissed: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.reportStatus.notCrossChecked && (<Grid item><Chip label={strings(stringKeys.filters.report.notCrossChecked)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, notCrossChecked: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && value.reportStatus.training && (<Grid item><Chip label={strings(stringKeys.filters.report.trainingReports)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, training: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
             <Grid item className={styles.expandFilterButton}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
                 <ExpandMore />
@@ -108,7 +119,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
       <ConditionalCollapse collapsible={isSmallScreen && !isGeneratingPdf} expanded={isFilterExpanded}>
         {!isSmallScreen && (
           <Grid container spacing={2}>
-            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle}  />
+            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle} />
           </Grid>
         )}
         <CardContent data-printable={true}>
@@ -130,17 +141,23 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             </Grid>
 
             <Grid item>
-              <TextField
-                select
-                label={strings(stringKeys.project.dashboard.filters.timeGrouping)}
-                onChange={handleGroupingTypeChange}
-                value={value.groupingType}
-                style={{ width: 130 }}
-                InputLabelProps={{ shrink: true }}
-              >
-                <MenuItem value="Day">{strings(stringKeys.project.dashboard.filters.timeGroupingDay)}</MenuItem>
-                <MenuItem value="Week">{strings(stringKeys.project.dashboard.filters.timeGroupingWeek)}</MenuItem>
-              </TextField>
+              <FormControl>
+                <FormLabel component='legend'>{strings(stringKeys.project.dashboard.filters.timeGrouping)}</FormLabel>
+                <RadioGroup value={value.groupingType} onChange={handleGroupingTypeChange} className={styles.radioGroup}>
+                  <FormControlLabel
+                    className={styles.radio}
+                    label={strings(stringKeys.project.dashboard.filters.timeGroupingDay)}
+                    value={'Day'}
+                    control={<Radio color='primary' />}
+                  />
+                  <FormControlLabel
+                    className={styles.radio}
+                    label={strings(stringKeys.project.dashboard.filters.timeGroupingWeek)}
+                    value={'Week'}
+                    control={<Radio color='primary' />}
+                  />
+                </RadioGroup>
+              </FormControl>
             </Grid>
 
             <Grid item>
@@ -173,8 +190,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               <TextField
                 select
                 label={strings(stringKeys.project.dashboard.filters.reportsType)}
-                onChange={handleReportsTypeChange}
-                value={value.reportsType || "all"}
+                onChange={handleDataCollectorTypeChange}
+                value={value.dataCollectorType || "all"}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
@@ -210,10 +227,12 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             </Grid>
 
             <Grid item>
-              <FormControl className={styles.filterItem}>
-                <FormLabel className={styles.trainingStateLabel}>{strings(stringKeys.project.dashboard.filters.inTraining)}</FormLabel>
-                <Switch checked={value.isTraining} onChange={handleIsTrainingChange} color="primary" />
-              </FormControl>
+              <ReportStatusFilter
+                filter={value.reportStatus}
+                showTrainingFilter
+                correctReports
+                onChange={handleReportStatusChange}
+              />
             </Grid>
           </Grid>
         </CardContent>
