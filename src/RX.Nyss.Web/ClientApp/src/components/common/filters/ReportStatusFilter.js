@@ -13,19 +13,23 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrain
           {correctReports && (
             <Fragment>
               <FormControlLabel
+                className={styles.checkbox}
                 control={<Checkbox checked={filter.kept} onChange={onChange} name='kept' color='primary' />}
                 label={strings(stringKeys.filters.report.kept)}
               />
               <FormControlLabel
+                className={styles.checkbox}
                 control={<Checkbox checked={filter.dismissed} onChange={onChange} name='dismissed' color='primary' />}
                 label={strings(stringKeys.filters.report.dismissed)}
               />
               <FormControlLabel
+                className={styles.checkbox}
                 control={<Checkbox checked={filter.notCrossChecked} onChange={onChange} name='notCrossChecked' color='primary' />}
                 label={strings(stringKeys.filters.report.notCrossChecked)}
               />
               {showTrainingFilter && (
                 <FormControlLabel
+                  className={styles.checkbox}
                   control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
                   label={strings(stringKeys.filters.report.trainingReports)}
                 />
@@ -36,16 +40,19 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrain
           {!correctReports && (
             <Fragment>
               <FormControlLabel
+                className={styles.checkbox}
                 control={<Checkbox checked={filter.real} onChange={onChange} name='real' color='primary' />}
                 label={strings(stringKeys.filters.report.nonTrainingReports)}
               />
               {showTrainingFilter && (
                 <FormControlLabel
+                  className={styles.checkbox}
                   control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
                   label={strings(stringKeys.filters.report.trainingReports)}
                 />
               )}
               <FormControlLabel
+                className={styles.checkbox}
                 control={<Checkbox checked={filter.corrected} onChange={onChange} name='corrected' color='primary' />}
                 label={strings(stringKeys.filters.report.correctedReports)}
               />
