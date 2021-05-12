@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GeoCoordinatePortable;
+using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -67,7 +69,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var projectHealthRiskWithCountThresholdOf1 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 1);
 
                 var reportGroup = _reportGroupGenerator.Create("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19")
-                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf1, _dataCollector);
+                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf1, _dataCollector, location: GetMockPoint(52.330898, 17.047525));
                 data.Reports = reportGroup.Reports;
             });
 
@@ -89,7 +91,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
                 var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                    .AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector, location: GetMockPoint(52.329331, 17.046055));
                 data.Reports = reportGroup.Reports;
             });
 
@@ -100,8 +102,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
                 var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector)
-                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, location: GetMockPoint(52.329331, 17.046055))
+                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector, location: GetMockPoint(52.329331, 17.046055));
                 data.Reports = reportGroup.Reports;
 
                 var reportsToCreateAlertFor = data.Reports.Where(r => r.Status == ReportStatus.Pending).ToList();
@@ -281,7 +283,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportGroup.Reports);
 
-                reportGroup.AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dc);
+                reportGroup.AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dc, location: GetMockPoint(52.329331, 17.046055));
                 data.Reports = reportGroup.Reports;
             });
 
@@ -307,11 +309,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
                 var existingReports = _reportGroupGenerator.Create("AAF7C49B-DCC8-4DCD-BC8F-B8BA226BE19C")
-                    .AddNReports(3, ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                    .AddNReports(3, ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector, location: GetMockPoint(52.329331, 17.046055));
 
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(existingReports.Reports);
 
-                existingReports.AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                existingReports.AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector, location: GetMockPoint(52.329331, 17.046055));
                 data.Reports = existingReports.Reports;
             });
 
@@ -328,6 +330,24 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             public Report HumanDataCollectorReport { get; set; }
             public Report DataCollectionPointReport { get; set; }
             public Report SingleReportWithoutHealthRisk { get; set; }
+        }
+
+        private Point GetMockPoint(double lat, double lon) =>
+            new MockPoint(lon, lat);
+
+        private class MockPoint : Point
+        {
+            public MockPoint(double x, double y)
+                : base(x, y)
+            {
+            }
+
+            public override double Distance(Geometry g)
+            {
+                var firstCoordinate = new GeoCoordinate(Y, X);
+                var secondCoordinate = new GeoCoordinate(g.Coordinate.Y, g.Coordinate.X);
+                return firstCoordinate.GetDistanceTo(secondCoordinate);
+            }
         }
     }
 }

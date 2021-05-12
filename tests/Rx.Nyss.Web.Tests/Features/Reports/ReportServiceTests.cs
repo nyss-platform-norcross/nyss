@@ -11,6 +11,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Projects;
@@ -35,6 +36,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAlertReportService _alertReportService;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -63,7 +65,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _stringsResourcesService, _dateTimeProvider);
+            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _stringsResourcesService, _dateTimeProvider, _alertReportService);
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
