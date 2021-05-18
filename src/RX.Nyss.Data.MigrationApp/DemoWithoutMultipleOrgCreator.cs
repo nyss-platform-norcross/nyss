@@ -27,7 +27,7 @@ namespace RX.Nyss.Data.MigrationApp
                 ("Supervisor", "51CF49DD-235B-4B43-9C1E-CF781310ABB7", "Sophie Supervisor", "+1234566", 2),
                 ("TechnicalAdvisor", "CA06B9BB-A93D-4AB7-A7D4-AC77955C947A", "Thierry TechnicalAdvisor", "+1234564", 2),
                 ("Manager", "BF23D073-A543-4C26-B83C-3BFF7227E65C", "Marcelle Manager", "+1234565", 2),
-                ("DataConsumer", "0582597c-77fa-441c-97fd-d8759cf786d0", "Andrés DataConsumer", "+2234561", 3),
+                ("DataConsumer", "0582597c-77fa-441c-97fd-d8759cf786d0", "Andres DataConsumer", "+2234561", 3),
                 ("Supervisor", "fac99c32-cceb-4abc-9561-6af84c1cb7b3", "Sergio Supervisor", "+2234563", 3),
                 ("Supervisor", "48b09322-9401-4d8f-8b6e-1eaaf2cc7c8b", "Sofia Supervisor", "+2234566", 3),
                 ("TechnicalAdvisor", "869cec24-e2fd-436a-820f-8d854670e682", "Juan TechnicalAdvisor", "+2234564", 3),
