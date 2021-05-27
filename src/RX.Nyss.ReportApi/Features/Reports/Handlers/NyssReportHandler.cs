@@ -198,7 +198,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         DataCollector = dataCollector,
                         ParsedReport = parsedReport,
                         ProjectHealthRisk = projectHealthRisk,
-                        ModemNumber = modemNumber
+                        ModemNumber = modemNumber,
+                        ReceivedAt = receivedAt
                     },
                     GatewaySetting = gatewaySetting
                 };
