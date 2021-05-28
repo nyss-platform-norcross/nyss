@@ -11,7 +11,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     {
         public DateTime Date { get; set; }
         public int DataCollectorId { get; set; }
-        public DataCollectorLocationRequestDto DataCollectorLocation { get; set; }
+        public int DataCollectorLocationId { get; set; }
         public ReportStatus ReportStatus { get; set; }
         public int HealthRiskId { get; set; }
         public int CountMalesBelowFive { get; set; }
@@ -38,6 +38,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
                 RuleFor(hr => hr.ReferredCount).GreaterThanOrEqualTo(0).When(hr => hr.ReferredCount.HasValue);
                 RuleFor(hr => hr.DeathCount).GreaterThanOrEqualTo(0).When(hr => hr.DeathCount.HasValue);
                 RuleFor(hr => hr.FromOtherVillagesCount).GreaterThanOrEqualTo(0).When(hr => hr.FromOtherVillagesCount.HasValue);
+                RuleFor(hr => hr.DataCollectorLocationId).GreaterThan(0);
             }
         }
     }

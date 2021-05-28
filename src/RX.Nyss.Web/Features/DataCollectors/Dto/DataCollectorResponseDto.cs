@@ -26,6 +26,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
     public class DataCollectorLocationResponseDto
     {
+        public int Id { get; set; }
         public string Region { get; set; }
         public string District { get; set; }
         public string Village { get; set; }

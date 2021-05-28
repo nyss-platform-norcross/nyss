@@ -305,6 +305,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Locations = dc.DataCollectorLocations
                         .Select(dcl => new DataCollectorLocationResponseDto
                         {
+                            Id = dcl.Id,
                             Region = dcl.Village.District.Region.Name,
                             District = dcl.Village.District.Name,
                             Village = dcl.Village.Name,

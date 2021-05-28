@@ -21,8 +21,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int FromOtherVillagesCount { get; set; }
         public ReportType ReportType { get; set; }
         public ReportStatus ReportStatus { get; set; }
-
-        public int ReportVillageId { get; set; }
-        public int ReportZoneId { get; set; }
+        public int LocationId { get; set; }
     }
 }
