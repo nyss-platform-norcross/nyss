@@ -21,5 +21,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             return Ok();
         }
+
+        [HttpPost("recalculateAlertForReport")]
+        public async Task<IActionResult> RecalculateAlertForReport(int reportId) =>
+            await _alertService.RecalculateAlertForReport(reportId)
+                ? (StatusCodeResult)new OkResult()
+                : new BadRequestResult();
     }
 }

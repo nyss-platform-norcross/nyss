@@ -11,7 +11,6 @@ namespace RX.Nyss.ReportApi.Features.Reports
     public interface IReportService
     {
         Task<bool> ReceiveReport(Report report);
-        Task<bool> EditReport(int reportId);
     }
 
     public class ReportService : IReportService
@@ -19,14 +18,12 @@ namespace RX.Nyss.ReportApi.Features.Reports
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly INyssReportHandler _nyssReportHandler;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IAlertService _alertService;
 
-        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter, INyssReportHandler nyssReportHandler, IAlertService alertService)
+        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter, INyssReportHandler nyssReportHandler)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
             _nyssReportHandler = nyssReportHandler;
-            _alertService = alertService;
         }
 
         public async Task<bool> ReceiveReport(Report report)
@@ -53,20 +50,6 @@ namespace RX.Nyss.ReportApi.Features.Reports
             }
 
             return true;
-        }
-
-        public async Task<bool> EditReport(int reportId)
-        {
-            try
-            {
-                await _alertService.RecalculateAlertForReport(reportId);
-                return true;
-            }
-            catch (Exception e)
-            {
-                _loggerAdapter.Error(e, $"Could not recalculate alert for report with id: '{reportId}'.");
-                return false;
-            }
         }
     }
 }
