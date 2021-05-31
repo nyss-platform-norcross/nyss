@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Validation
@@ -13,6 +14,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
         Task<bool> PhoneNumberExists(string phoneNumber);
         Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber);
         Task<bool> IsAllowedToCreateForSupervisor(int supervisorId);
+        Task<bool> LocationHasDuplicateVillageAndZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation);
     }
 
     public class DataCollectorValidationService : IDataCollectorValidationService
@@ -41,5 +43,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
                 || (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor)
                     && await _nyssContext.Users.Where(u => u.Id == supervisorId).Select(u => (SupervisorUser)u).Select(u => u.HeadSupervisor.Id).FirstOrDefaultAsync() == currentUser.Id);
         }
+
+        public async Task<bool> LocationHasDuplicateVillageAndZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
+            await _nyssContext.DataCollectorLocations
+                .AnyAsync(dcl => dcl.DataCollectorId == dataCollectorId
+                    && !dataCollectorLocation.Id.HasValue
+                    && dcl.Village.Id == dataCollectorLocation.VillageId
+                    && (dcl.Zone == null || dcl.Zone.Id == dataCollectorLocation.ZoneId));
     }
 }

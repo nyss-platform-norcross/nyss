@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
     public class DataCollectorLocationRequestDto

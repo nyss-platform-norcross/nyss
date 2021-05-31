@@ -465,6 +465,8 @@ namespace RX.Nyss.Web.Features.Reports
         private async Task UpdateDataCollectorForReport(Report report, int dataCollectorId)
         {
             var newDataCollector = await _nyssContext.DataCollectors
+                .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Village)
+                .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Zone)
                 .SingleOrDefaultAsync(dc => dc.Id == dataCollectorId);
 
             if (newDataCollector == null)

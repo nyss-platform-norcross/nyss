@@ -219,7 +219,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             {
                 public const string EditSuccess = "report.edit.success";
                 public const string EditError = "report.edit.error";
-                public const string SenderEditError = "report.edit.senderEditError";
+                public const string DataCollectorTypeCannotBeChanged = "report.edit.dataCollectorTypeCannotBeChanged";
                 public const string SenderDoesNotExist = "report.edit.senderDoesNotExist";
                 public const string OnlyNewReportsEditable = "report.edit.onlyNewReportsEditable";
                 public const string HealthRiskNotAssignedToProject = "report.healthRiskNotAssignedToProject";
@@ -313,6 +313,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string NotAllowedToSelectSupervisor = "dataCollector.notAllowedToSelectSupervisor";
             public const string SetToDeployedSuccess = "dataCollector.setToDeployed.success";
             public const string SetToNotDeployedSuccess = "dataCollector.setToNotDeployed.success";
+            public const string DuplicateLocation = "validation.dataCollector.duplicateLocation";
         }
 
         public static class Geolocation
