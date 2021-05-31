@@ -12,7 +12,7 @@ import SelectField from '../forms/SelectField';
 import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation, allLocations }) => {
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -60,12 +60,13 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     form.addField(`location_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)]);
     form.addField(`location_${locationNumber}_regionId`, location.regionId.toString(), [validators.required]);
     form.addField(`location_${locationNumber}_districtId`, location.districtId.toString(), [validators.required]);
-    form.addField(`location_${locationNumber}_villageId`, location.villageId.toString(), [validators.required]);
+    form.addField(`location_${locationNumber}_villageId`, location.villageId.toString(), [validators.required, validators.uniqueLocation(x => x[`location_${locationNumber}_zoneId`], allLocations)]);
     form.addField(`location_${locationNumber}_zoneId`, !!location.zoneId ? location.zoneId.toString() : '');
 
 
     form.fields[`location_${locationNumber}_latitude`].subscribe(({ newValue }) => dispatch({ type: 'latitude', value: newValue }));
     form.fields[`location_${locationNumber}_longitude`].subscribe(({ newValue }) => dispatch({ type: 'longitude', value: newValue }));
+    form.fields[`location_${locationNumber}_zoneId`].subscribe(({ newValue }) => location.zoneId = newValue);
 
     setReady(true);
 
@@ -121,6 +122,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   const onVillageChange = (event) => {
     const villageId = event.target.value;
     form.fields[`location_${locationNumber}_zoneId`].update('', true);
+    location.villageId = villageId;
 
     setZones([]);
 

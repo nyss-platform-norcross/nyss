@@ -37,11 +37,26 @@ export const reportAges = {
 }
 
 export const reportCountToSexAge = {
-  countMalesAtLeastFive: [reportSexes.male, reportAges.aboveFour],
-  countMalesBelowFive: [reportSexes.male, reportAges.belowFive],
-  countFemalesAtLeastFive: [reportSexes.female, reportAges.aboveFour],
-  countFemalesBelowFive: [reportSexes.female, reportAges.belowFive],
-  countUnspecifiedSexAndAge: [reportSexes.unspecified, reportAges.unspecified]
+  countMalesAtLeastFive: {
+    sex: reportSexes.male, 
+    age: reportAges.aboveFour
+  },
+  countMalesBelowFive: {
+    sex: reportSexes.male, 
+    age: reportAges.belowFive
+  },
+  countFemalesAtLeastFive: {
+    sex: reportSexes.female, 
+    age: reportAges.aboveFour
+  },
+  countFemalesBelowFive: {
+    sex: reportSexes.female, 
+    age: reportAges.belowFive
+  },
+  countUnspecifiedSexAndAge: {
+    sex: reportSexes.unspecified, 
+    age: reportAges.unspecified
+  },
 }
 
 export const ReportErrorType = {

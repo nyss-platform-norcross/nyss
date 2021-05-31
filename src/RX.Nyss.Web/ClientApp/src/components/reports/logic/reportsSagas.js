@@ -162,6 +162,7 @@ function* editReport({ projectId, reportId, data }) {
     yield put(appActions.showMessage(stringKeys.reports.list.editedSuccesfully));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
+    yield put(appActions.showMessage(error.message));
   }
 };
 

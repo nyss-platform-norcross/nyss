@@ -240,6 +240,7 @@ const DataCollectorsEditPageComponent = (props) => {
               initialZones={location.initialFormData.zones}
               isDefaultCollapsed={allLocationsCollapsed}
               removeLocation={removeDataCollectorLocation}
+              allLocations={locations}
             />
           ))}
 

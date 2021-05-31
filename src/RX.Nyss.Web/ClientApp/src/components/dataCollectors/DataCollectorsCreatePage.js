@@ -257,6 +257,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               initialZones={[]}
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
+              allLocations={locations}
             />
           ))}
 
