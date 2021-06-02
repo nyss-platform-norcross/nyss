@@ -492,6 +492,11 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(dcl => dcl.DataCollectorId == dataCollectorId && dcl.Id == locationId)
                 .SingleOrDefaultAsync();
 
+            if (location == null)
+            {
+                throw new ResultException(ResultKey.Report.Edit.LocationNotFound);
+            }
+
             report.Location = location.Location;
             report.RawReport.Village = location.Village;
             report.RawReport.Zone = location.Zone;

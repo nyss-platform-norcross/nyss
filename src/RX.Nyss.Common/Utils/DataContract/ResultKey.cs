@@ -224,6 +224,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string OnlyNewReportsEditable = "report.edit.onlyNewReportsEditable";
                 public const string HealthRiskNotAssignedToProject = "report.healthRiskNotAssignedToProject";
                 public const string HealthRiskCannotBeEdited = "report.healthRiskCannotBeEdited";
+                public const string LocationNotFound = "report.edit.locationNotFound";
             }
 
             public static class ErrorType

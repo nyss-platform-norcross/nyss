@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GeoCoordinatePortable;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
@@ -53,7 +54,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
         private readonly ServiceBusQueuesOptions _serviceBusQueuesOptions = new ServiceBusQueuesOptions
         {
-            ReportEditQueue = ""
+            RecalculateAlertsQueue = ""
         };
 
         public ReportServiceTests()
@@ -91,7 +92,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         }
 
 
-        private void ArrangeData()
+        private void ArrangeData(bool withErrorReports = false)
         {
             var nationalSocieties = new List<NationalSociety>
             {
@@ -244,6 +245,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     {
                         new DataCollectorLocation
                         {
+                            Id = 1,
+                            DataCollectorId = 1,
                             Village = villages[0],
                             Location = GetMockPoint(52.330898, 17.047525)
                         }
@@ -262,6 +265,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     {
                         new DataCollectorLocation
                         {
+                            Id = 2,
+                            DataCollectorId = 2,
                             Village = villages[0]
                         }
                     },
@@ -279,6 +284,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     {
                         new DataCollectorLocation
                         {
+                            Id = 3,
+                            DataCollectorId = 3,
                             Village = villages[0]
                         }
                     },
@@ -302,12 +309,24 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
             var dcpRawReports = BuildRawReports(dcpReports, villages[0], zones[0], nationalSocieties[0]);
 
-            var unknownSenderReports = BuildUnknownSenderReports(_unknownSenderReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
-            var unknownSenderRawReports = BuildUnknownSenderRawReports(unknownSenderReports, nationalSocieties[0]);
-            unknownSenderReports = LinkUnknownRawReportsToReports(unknownSenderReports, unknownSenderRawReports);
+            var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports);
+            var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports);
 
-            var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).Concat(unknownSenderReports).ToList();
-            var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).Concat(unknownSenderRawReports).ToList();
+            if (withErrorReports)
+            {
+                var unknownSenderReports = BuildUnknownSenderReports(_unknownSenderReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+                var unknownSenderRawReports = BuildUnknownSenderRawReports(unknownSenderReports, nationalSocieties[0]);
+                LinkUnknownRawReportsToReports(unknownSenderReports, unknownSenderRawReports);
+
+                reports = reports.Concat(unknownSenderReports).ToList();
+                rawReports = rawReports.Concat(unknownSenderRawReports).ToList();
+            }
+            else
+            {
+                reports = reports.ToList();
+                rawReports = rawReports.ToList();
+            }
+
 
             var users = new List<User>
             {
@@ -333,6 +352,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var reportsDbSet = reports.AsQueryable().BuildMockDbSet();
             var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
             var usersDbSet = users.AsQueryable().BuildMockDbSet();
+            var dataCollectorLocationsDbSet = dataCollectors.SelectMany(dc => dc.DataCollectorLocations).AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
@@ -349,6 +369,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.Reports.Returns(reportsDbSet);
             _nyssContextMock.RawReports.Returns(rawReportsDbSet);
             _nyssContextMock.Users.Returns(usersDbSet);
+            _nyssContextMock.DataCollectorLocations.Returns(dataCollectorLocationsDbSet);
 
             _nyssContextMock.Projects.FindAsync(1).Returns(projects.Single(x => x.Id == 1));
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
@@ -362,7 +383,25 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(9999);
 
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto());
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
+            {
+                Area = null,
+                ErrorType = null,
+                FormatCorrect = true,
+                OrderBy = "",
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    Training = false,
+                    NotCrossChecked = true
+                },
+                ReportType = new ReportTypeFilterDto(),
+                SortAscending = true,
+                UtcOffset = 0,
+                DataCollectorType = ReportListDataCollectorType.Human,
+                HealthRiskId = null
+            });
 
             //assert
             result.Value.Data.ShouldAllBe(x => _reportIdsFromProject1.Contains(x.Id));
@@ -725,10 +764,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task EditReport_WhenUnknownSender_ShouldSucceed()
         {
             // Arrange
+            ArrangeData(withErrorReports: true);
             var unknownSenderRawReports = _nyssContextMock.RawReports
                 .First(rr => rr.DataCollector == null);
             var unknownSenderReport = _nyssContextMock.Reports
-                .First(rr => ((rr.DataCollector == null) & (rr.Id == unknownSenderRawReports.Id)));
+                .First(rr => rr.DataCollector == null && rr.Id == unknownSenderRawReports.ReportId);
             var dataCollector = _nyssContextMock.DataCollectors
                 .First(dc => dc.Id == 1);
 
@@ -743,14 +783,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 CountUnspecifiedSexAndAge = 0,
                 DataCollectorId = dataCollector.Id,
                 ReportStatus = ReportStatus.Accepted,
-                DataCollectorLocation = new DataCollectorLocationRequestDto
-                {
-                    VillageId = dataCollector.DataCollectorLocations.First().Village.Id,
-                },
+                DataCollectorLocationId = 1
             };
 
             // Act
-            var result = await _reportService.Edit(unknownSenderReport.Id, 1, reportRequestDto);
+            var result = await _reportService.Edit(unknownSenderReport.Id, reportRequestDto);
             var reportAfterEdit = _nyssContextMock.Reports
                 .First(rr => rr.Id == unknownSenderReport.Id);
 
@@ -800,9 +837,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Status = ReportStatus.New,
                     ProjectHealthRisk = projectHealthRisk,
                     ReportedCase = new ReportCase(),
+                    DataCollectionPointCase = new DataCollectionPointCase(),
                     CreatedAt = new DateTime(2020, 1, 1),
                     ReceivedAt = new DateTime(2020, 1, 1),
-                    ReportType = ReportType.Single
+                    ReportType = ReportType.Single,
+                    IsTraining = false,
+                    PhoneNumber = "+523543234234"
                 })
                 .ToList();
             return reports;
@@ -814,10 +854,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 Id = r.Id,
                 Report = r,
                 ReportId = r.Id,
+                Sender = r.PhoneNumber,
                 ReceivedAt = r.ReceivedAt,
+                IsTraining = r.IsTraining,
                 NationalSociety = nationalSociety
             })
             .ToList();
+
         private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone, NationalSociety nationalSociety) =>
             reports.Select(r => new RawReport
                 {
@@ -834,12 +877,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 })
                 .ToList();
 
-        private static List<Report> LinkUnknownRawReportsToReports(List<Report> reports, List<RawReport> rawReports) =>
-            reports.Select(r =>
+        private static void LinkUnknownRawReportsToReports(List<Report> reports, List<RawReport> rawReports) =>
+            reports.ForEach(r =>
             {
-                r.RawReport = rawReports.First(rr => rr.Id == r.Id);
-                return r;
-            }).ToList();
+                r.RawReport = rawReports.First(rr => rr.ReportId == r.Id);
+            });
 
         private static Point GetMockPoint(double lat, double lon) =>
             new MockPoint(lon, lat);
