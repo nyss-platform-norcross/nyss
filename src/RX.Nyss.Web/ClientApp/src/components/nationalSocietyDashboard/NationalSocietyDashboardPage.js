@@ -13,7 +13,7 @@ import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDas
 import { NationalSocietyDashboardReportsMap } from './components/NationalSocietyDashboardReportsMap';
 import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
 
-const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData, isGeneratingPdf, isFetching, ...props }) => {
+const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
     openDashbaord(props.nationalSocietyId);
   });
@@ -37,6 +37,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData
           onChange={handleFiltersChange}
           filters={props.filters}
           isFetching={isFetching}
+          userRoles={userRoles}
         />
       </Grid>
 
@@ -83,7 +84,8 @@ const mapStateToProps = state => ({
   reportsGroupedByVillageAndDate: state.nationalSocietyDashboard.reportsGroupedByVillageAndDate,
   reportsGroupedByLocationDetailsFetching: state.nationalSocietyDashboard.reportsGroupedByLocationDetailsFetching,
   isGeneratingPdf: state.nationalSocietyDashboard.isGeneratingPdf,
-  isFetching: state.nationalSocietyDashboard.isFetching
+  isFetching: state.nationalSocietyDashboard.isFetching,
+  userRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

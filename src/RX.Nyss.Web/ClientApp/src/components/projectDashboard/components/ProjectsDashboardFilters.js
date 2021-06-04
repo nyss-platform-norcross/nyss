@@ -26,8 +26,9 @@ import {
 } from "@material-ui/core";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { Fragment } from "react";
+import { DataConsumer } from "../../../authentication/roles";
 
-export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
+export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded, userRoles }) => {
   const [value, setValue] = useState(filters);
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
@@ -103,10 +104,10 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             {!isFilterExpanded && value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
             {!isFilterExpanded && value.dataCollectorType !== "all" && (<Grid item><Chip label={collectionsTypes[value.dataCollectorType]} onDelete={() => onChange(updateValue({ dataCollectorType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
             {!isFilterExpanded && value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.reportStatus.kept && (<Grid item><Chip label={strings(stringKeys.filters.report.kept)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, kept: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.reportStatus.dismissed && (<Grid item><Chip label={strings(stringKeys.filters.report.dismissed)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, dismissed: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.reportStatus.notCrossChecked && (<Grid item><Chip label={strings(stringKeys.filters.report.notCrossChecked)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, notCrossChecked: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.reportStatus.training && (<Grid item><Chip label={strings(stringKeys.filters.report.trainingReports)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, training: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.kept && (<Grid item><Chip label={strings(stringKeys.filters.report.kept)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, kept: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.dismissed && (<Grid item><Chip label={strings(stringKeys.filters.report.dismissed)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, dismissed: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.notCrossChecked && (<Grid item><Chip label={strings(stringKeys.filters.report.notCrossChecked)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, notCrossChecked: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.training && (<Grid item><Chip label={strings(stringKeys.filters.report.trainingReports)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, training: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
             <Grid item className={styles.expandFilterButton}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
                 <ExpandMore />
@@ -226,15 +227,17 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               </TextField>
             </Grid>
 
-            <Grid item>
-              <ReportStatusFilter
-                filter={value.reportStatus}
-                showTrainingFilter
-                correctReports
-                showDismissedFilter
-                onChange={handleReportStatusChange}
-              />
-            </Grid>
+            {!userRoles.some(r => r === DataConsumer) && (
+              <Grid item>
+                <ReportStatusFilter
+                  filter={value.reportStatus}
+                  showTrainingFilter
+                  correctReports
+                  showDismissedFilter
+                  onChange={handleReportStatusChange}
+                />
+              </Grid>
+            )}
           </Grid>
         </CardContent>
       </ConditionalCollapse>
