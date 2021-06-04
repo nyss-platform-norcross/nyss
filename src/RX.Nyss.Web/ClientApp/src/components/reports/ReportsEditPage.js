@@ -29,7 +29,7 @@ const ReportsEditPageComponent = (props) => {
 
   const [selectedLocation, setLocation] = useReducer((state, locationId) => {
     if (props.data !== null && state.id !== locationId) {
-      return props.dataCollectors.find(dc => dc.id === props.data.dataCollectorId)
+      return props.dataCollectors.find(dc => dc.id === selectedDataCollector.id)
         .locations.find(lc => lc.id.toString() === locationId) || state;
     }
 
@@ -83,8 +83,8 @@ const ReportsEditPageComponent = (props) => {
       dataCollectorId: [validators.required],
       reportStatus: [validators.required],
       locationId: [validators.required],
-      reportSex: [validators.required, validators.sexAge(x => x.reportAge)],
-      reportAge: [validators.required, validators.sexAge(x => x.reportSex)],
+      reportSex: [validators.requiredWhen(() => props.data.reportType === ReportType.single), validators.sexAge(x => x.reportAge)],
+      reportAge: [validators.requiredWhen(() => props.data.reportType === ReportType.single), validators.sexAge(x => x.reportSex)],
       healthRiskId: [validators.required],
       countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
       countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
@@ -135,8 +135,9 @@ const ReportsEditPageComponent = (props) => {
 
     const values = form.getValues();
 
-    if (props.data.reportType === 'Single') {
+    if (props.data.reportType === ReportType.single) {
       Object.keys(reportCountToSexAge).forEach(comb => values[comb] = '0');
+      console.log(findSexAgeCombinationHelper());
       values[findSexAgeCombinationHelper()] = '1';
     }
 
@@ -158,7 +159,7 @@ const ReportsEditPageComponent = (props) => {
   };
 
   const findSexAgeCombinationHelper = () =>
-    Object.keys(reportCountToSexAge).find(key => reportCountToSexAge[key][0] === reportSex && reportCountToSexAge[key][1] === reportAge);
+    Object.keys(reportCountToSexAge).find(key => reportCountToSexAge[key].sex === reportSex && reportCountToSexAge[key].age === reportAge);
 
   const findSexAgeHelper = (data) => {
     const key = Object.keys(reportCountToSexAge).find(key => data[key] > 0);
@@ -211,7 +212,7 @@ const ReportsEditPageComponent = (props) => {
             </SelectField>
           </Grid>
 
-          {(props.data.reportType !== 'DataCollectionPoint' && props.data.reportType !== 'Aggregate') && (
+          {(props.data.reportType !== ReportType.dataCollectionPoint && props.data.reportType !== ReportType.aggregate) && (
             <Fragment>
               <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.statusSectionTitle)}</div>
               <Grid item xs={12}>
@@ -232,11 +233,11 @@ const ReportsEditPageComponent = (props) => {
             </Fragment>
           )}
 
-          {props.data.reportType !== 'Event' && (
+          {props.data.reportType !== ReportType.event && (
             <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.contentSectionTitle)}</div>
           )}
 
-          {props.data.reportType === 'Single' && (
+          {props.data.reportType === ReportType.single && (
             <Fragment>
               <Grid item xs={12}>
                 <SelectField
@@ -268,7 +269,7 @@ const ReportsEditPageComponent = (props) => {
             </Fragment>
           )}
 
-          {(props.data.reportType === 'DataCollectionPoint' || props.data.reportType === 'Aggregate') && (
+          {(props.data.reportType === ReportType.dataCollectionPoint || props.data.reportType === ReportType.aggregate) && (
             <Fragment>
               <Grid item xs={12}>
                 <DateInputField
@@ -327,14 +328,13 @@ const ReportsEditPageComponent = (props) => {
             </Fragment>
           )}
 
-          {props.data.reportType === 'DataCollectionPoint' && (
+          {props.data.reportType === ReportType.dataCollectionPoint && (
             <Fragment>
               <Grid item xs={12}>
                 <TextInputField
                   label={strings(stringKeys.reports.form.referredCount)}
                   name='referredCount'
                   field={form.fields.referredCount}
-                  disabled={props.data.reportType !== 'DataCollectionPoint'}
                 />
               </Grid>
 
@@ -343,7 +343,6 @@ const ReportsEditPageComponent = (props) => {
                   label={strings(stringKeys.reports.form.deathCount)}
                   name='deathCount'
                   field={form.fields.deathCount}
-                  disabled={props.data.reportType !== 'DataCollectionPoint'}
                 />
               </Grid>
 
@@ -352,15 +351,14 @@ const ReportsEditPageComponent = (props) => {
                   label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
                   name='fromOtherVillagesCount'
                   field={form.fields.fromOtherVillagesCount}
-                  disabled={props.data.reportType !== 'DataCollectionPoint'}
                 />
               </Grid>
             </Fragment>
           )}
 
-          <FormActions>
+          <FormActions className={styles.tableActionsContainer}>
             <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
-            <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
+            <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
           </FormActions>
         </Grid>
       </Form>

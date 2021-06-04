@@ -107,7 +107,7 @@ const CorrectReportsListPageComponent = (props) => {
         sorting={props.sorting}
         onSort={handleSortChange}
         projectId={props.projectId}
-        goToEdition={props.goToEdition}
+        goToEditing={props.goToEditing}
         markAsError={handleMarkAsError}
         isMarkingAsError={props.isMarkingAsError}
         user={props.user}
@@ -146,7 +146,7 @@ const mapDispatchToProps = {
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
   markAsError: reportsActions.markAsError.invoke,
-  goToEdition: reportsActions.goToEdition,
+  goToEditing: reportsActions.goToEditing,
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke,
   goToAlert: reportsActions.goToAlert,

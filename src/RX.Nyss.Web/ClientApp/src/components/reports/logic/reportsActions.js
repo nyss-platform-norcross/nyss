@@ -6,7 +6,7 @@ import {
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
-export const goToEdition = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
+export const goToEditing = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
 export const goToAlert = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/assess`);
 
 export const openCorrectReportsList = {

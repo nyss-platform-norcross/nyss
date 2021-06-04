@@ -101,10 +101,7 @@ const IncorrectReportsListPageComponent = (props) => {
         filters={props.filters}
         sorting={props.sorting}
         onSort={handleSortChange}
-        projectId={props.projectId}
-        goToEdition={props.goToEdition}
         user={props.user}
-        projectIsClosed={props.projectIsClosed}
       />
     </Fragment>
   );
@@ -124,8 +121,7 @@ const mapStateToProps = (state, ownProps) => ({
   isRemoving: state.reports.listRemoving,
   filters: state.reports.incorrectReportsFilters,
   sorting: state.reports.incorrectReportsSorting,
-  user: state.appData.user,
-  projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
+  user: state.appData.user
 });
 
 const mapDispatchToProps = {
@@ -133,7 +129,6 @@ const mapDispatchToProps = {
   getList: reportsActions.getIncorrectList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
-  goToEdition: reportsActions.goToEdition,
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke
 };
