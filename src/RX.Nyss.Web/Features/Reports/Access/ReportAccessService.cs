@@ -37,9 +37,19 @@ namespace RX.Nyss.Web.Features.Reports.Access
                 {
                     ProjectId = r.Report.ProjectHealthRisk.Project.Id,
                     Supervisor = r.DataCollector.Supervisor,
-                    HeadSupervisor = r.DataCollector.Supervisor.HeadSupervisor
+                    HeadSupervisor = r.DataCollector.Supervisor.HeadSupervisor,
+                    NationalSociety = r.NationalSociety,
+                    IsUnknownSender = r.DataCollector == null
                 })
                 .FirstOrDefaultAsync();
+
+            if (reportData.IsUnknownSender)
+            {
+                var userAndReportInSameNationalSociety = await _nyssContext.UserNationalSocieties
+                    .AnyAsync(uns => uns.User == currentUser && uns.NationalSociety == reportData.NationalSociety);
+
+                return userAndReportInSameNationalSociety;
+            }
 
             if (currentUser.Role == Role.Supervisor && reportData.Supervisor != currentUser)
             {

@@ -147,7 +147,7 @@ namespace RX.Nyss.Web.Features.Reports
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
-                        .Single(),
+                        .SingleOrDefault(),
                     IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
                         || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
                     IsValid = r.Report != null,
@@ -252,7 +252,7 @@ namespace RX.Nyss.Web.Features.Reports
 
                 if (rawReport.Report.ProjectHealthRisk.Id != reportRequestDto.HealthRiskId)
                 {
-                    await SetProjectHealthRisk(rawReport.Report, reportRequestDto.HealthRiskId);
+                    await SetProjectHealthRisk(rawReport.Report, reportRequestDto.HealthRiskId, reportRequestDto.DataCollectorId);
                 }
 
                 if (rawReport.DataCollector == null || rawReport.DataCollector.Id != reportRequestDto.DataCollectorId)
@@ -289,7 +289,7 @@ namespace RX.Nyss.Web.Features.Reports
 
                 await _nyssContext.SaveChangesAsync();
 
-                if (locationChanged)
+                if (locationChanged && rawReport.Report.Status != ReportStatus.Rejected)
                 {
                     await _alertReportService.RecalculateAlertForReport(rawReport.Id);
                 }
@@ -446,12 +446,17 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByReportType(filter.ReportType);
         }
 
-        private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId)
+        private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId, int dataCollectorId)
         {
+            var projectId = report.DataCollector?.Project.Id ?? await _nyssContext.DataCollectors
+                .Where(dc => dc.Id == dataCollectorId)
+                .Select(dc => dc.Project.Id)
+                .SingleOrDefaultAsync();
+
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRiskId == projectHealthRiskId
-                    && phr.Project.Id == report.DataCollector.Project.Id);
+                    && phr.Project.Id == projectId);
 
             if (projectHealthRisk == null)
             {
