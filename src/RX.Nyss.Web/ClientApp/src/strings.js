@@ -808,11 +808,11 @@ export const stringKeys = {
       "Other": "report.errorType.other"
     },
     status: {
-      "New": "report.status.new",
+      "New": "report.status.notCrossChecked",
       "Rejected": "report.status.rejected",
       "Accepted": "report.status.accepted",
-      "Pending": "report.status.pending",
-      "Closed": "report.status.closed"
+      "Pending": "report.status.notCrossChecked",
+      "Closed": "report.status.notCrossChecked"
     },
   },
   nationalSocietyReports: {
