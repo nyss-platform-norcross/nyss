@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 {
                     KeptReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
                     DismissedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
-                    NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending).Sum(r => r.ReportedCaseCount),
+                    NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending || r.Status == ReportStatus.Closed).Sum(r => r.ReportedCaseCount),
                     TotalReportCount = dashboardReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,

@@ -293,7 +293,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
             GetSuccessReportsQuery(filters)
-                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && r.Status != ReportStatus.Closed);
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
         public async Task<Result> MarkAsError(int reportId)
         {

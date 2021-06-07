@@ -109,7 +109,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             filterDto != null
                 ? rawReports.Where(r => (filterDto.Kept && r.Report != null && r.Report.Status == ReportStatus.Accepted)
                     || (filterDto.Dismissed && r.Report != null && r.Report.Status == ReportStatus.Rejected)
-                    || (filterDto.NotCrossChecked && r.Report != null && (r.Report.Status == ReportStatus.New || r.Report.Status == ReportStatus.Pending))
+                    || (filterDto.NotCrossChecked && r.Report != null && (r.Report.Status == ReportStatus.New || r.Report.Status == ReportStatus.Pending || r.Report.Status == ReportStatus.Closed))
                     || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
                 : rawReports;
 
