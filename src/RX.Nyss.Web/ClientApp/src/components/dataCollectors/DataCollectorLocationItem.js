@@ -52,6 +52,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     });
 
     if (!!location.districtId && !location.villageId) {
+      getFormDistricts(location.regionId, setDistricts);
       getFormVillages(location.districtId, setVillages);
     }
 
