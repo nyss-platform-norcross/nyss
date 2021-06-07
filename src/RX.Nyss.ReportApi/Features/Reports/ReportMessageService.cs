@@ -80,7 +80,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             var sexMatch = reportMatch.Groups["sex"].Value;
             var ageGroupMatch = reportMatch.Groups["ageGroup"].Value;
 
-            var healthRiskCode = int.Parse(healthRiskCodeMatch);
+            if (!int.TryParse(healthRiskCodeMatch, out var healthRiskCode))
+            {
+                throw new ReportValidationException($"The health risk code: {healthRiskCodeMatch} could not be parsed", ReportErrorType.FormatError);
+            }
+
             var sex = sexMatch.ParseToNullableInt();
             var ageGroup = ageGroupMatch.ParseToNullableInt();
 
