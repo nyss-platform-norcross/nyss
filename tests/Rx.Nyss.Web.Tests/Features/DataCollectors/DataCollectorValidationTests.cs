@@ -26,13 +26,27 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         [Fact]
         public void Create_WhenNameExists_ShouldHaveError()
         {
-            CreateValidator.ShouldHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345678");
+            var dcRequestDto = new CreateDataCollectorRequestDto
+            {
+                PhoneNumber = "+4712345678",
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = CreateValidator.TestValidate(dcRequestDto);
+
+            result.ShouldHaveValidationErrorFor(dc => dc.PhoneNumber);
         }
 
         [Fact]
         public void Create_WhenNameDoesntExists_ShouldNotHaveError()
         {
-            CreateValidator.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345679");
+            var dcRequestDto = new CreateDataCollectorRequestDto
+            {
+                PhoneNumber = "+4712345679",
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = CreateValidator.TestValidate(dcRequestDto);
+
+            result.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber);
         }
 
         [Fact]
@@ -49,6 +63,18 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         }
 
         [Fact]
+        public void Create_WhenLocationListEmpty_ShouldHaveError()
+        {
+            var dcRequestDto = new CreateDataCollectorRequestDto
+            {
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = CreateValidator.TestValidate(dcRequestDto);
+
+            result.ShouldHaveValidationErrorFor(dc => dc.Locations);
+        }
+
+        [Fact]
         public void Edit_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
         {
             EditValidator.ShouldHaveValidationErrorFor(dc => dc.Locations, new List<DataCollectorLocationRequestDto>
@@ -61,15 +87,16 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             });
         }
 
-
         [Fact]
         public void Edit_WhenNameExistsForOtherDataCollector_ShouldHaveError()
         {
-            var result = EditValidator.TestValidate(new EditDataCollectorRequestDto
+            var dcRequestDto = new EditDataCollectorRequestDto
             {
                 Id = 1,
-                PhoneNumber = "+4712345678"
-            });
+                PhoneNumber = "+4712345678",
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = EditValidator.TestValidate(dcRequestDto);
 
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
         }
@@ -77,13 +104,28 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         [Fact]
         public void Edit_WhenNameDoesntExists_ShouldNotHaveError()
         {
-            var result = EditValidator.TestValidate(new EditDataCollectorRequestDto
+            var dcRequestDto = new EditDataCollectorRequestDto
             {
                 Id = 2,
-                PhoneNumber = "+4712345678"
-            });
+                PhoneNumber = "+4712345678",
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = EditValidator.TestValidate(dcRequestDto);
 
             result.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber);
         }
+
+        [Fact]
+        public void Edit_WhenLocationListEmpty_ShouldHaveError()
+        {
+            var dcRequestDto = new EditDataCollectorRequestDto
+            {
+                Locations = new List<DataCollectorLocationRequestDto>()
+            };
+            var result = EditValidator.TestValidate(dcRequestDto);
+
+            result.ShouldHaveValidationErrorFor(dc => dc.Locations);
+        }
+
     }
 }
