@@ -74,7 +74,7 @@ export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocati
   const [zoomLevel, setZoomLevel] = useState(zoom || 13);
 
   useEffect(() => {
-    if (!location) {
+    if (!location || (!location.lat && !location.lng)) {
       setMarkerLocation(null);
       return;
     }

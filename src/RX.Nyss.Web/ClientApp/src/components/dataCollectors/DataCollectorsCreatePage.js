@@ -44,7 +44,6 @@ const DataCollectorsCreatePageComponent = (props) => {
     zoneId: '',
     number: 0
   }]);
-  const [initialDistricts, setInitialDistricts] = useState([]);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -250,13 +249,13 @@ const DataCollectorsCreatePageComponent = (props) => {
               location={location}
               locationNumber={location.number}
               isLastLocation={i === locations.length - 1}
+              isOnlyLocation={locations.length === 1}
               defaultLocation={centerLocation}
               regions={props.regions}
-              initialDistricts={initialDistricts}
+              initialDistricts={[]}
               initialVillages={[]}
               initialZones={[]}
               isDefaultCollapsed={false}
-              setInitialDistricts={setInitialDistricts}
               removeLocation={removeDataCollectorLocation}
             />
           ))}
