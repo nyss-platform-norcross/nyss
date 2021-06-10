@@ -1,3 +1,4 @@
+import styles from './ProjectHealthRiskItem.module.scss';
 import React, { useState, Fragment, useEffect } from 'react';
 import { validators } from '../../utils/forms';
 import TextInputField from '../forms/TextInputField';
@@ -52,11 +53,11 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   }
 
   return (
-    <Card key={`healthRisk.${healthRisk.healthRiskId}`}>
+    <Card>
       <CardContent>
-        <Typography variant="h2" display="inline">{healthRisk.healthRiskCode}</Typography>
-        <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {healthRisk.healthRiskName}</Typography>
-        <Grid container spacing={2} style={{marginTop: "10px"}}>
+        <Typography variant="h2" className={styles.header}>{healthRisk.healthRiskCode}</Typography>
+        <Typography variant="h3" className={`${styles.header} ${styles.healthRiskName}`}>{healthRisk.healthRiskName}</Typography>
+        <Grid container spacing={2} className={styles.content}>
           <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.caseDefinition)}
@@ -78,8 +79,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSection)}</Typography>
 
         {healthRisk.healthRiskType === 'Activity' && (
-          <Typography variant="body1"
-                      style={{ color: "#a0a0a0" }}>{strings(stringKeys.healthRisk.form.noAlertRule)}
+          <Typography variant="body1" className={styles.disabled}>{strings(stringKeys.healthRisk.form.noAlertRule)}
           </Typography>
         )}
 
