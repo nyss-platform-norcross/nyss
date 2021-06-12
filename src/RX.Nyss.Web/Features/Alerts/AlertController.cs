@@ -134,17 +134,6 @@ namespace RX.Nyss.Web.Features.Alerts
             _alertService.Close(alertId, dto.Comments, dto.EscalatedOutcome);
 
         /// <summary>
-        /// Retrieves the alert actions' log
-        /// </summary>
-        /// <param name="alertId">An identifier of the alert</param>
-        /// <param name="utcOffset">The offset from utc in hours</param>
-        [HttpGet("{alertId:int}/getLogs")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset) =>
-            _alertService.GetLogs(alertId, utcOffset);
-
-        /// <summary>
         /// Exports the alert list to excel
         /// </summary>
         /// <param name="projectId">An identifier of the project</param>

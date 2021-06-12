@@ -13,7 +13,6 @@ export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
   takeEvery(consts.GET_ALERTS.INVOKE, getAlerts),
   takeEvery(consts.OPEN_ALERTS_ASSESSMENT.INVOKE, openAlertsAssessment),
-  takeEvery(consts.OPEN_ALERTS_LOGS.INVOKE, openAlertsLogs),
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
   takeEvery(consts.ESCALATE_ALERT.INVOKE, escalateAlert),
@@ -86,21 +85,6 @@ function* openAlertsAssessment({ projectId, alertId }) {
     yield put(actions.openAssessment.success(alertId, data));
   } catch (error) {
     yield put(actions.openAssessment.failure(error.message));
-  }
-};
-
-function* openAlertsLogs({ projectId, alertId }) {
-  yield put(actions.openLogs.request());
-  try {
-    const response = yield call(http.get, `/api/alert/${alertId}/getLogs?utcOffset=${getUtcOffset()}`);
-    const data = response.value;
-
-    const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
-
-    yield openAlertsModule(projectId, title);
-    yield put(actions.openLogs.success(alertId, data));
-  } catch (error) {
-    yield put(actions.openLogs.failure(error.message));
   }
 };
 

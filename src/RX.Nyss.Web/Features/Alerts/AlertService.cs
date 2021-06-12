@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -36,7 +35,6 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result> Dismiss(int alertId);
         Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
-        Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
         Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
         Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto);
@@ -447,124 +445,6 @@ namespace RX.Nyss.Web.Features.Alerts
                 .SingleAsync();
 
             return GetAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
-        }
-
-        public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset)
-        {
-            var currentUser = await _authorizationService.GetCurrentUser();
-            var currentUserOrganization = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSociety == _nyssContext.Alerts
-                    .Where(a => a.Id == alertId)
-                    .Select(a => a.ProjectHealthRisk.Project.NationalSociety)
-                    .Single())
-                .Select(uns => uns.Organization)
-                .SingleOrDefaultAsync();
-
-            var alert = await _nyssContext.Alerts
-                .IgnoreQueryFilters()
-                .Where(a => a.Id == alertId)
-                .Select(a => new
-                {
-                    a.CreatedAt,
-                    a.EscalatedAt,
-                    a.DismissedAt,
-                    a.ClosedAt,
-                    a.EscalatedOutcome,
-                    a.Comments,
-                    EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.EscalatedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
-                            ? a.EscalatedBy.UserNationalSocieties.Single(eduns => eduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                            : a.EscalatedBy.Name,
-                    DismissedBy = a.DismissedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.DismissedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
-                            ? a.DismissedBy.UserNationalSocieties.Single(dbuns => dbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                            : a.DismissedBy.Name,
-                    ClosedBy = a.ClosedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
-                            ? a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                            : a.ClosedBy.Name,
-                    HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
-                        .Select(lc => lc.Name)
-                        .Single(),
-                    Reports = a.AlertReports
-                        .Where(ar => ar.Report.Status == ReportStatus.Accepted || ar.Report.Status == ReportStatus.Rejected || ar.Report.ResetAt.HasValue)
-                        .Select(ar => new
-                        {
-                            ar.ReportId,
-                            ar.Report.AcceptedAt,
-                            ar.Report.RejectedAt,
-                            ar.Report.ResetAt,
-                            AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.AcceptedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
-                                        .Organization)
-                                    ? ar.Report.AcceptedBy.UserNationalSocieties.Single(abuns => abuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                                    : ar.Report.AcceptedBy.Name,
-                            RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.RejectedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
-                                        .Organization)
-                                    ? ar.Report.RejectedBy.UserNationalSocieties.Single(rejecteduns => rejecteduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                                    : ar.Report.RejectedBy.Name,
-                            ResetBy = ar.Report.ResetBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.ResetBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
-                                    ? ar.Report.ResetBy.UserNationalSocieties.Single(resetuns => resetuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                                    : ar.Report.ResetBy.Name
-                        })
-                        .ToList()
-                })
-                .SingleAsync();
-
-            var list = new List<AlertLogResponseDto.Item> { new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.AddHours(utcOffset), null) };
-
-            if (alert.EscalatedAt.HasValue)
-            {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.EscalatedAlert, alert.EscalatedAt.Value.AddHours(utcOffset), alert.EscalatedBy));
-            }
-
-            if (alert.DismissedAt.HasValue)
-            {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.DismissedAlert, alert.DismissedAt.Value.AddHours(utcOffset), alert.DismissedBy));
-            }
-
-            if (alert.ClosedAt.HasValue)
-            {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.AddHours(utcOffset), alert.ClosedBy, new
-                {
-                    alert.EscalatedOutcome,
-                    alert.Comments
-                }));
-            }
-
-            foreach (var report in alert.Reports)
-            {
-                if (report.AcceptedAt.HasValue)
-                {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.AcceptedReport, report.AcceptedAt.Value.AddHours(utcOffset), report.AcceptedBy, new { report.ReportId }));
-                }
-
-                if (report.RejectedAt.HasValue)
-                {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.RejectedReport, report.RejectedAt.Value.AddHours(utcOffset), report.RejectedBy, new { report.ReportId }));
-                }
-
-                if (report.ResetAt.HasValue)
-                {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ResetReport, report.ResetAt.Value.AddHours(utcOffset), report.ResetBy, new { report.ReportId }));
-                }
-            }
-
-            return Success(new AlertLogResponseDto
-            {
-                HealthRisk = alert.HealthRisk,
-                CreatedAt = alert.CreatedAt.AddHours(utcOffset),
-                Items = list.OrderBy(x => x.Date).ToList()
-            });
         }
 
         public async Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto)
