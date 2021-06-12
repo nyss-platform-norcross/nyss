@@ -14,6 +14,12 @@ namespace RX.Nyss.Data
 
         public DbSet<Alert> Alerts { get; set; }
 
+        public DbSet<AlertEventType> AlertEventTypes { get; set; }
+
+        public DbSet<AlertEventSubtype> AlertEventSubtypes { get; set; }
+
+        public DbSet<AlertEventLog> AlertEventLogs { get; set; }
+
         public DbSet<AlertNotificationRecipient> AlertNotificationRecipients { get; set; }
 
         public DbSet<AlertReport> AlertReports { get; set; }

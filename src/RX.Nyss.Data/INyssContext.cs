@@ -11,6 +11,9 @@ namespace RX.Nyss.Data
     public interface INyssContext
     {
         DbSet<Alert> Alerts { get; set; }
+        public DbSet<AlertEventType> AlertEventTypes { get; set; }
+        public DbSet<AlertEventSubtype> AlertEventSubtypes { get; set; }
+        public DbSet<AlertEventLog> AlertEventLogs { get; set; }
         DbSet<AlertNotificationRecipient> AlertNotificationRecipients { get; set; }
         DbSet<AlertReport> AlertReports { get; set; }
         DbSet<AlertRule> AlertRules { get; set; }

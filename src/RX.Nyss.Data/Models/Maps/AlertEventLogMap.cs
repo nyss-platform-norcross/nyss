@@ -24,7 +24,7 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.Property(x => x.Textfield);
 
-            builder.Property(x => x.DateTime);
+            builder.Property(x => x.CreatedAt);
 
             builder.HasOne(x => x.LoggedBy)
                 .WithMany()
