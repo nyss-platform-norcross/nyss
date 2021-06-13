@@ -6,11 +6,12 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import * as alertEventsActions from './logic/alertEventsActions'
 import { AlertEventsTable } from './components/AlertEventsTable';
-import {TableActionsButton} from "../common/tableActions/TableActionsButton";
-import {accessMap} from "../../authentication/accessMap";
-import {stringKeys, strings} from "../../strings";
-import {CreateAlertEventDialog} from "./components/CreateAlertEventDialog";
-import {Divider} from "@material-ui/core";
+import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { accessMap } from "../../authentication/accessMap";
+import { stringKeys, strings } from "../../strings";
+import { CreateAlertEventDialog } from "./components/CreateAlertEventDialog";
+import TableActions from "../common/tableActions/TableActions";
+import AddIcon from "@material-ui/icons/Add";
 
 const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => {
   useMount(() => {
@@ -32,20 +33,20 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
 
   return (
     <Fragment>
+      <TableActions>
+        <TableActionsButton
+          onClick={() => setCreateDialogOpened(true)}
+          variant="outlined"
+          color="primary"
+          roles={accessMap.alertEvents.add}
+          icon={<AddIcon />}>
+          {strings(stringKeys.alerts.logs.addNew)}
+        </TableActionsButton>
+      </TableActions>
       <AlertEventsTable
         list={data}
       />
 
-      <Divider />
-
-      <TableActionsButton
-        onClick={() => setCreateDialogOpened(true)}
-        variant="outlined"
-        color="primary"
-        roles={accessMap.alertEvents.add}
-      >
-        {strings(stringKeys.alerts.logs.addNew)}
-      </TableActionsButton>
       <CreateAlertEventDialog
         isOpened={createDialogOpened}
         close={() => setCreateDialogOpened(false)}
