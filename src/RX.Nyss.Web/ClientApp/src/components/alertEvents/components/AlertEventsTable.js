@@ -30,6 +30,14 @@ const dashIfEmpty = (text, ...args) => {
   return [text || "-", ...args].filter(x => !!x).join(", ");
 };
 
+const truncateLongText = (row) => {
+  const maxLength = 40;
+
+  if(row.text && row.text.length > maxLength - 3) {
+    return row.text.substring(0, maxLength - 3) + "..."
+  }
+  return dashIfEmpty(row.text)
+}
 export const AlertEventsTable = ({ list }) => {
   return (
     <TableContainer sticky="true" >
@@ -50,7 +58,7 @@ export const AlertEventsTable = ({ list }) => {
               <TableCell>{dashIfEmpty(row.loggedBy)}</TableCell>
               <TableCell>{formatLogType(row)}</TableCell>
               <TableCell>{dashIfEmpty(formatSubtype(row))}</TableCell>
-              <TableCell>{dashIfEmpty(row.text)}</TableCell>
+              <TableCell>{truncateLongText(row)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
