@@ -12,11 +12,11 @@ namespace RX.Nyss.Web.Features.AlertEvents
     public class AlertEventsController : BaseController
     {
 
-        private readonly IAlertEventsService _alertEventService;
+        private readonly IAlertEventsService _alertEventsService;
 
-        public AlertEventsController(IAlertEventsService alertEventService)
+        public AlertEventsController(IAlertEventsService alertEventsService)
         {
-            _alertEventService = alertEventService;
+            _alertEventsService = alertEventsService;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public async Task<Result<AlertEventsLogResponseDto>> GetAlertEventLogItems(int alertId, int utcOffset) =>
-            await _alertEventService.GetLogItems(alertId, utcOffset);
+            await _alertEventsService.GetLogItems(alertId, utcOffset);
 
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
         [HttpGet("eventLog/formData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         public async Task<Result<AlertEventCreateFormDto>> GetFormData() =>
-            await _alertEventService.GetFormData();
+            await _alertEventsService.GetFormData();
 
     }
 }

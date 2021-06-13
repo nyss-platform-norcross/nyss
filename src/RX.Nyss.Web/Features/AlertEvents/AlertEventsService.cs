@@ -16,15 +16,16 @@ namespace RX.Nyss.Web.Features.AlertEvents
     {
         Task<Result<AlertEventsLogResponseDto>> GetLogItems(int alertId, int utcOffset);
         Task<Result> CreateAlertEventLogItem(int alertId, CreateAlertEventRequestDto alertEvent);
+        Task<Result> EditAlertEventLogItem(EditAlertEventRequestDto editDto);
         Task<Result<AlertEventCreateFormDto>> GetFormData();
     }
 
-    public class AlertEventService : IAlertEventsService
+    public class AlertEventsService : IAlertEventsService
     {
         private readonly INyssContext _nyssContext;
         private readonly IAuthorizationService _authorizationService;
 
-        public AlertEventService(
+        public AlertEventsService(
             INyssContext nyssContext,
             IAuthorizationService authorizationService)
         {
