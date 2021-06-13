@@ -15,6 +15,7 @@ import { nationalSocietyReportsSagas } from "../components/nationalSocietyReport
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 import { alertsSagas } from "../components/alerts/logic/alertsSagas";
+import { alertEventsSagas} from "../components/alertEvents/logic/alertEventsSagas";
 import { nationalSocietyDashboardSagas } from "../components/nationalSocietyDashboard/logic/nationalSocietyDashboardSagas";
 import { translationsSagas } from "../components/translations/logic/translationsSagas";
 import { organizationsSagas } from "../components/organizations/logic/organizationsSagas";
@@ -43,6 +44,7 @@ function* rootSaga() {
     ...nationalSocietyReportsSagas(),
     ...nationalSocietyDashboardSagas(),
     ...alertsSagas(),
+    ...alertEventsSagas(),
     ...translationsSagas(),
     ...projectAlertNotHandledRecipientsSagas()
   ]);

@@ -11,6 +11,7 @@ import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStr
 import { projectDashboardSiteMap } from "./components/projectDashboard/logic/projectDashboardSiteMap";
 import { agreementsSiteMap } from "./components/agreements/logic/agreementsSiteMap";
 import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
+import { alertEventsSiteMap} from "./components/alertEvents/logic/alertEventsSiteMap";
 import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
 import { organizationsSiteMap } from "./components/organizations/logic/organizationsSiteMap";
@@ -33,5 +34,6 @@ export const siteMap = [
   ...nationalSocietyReportsSiteMap,
   ...agreementsSiteMap,
   ...alertsSiteMap,
+  ...alertEventsSiteMap,
   ...translationsSiteMap
 ];

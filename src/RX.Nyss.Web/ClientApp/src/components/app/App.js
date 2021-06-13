@@ -47,7 +47,6 @@ import { AlertsListPage } from '../alerts/AlertsListPage';
 import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
-import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
 import { NationalSocietyDashboardPage } from '../nationalSocietyDashboard/NationalSocietyDashboardPage';
 import { TranslationsListPage } from '../translations/TranslationsListPage';
 import { NotFoundPage } from '../layout/NotFoundPage';
@@ -64,6 +63,7 @@ import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/Projec
 import { IncorrectReportsListPage } from '../reports/IncorrectReportsListPage';
 import { NationalSocietyCorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyCorrectReportsListPage';
 import { NationalSocietyIncorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyIncorrectReportsListPage';
+import {AlertEventsLogPage} from "../alertEvents/AlertEventsLogPage";
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -142,7 +142,7 @@ export const App = ({ history }) => (
 
           <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />
-          <AuthRoute exact path='/projects/:projectId/alerts/:alertId/logs' component={AlertsLogsPage} roles={accessMap.alerts.assess} />
+          <AuthRoute exact path='/projects/:projectId/alerts/:alertId/eventLog' component={AlertEventsLogPage} roles={accessMap.alertEvents.list} />
 
           <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
           <AuthRoute exact path='/emailTranslations' component={EmailTranslationsListPage} roles={accessMap.translations.list} />
