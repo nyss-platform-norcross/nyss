@@ -111,7 +111,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                     EventType = logItem.AlertEventType.Name,
                     EventSubtype = logItem.AlertEventSubtype.Name,
                     logItem.LoggedBy,
-                    logItem.CreatedAt,
+                    CreatedAt = logItem.CreatedAt.AddHours(utcOffset),
                     logItem.Textfield
                 })
                 .ToList();
@@ -127,7 +127,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
             list.AddRange(alertEventLogItems.Select(logItem => new AlertEventsLogResponseDto.LogItem()
             {
-                Date = logItem.CreatedAt.AddHours(utcOffset),
+                Date = logItem.CreatedAt,
                 LoggedBy = logItem.LoggedBy.Name,
                 AlertEventType = logItem.EventType,
                 AlertEventSubtype = logItem.EventSubtype,
@@ -222,7 +222,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
             var alertEventLogItem = new AlertEventLog()
             {
                 AlertId = alert,
-                CreatedAt = createDto.Timestamp,
+                CreatedAt = createDto.Timestamp.ToUniversalTime(),
                 AlertEventTypeId = createDto.EventTypeId,
                 AlertEventSubtypeId = createDto.EventSubtypeId,
                 LoggedBy = currentUser,
