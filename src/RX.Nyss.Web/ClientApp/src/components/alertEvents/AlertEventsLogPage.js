@@ -67,7 +67,7 @@ AlertEventsLogPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
-  alertId: state.appData.siteMap.parameters.alertId,
+  alertId: ownProps.match.params.alertId,
   isFetching: state.alertEvents.logFetching,
   isSaving: state.alertEvents.formSaving,
   data: state.alertEvents.logItems
