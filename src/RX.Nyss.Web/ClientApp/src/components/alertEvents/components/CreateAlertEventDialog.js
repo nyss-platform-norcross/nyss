@@ -110,6 +110,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               </SelectField>
             </Grid>
 
+            {filteredSubtypes.length > 1 &&
             <Grid item xs={10}>
               <SelectField
                 label={strings(stringKeys.alerts.logs.list.subtype)}
@@ -126,6 +127,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
                 ))}
               </SelectField>
             </Grid>
+            }
 
             <Grid item xs={6}>
               <DatePicker
