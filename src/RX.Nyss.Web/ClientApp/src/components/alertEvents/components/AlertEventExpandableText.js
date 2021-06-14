@@ -1,14 +1,16 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styles from "./AlertEventExpandableText.module.scss";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { TableRowAction } from "../../common/tableRowAction/TableRowAction";
+import { TableRowActions } from "../../common/tableRowAction/TableRowActions";
 import {IconButton} from "@material-ui/core";
 
-export const AlertEventExpandableText = ({text, maxLength} ) => {
+export const AlertEventExpandableText = ({ text, maxLength } ) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const isTooLong = text && text.length > maxLength
+  const isTooLong = text && text.length > maxLength;
 
   const getTruncatedText = () => {
     return text.substring(0, maxLength - 3) + "..."
@@ -29,14 +31,18 @@ export const AlertEventExpandableText = ({text, maxLength} ) => {
   const renderExpandableText = () => {
     return (
       <div className={styles.collapsibleContentWrapper}>
-        <div className={styles.collapsibleText}>
+        <div>
           {getText()}
         </div>
-        <div className={styles.controls}>
-          <IconButton aria-label="expand row" size="small" onClick={ () => setIsExpanded(true)}>
-            <KeyboardArrowDownIcon />
-          </IconButton>
-        </div>
+        <TableRowActions>
+          <TableRowAction
+            aria-label="expand row"
+            size="small"
+            onClick={ () => setIsExpanded(true)}
+            icon={<KeyboardArrowDownIcon />}
+           >
+          </TableRowAction>
+        </TableRowActions>
       </div>
     )
   }
@@ -44,14 +50,17 @@ export const AlertEventExpandableText = ({text, maxLength} ) => {
   const renderShrinkableText = () => {
     return (
     <div className={styles.collapsibleContentWrapper}>
-      <div className={styles.collapsibleText}>
+      <div>
         {getText()}
       </div>
-      <div className={styles.controls}>
-        <IconButton aria-label="shrink row" size="small" onClick={ () => setIsExpanded(false)}>
+      <TableRowActions>
+        <IconButton
+          aria-label="shrink row"
+          size="small"
+          onClick={ () => setIsExpanded(false)}>
           <KeyboardArrowUpIcon />
         </IconButton>
-      </div>
+      </TableRowActions>
     </div>
     )
   }
