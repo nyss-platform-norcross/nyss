@@ -62,9 +62,9 @@ function* createAlertEvent({ alertId, data }) {
     const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/add`, data);
     yield call(getEventLog, {alertId})
     yield put(actions.create.success(response.value));
-    yield put(appActions.showMessage(stringKeys.alerts.logs.addedSuccessfully));
+    yield put(appActions.showMessage(response.message.key));
   } catch (error) {
-    yield put(actions.create.failure(error));
+    yield put(actions.create.failure(error.message));
   }
 };
 
