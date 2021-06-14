@@ -25,8 +25,8 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
 
   const [form] = useState(() => {
     const fields = {
-      escalatedOutcome: escalatedOutcomes.dismissed,
-      comments: ""
+      escalatedOutcome: '',
+      comments: ''
     };
 
     const validation = {
