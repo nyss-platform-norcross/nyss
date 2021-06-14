@@ -3,24 +3,26 @@ import { stringKeys, strings } from "../../../strings";
 import {
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle, Grid, MenuItem,
+  DialogTitle,
+  Grid,
+  MenuItem,
   useMediaQuery,
   useTheme
 } from "@material-ui/core";
 import SelectField from "../../forms/SelectField";
-import {useMount} from "../../../utils/lifecycle";
-import {createForm, validators} from "../../../utils/forms";
+import { useMount } from "../../../utils/lifecycle";
+import { createForm, validators } from "../../../utils/forms";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import {connect, useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import Form from "../../forms/form/Form";
-import {DatePicker} from "../../forms/DatePicker";
+import { DatePicker } from "../../forms/DatePicker";
 import TextInputField from "../../forms/TextInputField";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import FormActions from "../../forms/formActions/FormActions";
 
-export const CreateAlertEventDialog = ({ isOpened, close, alertId, openCreation, create }) => {
+export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   dayjs.extend(utc);
@@ -28,6 +30,7 @@ export const CreateAlertEventDialog = ({ isOpened, close, alertId, openCreation,
   const eventSubtypes = useSelector(state => state.alertEvents.eventSubtypes);
   const [filteredSubtypes, setFilteredSubtypes] = useState([])
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const isSaving = useSelector(state => state.alertEvents.formSaving)
 
   useMount(() => {
     openCreation();
@@ -79,7 +82,7 @@ export const CreateAlertEventDialog = ({ isOpened, close, alertId, openCreation,
   };
 
   return (
-    <Dialog onClose={close} open={isOpened} fullScreen={fullScreen}>
+    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
       <DialogTitle id="form-dialog-title">
         {strings(stringKeys.alerts.logs.addNew)}
@@ -153,14 +156,14 @@ export const CreateAlertEventDialog = ({ isOpened, close, alertId, openCreation,
 
           </Grid>
 
-          <DialogActions>
+          <FormActions>
             <Button onClick={close}>
               {strings(stringKeys.form.cancel)}
             </Button>
-            <SubmitButton>
+            <SubmitButton isFetching={isSaving}>
               {strings(stringKeys.alerts.logs.addNew)}
             </SubmitButton>
-          </DialogActions>
+          </FormActions>
         </Form>
       </DialogContent>
 

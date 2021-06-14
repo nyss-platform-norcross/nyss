@@ -14,11 +14,12 @@ import TableActions from "../common/tableActions/TableActions";
 import AddIcon from "@material-ui/icons/Add";
 
 const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => {
+
+  const [createDialogOpened, setCreateDialogOpened] = useState(false);
+
   useMount(() => {
     props.openEventLog(projectId, alertId);
   });
-
-  const [createDialogOpened, setCreateDialogOpened] = useState(false);
 
   useEffect(() => {
     if (!props.data) {
@@ -34,26 +35,28 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
   return (
     <Fragment>
       <TableActions>
+
         <TableActionsButton
           onClick={() => setCreateDialogOpened(true)}
           variant="outlined"
           color="primary"
           roles={accessMap.alertEvents.add}
-          icon={<AddIcon />}>
+          icon={<AddIcon/>}>
           {strings(stringKeys.alerts.logs.addNew)}
         </TableActionsButton>
+
       </TableActions>
       <AlertEventsTable
         list={data}
       />
-
+      {createDialogOpened && (
       <CreateAlertEventDialog
-        isOpened={createDialogOpened}
         close={() => setCreateDialogOpened(false)}
         openCreation={props.openCreation}
         create={props.create}
         alertId={alertId}
       />
+      )}
 
     </Fragment>
   );

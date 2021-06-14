@@ -4,7 +4,7 @@ import { TableContainer, Table, TableBody, TableCell, TableHead, TableRow } from
 import * as dayjs from "dayjs";
 import { logType } from "../logic/alertEventsConstants";
 import { escalatedOutcomes } from "../../alerts/logic/alertsConstants";
-import {AlertEventExpandableText} from "./AlertEventExpandableText";
+import { AlertEventExpandableText } from "./AlertEventExpandableText";
 
 const formatLogType = (row) => {
   if (row.logType != null) {
