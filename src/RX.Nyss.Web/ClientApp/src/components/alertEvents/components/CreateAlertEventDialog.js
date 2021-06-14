@@ -1,4 +1,5 @@
 import React, {Fragment, useCallback, useState} from 'react';
+import styles from "./CreateAlertEventDialog.module.scss";
 import { stringKeys, strings } from "../../../strings";
 import {
   Button,
@@ -71,12 +72,12 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
     const values = form.getValues();
 
     create( alertId,
-      {
-        eventTypeId: parseInt(values.eventTypeId),
-        eventSubtypeId: parseInt(values.eventSubtypeId),
-        timestamp: dayjs(`${date} ${values.time}`).utc(),
-        text: values.text,
-      });
+    {
+      eventTypeId: parseInt(values.eventTypeId),
+      eventSubtypeId: parseInt(values.eventSubtypeId),
+      timestamp: dayjs(`${date} ${values.time}`).utc(),
+      text: values.text,
+    });
 
     close();
   };
@@ -91,7 +92,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       <DialogContent>
         <Form onSubmit={handleSubmit} fullWidth>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <SelectField
                 label={strings(stringKeys.alerts.logs.list.type)}
                 name="type"
@@ -109,7 +110,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               </SelectField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <SelectField
                 label={strings(stringKeys.alerts.logs.list.subtype)}
                 name="subtype"
@@ -126,7 +127,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               </SelectField>
             </Grid>
 
-            <Grid>
+            <Grid item xs={6}>
               <DatePicker
                 label={strings(stringKeys.alerts.logs.form.dateOfEvent)}
                 fullWidth
@@ -145,12 +146,15 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextInputField
                 label={strings(stringKeys.alerts.logs.form.text)}
+                className={styles.fullWidth}
                 type="text"
                 name="text"
                 field={form.fields.text}
+                inputmode="text"
+                multiline
               />
             </Grid>
 
@@ -168,5 +172,5 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       </DialogContent>
 
     </Dialog>
-  );
+);
 }
