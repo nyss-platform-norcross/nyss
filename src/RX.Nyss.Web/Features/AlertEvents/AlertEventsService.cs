@@ -236,32 +236,31 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
         public async Task<Result<AlertEventCreateFormDto>> GetFormData()
         {
-            var alertEventTypes = await _nyssContext.AlertEventTypes
-                .Select(t => new
-                {
-                    subtypes = _nyssContext.AlertEventSubtypes
-                        .Where(subtype => t.Id == subtype.AlertEventTypeId)
-                        .Select(subtype => new AlertEventsSubtypeDto()
-                        {
-                            Id = subtype.Id,
-                            Name = subtype.Name,
-                            TypeId = subtype.AlertEventTypeId
-                        }).ToList(),
-                    type = new AlertEventsTypeDto()
-                    {
-                        Id = t.Id,
-                        Name = t.Name
-                    }
-                })
+            var eventTypes = await _nyssContext.AlertEventTypes
+                .Include((a => a.AlertEventSubtype))
                 .ToListAsync();
 
-            var dto = new AlertEventCreateFormDto()
-            {
-                EventTypes = alertEventTypes.Select(t => t.type),
-                EventSubtypes = alertEventTypes.SelectMany(s => s.subtypes)
-            };
+            var types = eventTypes.Select(e => new AlertEventsTypeDto
+                {
+                Id = e.Id,
+                Name = e.Name
+            });
 
-            return Success(dto);
+            var subtypes = eventTypes
+                .SelectMany(alertEventType =>
+                    alertEventType.AlertEventSubtype,
+                (alertEventType, alertEventSubtype) => new AlertEventsSubtypeDto
+                        {
+                                Id = alertEventSubtype.Id,
+                                Name = alertEventSubtype.Name,
+                                TypeId = alertEventSubtype.AlertEventTypeId
+                            });
+
+            return Success(new AlertEventCreateFormDto
+            {
+                EventTypes = types,
+                EventSubtypes = subtypes,
+            });
         }
     }
 }
