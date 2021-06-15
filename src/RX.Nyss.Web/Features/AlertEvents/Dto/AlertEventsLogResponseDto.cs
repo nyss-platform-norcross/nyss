@@ -21,6 +21,7 @@ namespace RX.Nyss.Web.Features.AlertEvents.Dto
 
         public class LogItem
         {
+            public int? AlertEventLogId { get; set; }
             public LogType? LogType { get; set; }
             public DateTime Date { get; set; }
             public string AlertEventType { get; set; }

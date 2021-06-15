@@ -26,7 +26,17 @@ namespace RX.Nyss.Web.Features.AlertEvents
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public async Task<Result> CreateAlertEventLogItem(int alertId, CreateAlertEventRequestDto createDto) =>
-            await _alertEventService.CreateAlertEventLogItem(alertId, createDto);
+            await _alertEventsService.CreateAlertEventLogItem(alertId, createDto);
+
+        /// <summary>
+        /// Edits an alert event item
+        /// </summary>
+        [HttpPost("{alertId:int}/eventLog/edit/{alertEventLogId:int}")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public async Task<Result> EditAlertEventLogItem(EditAlertEventRequestDto editDto) =>
+            await _alertEventsService.EditAlertEventLogItem(editDto);
+
         /// <summary>
         /// Retrieves the log of events for an alert
         /// </summary>

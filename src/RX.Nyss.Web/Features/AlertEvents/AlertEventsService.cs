@@ -108,6 +108,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 .Where(log => log.AlertId == alertId)
                 .Select(logItem => new
                 {
+                    AlertEventLogId = logItem.Id,
                     EventType = logItem.AlertEventType.Name,
                     EventSubtype = logItem.AlertEventSubtype.Name,
                     logItem.LoggedBy,
@@ -127,6 +128,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
             list.AddRange(alertEventLogItems.Select(logItem => new AlertEventsLogResponseDto.LogItem()
             {
+                AlertEventLogId = logItem.AlertEventLogId,
                 Date = logItem.CreatedAt,
                 LoggedBy = logItem.LoggedBy.Name,
                 AlertEventType = logItem.EventType,
@@ -234,6 +236,17 @@ namespace RX.Nyss.Web.Features.AlertEvents
             return SuccessMessage(ResultKey.AlertEvent.CreateSuccess);
         }
 
+        public async Task<Result> EditAlertEventLogItem(EditAlertEventRequestDto editDto)
+        {
+            var alertEventItem = await _nyssContext.AlertEventLogs
+                .SingleAsync(ae => ae.Id == editDto.AlertEventLogId);
+
+            alertEventItem.Textfield = editDto.Text;
+
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.AlertEvent.EditSuccess);
+        }
+
         public async Task<Result<AlertEventCreateFormDto>> GetFormData()
         {
             var eventTypes = await _nyssContext.AlertEventTypes
@@ -241,7 +254,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 .ToListAsync();
 
             var types = eventTypes.Select(e => new AlertEventsTypeDto
-                {
+            {
                 Id = e.Id,
                 Name = e.Name
             });
@@ -250,7 +263,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 .SelectMany(alertEventType =>
                     alertEventType.AlertEventSubtype,
                 (alertEventType, alertEventSubtype) => new AlertEventsSubtypeDto
-                        {
+                            {
                                 Id = alertEventSubtype.Id,
                                 Name = alertEventSubtype.Name,
                                 TypeId = alertEventSubtype.AlertEventTypeId
