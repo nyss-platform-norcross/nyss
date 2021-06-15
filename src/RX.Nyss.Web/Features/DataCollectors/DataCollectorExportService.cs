@@ -90,7 +90,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 GetStringResource(stringResources, "dataCollectors.export.latitude"),
                 GetStringResource(stringResources, "dataCollectors.export.longitude"),
                 GetStringResource(stringResources, "dataCollectors.export.supervisor"),
-                GetStringResource(stringResources, "dataCollectors.export.trainingStatus")
+                GetStringResource(stringResources, "dataCollectors.export.trainingStatus"),
+                GetStringResource(stringResources, "dataCollectors.filters.deployedMode")
             };
 
             var dataCollectorsData = dataCollectors
@@ -110,7 +111,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     dc.Latitude,
                     dc.Longitude,
                     dc.Supervisor,
-                    dc.TrainingStatus
+                    dc.TrainingStatus,
+                    dc.Deployed
                 });
 
             return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
@@ -134,7 +136,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 GetStringResource(stringResources, "dataCollectors.export.latitude"),
                 GetStringResource(stringResources, "dataCollectors.export.longitude"),
                 GetStringResource(stringResources, "dataCollectors.export.supervisor"),
-                GetStringResource(stringResources, "dataCollectors.export.trainingStatus")
+                GetStringResource(stringResources, "dataCollectors.export.trainingStatus"),
+                GetStringResource(stringResources, "dataCollectors.filters.deployedMode")
             };
 
             var package = new ExcelPackage();
@@ -168,6 +171,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 worksheet.Cells[index, 13].Value = dataCollector.Longitude;
                 worksheet.Cells[index, 14].Value = dataCollector.Supervisor;
                 worksheet.Cells[index, 15].Value = dataCollector.TrainingStatus;
+                worksheet.Cells[index, 16].Value = dataCollector.Deployed;
             }
 
             worksheet.Column(1).Width = 20;
@@ -216,7 +220,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Supervisor = dc.Supervisor.Name,
                     TrainingStatus = dc.IsInTrainingMode
                         ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
-                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
+                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining"),
+                    Deployed = dc.Deployed
+                        ? GetStringResource(stringResources, "dataCollectors.deployedMode.deployed")
+                        : GetStringResource(stringResources, "dataCollectors.deployedMode.notDeployed")
                 }))
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
