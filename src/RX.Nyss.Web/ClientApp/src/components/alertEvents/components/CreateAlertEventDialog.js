@@ -22,6 +22,7 @@ import TextInputField from "../../forms/TextInputField";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
+import {getUtcOffset} from "../../../utils/date";
 
 export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
@@ -50,7 +51,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       eventSubtypeId: [validators.requiredWhen(x => eventSubtypes.some(subtype => x.eventTypeId === subtype.eventTypeId))],
       date: [validators.required],
     };
-    return createForm(fields, validation);
+    return createForm(fields, validation)
   });
 
   const onEventTypeChange = (event) => {
@@ -77,7 +78,11 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       eventSubtypeId: parseInt(values.eventSubtypeId),
       timestamp: dayjs(`${date} ${values.time}`).utc(),
       text: values.text,
-    });
+      utcOffset: getUtcOffset()
+    },
+
+  );
+
 
     close();
   };

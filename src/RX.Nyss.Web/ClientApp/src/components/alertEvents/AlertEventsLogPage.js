@@ -35,7 +35,6 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
   return (
     <Fragment>
       <TableActions>
-
         <TableActionsButton
           onClick={() => setCreateDialogOpened(true)}
           variant="outlined"
@@ -44,20 +43,22 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
           icon={<AddIcon/>}>
           {strings(stringKeys.alerts.logs.addNew)}
         </TableActionsButton>
-
       </TableActions>
-      <AlertEventsTable
-        list={data}
-      />
-      {createDialogOpened && (
-      <CreateAlertEventDialog
-        close={() => setCreateDialogOpened(false)}
-        openCreation={props.openCreation}
-        create={props.create}
-        alertId={alertId}
-      />
-      )}
 
+      <AlertEventsTable
+        alertId={alertId}
+        list={data}
+        alertEventLogId={props.alertEventLogId}
+      />
+
+      {createDialogOpened && (
+        <CreateAlertEventDialog
+          close={() => setCreateDialogOpened(false)}
+          openCreation={props.openCreation}
+          create={props.create}
+          alertId={alertId}
+        />
+      )}
     </Fragment>
   );
 }
@@ -77,7 +78,6 @@ const mapDispatchToProps = {
   openEventLog: alertEventsActions.openEventLog.invoke,
   openCreation: alertEventsActions.openCreation.invoke,
   create: alertEventsActions.create.invoke,
-  edit: alertEventsActions.edit.invoke
 };
 
 export const AlertEventsLogPage = withLayout(
