@@ -38,6 +38,7 @@ export const AlertEventExpandableText = ({ text, maxLength } ) => {
           <TableRowAction
             aria-label="expand row"
             size="small"
+            title={"Expand text"}
             onClick={ () => setIsExpanded(true)}
             icon={<KeyboardArrowDownIcon />}
            >
@@ -57,6 +58,7 @@ export const AlertEventExpandableText = ({ text, maxLength } ) => {
         <IconButton
           aria-label="shrink row"
           size="small"
+          title={"Collapse text"}
           onClick={ () => setIsExpanded(false)}>
           <KeyboardArrowUpIcon />
         </IconButton>
