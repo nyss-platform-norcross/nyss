@@ -60,12 +60,12 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
 
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: "12%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.date)}</TableCell>
-              <TableCell style={{ width: "12%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.userName)}</TableCell>
+              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.date)}</TableCell>
+              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.userName)}</TableCell>
               <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.type)}</TableCell>
               <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.subtype)}</TableCell>
               <TableCell style={{ width: "35%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.text)}</TableCell>
-              <TableCell />
+              <TableCell style={{ width: "5%", minWidth: 50 }}/>
             </TableRow>
           </TableHead>
 
@@ -77,7 +77,7 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
                 <TableCell>{formatLogType(row)}</TableCell>
                 <TableCell>{formatSubtype(row)}</TableCell>
                 <TableCell>
-                  <AlertEventExpandableText text={row.text} maxLength={50}/>
+                  <AlertEventExpandableText text={row.text} maxLength={70}/>
                 </TableCell>
                 <TableCell>
                   {row.alertEventType &&

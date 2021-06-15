@@ -34,7 +34,7 @@ export const AlertEventExpandableText = ({ text, maxLength } ) => {
         <div>
           {getText()}
         </div>
-        <TableRowActions>
+        <TableRowActions className={styles.actionsMargin}>
           <TableRowAction
             aria-label="expand row"
             size="small"
@@ -54,7 +54,7 @@ export const AlertEventExpandableText = ({ text, maxLength } ) => {
       <div>
         {getText()}
       </div>
-      <TableRowActions>
+      <TableRowActions className={styles.actionsMargin}>
         <IconButton
           aria-label="shrink row"
           size="small"
