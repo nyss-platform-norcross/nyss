@@ -929,7 +929,8 @@ export const stringKeys = {
     },
     logs: {
       title: "alerts.logs.title",
-      addNew: "alerts.log.addNew",      
+      addNew: "alerts.log.addNew",
+      edit: "alerts.log.edit",      
       list: {
         date: "alerts.logs.list.date",
         userName: "alerts.logs.list.userName",

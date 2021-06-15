@@ -10,7 +10,7 @@ export function alertEventsReducer(state = initialState.alertEvents, action) {
       return { ...state, logFetching: false, logItems: action.data.logItems };
 
     case actions.OPEN_ALERT_EVENT_LOG.FAILURE:
-      return { ...state };
+      return { ...state, logFetching: false };
 
     case actions.GET_ALERT_EVENT_LOG.REQUEST:
       return { ...state, logFetching: true, logItems: null };
@@ -37,6 +37,15 @@ export function alertEventsReducer(state = initialState.alertEvents, action) {
       return { ...state, formSaving: false, listStale: true};
 
     case actions.CREATE_ALERT_EVENT.FAILURE:
+      return { ...state, formSaving: false, formError: action.error};
+
+    case actions.EDIT_ALERT_EVENT.REQUEST:
+      return { ...state, formSaving: true, formError: null};
+
+    case actions.EDIT_ALERT_EVENT.SUCCESS:
+      return { ...state, formSaving: false, listStale: true};
+
+    case actions.EDIT_ALERT_EVENT.FAILURE:
       return { ...state, formSaving: false, formError: action.error};
 
 

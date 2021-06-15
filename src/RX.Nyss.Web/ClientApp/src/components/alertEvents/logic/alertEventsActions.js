@@ -4,6 +4,7 @@ import {
   GET_ALERT_EVENT_LOG,
   OPEN_ALERT_EVENT_CREATION,
   CREATE_ALERT_EVENT,
+  EDIT_ALERT_EVENT
 } from "./alertEventsConstants";
 
 export const goToLog = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/eventLog`);
@@ -32,7 +33,13 @@ export const openCreation = {
 export const create = {
   invoke: (alertId, data) => ({ type: CREATE_ALERT_EVENT.INVOKE, alertId, data }),
   request: () => ({ type: CREATE_ALERT_EVENT.REQUEST }),
-  success: () => ({ type: CREATE_ALERT_EVENT.SUCCESS }),
+  success: (formData) => ({ type: CREATE_ALERT_EVENT.SUCCESS, formData }),
   failure: (error) => ({ type: CREATE_ALERT_EVENT.FAILURE, error, suppressPopup: true })
 };
 
+export const edit = {
+  invoke: (alertId, alertEventLogId, text) => ({ type: EDIT_ALERT_EVENT.INVOKE, alertId, alertEventLogId, text }),
+  request: () => ({ type: EDIT_ALERT_EVENT.REQUEST }),
+  success: () => ({ type: EDIT_ALERT_EVENT.SUCCESS }),
+  failure: (error) => ({ type: EDIT_ALERT_EVENT.FAILURE, error, suppressPopup: true })
+};

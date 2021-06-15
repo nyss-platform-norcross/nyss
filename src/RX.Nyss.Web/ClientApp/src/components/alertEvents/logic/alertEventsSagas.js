@@ -1,4 +1,4 @@
-import {call, put, select, takeEvery} from "redux-saga/effects";
+import {call, put, takeEvery} from "redux-saga/effects";
 import * as actions from "../../alertEvents/logic/alertEventsActions";
 import * as http from "../../../utils/http";
 import * as appActions from "../../app/logic/appActions";
@@ -14,6 +14,7 @@ export const alertEventsSagas = () => {
     takeEvery(consts.GET_ALERT_EVENT_LOG.INVOKE, getEventLog),
     takeEvery(consts.OPEN_ALERT_EVENT_CREATION.INVOKE, openAlertEventCreation),
     takeEvery(consts.CREATE_ALERT_EVENT.INVOKE, createAlertEvent),
+    takeEvery(consts.EDIT_ALERT_EVENT.INVOKE, editAlertEvent),
   ];
 }
 
@@ -68,6 +69,19 @@ function* createAlertEvent({ alertId, data }) {
   }
 };
 
+function* editAlertEvent({ alertId, alertEventLogId, text }) {
+  yield put(actions.edit.request());
+  try {
+    const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/edit/${alertEventLogId}`,
+      {alertEventLogId, text});
+    yield call(getEventLog, {alertId})
+    yield put(actions.edit.success(response.value));
+
+    yield put(appActions.showMessage(response.message.key));
+  } catch (error) {
+    yield put(actions.edit.failure(error.message));
+  }
+};
 
 function* openAlertEventsModule(projectId, title) {
   const project = yield call(http.getCached, {
