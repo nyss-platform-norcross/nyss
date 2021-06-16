@@ -167,6 +167,9 @@ namespace RX.Nyss.Common.Utils.DataContract
             {
                 public const string ItemAlreadyExists = "nationalSociety.structure.itemAlreadyExists";
                 public const string CannotCreateItemInArchivedNationalSociety = "nationalSociety.structure.cannotCreateItemInArchivedNationalSociety";
+                public const string VillageLinkedToDataCollector = "nationalSociety.structure.villageLinkedToDataCollector";
+                public const string DistrictLinkedToDataCollector = "nationalSociety.structure.districtLinkedToDataCollector";
+                public const string RegionLinkedToDataCollector = "nationalSociety.structure.regionLinkedToDataCollector";
             }
         }
 
