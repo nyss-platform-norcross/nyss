@@ -80,9 +80,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       text: values.text,
       utcOffset: getUtcOffset()
     },
-
   );
-
 
     close();
   };
@@ -91,7 +89,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
       <DialogTitle id="form-dialog-title">
-        {strings(stringKeys.alerts.logs.addNew)}
+        {strings(stringKeys.alerts.eventLog.addNew)}
       </DialogTitle>
 
       <DialogContent>
@@ -99,7 +97,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
           <Grid container spacing={2}>
             <Grid item xs={10}>
               <SelectField
-                label={strings(stringKeys.alerts.logs.list.type)}
+                label={strings(stringKeys.alerts.eventLog.list.type)}
                 name="type"
                 field={form.fields.eventTypeId}
                 onChange={onEventTypeChange}
@@ -118,7 +116,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
             {filteredSubtypes.length > 1 &&
             <Grid item xs={10}>
               <SelectField
-                label={strings(stringKeys.alerts.logs.list.subtype)}
+                label={strings(stringKeys.alerts.eventLog.list.subtype)}
                 name="subtype"
                 field={form.fields.eventSubtypeId}
               >
@@ -136,7 +134,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
 
             <Grid item xs={6}>
               <DatePicker
-                label={strings(stringKeys.alerts.logs.form.dateOfEvent)}
+                label={strings(stringKeys.alerts.eventLog.form.dateOfEvent)}
                 fullWidth
                 onChange={handleDateChange}
                 value={date}
@@ -145,7 +143,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
 
             <Grid item xs={6}>
               <TextInputField
-                label={strings(stringKeys.alerts.logs.form.timeOfEvent)}
+                label={strings(stringKeys.alerts.eventLog.form.timeOfEvent)}
                 type="time"
                 name="time"
                 field={form.fields.time}
@@ -155,7 +153,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
 
             <Grid item xs={12}>
               <TextInputField
-                label={strings(stringKeys.alerts.logs.form.text)}
+                label={strings(stringKeys.alerts.eventLog.form.comment)}
                 className={styles.fullWidth}
                 type="text"
                 name="text"
@@ -172,12 +170,12 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               {strings(stringKeys.form.cancel)}
             </Button>
             <SubmitButton isFetching={isSaving}>
-              {strings(stringKeys.alerts.logs.addNew)}
+              {strings(stringKeys.alerts.eventLog.addNew)}
             </SubmitButton>
           </FormActions>
         </Form>
       </DialogContent>
 
     </Dialog>
-);
+  );
 }

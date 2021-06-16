@@ -24,7 +24,7 @@ function* openEventLog ({ projectId, alertId }) {
     const response = yield call(http.get, `/api/alertEvents/${alertId}/eventLog?utcOffset=${getUtcOffset()}`);
     const data = response.value;
 
-    const title = `${strings(stringKeys.alerts.logs.title, true)} - ${data.healthRisk} ${dayjs(data.date).format('YYYY-MM-DD HH:mm')}`;
+    const title = `${strings(stringKeys.alerts.eventLog.title, true)} - ${data.healthRisk} ${dayjs(data.date).format('YYYY-MM-DD HH:mm')}`;
 
     yield openAlertEventsModule(projectId, title);
 

@@ -6,7 +6,7 @@ export const alertEventsSiteMap = [
   {
     parentPath: "/projects/:projectId/alerts/:alertId/details",
     path: "/projects/:projectId/alerts/:alertId/eventLog",
-    title: () => strings(stringKeys.alerts.logs.title),
+    title: () => strings(stringKeys.alerts.eventLog.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.alertEvents.list,
     middleStepOnly: true

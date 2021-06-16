@@ -927,21 +927,21 @@ export const stringKeys = {
         linkedToSupervisor: "alerts.assess.report.linkedToSupervisor"
       }
     },
-    logs: {
-      title: "alerts.logs.title",
-      addNew: "alerts.log.addNew",
-      edit: "alerts.log.edit",      
+    eventLog: {
+      title: "alerts.eventLog.title",
+      addNew: "alerts.eventLog.addNew",
+      edit: "alerts.eventLog.edit",      
       list: {
-        date: "alerts.logs.list.date",
-        userName: "alerts.logs.list.userName",
-        type: "alerts.logs.list.type",
-        subtype: "alerts.logs.list.subtype",
-        text: "alerts.logs.list.text"
+        date: "alerts.eventLog.list.date",
+        userName: "alerts.eventLog.list.userName",
+        type: "alerts.eventLog.list.type",
+        subtype: "alerts.eventLog.list.subtype",
+        comment: "alerts.eventLog.list.comment"
       },
       form: {
-        dateOfEvent: "alerts.log.dateOfEvent",
-        timeOfEvent: "alerts.log.timeOfEvent",
-        text: "alerts.log.text",
+        dateOfEvent: "alerts.eventLog.form.dateOfEvent",
+        timeOfEvent: "alerts.eventLog.form.timeOfEvent",
+        comment: "alerts.eventLog.form.comment",
       }
     },
     constants: {

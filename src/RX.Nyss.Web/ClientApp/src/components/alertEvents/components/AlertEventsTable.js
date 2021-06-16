@@ -29,7 +29,7 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
     }
   };
 
-  const formatSubtype = (row) => {
+      return strings(stringKeys.alerts.constants.eventTypes[row.alertEventType])
     if (row.alertEventSubtype !== null) {
       return strings(stringKeys.alerts.constants.eventSubtypes[row.alertEventSubtype])
     }
@@ -60,11 +60,11 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
 
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.date)}</TableCell>
-              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.userName)}</TableCell>
-              <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.type)}</TableCell>
-              <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.subtype)}</TableCell>
-              <TableCell style={{ width: "35%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.text)}</TableCell>
+              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.date)}</TableCell>
+              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.userName)}</TableCell>
+              <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.type)}</TableCell>
+              <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.subtype)}</TableCell>
+              <TableCell style={{ width: "35%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.comment)}</TableCell>
               <TableCell style={{ width: "5%", minWidth: 50 }}/>
             </TableRow>
           </TableHead>

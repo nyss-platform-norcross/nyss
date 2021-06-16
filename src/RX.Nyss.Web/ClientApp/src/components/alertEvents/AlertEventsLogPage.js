@@ -41,7 +41,7 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
           color="primary"
           roles={accessMap.alertEvents.add}
           icon={<AddIcon/>}>
-          {strings(stringKeys.alerts.logs.addNew)}
+          {strings(stringKeys.alerts.eventLog.addNew)}
         </TableActionsButton>
       </TableActions>
 
