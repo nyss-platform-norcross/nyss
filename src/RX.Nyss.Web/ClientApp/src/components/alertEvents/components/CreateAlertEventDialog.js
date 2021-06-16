@@ -95,7 +95,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
       <DialogContent>
         <Form onSubmit={handleSubmit} fullWidth>
           <Grid container spacing={2}>
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.alerts.eventLog.list.type)}
                 name="type"
@@ -114,7 +114,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
             </Grid>
 
             {filteredSubtypes.length > 1 &&
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.alerts.eventLog.list.subtype)}
                 name="subtype"
