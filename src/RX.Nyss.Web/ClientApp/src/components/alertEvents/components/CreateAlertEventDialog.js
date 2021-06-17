@@ -7,7 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid, LinearProgress,
+  Grid,
   MenuItem,
   useMediaQuery,
   useTheme

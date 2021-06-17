@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { TableRowAction } from "../../common/tableRowAction/TableRowAction";
 import { TableRowActions } from "../../common/tableRowAction/TableRowActions";
-import {IconButton} from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 
 export const AlertEventExpandableText = ({ text, maxLength } ) => {
 
