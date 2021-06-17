@@ -20,7 +20,10 @@ namespace RX.Nyss.Web.Features.AlertEvents.Dto
                     .NotEmpty();
                 RuleFor(x => x.Timestamp)
                     .NotEmpty();
-                RuleFor(x => x.UtcOffset).NotEmpty();
+                RuleFor(x => x.UtcOffset)
+                    .NotEmpty();
+                RuleFor(x => x.Text)
+                    .MaximumLength(4000);
             }
         }
     }
