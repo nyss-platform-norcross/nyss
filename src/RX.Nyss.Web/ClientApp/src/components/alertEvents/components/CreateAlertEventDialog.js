@@ -1,4 +1,4 @@
-import React, {Fragment, useCallback, useState} from 'react';
+import React, { useState } from 'react';
 import styles from "./CreateAlertEventDialog.module.scss";
 import { stringKeys, strings } from "../../../strings";
 import {
@@ -22,7 +22,7 @@ import TextInputField from "../../forms/TextInputField";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
-import {getUtcOffset} from "../../../utils/date";
+import { getUtcOffset } from "../../../utils/date";
 
 export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
@@ -48,15 +48,26 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
 
     const validation = {
       eventTypeId: [validators.required],
-      eventSubtypeId: [validators.requiredWhen(x => eventSubtypes.some(subtype => x.eventTypeId === subtype.eventTypeId))],
+      eventSubtypeId: [
+        [
+          () => strings(stringKeys.validation.fieldRequired),
+          (value, formValues) => {
+            const currentTypeHasSubtypes = eventSubtypes.some(subtype => subtype.typeId === parseInt(formValues.eventTypeId))
+            return !currentTypeHasSubtypes || !!value
+          }
+        ]
+      ],
       date: [validators.required],
+      text: [validators.maxLength(4000)]
     };
-    return createForm(fields, validation)
+    return createForm(fields, validation);
   });
 
   const onEventTypeChange = (event) => {
     const eventTypeId = event.target.value;
     setFilteredSubtypes(eventSubtypes.filter(subtype => subtype.typeId.toString() === eventTypeId))
+
+    form.fields.eventSubtypeId.update('')
   }
 
   const handleDateChange = date => {
@@ -68,19 +79,19 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
 
     if (!form.isValid()) {
       return;
-    }
+    };
 
     const values = form.getValues();
 
     create( alertId,
-    {
-      eventTypeId: parseInt(values.eventTypeId),
-      eventSubtypeId: parseInt(values.eventSubtypeId),
-      timestamp: dayjs(`${date} ${values.time}`).utc(),
-      text: values.text,
-      utcOffset: getUtcOffset()
-    },
-  );
+      {
+        eventTypeId: parseInt(values.eventTypeId),
+        eventSubtypeId: parseInt(values.eventSubtypeId),
+        timestamp: dayjs(`${date} ${values.time}`).utc(),
+        text: values.text,
+        utcOffset: getUtcOffset()
+      }
+    );
 
     close();
   };
@@ -113,7 +124,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               </SelectField>
             </Grid>
 
-            {filteredSubtypes.length > 1 &&
+            {filteredSubtypes.length > 0 &&
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.alerts.eventLog.list.subtype)}
