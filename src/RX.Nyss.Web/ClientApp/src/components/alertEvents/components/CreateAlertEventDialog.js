@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import styles from "./CreateAlertEventDialog.module.scss";
 import { stringKeys, strings } from "../../../strings";
 import {
@@ -6,7 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
+  Grid, LinearProgress,
   MenuItem,
   useMediaQuery,
   useTheme
@@ -32,36 +33,42 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
   const eventSubtypes = useSelector(state => state.alertEvents.eventSubtypes);
   const [filteredSubtypes, setFilteredSubtypes] = useState([])
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [form, setForm] = useState(null);
   const isSaving = useSelector(state => state.alertEvents.formSaving)
 
   useMount(() => {
     openCreation();
   });
 
-  const [form] = useState(() => {
-    const fields = {
-      eventTypeId: '',
-      eventSubtypeId: '',
-      time: dayjs().hour(0).minute(0).format('HH:mm'),
-      text: ''
-    };
+  useEffect(() => {
+    if (!eventTypes.length || !eventSubtypes.length) {
+      return null;
+    }
 
-    const validation = {
-      eventTypeId: [validators.required],
-      eventSubtypeId: [
-        [
-          () => strings(stringKeys.validation.fieldRequired),
-          (value, formValues) => {
-            const currentTypeHasSubtypes = eventSubtypes.some(subtype => subtype.typeId === parseInt(formValues.eventTypeId))
-            return !currentTypeHasSubtypes || !!value
-          }
-        ]
-      ],
-      date: [validators.required],
-      text: [validators.maxLength(4000)]
-    };
-    return createForm(fields, validation);
-  });
+      const fields = {
+        eventTypeId: '',
+        eventSubtypeId: '',
+        time: dayjs().hour(0).minute(0).format('HH:mm'),
+        text: ''
+      };
+
+      const validation = {
+        eventTypeId: [validators.required],
+        eventSubtypeId: [
+          [
+            () => strings(stringKeys.validation.fieldRequired),
+            (value, formValues) => {
+              const currentTypeHasSubtypes = eventSubtypes.some(subtype => subtype.typeId === parseInt(formValues.eventTypeId))
+              return !currentTypeHasSubtypes || !!value
+            }
+          ]
+        ],
+        date: [validators.required],
+        text: [validators.maxLength(4000)]
+      };
+      setForm(createForm(fields, validation));
+    }, [eventTypes, eventSubtypes]
+  );
 
   const onEventTypeChange = (event) => {
     const eventTypeId = event.target.value;
@@ -96,7 +103,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
     close();
   };
 
-  return (
+  return !!form && (
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
       <DialogTitle id="form-dialog-title">
