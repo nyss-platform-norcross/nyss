@@ -1,21 +1,21 @@
-import React, {Fragment, useState} from 'react';
+import React, { Fragment, useState } from 'react';
 import { stringKeys, strings, stringsFormat } from "../../../strings";
 import { TableContainer, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import * as dayjs from "dayjs";
 import { logType } from "../logic/alertEventsConstants";
 import { escalatedOutcomes } from "../../alerts/logic/alertsConstants";
 import { AlertEventExpandableText } from "./AlertEventExpandableText";
-import {EditAlertEventDialog} from "./EditAlertEventDialog";
-import {TableRowActions} from "../../common/tableRowAction/TableRowActions";
+import { EditAlertEventDialog } from "./EditAlertEventDialog";
+import { TableRowActions } from "../../common/tableRowAction/TableRowActions";
 import EditIcon from "@material-ui/icons/Edit";
-import {TableRowAction} from "../../common/tableRowAction/TableRowAction";
-import {accessMap} from "../../../authentication/accessMap";
+import { TableRowAction } from "../../common/tableRowAction/TableRowAction";
+import { accessMap } from "../../../authentication/accessMap";
 
 export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
   const [editDialogOpened, setEditDialogOpened] = useState(false);
   const [editDialog, setEditDialog] = useState();
 
-  const formatLogType = (row) => {
+  const selectTypeAndFormat = (row) => {
 
     if (row.logType != null) {
       if (row.logType === logType.closedAlert && row.metadata.escalatedOutcome !== escalatedOutcomes.other) {
@@ -29,7 +29,13 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
     }
   };
 
+  const formatEventType = (row) => {
+    if (row.alertEventType !== null) {
       return strings(stringKeys.alerts.constants.eventTypes[row.alertEventType])
+    }
+  };
+
+  const formatEventSubtype = (row) => {
     if (row.alertEventSubtype !== null) {
       return strings(stringKeys.alerts.constants.eventSubtypes[row.alertEventSubtype])
     }
@@ -75,8 +81,8 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
               <TableRow key={index} hover >
                 <TableCell>{dayjs(row.date).format("YYYY-MM-DD HH:mm")}</TableCell>
                 <TableCell>{dashIfEmpty(row.loggedBy)}</TableCell>
-                <TableCell>{formatLogType(row)}</TableCell>
-                <TableCell>{formatSubtype(row)}</TableCell>
+                <TableCell>{selectTypeAndFormat(row)}</TableCell>
+                <TableCell>{formatEventSubtype(row)}</TableCell>
                 <TableCell>
                   <AlertEventExpandableText text={row.text} maxLength={70}/>
                 </TableCell>
@@ -84,7 +90,7 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
                   {row.alertEventType &&
                   <TableRowActions>
                     <TableRowAction
-                      onClick={() => showEditDialog(row.alertEventLogId, row.text) }
+                      onClick={() => showEditDialog(row, formatEventType(row), formatEventSubtype(row)) }
                       roles={accessMap.alertEvents.edit}
                       icon={<EditIcon />}
                       title={"Edit"} />
