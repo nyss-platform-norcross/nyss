@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import styles from "./CreateAlertEventDialog.module.scss";
-import { Button, Dialog, DialogContent, DialogTitle, Grid, MenuItem, useMediaQuery, useTheme } from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  Grid,
+  useMediaQuery,
+  useTheme
+} from "@material-ui/core";
 import { useSelector } from "react-redux";
-import { createForm, useCustomErrors } from "../../../utils/forms";
+import { createForm, validators } from "../../../utils/forms";
 import { Loading } from "../../common/loading/Loading";
 import { stringKeys, strings } from "../../../strings";
 import Form from "../../forms/form/Form";
@@ -11,18 +18,24 @@ import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import * as alertEventsActions from "../logic/alertEventsActions";
 import { connect } from "react-redux";
+import * as dayjs from "dayjs";
+import Typography from "@material-ui/core/Typography";
 
-const EditAlertEventDialogComponent = ({ close, alertId, alertEventLogId, edit, text, ...props }) => {
+const EditAlertEventDialogComponent = ({ close, edit, alertId, eventLogItem, formattedEventType, formattedEventSubtype, ...props }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const isSaving = useSelector(state => state.alertEvents.formSaving)
 
   const [form] = useState(() => {
     const fields = {
-      text: text
+      text: eventLogItem.text
     };
 
-    return createForm(fields);
+      const validation = {
+
+        text: [validators.maxLength(4000)]
+      };
+      return createForm(fields, validation)
   });
 
   const handleSubmit = (e) => {
@@ -32,36 +45,37 @@ const EditAlertEventDialogComponent = ({ close, alertId, alertEventLogId, edit, 
       return;
     };
 
-    // const values = form.getValues();
 
-    edit(alertId, alertEventLogId, form.fields.text.value);
+    edit(alertId, eventLogItem.alertEventLogId, form.fields.text.value);
     close();
   };
 
-  // useCustomErrors(form, props.error);
-
   if (props.isFetching) {
-    return <Loading />;
+    return <Loading/>;
   }
 
-  // if (!form || !props.data) {
-  //   return null;
-  // }
-
   return (
-    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
-
-      <DialogTitle id="form-dialog-title">
-        {strings(stringKeys.alerts.logs.edit)}
-      </DialogTitle>
+    <Dialog open={true} onClose={close} fullScreen={fullScreen}>
 
       <DialogContent>
         <Form onSubmit={handleSubmit} fullWidth>
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
+              <Typography variant="h6">
+                {dayjs(eventLogItem.date).format("YYYY-MM-DD HH:mm")}
+              </Typography>
+              <Typography >
+                {formattedEventType}
+              </Typography>
+              <Typography >
+                {formattedEventSubtype}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
               <TextInputField
-                label={strings(stringKeys.alerts.logs.form.text)}
+                label={strings(stringKeys.alerts.eventLog.form.comment)}
                 className={styles.fullWidth}
                 type="text"
                 name="text"
@@ -78,7 +92,7 @@ const EditAlertEventDialogComponent = ({ close, alertId, alertEventLogId, edit, 
               {strings(stringKeys.form.cancel)}
             </Button>
             <SubmitButton isFetching={isSaving}>
-              {strings(stringKeys.alerts.logs.edit)}
+              {strings(stringKeys.alerts.eventLog.edit)}
             </SubmitButton>
           </FormActions>
 
@@ -88,7 +102,6 @@ const EditAlertEventDialogComponent = ({ close, alertId, alertEventLogId, edit, 
     </Dialog>
   );
 }
-
 const mapStateToProps = (state, ownProps) => ({
 });
 

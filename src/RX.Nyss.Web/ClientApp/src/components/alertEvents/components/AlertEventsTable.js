@@ -40,14 +40,15 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
 
   };
 
-  const showEditDialog = (alertEventLogId, text) => {
+  const showEditDialog = (eventLogItem, formattedEventType, formattedEventSubtype ) => {
     setEditDialog(
       <EditAlertEventDialog
       close={() => setEditDialogOpened(false)}
       edit={props.edit}
-      alertEventLogId={alertEventLogId}
       alertId={alertId}
-      text={text}
+      eventLogItem = {eventLogItem}
+      formattedEventType = {formattedEventType}
+      formattedEventSubtype = {formattedEventSubtype}
     />
     )
     setEditDialogOpened(true)
