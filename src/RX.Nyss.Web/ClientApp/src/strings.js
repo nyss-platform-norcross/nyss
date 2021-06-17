@@ -232,7 +232,8 @@ export const stringKeys = {
       pingIsRequired: "smsGateway.form.pingIsRequired",
       useDualModem: "smsGateway.form.useDualModem",
       modemOneName: "smsGateway.form.modemOneName",
-      modemTwoName: "smsGateway.form.modemTwoName"
+      modemTwoName: "smsGateway.form.modemTwoName",
+      generateKey: "smsGateway.form.generateKey"
     },
     create: {
       success: "smsGateway.create.success"

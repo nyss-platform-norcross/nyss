@@ -1,3 +1,4 @@
+import styles from './SmsGatewaysCreateOrEditPage.module.scss';
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
@@ -15,7 +16,8 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import { Typography, MenuItem, Button, Grid, Icon } from '@material-ui/core';
+import { Typography, MenuItem, Button, Grid, Icon, InputAdornment } from '@material-ui/core';
+import { v4 as uuidv4 } from 'uuid';
 
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -115,6 +117,10 @@ const SmsGatewaysEditPageComponent = (props) => {
     props.pingIotDevice(form.fields.iotHubDeviceName.value);
   }
 
+  const generateUuid = () => {
+    form.fields.apiKey.update(uuidv4());
+  }
+
   return (
     <Fragment>
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
@@ -134,6 +140,11 @@ const SmsGatewaysEditPageComponent = (props) => {
               label={strings(stringKeys.smsGateway.form.apiKey)}
               name="apiKey"
               field={form.fields.apiKey}
+              endAdornment={(
+                <InputAdornment position="end">
+                  <Button onClick={generateUuid} className={styles.generateButton}>{strings(stringKeys.smsGateway.form.generateKey)}</Button>
+                </InputAdornment>
+              )}
             />
           </Grid>
 
