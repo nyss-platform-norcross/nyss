@@ -1,4 +1,5 @@
 import React, {useEffect, Fragment, useState} from 'react';
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -12,6 +13,7 @@ import { stringKeys, strings } from "../../strings";
 import { CreateAlertEventDialog } from "./components/CreateAlertEventDialog";
 import TableActions from "../common/tableActions/TableActions";
 import AddIcon from "@material-ui/icons/Add";
+
 
 const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => {
 
@@ -49,6 +51,8 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
         alertId={alertId}
         list={data}
         alertEventLogId={props.alertEventLogId}
+        isRemoving={props.isRemoving}
+        remove={props.remove}
       />
 
       {createDialogOpened && (
@@ -71,6 +75,7 @@ const mapStateToProps = (state, ownProps) => ({
   alertId: ownProps.match.params.alertId,
   isFetching: state.alertEvents.logFetching,
   isSaving: state.alertEvents.formSaving,
+  isRemoving: state.alertEvents.logRemoving,
   data: state.alertEvents.logItems
 });
 
@@ -78,6 +83,7 @@ const mapDispatchToProps = {
   openEventLog: alertEventsActions.openEventLog.invoke,
   openCreation: alertEventsActions.openCreation.invoke,
   create: alertEventsActions.create.invoke,
+  remove: alertEventsActions.remove.invoke,
 };
 
 export const AlertEventsLogPage = withLayout(

@@ -7,11 +7,12 @@ import { escalatedOutcomes } from "../../alerts/logic/alertsConstants";
 import { AlertEventExpandableText } from "./AlertEventExpandableText";
 import { EditAlertEventDialog } from "./EditAlertEventDialog";
 import { TableRowActions } from "../../common/tableRowAction/TableRowActions";
-import EditIcon from "@material-ui/icons/Edit";
 import { TableRowAction } from "../../common/tableRowAction/TableRowAction";
 import { accessMap } from "../../../authentication/accessMap";
+import ClearIcon from "@material-ui/icons/Clear";
+import EditIcon from "@material-ui/icons/Edit";
 
-export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
+export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving, ...props }) => {
   const [editDialogOpened, setEditDialogOpened] = useState(false);
   const [editDialog, setEditDialog] = useState();
 
@@ -93,7 +94,14 @@ export const AlertEventsTable = ({ alertId, list, edit, ...props }) => {
                       onClick={() => showEditDialog(row, formatEventType(row), formatEventSubtype(row)) }
                       roles={accessMap.alertEvents.edit}
                       icon={<EditIcon />}
-                      title={"Edit"} />
+                      title={"Edit"}
+                    />
+                    <TableRowAction
+                      onClick={() => remove(alertId, row.alertEventLogId)}
+                      confirmationText={strings(stringKeys.alerts.eventLog.list.removalConfirmation)}
+                      icon={<ClearIcon />} title={"Delete"}
+                      isFetching={isRemoving[row.alertEventLogId]}
+                    />
                   </TableRowActions>
                   }
                 </TableCell>
