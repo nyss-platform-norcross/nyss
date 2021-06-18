@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
         Task<Result> CreateAlertEventLogItem(int alertId, CreateAlertEventRequestDto alertEvent);
         Task<Result> EditAlertEventLogItem(EditAlertEventRequestDto editDto);
         Task<Result<AlertEventCreateFormDto>> GetFormData();
+        Task<Result> DeleteAlertEventLogItem(int alertEventLogId);
     }
 
     public class AlertEventsService : IAlertEventsService
@@ -245,6 +246,22 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.AlertEvent.EditSuccess);
+        }
+
+        public async Task<Result> DeleteAlertEventLogItem(int alertEventLogId)
+        {
+            var alertEventItem = await _nyssContext.AlertEventLogs
+                .SingleAsync(ae => ae.Id == alertEventLogId);
+
+            if (alertEventItem == null)
+            {
+                return Error(ResultKey.AlertEvent.AlertEventNotFound);
+            }
+
+            _nyssContext.AlertEventLogs.Remove(alertEventItem);
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(ResultKey.AlertEvent.DeleteSuccess);
         }
 
         public async Task<Result<AlertEventCreateFormDto>> GetFormData()

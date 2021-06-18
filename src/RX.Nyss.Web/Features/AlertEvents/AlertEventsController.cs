@@ -38,6 +38,15 @@ namespace RX.Nyss.Web.Features.AlertEvents
             await _alertEventsService.EditAlertEventLogItem(editDto);
 
         /// <summary>
+        /// Deletes an alert event item
+        /// </summary>
+        [HttpPost("{alertId:int}/eventLog/delete/{alertEventLogId:int}")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public async Task<Result> DeleteAlertEventLogItem(int alertEventLogId) =>
+            await _alertEventsService.DeleteAlertEventLogItem(alertEventLogId);
+
+        /// <summary>
         /// Retrieves the log of events for an alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
