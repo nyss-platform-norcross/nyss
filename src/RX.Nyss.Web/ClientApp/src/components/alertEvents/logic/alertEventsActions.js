@@ -4,7 +4,8 @@ import {
   GET_ALERT_EVENT_LOG,
   OPEN_ALERT_EVENT_CREATION,
   CREATE_ALERT_EVENT,
-  EDIT_ALERT_EVENT
+  EDIT_ALERT_EVENT,
+  DELETE_ALERT_EVENT
 } from "./alertEventsConstants";
 
 export const goToLog = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/eventLog`);
@@ -42,4 +43,11 @@ export const edit = {
   request: () => ({ type: EDIT_ALERT_EVENT.REQUEST }),
   success: () => ({ type: EDIT_ALERT_EVENT.SUCCESS }),
   failure: (error) => ({ type: EDIT_ALERT_EVENT.FAILURE, error, suppressPopup: true })
+};
+
+export const remove = {
+  invoke: (alertId, alertEventLogId) => ({ type: DELETE_ALERT_EVENT.INVOKE, alertId, alertEventLogId }),
+  request: (alertEventLogId) => ({ type: DELETE_ALERT_EVENT.REQUEST, alertEventLogId }),
+  success: (alertEventLogId) => ({ type: DELETE_ALERT_EVENT.SUCCESS, alertEventLogId }),
+  failure: (id, message) => ({ type: DELETE_ALERT_EVENT.FAILURE, id, message })
 };

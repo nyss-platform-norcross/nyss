@@ -1,12 +1,12 @@
-import {call, put, takeEvery} from "redux-saga/effects";
+import { call, put, takeEvery } from "redux-saga/effects";
 import * as actions from "../../alertEvents/logic/alertEventsActions";
 import * as http from "../../../utils/http";
 import * as appActions from "../../app/logic/appActions";
-import {stringKeys, strings} from "../../../strings";
+import { stringKeys, strings } from "../../../strings";
 import * as consts from "../../alertEvents/logic/alertEventsConstants";
-import {getUtcOffset} from "../../../utils/date";
+import { getUtcOffset } from "../../../utils/date";
 import dayjs from "dayjs";
-import {entityTypes} from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 
 export const alertEventsSagas = () => {
   return [
@@ -15,6 +15,7 @@ export const alertEventsSagas = () => {
     takeEvery(consts.OPEN_ALERT_EVENT_CREATION.INVOKE, openAlertEventCreation),
     takeEvery(consts.CREATE_ALERT_EVENT.INVOKE, createAlertEvent),
     takeEvery(consts.EDIT_ALERT_EVENT.INVOKE, editAlertEvent),
+    takeEvery(consts.DELETE_ALERT_EVENT.INVOKE, deleteAlertEvent)
   ];
 }
 
@@ -80,6 +81,22 @@ function* editAlertEvent({ alertId, alertEventLogId, text }) {
     yield put(appActions.showMessage(response.message.key));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
+  }
+};
+
+function* deleteAlertEvent({ alertId, alertEventLogId }) {
+  yield put(actions.remove.request(alertEventLogId));
+  try {
+    const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/delete/${alertEventLogId}`,
+      {alertId, alertEventLogId});
+    yield put(actions.remove.success(alertEventLogId));
+
+    yield call(getEventLog, {alertId})
+    yield put(actions.remove.success(response.value));
+    yield put(appActions.showMessage(response.message.key));
+
+  } catch (error) {
+    yield put(actions.remove.failure(alertEventLogId, error.message));
   }
 };
 

@@ -337,6 +337,7 @@ export const initialState = {
     eventTypes: [],
     eventSubtypes: [],
     logFetching: false,
+    logRemoving: {},
     listStale: true,
     logItems: null,
     formFetching: false,

@@ -1,5 +1,6 @@
 import * as actions from "./alertEventsConstants";
 import { initialState } from "../../../initialState";
+import {setProperty} from "../../../utils/immutable";
 
 export function alertEventsReducer(state = initialState.alertEvents, action) {
   switch (action.type) {
@@ -48,6 +49,14 @@ export function alertEventsReducer(state = initialState.alertEvents, action) {
     case actions.EDIT_ALERT_EVENT.FAILURE:
       return { ...state, formSaving: false, formError: action.error};
 
+    case actions.DELETE_ALERT_EVENT.REQUEST:
+      return { ...state, logRemoving: setProperty(state.logRemoving, action.alertEventLogId, true) };
+
+    case actions.DELETE_ALERT_EVENT.SUCCESS:
+      return {  ...state, logRemoving: setProperty(state.logRemoving, action.alertEventLogId, undefined), listStale: true };
+
+    case actions.DELETE_ALERT_EVENT.FAILURE:
+      return {  ...state, logRemoving: setProperty(state.logRemoving, action.alertEventLogId, undefined) };
 
     default:
       return state;
