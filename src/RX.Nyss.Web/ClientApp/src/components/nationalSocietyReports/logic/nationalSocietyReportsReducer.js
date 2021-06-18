@@ -14,10 +14,10 @@ export function nationalSocietyReportsReducer(state = initialState.nationalSocie
       return { ...state, listNationalSocietyId: action.nationalSocietyId, filtersData: action.filtersData };
 
     case actions.OPEN_NATIONAL_SOCIETY_INCORRECT_REPORTS_LIST.INVOKE:
-      return { ...state, incorrectReportsListStale: action.nationalSocietyId !== state.listNationalSocietyId };
+      return { ...state, incorrectReportsListStale: state.incorrectReportsListStale || action.nationalSocietyId !== state.listNationalSocietyId };
 
     case actions.OPEN_NATIONAL_SOCIETY_INCORRECT_REPORTS_LIST.SUCCESS:
-      return { ...state, listNationalSocietyId: action.nationalSocietyId, filtersData: action.filtersData };
+      return { ...state, listNationalSocietyId: action.nationalSocietyId };
 
     case actions.GET_NATIONAL_SOCIETY_CORRECT_REPORTS.REQUEST:
       return { ...state, correctReportsPaginatedListData: state.correctReportsListStale ? null : state.correctReportsPaginatedListData, listFetching: true };
