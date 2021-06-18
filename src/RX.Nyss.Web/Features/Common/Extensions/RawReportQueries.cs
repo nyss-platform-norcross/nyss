@@ -51,8 +51,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> FilterByHealthRisk(this IQueryable<RawReport> reports, int? healthRiskId) =>
             reports.Where(r => !healthRiskId.HasValue || (r.Report != null && r.Report.ProjectHealthRisk.HealthRiskId == healthRiskId.Value));
 
-        public static IQueryable<RawReport> FilterByProject(this IQueryable<RawReport> reports, int? projectId, bool? includeUnknownSenderReports) =>
-            reports.Where(r => !projectId.HasValue || r.DataCollector.Project.Id == projectId.Value || (includeUnknownSenderReports.HasValue && r.DataCollector == null));
+        public static IQueryable<RawReport> FilterByProject(this IQueryable<RawReport> reports, int? projectId, bool includeUnknownSenderReports = false) =>
+            reports.Where(r => !projectId.HasValue || r.DataCollector.Project.Id == projectId.Value || (includeUnknownSenderReports && r.DataCollector == null));
 
         public static IQueryable<RawReport> FromKnownDataCollector(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.DataCollector != null);
