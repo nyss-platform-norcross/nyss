@@ -377,6 +377,8 @@ namespace RX.Nyss.Common.Utils.DataContract
         {
             public const string CreateSuccess = "alertEvent.create.success";
             public const string EditSuccess = "alertEvent.edit.success";
+            public const string AlertEventNotFound = "alertEvent.notFound";
+            public const string DeleteSuccess = "alertEvent.delete.success";
 
         }
         

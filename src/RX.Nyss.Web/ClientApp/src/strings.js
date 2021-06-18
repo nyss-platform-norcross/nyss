@@ -936,7 +936,8 @@ export const stringKeys = {
         userName: "alerts.eventLog.list.userName",
         type: "alerts.eventLog.list.type",
         subtype: "alerts.eventLog.list.subtype",
-        comment: "alerts.eventLog.list.comment"
+        comment: "alerts.eventLog.list.comment",
+        removalConfirmation: "alerts.eventLog.list.removalConfirmation"
       },
       form: {
         dateOfEvent: "alerts.eventLog.form.dateOfEvent",
