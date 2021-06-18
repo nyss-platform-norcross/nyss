@@ -98,6 +98,7 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving, ...p
                     />
                     <TableRowAction
                       onClick={() => remove(alertId, row.alertEventLogId)}
+                      roles={accessMap.alertEvents.delete}
                       confirmationText={strings(stringKeys.alerts.eventLog.list.removalConfirmation)}
                       icon={<ClearIcon />} title={"Delete"}
                       isFetching={isRemoving[row.alertEventLogId]}
