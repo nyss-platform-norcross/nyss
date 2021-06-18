@@ -53,16 +53,16 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
         alertEventLogId={props.alertEventLogId}
         isRemoving={props.isRemoving}
         remove={props.remove}
+        edit={props.edit}
       />
 
-      {createDialogOpened && (
-        <CreateAlertEventDialog
-          close={() => setCreateDialogOpened(false)}
-          openCreation={props.openCreation}
-          create={props.create}
-          alertId={alertId}
-        />
-      )}
+      <CreateAlertEventDialog
+        open={createDialogOpened}
+        close={() => setCreateDialogOpened(false)}
+        openCreation={props.openCreation}
+        create={props.create}
+        alertId={alertId}
+      />
     </Fragment>
   );
 }
@@ -84,6 +84,7 @@ const mapDispatchToProps = {
   openCreation: alertEventsActions.openCreation.invoke,
   create: alertEventsActions.create.invoke,
   remove: alertEventsActions.remove.invoke,
+  edit: alertEventsActions.edit.invoke
 };
 
 export const AlertEventsLogPage = withLayout(

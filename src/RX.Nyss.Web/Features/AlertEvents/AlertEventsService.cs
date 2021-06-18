@@ -127,7 +127,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 }
             };
 
-            list.AddRange(alertEventLogItems.Select(logItem => new AlertEventsLogResponseDto.LogItem()
+            list.AddRange(alertEventLogItems.Select(logItem => new AlertEventsLogResponseDto.LogItem
             {
                 AlertEventLogId = logItem.AlertEventLogId,
                 Date = logItem.CreatedAt,
@@ -222,7 +222,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 .Select(a => a.Id)
                 .SingleAsync();
 
-            var alertEventLogItem = new AlertEventLog()
+            var alertEventLogItem = new AlertEventLog
             {
                 AlertId = alert,
                 CreatedAt = createDto.Timestamp.ToUniversalTime(),

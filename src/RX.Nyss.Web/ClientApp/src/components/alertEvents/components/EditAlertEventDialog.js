@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./CreateAlertEventDialog.module.scss";
 import {
   Button,
@@ -16,27 +16,28 @@ import Form from "../../forms/form/Form";
 import TextInputField from "../../forms/TextInputField";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import * as alertEventsActions from "../logic/alertEventsActions";
-import { connect } from "react-redux";
 import * as dayjs from "dayjs";
 import Typography from "@material-ui/core/Typography";
 
-const EditAlertEventDialogComponent = ({ close, edit, alertId, eventLogItem, formattedEventType, formattedEventSubtype, ...props }) => {
+export const EditAlertEventDialog = ({ open, close, edit, alertId, eventLogItem, formattedEventType, formattedEventSubtype, ...props }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const isSaving = useSelector(state => state.alertEvents.formSaving)
+  const [form, setForm] = useState(null);
 
-  const [form] = useState(() => {
+  useEffect(() => {
+    if (!eventLogItem) return;
+
     const fields = {
       text: eventLogItem.text
     };
 
-      const validation = {
+    const validation = {
+      text: [validators.maxLength(4000)]
+    };
 
-        text: [validators.maxLength(4000)]
-      };
-      return createForm(fields, validation)
-  });
+    setForm(createForm(fields, validation));
+  }, [eventLogItem]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,11 +52,11 @@ const EditAlertEventDialogComponent = ({ close, edit, alertId, eventLogItem, for
   };
 
   if (props.isFetching) {
-    return <Loading/>;
+    return <Loading />;
   }
 
-  return (
-    <Dialog open={true} onClose={close} fullScreen={fullScreen}>
+  return !!form && (
+    <Dialog open={open} onClose={close} fullScreen={fullScreen}>
 
       <DialogContent>
         <Form onSubmit={handleSubmit} fullWidth>
@@ -65,10 +66,12 @@ const EditAlertEventDialogComponent = ({ close, edit, alertId, eventLogItem, for
               <Typography variant="h6">
                 {dayjs(eventLogItem.date).format("YYYY-MM-DD HH:mm")}
               </Typography>
-              <Typography >
+
+              <Typography variant="body1">
                 {formattedEventType}
               </Typography>
-              <Typography >
+
+              <Typography variant="body1">
                 {formattedEventSubtype}
               </Typography>
             </Grid>
@@ -102,12 +105,4 @@ const EditAlertEventDialogComponent = ({ close, edit, alertId, eventLogItem, for
     </Dialog>
   );
 }
-const mapStateToProps = (state, ownProps) => ({
-});
-
-const mapDispatchToProps = {
-  edit: alertEventsActions.edit.invoke
-};
-
-export const EditAlertEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditAlertEventDialogComponent)
 

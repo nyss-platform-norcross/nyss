@@ -12,9 +12,9 @@ import { accessMap } from "../../../authentication/accessMap";
 import ClearIcon from "@material-ui/icons/Clear";
 import EditIcon from "@material-ui/icons/Edit";
 
-export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving, ...props }) => {
+export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) => {
   const [editDialogOpened, setEditDialogOpened] = useState(false);
-  const [editDialog, setEditDialog] = useState();
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const selectTypeAndFormat = (row) => {
 
@@ -47,18 +47,9 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving, ...p
 
   };
 
-  const showEditDialog = (eventLogItem, formattedEventType, formattedEventSubtype ) => {
-    setEditDialog(
-      <EditAlertEventDialog
-      close={() => setEditDialogOpened(false)}
-      edit={props.edit}
-      alertId={alertId}
-      eventLogItem = {eventLogItem}
-      formattedEventType = {formattedEventType}
-      formattedEventSubtype = {formattedEventSubtype}
-    />
-    )
-    setEditDialogOpened(true)
+  const showEditDialog = (eventLogItem) => {
+    setSelectedEvent(eventLogItem);
+    setEditDialogOpened(true);
   }
 
   return (
@@ -112,7 +103,15 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving, ...p
         </Table>
       </TableContainer>
 
-      {editDialogOpened && editDialog}
+      <EditAlertEventDialog
+        open={editDialogOpened}
+        close={() => setEditDialogOpened(false)}
+        edit={edit}
+        alertId={alertId}
+        eventLogItem={selectedEvent}
+        formattedEventType={selectedEvent && formatEventType(selectedEvent)}
+        formattedEventSubtype={selectedEvent && formatEventSubtype(selectedEvent)}
+      />
     </Fragment>
   );
 }

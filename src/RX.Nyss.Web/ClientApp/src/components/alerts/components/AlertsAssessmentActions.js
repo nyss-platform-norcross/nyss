@@ -85,7 +85,6 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
 
             {alertAssessmentStatus === assessmentStatus.escalated && hasAccess && (
               <Fragment>
-                {closeDialogOpened &&
                 <AlertsCloseDialog
                   alertId={alertId}
                   closeAlert={props.closeAlert}
@@ -93,7 +92,6 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
                   isOpened={closeDialogOpened}
                   close={() => setCloseDialogOpened(false)}
                 />
-                }
                 <SubmitButton onClick={() => setCloseDialogOpened(true)}>
                   {strings(stringKeys.alerts.assess.alert.close)}
                 </SubmitButton>
