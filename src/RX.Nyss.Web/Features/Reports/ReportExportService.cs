@@ -60,7 +60,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .SingleOrDefaultAsync();
 
             var reportsQuery = _nyssContext.RawReports
-                .FilterByProject(projectId)
+                .FilterByProject(projectId, filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByReportType(filter.ReportType)
                 .FilterByDataCollectorType(filter.DataCollectorType)
