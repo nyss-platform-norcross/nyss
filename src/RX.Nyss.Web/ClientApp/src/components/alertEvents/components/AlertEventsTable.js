@@ -60,9 +60,9 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
           <TableHead>
             <TableRow>
               <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.date)}</TableCell>
-              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.userName)}</TableCell>
               <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.type)}</TableCell>
               <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.subtype)}</TableCell>
+              <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.userName)}</TableCell>
               <TableCell style={{ width: "35%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.comment)}</TableCell>
               <TableCell style={{ width: "5%", minWidth: 50 }}/>
             </TableRow>
@@ -72,9 +72,9 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
             {!!list && list.map((row, index) => (
               <TableRow key={index} hover >
                 <TableCell>{dayjs(row.date).format("YYYY-MM-DD HH:mm")}</TableCell>
-                <TableCell>{dashIfEmpty(row.loggedBy)}</TableCell>
                 <TableCell>{selectTypeAndFormat(row)}</TableCell>
                 <TableCell>{formatEventSubtype(row)}</TableCell>
+                <TableCell>{dashIfEmpty(row.loggedBy)}</TableCell>
                 <TableCell>
                   <AlertEventExpandableText text={row.text} maxLength={70}/>
                 </TableCell>
