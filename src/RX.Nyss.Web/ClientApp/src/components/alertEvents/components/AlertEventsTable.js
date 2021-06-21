@@ -78,6 +78,7 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
                 <TableCell>
                   <AlertEventExpandableText text={row.text} maxLength={70}/>
                 </TableCell>
+
                 <TableCell>
                   {row.alertEventType &&
                   <TableRowActions>

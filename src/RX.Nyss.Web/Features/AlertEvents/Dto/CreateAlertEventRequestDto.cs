@@ -1,6 +1,5 @@
 using System;
 using FluentValidation;
-using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Features.AlertEvents.Dto
 {

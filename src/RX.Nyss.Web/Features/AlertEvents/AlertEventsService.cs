@@ -220,7 +220,26 @@ namespace RX.Nyss.Web.Features.AlertEvents
             var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
                 .Select(a => a.Id)
-                .SingleAsync();
+                .FirstOrDefaultAsync();
+
+
+            var alertEventType = await _nyssContext.AlertEventTypes
+                .Where(x => x.Id == createDto.EventTypeId)
+                .Include(x => x.AlertEventSubtype)
+                .SingleOrDefaultAsync();
+
+            if (alertEventType == null)
+            {
+                return Error(ResultKey.AlertEvent.AlertEventTypeNotFound);
+            }
+
+            var hasValidSubtype = alertEventType.AlertEventSubtype
+                .Any(x => x.Id == createDto.EventSubtypeId);
+
+            if (!hasValidSubtype)
+            {
+                return Error(ResultKey.AlertEvent.SubtypeMustBelongToType);
+            }
 
             var alertEventLogItem = new AlertEventLog
             {
@@ -240,7 +259,12 @@ namespace RX.Nyss.Web.Features.AlertEvents
         public async Task<Result> EditAlertEventLogItem(EditAlertEventRequestDto editDto)
         {
             var alertEventItem = await _nyssContext.AlertEventLogs
-                .SingleAsync(ae => ae.Id == editDto.AlertEventLogId);
+                .FirstOrDefaultAsync(ae => ae.Id == editDto.AlertEventLogId);
+
+            if (alertEventItem == null)
+            {
+                return Error(ResultKey.AlertEvent.AlertEventNotFound);
+            }
 
             alertEventItem.Textfield = editDto.Text;
 
@@ -251,7 +275,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
         public async Task<Result> DeleteAlertEventLogItem(int alertEventLogId)
         {
             var alertEventItem = await _nyssContext.AlertEventLogs
-                .SingleAsync(ae => ae.Id == alertEventLogId);
+                .FirstOrDefaultAsync(ae => ae.Id == alertEventLogId);
 
             if (alertEventItem == null)
             {
