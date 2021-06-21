@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import styles from "./CreateAlertEventDialog.module.scss";
 import {
   Button,
@@ -63,23 +63,31 @@ export const EditAlertEventDialog = ({ open, close, edit, alertId, eventLogItem,
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
-              <Typography variant="h6">
+              <Typography variant="h6">{strings(stringKeys.alerts.eventLog.form.dateOfEvent)}</Typography>
+              <Typography variant="body1">
                 {dayjs(eventLogItem.date).format("YYYY-MM-DD HH:mm")}
               </Typography>
 
+              <Typography variant="h6">{strings(stringKeys.alerts.eventLog.list.type)}</Typography>
               <Typography variant="body1">
                 {formattedEventType}
               </Typography>
 
-              <Typography variant="body1">
-                {formattedEventSubtype}
-              </Typography>
+              {!!formattedEventSubtype && (
+                <Fragment>
+                  <Typography variant="h6">{strings(stringKeys.alerts.eventLog.list.subtype)}</Typography>
+                  <Typography variant="body1">
+                    {formattedEventSubtype}
+                  </Typography>
+                </Fragment>
+              )}
             </Grid>
 
             <Grid item xs={12}>
               <TextInputField
                 label={strings(stringKeys.alerts.eventLog.form.comment)}
-                className={styles.fullWidth}
+                className={`${styles.fullWidth} ${styles.bold}`}
+                labelClassName={styles.bold}
                 type="text"
                 name="text"
                 field={form.fields.text}
