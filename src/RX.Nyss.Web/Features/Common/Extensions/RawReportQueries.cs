@@ -109,8 +109,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             filterDto != null
                 ? rawReports.Where(r => (filterDto.Kept && r.Report != null && r.Report.Status == ReportStatus.Accepted)
                     || (filterDto.Dismissed && r.Report != null && r.Report.Status == ReportStatus.Rejected)
-                    || (filterDto.NotCrossChecked && r.Report != null && (r.Report.Status == ReportStatus.New || r.Report.Status == ReportStatus.Pending || r.Report.Status == ReportStatus.Closed))
-                    || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
+                    || (filterDto.NotCrossChecked && r.Report != null && ((r.Report.Status == ReportStatus.New && !r.IsTraining.Value) || r.Report.Status == ReportStatus.Pending || r.Report.Status == ReportStatus.Closed))
+                    || (filterDto.Training && (r.IsTraining.HasValue && r.IsTraining.Value && r.Report.Status == ReportStatus.New)))
                 : rawReports;
 
         public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> rawReports, ReportTypeFilterDto filterDto) =>
