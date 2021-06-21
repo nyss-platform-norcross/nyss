@@ -691,12 +691,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
         private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, bool? isTraining = false)
         {
+
             var reports = ids
                 .Select(i => new Report
                 {
                     Id = i,
                     DataCollector = dataCollector,
-                    Status = ReportStatus.Pending,
+                    Status = (isTraining != null && (bool) isTraining) ? ReportStatus.New : ReportStatus.Pending,
                     ProjectHealthRisk = projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     DataCollectionPointCase = new DataCollectionPointCase(),
