@@ -22,7 +22,8 @@ namespace RX.Nyss.Data.Models.Maps
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(x => x.Textfield);
+            builder.Property(x => x.Text)
+                .HasMaxLength(4000);
 
             builder.Property(x => x.CreatedAt);
 

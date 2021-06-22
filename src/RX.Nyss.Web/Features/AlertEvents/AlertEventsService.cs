@@ -114,7 +114,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                     EventSubtype = logItem.AlertEventSubtype.Name,
                     logItem.LoggedBy,
                     CreatedAt = logItem.CreatedAt.AddHours(utcOffset),
-                    logItem.Textfield
+                    logItem.Text
                 })
                 .ToList();
 
@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 LoggedBy = logItem.LoggedBy.Name,
                 AlertEventType = logItem.EventType,
                 AlertEventSubtype = logItem.EventSubtype,
-                Text = logItem.Textfield
+                Text = logItem.Text
             }));
 
             if (alert.EscalatedAt.HasValue)
@@ -248,7 +248,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 AlertEventTypeId = createDto.EventTypeId,
                 AlertEventSubtypeId = createDto.EventSubtypeId,
                 LoggedBy = currentUser,
-                Textfield = createDto.Text
+                Text = createDto.Text
             };
 
             await _nyssContext.AddAsync(alertEventLogItem);
@@ -266,7 +266,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 return Error(ResultKey.AlertEvent.AlertEventNotFound);
             }
 
-            alertEventItem.Textfield = editDto.Text;
+            alertEventItem.Text = editDto.Text;
 
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.AlertEvent.EditSuccess);
