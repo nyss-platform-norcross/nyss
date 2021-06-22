@@ -6,13 +6,15 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
-import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
+import { ReportErrorFilterType, DataCollectorType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
 import { formatDate, getUtcOffset } from "../../../utils/date";
 
 export const reportsSagas = () => [
-  takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
-  takeEvery(consts.GET_REPORTS.INVOKE, getReports),
+  takeEvery(consts.OPEN_CORRECT_REPORTS_LIST.INVOKE, openCorrectReportsList),
+  takeEvery(consts.OPEN_INCORRECT_REPORTS_LIST.INVOKE, openIncorrectReportsList),
+  takeEvery(consts.GET_CORRECT_REPORTS.INVOKE, getCorrectReports),
+  takeEvery(consts.GET_INCORRECT_REPORTS.INVOKE, getIncorrectReports),
   takeEvery(consts.OPEN_REPORT_EDITION.INVOKE, openReportEdition),
   takeEvery(consts.EDIT_REPORT.INVOKE, editReport),
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
@@ -24,50 +26,109 @@ export const reportsSagas = () => [
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport)
 ];
 
-function* openReportsList({ projectId }) {
-  const listStale = yield select(state => state.reports.listStale);
+function* openCorrectReportsList({ projectId }) {
+  const listStale = yield select(state => state.reports.correctReportsListStale);
 
-  yield put(actions.openList.request());
+  yield put(actions.openCorrectReportsList.request());
   try {
     yield openReportsModule(projectId);
 
     const filtersData = yield call(http.get, `/api/report/filters?projectId=${projectId}`);
 
     if (listStale) {
-      yield call(getReports, { projectId });
+      yield call(getCorrectReports, { projectId });
     }
 
-    yield put(actions.openList.success(projectId, filtersData.value));
+    yield put(actions.openCorrectReportsList.success(projectId, filtersData.value));
   } catch (error) {
-    yield put(actions.openList.failure(error.message));
+    yield put(actions.openCorrectReportsList.failure(error.message));
   }
 };
 
-function* getReports({ projectId, pageNumber, filters, sorting }) {
-  const requestFilters = filters || (yield select(state => state.reports.filters)) ||
+function* openIncorrectReportsList({ projectId }) {
+  const listStale = yield select(state => state.reports.incorrectReportsListStale);
+
+  yield put(actions.openIncorrectReportsList.request());
+  try {
+    yield openReportsModule(projectId);
+
+    if (listStale) {
+      yield call(getIncorrectReports, { projectId });
+    }
+
+    yield put(actions.openIncorrectReportsList.success(projectId));
+  } catch (error) {
+    yield put(actions.openIncorrectReportsList.failure(error.message));
+  }
+};
+
+function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
+  const requestFilters = filters || (yield select(state => state.reports.correctReportsFilters)) ||
   {
-    reportsType: ReportListType.main,
+    dataCollectorType: DataCollectorType.human,
+    errorType: null,
     area: null,
     healthRiskId: null,
-    status: true,
+    formatCorrect: true,
     isTraining: false,
+    reportStatus: {
+      kept: true,
+      dismissed: true,
+      notCrossChecked: true,
+      training: false
+    },
+    reportType: null,
     utcOffset: getUtcOffset()
   };
 
-  const requestSorting = sorting || (yield select(state => state.reports.sorting)) ||
+  const requestSorting = sorting || (yield select(state => state.reports.correctReportsSorting)) ||
   {
     orderBy: DateColumnName,
     sortAscending: false
   };
 
-  const page = pageNumber || (yield select(state => state.reports.paginatedListData && state.reports.paginatedListData.page)) || 1;
+  const page = pageNumber || (yield select(state => state.reports.correctReportsPaginatedListData && state.reports.correctReportsPaginatedListData.page)) || 1;
 
-  yield put(actions.getList.request());
+  yield put(actions.getCorrectList.request());
   try {
     const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
+    yield put(actions.getCorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
-    yield put(actions.getList.failure(error.message));
+    yield put(actions.getCorrectList.failure(error.message));
+  }
+};
+
+function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
+  const requestFilters = filters || (yield select(state => state.reports.incorrectReportsFilters)) ||
+  {
+    dataCollectorType: DataCollectorType.human,
+    errorType: ReportErrorFilterType.all,
+    area: null,
+    healthRiskId: null,
+    formatCorrect: false,
+    isTraining: false,
+    reportStatus: null,
+    reportType: {
+      real: true,
+      training: false,
+      corrected: false
+    },
+    utcOffset: getUtcOffset()
+  };
+  const requestSorting = sorting || (yield select(state => state.reports.incorrectReportsSorting)) ||
+  {
+    orderBy: DateColumnName,
+    sortAscending: false
+  };
+
+  const page = pageNumber || (yield select(state => state.reports.incorrectReportsPaginatedListData && state.reports.incorrectReportsPaginatedListData.page)) || 1;
+
+  yield put(actions.getIncorrectList.request());
+  try {
+    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
+    yield put(actions.getIncorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
+  } catch (error) {
+    yield put(actions.getIncorrectList.failure(error.message));
   }
 };
 
@@ -151,7 +212,7 @@ function* markAsError({ reportId }) {
     yield call(http.post, `/api/report/${reportId}/markAsError`);
     yield put(actions.markAsError.success());
     yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
-    yield call(getReports, { projectId });
+    yield call(getCorrectReports, { projectId });
   } catch (error) {
     yield put(actions.markAsError.failure());
   }
@@ -195,7 +256,7 @@ function* acceptReport({ reportId }) {
     yield call(http.post, `/api/report/${reportId}/accept`);
     yield put(actions.acceptReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.acceptReportSuccess));
-    yield getReports({projectId});
+    yield getCorrectReports({projectId});
   } catch (error) {
     yield put(actions.acceptReport.failure());
     yield put(appActions.showMessage(error.message));
@@ -209,7 +270,7 @@ function* dismissReport({ reportId }) {
     yield call(http.post, `/api/report/${reportId}/dismiss`);
     yield put(actions.dismissReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.dismissReportSuccess));
-    yield getReports({projectId});
+    yield getCorrectReports({projectId});
   } catch (error) {
     yield put(actions.dismissReport.failure());
     yield put(appActions.showMessage(error.message));

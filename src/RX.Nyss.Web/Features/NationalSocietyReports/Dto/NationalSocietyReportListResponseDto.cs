@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
 {
@@ -26,5 +27,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public string ProjectName { get; set; }
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
+        public ReportStatus Status { get; set; }
+        public ReportErrorType? ErrorType { get; set; }
     }
 }

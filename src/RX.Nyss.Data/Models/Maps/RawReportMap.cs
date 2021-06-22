@@ -24,6 +24,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.OutgoingMessageId);
             builder.Property(x => x.ModemNumber);
             builder.Property(x => x.IsTraining);
+            builder.Property(x => x.ErrorType);
 
             builder.Property(x => x.ApiKey)
                 .HasMaxLength(100)

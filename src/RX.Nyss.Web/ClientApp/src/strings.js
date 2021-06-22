@@ -1,5 +1,5 @@
-import React from 'react';
-import { StringsEditor } from './components/common/stringsEditor/StringsEditor';
+import React from "react";
+import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
 
 let stringList = {};
 
@@ -762,7 +762,8 @@ export const stringKeys = {
       acceptReport: "reports.list.acceptReport",
       dismissReport: "reports.list.dismissReport",
       acceptReportSuccess: "reports.list.acceptReportSuccess",
-      dismissReportSuccess: "reports.list.dismissReportSuccess"
+      dismissReportSuccess: "reports.list.dismissReportSuccess",
+      errorType: "reports.list.errorType"
     },
     form: {
       title: "reports.form.editionTitle",
@@ -778,6 +779,8 @@ export const stringKeys = {
       update: "reports.form.update"
     },
     title: "reports.title",
+    correctReportsTitle: "correctReports.title",
+    incorrectReportsTitle: "incorrectReports.title",
     sendReport: {
       dataCollector: "reports.sendReport.dataCollector",
       message: "reports.sendReport.message",
@@ -787,7 +790,30 @@ export const stringKeys = {
       goToReportList: "reports.sendReport.goToReportList",
       success: "reports.sendReport.success",
       modem: "reports.sendReport.modem"
-    }
+    },
+    errorTypes: {
+      "GlobalHealthRiskCodeNotFound": "report.errorType.globalHealthRiskCodeNotFound",
+      "HealthRiskNotFound": "report.errorType.healthRiskNotFound",
+      "FormatError": "report.errorType.formatError",
+      "GatewayError": "report.errorType.gatewayError",
+      "TooLong": "report.errorType.tooLong",
+      "DataCollectorUsedCollectionPointFormat": "report.errorType.dataCollectorUsedCollectionPointFormat",
+      "CollectionPointUsedDataCollectorFormat": "report.errorType.collectionPointUsedDataCollectorFormat",
+      "CollectionPointNonHumanHealthRisk": "report.errorType.collectionPointNonHumanHealthRisk",
+      "SingleReportNonHumanHealthRisk": "report.errorType.singleReportNonHumanHealthRisk",
+      "AggregateReportNonHumanHealthRisk": "report.errorType.aggregateReportNonHumanHealthRisk",
+      "EventReportHumanHealthRisk": "report.errorType.eventReportHumanHealthRisk",
+      "GenderAndAgeNonHumanHealthRisk": "report.errorType.genderAndAgeNonHumanHealthRisk",
+      "Gateway": "report.errorType.gateway",
+      "Other": "report.errorType.other"
+    },
+    status: {
+      "New": "report.status.notCrossChecked",
+      "Rejected": "report.status.rejected",
+      "Accepted": "report.status.accepted",
+      "Pending": "report.status.notCrossChecked",
+      "Closed": "report.status.notCrossChecked"
+    },
   },
   nationalSocietyReports: {
     list: {
@@ -810,9 +836,8 @@ export const stringKeys = {
       referredCount: "nationalSocietyReports.list.referredCount",
       deathCount: "nationalSocietyReports.list.deathCount",
       fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
-      success: "nationalSocietyReports.list.success",
-      error: "nationalSocietyReports.list.error",
-      markedAsError: "nationalSocietyReports.list.markedAsError"
+      markedAsError: "nationalSocietyReports.list.markedAsError",
+      errorType: "nationalSocietyReports.list.errorType"
     },
     title: "nationalSocietyReports.title"
   },
@@ -952,13 +977,23 @@ export const stringKeys = {
       selectReportListType: "filters.report.selectReportListType",
       mainReportsListType: "filters.report.mainReportsListType",
       dcpReportListType: "filters.report.dcpReportListType",
-      unknownSenderReportListType: "filters.report.unknownSenderReportListType",    
+      unknownSenderReportListType: "filters.report.unknownSenderReportListType",
       status: "filters.report.status",
-      success: "filters.report.success",
-      error: "filters.report.error",
       reportType: "filters.report.reportType",
       trainingReports: "filters.report.trainingReports",
-      nonTrainingReports: "filters.report.nonTrainingReports"
+      nonTrainingReports: "filters.report.nonTrainingReports",
+      correctedReports: "filters.report.correctedReports",
+      kept: "filters.report.keptReports",
+      dismissed: "filters.report.dismissedReports",
+      notCrossChecked: "filters.report.notCrossCheckedReports",
+      selectErrorType: "filters.report.selectErrorType",
+      errorTypes: {
+        "All": "filters.report.errorTypeAll",
+        "HealthRiskNotFound": "filters.report.errorTypeHealthRiskNotFound",
+        "WrongFormat": "filters.report.errorTypeWrongFormat",
+        "GatewayError": "filters.report.errorTypeGatewayError",
+        "Other": "filters.report.errorTypeOther"
+      }
     }
   },
   table: {
@@ -1083,8 +1118,8 @@ export const stringKey = (key) =>
 
 export const extractKey = (key) =>
   isStringKey(key)
-  ? key.substring(stringPrefix.length)
-  : key
+    ? key.substring(stringPrefix.length)
+    : key
 
 export function updateStrings(strings) {
   Object.assign(stringList, strings);

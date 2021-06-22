@@ -7,20 +7,35 @@ export function nationalSocietyReportsReducer(state = initialState.nationalSocie
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
-    case actions.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.INVOKE:
-      return { ...state, listStale: action.nationalSocietyId !== state.listNationalSocietyId };
+    case actions.OPEN_NATIONAL_SOCIETY_CORRECT_REPORTS_LIST.INVOKE:
+      return { ...state, correctReportsListStale: action.nationalSocietyId !== state.listNationalSocietyId };
 
-    case actions.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.SUCCESS:
+    case actions.OPEN_NATIONAL_SOCIETY_CORRECT_REPORTS_LIST.SUCCESS:
       return { ...state, listNationalSocietyId: action.nationalSocietyId, filtersData: action.filtersData };
 
-    case actions.GET_NATIONAL_SOCIETY_REPORTS.REQUEST:
-      return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
+    case actions.OPEN_NATIONAL_SOCIETY_INCORRECT_REPORTS_LIST.INVOKE:
+      return { ...state, incorrectReportsListStale: state.incorrectReportsListStale || action.nationalSocietyId !== state.listNationalSocietyId };
 
-    case actions.GET_NATIONAL_SOCIETY_REPORTS.SUCCESS:
-      return { ...state, filters: action.filters, sorting: action.sorting, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+    case actions.OPEN_NATIONAL_SOCIETY_INCORRECT_REPORTS_LIST.SUCCESS:
+      return { ...state, listNationalSocietyId: action.nationalSocietyId };
 
-    case actions.GET_NATIONAL_SOCIETY_REPORTS.FAILURE:
-      return { ...state, listFetching: false, paginatedListData: null };
+    case actions.GET_NATIONAL_SOCIETY_CORRECT_REPORTS.REQUEST:
+      return { ...state, correctReportsPaginatedListData: state.correctReportsListStale ? null : state.correctReportsPaginatedListData, listFetching: true };
+
+    case actions.GET_NATIONAL_SOCIETY_CORRECT_REPORTS.SUCCESS:
+      return { ...state, correctReportsFilters: action.filters, correctReportsSorting: action.sorting, listFetching: false, correctReportsListStale: false, correctReportsPaginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+
+    case actions.GET_NATIONAL_SOCIETY_CORRECT_REPORTS.FAILURE:
+      return { ...state, listFetching: false, correctReportsPaginatedListData: null };
+
+    case actions.GET_NATIONAL_SOCIETY_INCORRECT_REPORTS.REQUEST:
+      return { ...state, incorrectReportsPaginatedListData: state.incorrectReportsListStale ? null : state.incorrectReportsPaginatedListData, listFetching: true };
+
+    case actions.GET_NATIONAL_SOCIETY_INCORRECT_REPORTS.SUCCESS:
+      return { ...state, incorrectReportsFilters: action.filters, incorrectReportsSorting: action.sorting, listFetching: false, incorrectReportsListStale: false, incorrectReportsPaginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+
+    case actions.GET_NATIONAL_SOCIETY_INCORRECT_REPORTS.FAILURE:
+      return { ...state, listFetching: false, incorrectReportsPaginatedListData: null };
 
     default:
       return state;

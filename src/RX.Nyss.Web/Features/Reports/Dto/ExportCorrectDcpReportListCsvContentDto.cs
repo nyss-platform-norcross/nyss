@@ -3,7 +3,7 @@ using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Reports.Dto
 {
-    public class ExportDcpReportListCsvContentDto
+    public class ExportCorrectDcpReportListCsvContentDto
     {
         public int Id { get; set; }
         public string Date { get; set; }
@@ -32,5 +32,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public string PhoneNumber { get; set; }
         public string Message { get; set; }
         public string Location { get; set; }
+        public string Corrected { get; set; }
     }
 }

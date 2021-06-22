@@ -20,6 +20,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.ModifiedAt);
             builder.Property(x => x.AcceptedAt);
             builder.Property(x => x.RejectedAt);
+            builder.Property(x => x.CorrectedAt);
 
             builder.Property(x => x.ModifiedBy)
                 .HasMaxLength(100);
@@ -78,7 +79,6 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.HasOne(x => x.DataCollector)
                 .WithMany(x => x.Reports)
-                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.ProjectHealthRisk)
@@ -91,6 +91,10 @@ namespace RX.Nyss.Data.Models.Maps
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RejectedBy)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.CorrectedBy)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 

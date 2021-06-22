@@ -24,7 +24,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
                 public const string CannotDeleteHeadSupervisorHasSupervisors = "user.deletion.cannotDeleteHeadSupervisorHasSupervisors";
                 public const string CannotDeleteYourself = "user.deletion.cannotDeleteYourself";
-                public const string MoreUsersExists  = "user.deletion.moreUsersExists";
+                public const string MoreUsersExists = "user.deletion.moreUsersExists";
                 public const string UserNotFound = "user.deletion.userNotFound ";
             }
 
@@ -222,6 +222,23 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string HealthRiskNotAssignedToProject = "report.healthRiskNotAssignedToProject";
                 public const string HealthRiskCannotBeEdited = "report.healthRiskCannotBeEdited";
             }
+
+            public static class ErrorType
+            {
+                public const string HealthRiskNotFound = "report.errorType.healthRiskNotFound";
+                public const string GlobalHealthRiskCodeNotFound = "report.errorType.globalHealthRiskCodeNotFound";
+                public const string FormatError = "report.errorType.formatError";
+                public const string Gateway = "report.errorType.gateway";
+                public const string TooLong = "report.errorType.tooLong";
+                public const string DataCollectorUsedCollectionPointFormat = "report.errorType.dataCollectorUsedCollectionPointFormat";
+                public const string CollectionPointUsedDataCollectorFormat = "report.errorType.collectionPointUsedDataCollectorFormat";
+                public const string CollectionPointNonHumanHealthRisk = "report.errorType.collectionPointNonHumanHealthRisk";
+                public const string SingleReportNonHumanHealthRisk = "report.errorType.singleReportNonHumanHealthRisk";
+                public const string AggregateReportNonHumanHealthRisk = "report.errorType.aggregateReportNonHumanHealthRisk";
+                public const string EventReportHumanHealthRisk = "report.errorType.eventReportHumanHealthRisk";
+                public const string GenderAndAgeNonHumanHealthRisk = "report.errorType.genderAndAgeNonHumanHealthRisk";
+                public const string Other = "report.errorType.other";
+            }
         }
 
         public static class Project
@@ -349,6 +366,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string NoPermission = "alert.closeAlert.noPermission";
             }
         }
+
         public static class Consent
         {
             public const string NoPendingConsent = "consent.noPendingConsent";

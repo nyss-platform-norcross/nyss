@@ -6,11 +6,11 @@ import { connect } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import NationalSocietyReportsTable from './NationalSocietyReportsTable';
+import NationalSocietyCorrectReportsTable from './NationalSocietyCorrectReportsTable';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { useMount } from '../../utils/lifecycle';
 
-const NationalSocietyReportsListPageComponent = (props) => {
+const NationalSocietyCorrectReportsListPageComponent = (props) => {
   useMount(() => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
@@ -36,12 +36,11 @@ const NationalSocietyReportsListPageComponent = (props) => {
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
-          showUnknownSenderOption={true}
-          showTrainingFilter={false}
+          showCorrectReportFilters={true}
         />
       </div>
 
-        <NationalSocietyReportsTable
+        <NationalSocietyCorrectReportsTable
           list={props.data.data}
           isListFetching={props.isListFetching}
           page={props.data.page}
@@ -57,7 +56,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
   );
 }
 
-NationalSocietyReportsListPageComponent.propTypes = {
+NationalSocietyCorrectReportsListPageComponent.propTypes = {
   getNationalSocietyReports: PropTypes.func,
   isFetching: PropTypes.bool,
   list: PropTypes.array
@@ -65,21 +64,21 @@ NationalSocietyReportsListPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
-  data: state.nationalSocietyReports.paginatedListData,
+  data: state.nationalSocietyReports.correctReportsPaginatedListData,
   isListFetching: state.nationalSocietyReports.listFetching,
   isRemoving: state.nationalSocietyReports.listRemoving,
-  filters: state.nationalSocietyReports.filters,
-  sorting: state.nationalSocietyReports.sorting,
+  filters: state.nationalSocietyReports.correctReportsFilters,
+  sorting: state.nationalSocietyReports.correctReportsSorting,
   healthRisks: state.nationalSocietyReports.filtersData.healthRisks,
   nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {
-  openNationalSocietyReportsList: nationalSocietyReportsActions.openList.invoke,
-  getList: nationalSocietyReportsActions.getList.invoke
+  openNationalSocietyReportsList: nationalSocietyReportsActions.openCorrectList.invoke,
+  getList: nationalSocietyReportsActions.getCorrectList.invoke
 };
 
-export const NationalSocietyReportsListPage = withLayout(
+export const NationalSocietyCorrectReportsListPage = withLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(NationalSocietyReportsListPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(NationalSocietyCorrectReportsListPageComponent)
 );

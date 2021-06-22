@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
@@ -25,6 +26,8 @@ namespace RX.Nyss.Data.Models
         public int? ReportId { get; set; }
 
         public bool? IsTraining { get; set; }
+
+        public ReportErrorType? ErrorType { get; set; }
 
         public virtual Village Village { get; set; }
 

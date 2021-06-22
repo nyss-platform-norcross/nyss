@@ -6,6 +6,7 @@ using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -59,16 +60,9 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
-            var reportsQuery = _nyssContext.RawReports
-                .FilterByProject(projectId)
-                .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByTrainingMode(filter.IsTraining)
-                .FilterByReportType(filter.ReportsType)
-                .FilterByArea(ReportService.MapToArea(filter.Area))
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                .Select(r => new ExportReportListResponseDto
+            var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
+
+            var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
@@ -87,7 +81,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
                     SupervisorName = r.DataCollector.Supervisor.Name,
-                    Status = GetReportStatus(r.Report != null, r.Report.MarkedAsError, stringResources),
+                    Status = GetReportStatusString(stringResources, r.Report.Status),
                     MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
@@ -114,7 +108,8 @@ namespace RX.Nyss.Web.Features.Reports
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
                         .FirstOrDefault(),
-                    ReportStatus = GetReportStatusString(stringResources, r.Report.Status)
+                    ErrorType = GetReportErrorTypeString(stringResources, r.ErrorType),
+                    Corrected = r.Report.CorrectedAt.HasValue
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -123,21 +118,28 @@ namespace RX.Nyss.Web.Features.Reports
 
             ReportService.AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
+            if (!filter.FormatCorrect)
+            {
+                return useExcelFormat
+                    ? GetIncorrectReportsExcelData(reports, stringResources)
+                    : GetIncorrectReportsCsvData(reports, stringResources);
+            }
+
             return useExcelFormat
-                ? GetExcelData(reports, stringResources, filter.ReportsType)
-                : GetCsvData(reports, stringResources, filter.ReportsType);
+                ? GetCorrectReportsExcelData(reports, stringResources, filter.DataCollectorType)
+                : GetCorrectReportsCsvData(reports, stringResources, filter.DataCollectorType);
         }
 
-        private byte[] GetCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private byte[] GetCorrectReportsCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
         {
-            var columnLabels = GetColumnLabels(stringResources, reportListType);
+            var columnLabels = GetCorrectReportsColumnLabels(stringResources, reportListDataCollectorType);
 
-            if (reportListType == ReportListType.FromDcp)
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 var dcpReportData = reports.Select(r =>
                 {
                     var report = (ExportReportListResponseDto)r;
-                    return new ExportDcpReportListCsvContentDto
+                    return new ExportCorrectDcpReportListCsvContentDto
                     {
                         Id = r.Id,
                         Date = r.DateTime.ToString("yyyy-MM-dd"),
@@ -167,7 +169,10 @@ namespace RX.Nyss.Web.Features.Reports
                         Message = report.Message,
                         Location = report.Location != null
                             ? $"{report.Location.Y}/{report.Location.X}"
-                            : ""
+                            : "",
+                        Corrected = report.Corrected
+                        ? GetStringResource(stringResources, "report.export.corrected")
+                        : null
                     };
                 });
                 return _excelExportService.ToCsv(dcpReportData, columnLabels);
@@ -176,7 +181,7 @@ namespace RX.Nyss.Web.Features.Reports
             var reportData = reports.Select(r =>
             {
                 var report = (ExportReportListResponseDto)r;
-                return new ExportReportListCsvContentDto
+                return new ExportCorrectReportListCsvContentDto
                 {
                     Id = r.Id,
                     Date = r.DateTime.ToString("yyyy-MM-dd"),
@@ -201,11 +206,46 @@ namespace RX.Nyss.Web.Features.Reports
                     DataCollectorDisplayName = report.DataCollectorDisplayName,
                     PhoneNumber = report.PhoneNumber,
                     Message = report.Message,
-                    ReportStatus = report.ReportStatus,
                     ReportAlertId = report.ReportAlertId,
                     Location = report.Location != null
                         ? $"{report.Location.Y}/{report.Location.X}"
-                        : ""
+                        : "",
+                    Corrected = report.Corrected
+                        ? GetStringResource(stringResources, "reports.export.corrected")
+                        : null
+                };
+            });
+            return _excelExportService.ToCsv(reportData, columnLabels);
+        }
+
+        private byte[] GetIncorrectReportsCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources)
+        {
+            var columnLabels = GetIncorrectReportsColumnLabels(stringResources);
+
+            var reportData = reports.Select(r =>
+            {
+                var report = (ExportReportListResponseDto)r;
+                return new ExportIncorrectReportListCsvContentDto
+                {
+                    Id = r.Id,
+                    Date = r.DateTime.ToString("yyyy-MM-dd"),
+                    Time = report.DateTime.ToString("HH:mm"),
+                    EpiWeek = report.EpiYear,
+                    EpiYear = report.EpiWeek,
+                    Region = report.Region,
+                    District = report.District,
+                    Village = report.Village,
+                    Zone = report.Zone,
+                    DataCollectorDisplayName = report.DataCollectorDisplayName,
+                    PhoneNumber = report.PhoneNumber,
+                    Message = report.Message,
+                    Location = report.Location != null
+                        ? $"{report.Location.Y}/{report.Location.X}"
+                        : "",
+                    ErrorType = report.ErrorType,
+                    Corrected = report.Corrected
+                        ? GetStringResource(stringResources, "report.export.corrected")
+                        : null
                 };
             });
             return _excelExportService.ToCsv(reportData, columnLabels);
@@ -222,32 +262,51 @@ namespace RX.Nyss.Web.Features.Reports
                 _ => null
             };
 
+        private static string GetReportErrorTypeString(IDictionary<string, StringResourceValue> stringResources, ReportErrorType? errorType) =>
+            errorType switch
+            {
+                ReportErrorType.HealthRiskNotFound => GetStringResource(stringResources, ResultKey.Report.ErrorType.HealthRiskNotFound),
+                ReportErrorType.GlobalHealthRiskCodeNotFound => GetStringResource(stringResources, ResultKey.Report.ErrorType.GlobalHealthRiskCodeNotFound),
+                ReportErrorType.FormatError => GetStringResource(stringResources, ResultKey.Report.ErrorType.FormatError),
+                ReportErrorType.EventReportHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.EventReportHumanHealthRisk),
+                ReportErrorType.AggregateReportNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.AggregateReportNonHumanHealthRisk),
+                ReportErrorType.CollectionPointNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.CollectionPointNonHumanHealthRisk),
+                ReportErrorType.CollectionPointUsedDataCollectorFormat => GetStringResource(stringResources, ResultKey.Report.ErrorType.CollectionPointUsedDataCollectorFormat),
+                ReportErrorType.DataCollectorUsedCollectionPointFormat => GetStringResource(stringResources, ResultKey.Report.ErrorType.DataCollectorUsedCollectionPointFormat),
+                ReportErrorType.SingleReportNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.SingleReportNonHumanHealthRisk),
+                ReportErrorType.GenderAndAgeNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.GenderAndAgeNonHumanHealthRisk),
+                ReportErrorType.TooLong => GetStringResource(stringResources, ResultKey.Report.ErrorType.TooLong),
+                ReportErrorType.Gateway => GetStringResource(stringResources, ResultKey.Report.ErrorType.Gateway),
+                ReportErrorType.Other => GetStringResource(stringResources, ResultKey.Report.ErrorType.Other),
+                _ => null
+            };
+
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
             stringResources.Keys.Contains(key)
                 ? stringResources[key]
                     .Value
                 : key;
 
-        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private byte[] GetCorrectReportsExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources,
+            ReportListDataCollectorType reportListDataCollectorType)
         {
             var documentTitle = GetStringResource(stringResources, "reports.export.title");
-            var columnLabels = GetColumnLabels(stringResources, reportListType);
-            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle, reportListType);
+            var columnLabels = GetCorrectReportsColumnLabels(stringResources, reportListDataCollectorType);
+            var excelDoc = _excelExportService.CorrectReportsToExcel(reports, columnLabels, documentTitle, reportListDataCollectorType);
             return excelDoc.GetAsByteArray();
         }
 
-        private static string GetReportStatus(bool isValid, bool markedAsError, IDictionary<string, StringResourceValue> stringResources) =>
-            markedAsError switch
-            {
-                true => GetStringResource(stringResources, "reports.list.markedAsError"),
-                false => isValid
-                    ? GetStringResource(stringResources, "reports.list.success")
-                    : GetStringResource(stringResources, "reports.list.error")
-            };
-
-        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
+        private byte[] GetIncorrectReportsExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources)
         {
-            if (reportListType == ReportListType.FromDcp)
+            var documentTitle = GetStringResource(stringResources, "reports.export.title");
+            var columnLabels = GetIncorrectReportsColumnLabels(stringResources);
+            var excelDoc = _excelExportService.IncorrectReportsToExcel(reports, columnLabels, documentTitle);
+            return excelDoc.GetAsByteArray();
+        }
+
+        private List<string> GetCorrectReportsColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
+        {
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 return new List<string>
                 {
@@ -277,7 +336,8 @@ namespace RX.Nyss.Web.Features.Reports
                     GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
                     GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
                     GetStringResource(stringResources, "reports.export.message"),
-                    GetStringResource(stringResources, "reports.export.location")
+                    GetStringResource(stringResources, "reports.export.location"),
+                    GetStringResource(stringResources, "reports.export.corrected")
                 };
             }
 
@@ -306,10 +366,60 @@ namespace RX.Nyss.Web.Features.Reports
                 GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
                 GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
                 GetStringResource(stringResources, "reports.export.message"),
-                GetStringResource(stringResources, "reports.export.reportStatus"),
                 GetStringResource(stringResources, "reports.export.reportAlertId"),
-                GetStringResource(stringResources, "reports.export.location")
+                GetStringResource(stringResources, "reports.export.location"),
+                GetStringResource(stringResources, "reports.export.corrected")
             };
+        }
+
+        private List<string> GetIncorrectReportsColumnLabels(IDictionary<string, StringResourceValue> stringResources) =>
+            new List<string>
+            {
+                GetStringResource(stringResources, "reports.export.id"),
+                GetStringResource(stringResources, "reports.export.date"),
+                GetStringResource(stringResources, "reports.export.time"),
+                GetStringResource(stringResources, "reports.export.epiYear"),
+                GetStringResource(stringResources, "reports.export.epiWeek"),
+                GetStringResource(stringResources, "reports.export.message"),
+                GetStringResource(stringResources, "reports.list.errorType"),
+                GetStringResource(stringResources, "reports.list.region"),
+                GetStringResource(stringResources, "reports.list.district"),
+                GetStringResource(stringResources, "reports.list.village"),
+                GetStringResource(stringResources, "reports.list.zone"),
+                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
+                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
+                GetStringResource(stringResources, "reports.export.location"),
+                GetStringResource(stringResources, "reports.export.corrected")
+            };
+
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
+            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
+            {
+                var nationalSocietyId = await _nyssContext.Projects
+                    .Where(p => p.Id == projectId)
+                    .Select(p => p.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+
+                return _nyssContext.RawReports
+                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
+                    .FilterByDataCollectorType(filter.DataCollectorType)
+                    .FilterByHealthRisk(filter.HealthRiskId)
+                    .FilterByFormatCorrectness(filter.FormatCorrect)
+                    .FilterByErrorType(filter.ErrorType)
+                    .FilterByArea(ReportService.MapToArea(filter.Area))
+                    .FilterByReportStatus(filter.ReportStatus)
+                    .FilterByReportType(filter.ReportType);
+            }
+
+            return _nyssContext.RawReports
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByDataCollectorType(filter.DataCollectorType)
+                .FilterByArea(ReportService.MapToArea(filter.Area))
+                .FilterByFormatCorrectness(filter.FormatCorrect)
+                .FilterByErrorType(filter.ErrorType)
+                .FilterByReportStatus(filter.ReportStatus)
+                .FilterByReportType(filter.ReportType);
         }
     }
 }

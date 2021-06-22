@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Exceptions

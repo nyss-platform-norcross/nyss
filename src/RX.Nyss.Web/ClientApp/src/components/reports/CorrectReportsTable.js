@@ -1,10 +1,8 @@
-import styles from '../common/table/Table.module.scss';
-
 import React, { Fragment, useState } from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import TablePager from '../common/tablePagination/TablePager';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
@@ -14,21 +12,20 @@ import { accessMap } from '../../authentication/accessMap';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
-import { ReportListType } from '../common/filters/logic/reportFilterConstsants';
+import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
 import { DateColumnName, reportStatus } from './logic/reportsConstants';
 import {
-  Typography,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   TableSortLabel,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { alertStatus } from '../alerts/logic/alertsConstants';
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
-  list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, projectIsClosed,
+export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
+  list, page, onChangePage, rowsPerPage, totalRows, dataCollectorType, filters, sorting, onSort, projectIsClosed,
   goToAlert, acceptReport, dismissReport }) => {
 
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
@@ -45,7 +42,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
   };
 
   const dashIfEmpty = (text, ...args) => {
-    return [text || "-", ...args].filter(x => !!x).join(", ");
+    return [text || '-', ...args].filter(x => !!x).join(', ');
   };
 
   const createSortHandler = column => event => {
@@ -119,7 +116,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: "6%", minWidth: "80px" }}>
+              <TableCell style={{ width: '6%', minWidth: '80px' }}>
                 <TableSortLabel
                   active={sorting.orderBy === DateColumnName}
                   direction={sorting.sortAscending ? 'asc' : 'desc'}
@@ -128,25 +125,22 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                   {strings(stringKeys.reports.list.date)}
                 </TableSortLabel>
               </TableCell>
-              <TableCell style={{ width: "6%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
-              <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: "20%" }}>{strings(stringKeys.reports.list.location)}</TableCell>
-              <TableCell style={{ width: "14%" }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
-              {!filters.status &&
-                <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.message)}</TableCell>
-              }
-              <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-              <TableCell style={{ width: "8%" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-              <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-              <TableCell style={{ width: "8%" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
-              {reportsType === ReportListType.fromDcp &&
+              <TableCell style={{ width: '6%' }}>{strings(stringKeys.reports.list.status)}</TableCell>
+              <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+              <TableCell style={{ width: '20%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: '14%' }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
+              <TableCell style={{ width: '7%' }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
+              <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
+              <TableCell style={{ width: '7%' }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
+              <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+              {dataCollectorType === DataCollectorType.collectionPoint &&
                 <Fragment>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
                 </Fragment>
               }
-              <TableCell style={{ width: "3%" }} />
+              <TableCell style={{ width: '3%' }} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -154,27 +148,20 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
               <TableRow key={row.id} hover>
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
                 <TableCell>
-                  {row.isMarkedAsError
-                    ? strings(stringKeys.reports.list.markedAsError)
-                    : row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}
+                  {strings(stringKeys.reports.status[row.status])}
                 </TableCell>
                 <TableCell>
                   {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ""}
-                  {(!row.isAnonymized || filters.reportsType === ReportListType.unknownSender) && row.phoneNumber}
+                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
+                  {(!row.isAnonymized || dataCollectorType === DataCollectorType.unknownSender) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
-                {!filters.status &&
-                  <TableCell>
-                    <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
-                  </TableCell>
-                }
                 <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
-                {reportsType === ReportListType.fromDcp &&
+                {dataCollectorType === DataCollectorType.collectionPoint &&
                   <Fragment>
                     <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
                     <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
@@ -194,7 +181,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && (row.reportType === "Aggregate" || row.reportType === "DataCollectionPoint")} />
+                      condition={!row.isAnonymized && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
@@ -217,9 +204,9 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
   );
 }
 
-ReportsTable.propTypes = {
+CorrectReportsTable.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
-export default ReportsTable;
+export default CorrectReportsTable;

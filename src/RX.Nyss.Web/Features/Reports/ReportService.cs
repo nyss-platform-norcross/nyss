@@ -168,7 +168,8 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    Status = r.Report.Status
+                    Status = r.Report.Status,
+                    ReportErrorType = r.ErrorType
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -178,7 +179,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
 
-            if(filter.ReportsType != ReportListType.UnknownSender)
+            if(filter.DataCollectorType != ReportListDataCollectorType.UnknownSender)
             {
                 AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
             }
@@ -292,7 +293,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
             GetSuccessReportsQuery(filters)
-                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && r.Status != ReportStatus.Closed);
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
         public async Task<Result> MarkAsError(int reportId)
         {
@@ -375,7 +376,7 @@ namespace RX.Nyss.Web.Features.Reports
         }
 
         private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
-            if(filter.ReportsType == ReportListType.UnknownSender)
+            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
                     .Where(p => p.Id == projectId)
@@ -384,23 +385,24 @@ namespace RX.Nyss.Web.Features.Reports
 
                 return _nyssContext.RawReports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
-                    .FilterByReportType(filter.ReportsType)
+                    .FilterByDataCollectorType(filter.DataCollectorType)
                     .FilterByHealthRisk(filter.HealthRiskId)
-                    .Where(r => filter.Status
-                        ? r.Report != null && !r.Report.MarkedAsError
-                        : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                    .FilterByArea(MapToArea(filter.Area));
+                    .FilterByFormatCorrectness(filter.FormatCorrect)
+                    .FilterByErrorType(filter.ErrorType)
+                    .FilterByArea(MapToArea(filter.Area))
+                    .FilterByReportStatus(filter.ReportStatus)
+                    .FilterByReportType(filter.ReportType);
             }
 
             return _nyssContext.RawReports
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByTrainingMode(filter.IsTraining)
-                .FilterByReportType(filter.ReportsType)
+                .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByArea(MapToArea(filter.Area))
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || r.Report.MarkedAsError);
+                .FilterByFormatCorrectness(filter.FormatCorrect)
+                .FilterByErrorType(filter.ErrorType)
+                .FilterByReportStatus(filter.ReportStatus)
+                .FilterByReportType(filter.ReportType);
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>

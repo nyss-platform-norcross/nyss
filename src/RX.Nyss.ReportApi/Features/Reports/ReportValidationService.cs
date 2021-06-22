@@ -7,7 +7,6 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
@@ -15,9 +14,10 @@ namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportValidationService
     {
-        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector);
+        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, int nationalSocietyId);
         DateTime ParseTimestamp(string timestamp);
         void ValidateReceivalTime(DateTime receivedAt);
+        Task<GatewaySetting> ValidateGatewaySetting(string apiKey);
     }
 
     public class ReportValidationService : IReportValidationService
@@ -33,42 +33,51 @@ namespace RX.Nyss.ReportApi.Features.Reports
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
+        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, int nationalSocietyId)
         {
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
-                .SingleOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
-                    phr.Project.Id == dataCollector.Project.Id);
+                .FirstOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
+                    ((dataCollector != null && phr.Project.Id == dataCollector.Project.Id) || phr.Project.NationalSocietyId == nationalSocietyId));
 
             if (projectHealthRisk == null)
             {
-                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.",
+                if (dataCollector != null)
+                {
+                    throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.",
+                        ReportErrorType.HealthRiskNotFound);
+                }
+
+                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in national society with id '{nationalSocietyId}'.",
                     ReportErrorType.HealthRiskNotFound);
             }
 
-            switch (dataCollector.DataCollectorType)
+            if (dataCollector != null)
             {
-                case DataCollectorType.Human:
-                    if (parsedReport.ReportType != ReportType.Single &&
-                        parsedReport.ReportType != ReportType.Aggregate &&
-                        parsedReport.ReportType != ReportType.Event)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.");
-                    }
+                switch (dataCollector.DataCollectorType)
+                {
+                    case DataCollectorType.Human:
+                        if (parsedReport.ReportType != ReportType.Single &&
+                            parsedReport.ReportType != ReportType.Aggregate &&
+                            parsedReport.ReportType != ReportType.Event)
+                        {
+                            throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
+                                $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.", ReportErrorType.DataCollectorUsedCollectionPointFormat);
+                        }
 
-                    break;
-                case DataCollectorType.CollectionPoint:
-                    if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        parsedReport.ReportType != ReportType.Event)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.");
-                    }
+                        break;
+                    case DataCollectorType.CollectionPoint:
+                        if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
+                            parsedReport.ReportType != ReportType.Event)
+                        {
+                            throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
+                                $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.", ReportErrorType.CollectionPointUsedDataCollectorFormat);
+                        }
 
-                    break;
-                default:
-                    throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
+                        break;
+                    default:
+                        throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
+                }
             }
 
             switch (parsedReport.ReportType)
@@ -76,14 +85,14 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 case ReportType.Single:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.SingleReportNonHumanHealthRisk);
                     }
 
                     break;
                 case ReportType.Aggregate:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.AggregateReportNonHumanHealthRisk);
                     }
 
                     break;
@@ -93,7 +102,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.Event}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.");
+                            $"A report of type '{ReportType.Event}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.", ReportErrorType.EventReportHumanHealthRisk);
                     }
 
                     break;
@@ -101,8 +110,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
-                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.");
+                            $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.CollectionPointNonHumanHealthRisk);
                     }
 
                     break;
@@ -140,7 +148,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
             }
             catch (Exception e)
             {
-                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
+                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}'. Exception: {e.Message} Stack trace: {e.StackTrace}", ReportErrorType.Gateway);
             }
         }
 
@@ -150,8 +158,28 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             if (receivedAt > _dateTimeProvider.UtcNow.AddMinutes(maxAllowedPrecedenceInMinutes))
             {
-                throw new ReportValidationException("The receival time cannot be in the future.");
+                throw new ReportValidationException("The receival time cannot be in the future.", ReportErrorType.Gateway);
             }
+        }
+
+        public async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
+        {
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.NationalSociety)
+                .Include(gs => gs.Modems)
+                .SingleOrDefaultAsync(gs => gs.ApiKey == apiKey);
+
+            if (gatewaySetting == null)
+            {
+                throw new ReportValidationException($"A gateway setting with API key '{apiKey}' does not exist.", ReportErrorType.Gateway);
+            }
+
+            if (gatewaySetting.GatewayType != GatewayType.SmsEagle)
+            {
+                throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.", ReportErrorType.Gateway);
+            }
+
+            return gatewaySetting;
         }
     }
 }

@@ -46,12 +46,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         {
             // Arrange
             var projectId = 1;
+            var nationalSocietyId = 1;
             var healthRiskCode = 1;
             var projectHealthRisks = new List<ProjectHealthRisk>
             {
                 new ProjectHealthRisk
                 {
-                    Project = new Project { Id = projectId },
+                    Project = new Project { Id = projectId, NationalSocietyId = nationalSocietyId},
                     HealthRisk = new HealthRisk
                     {
                         HealthRiskType = healthRiskType,
@@ -74,7 +75,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             };
 
             // Assert
-            Should.NotThrow(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector));
+            Should.NotThrow(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector, nationalSocietyId));
         }
 
         [Theory]
@@ -105,12 +106,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         {
             // Arrange
             var projectId = 1;
+            var nationalSocietyId = 1;
             var healthRiskCode = 1;
             var projectHealthRisks = new List<ProjectHealthRisk>
             {
                 new ProjectHealthRisk
                 {
-                    Project = new Project { Id = projectId },
+                    Project = new Project { Id = projectId, NationalSocietyId = nationalSocietyId},
                     HealthRisk = new HealthRisk
                     {
                         HealthRiskType = healthRiskType,
@@ -133,22 +135,23 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             };
 
             // Assert
-            Should.Throw<ReportValidationException>(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector));
+            Should.Throw<ReportValidationException>(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector, nationalSocietyId));
         }
 
         [Fact]
         public void ValidateReport_WhenProjectHealthRiskDoesNotExist_ShouldThrowException()
         {
             // Arrange
+            var nationalSocietyId = 1;
             var projectHealthRisks = new List<ProjectHealthRisk>();
             var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
 
             var parsedReport = new ParsedReport { HealthRiskCode = 1 };
-            var dataCollector = new DataCollector { Project = new Project { Id = 1 } };
+            var dataCollector = new DataCollector { Project = new Project { Id = 1, NationalSocietyId = nationalSocietyId} };
 
             // Assert
-            Should.Throw<ReportValidationException>(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector));
+            Should.Throw<ReportValidationException>(async () => await _reportValidationService.ValidateReport(parsedReport, dataCollector, nationalSocietyId));
         }
 
         [Theory]
@@ -234,6 +237,59 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
 
             // Assert
             Should.Throw<ReportValidationException>(() => _reportValidationService.ValidateReceivalTime(receivalTime));
+        }
+
+        [Fact]
+        public void ValidateGatewaySetting_WhenApiKeyExists_ShouldNotThrowException()
+        {
+            // Arrange
+            var apiKey = "api-key";
+            var gatewaySettings = new List<GatewaySetting>
+            {
+                new GatewaySetting
+                {
+                    ApiKey = apiKey,
+                    GatewayType = GatewayType.SmsEagle
+                }
+            };
+            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
+
+            // Assert
+            Should.NotThrow(() => _reportValidationService.ValidateGatewaySetting(apiKey));
+        }
+
+        [Fact]
+        public void ValidateGatewaySetting_WhenGatewayTypeDoesNotExist_ShouldThrowException()
+        {
+            // Arrange
+            var apiKey = "api-key";
+            var gatewaySettings = new List<GatewaySetting>();
+            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
+
+            // Assert
+            Should.Throw<ReportValidationException>(() => _reportValidationService.ValidateGatewaySetting(apiKey));
+        }
+
+        [Fact]
+        public void ValidateGatewaySetting_WhenGatewayTypeIsNotSmsEagle_ShouldThrowException()
+        {
+            // Arrange
+            var apiKey = "api-key";
+            var gatewaySettings = new List<GatewaySetting>
+            {
+                new GatewaySetting
+                {
+                    ApiKey = apiKey,
+                    GatewayType = GatewayType.Unknown
+                }
+            };
+            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
+
+            // Assert
+            Should.Throw<ReportValidationException>(() => _reportValidationService.ValidateGatewaySetting(apiKey));
         }
     }
 }

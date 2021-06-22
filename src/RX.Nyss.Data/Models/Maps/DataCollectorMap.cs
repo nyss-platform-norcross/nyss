@@ -52,7 +52,6 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.HasMany(x => x.Reports)
                 .WithOne(x => x.DataCollector)
-                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.DataCollectorLocations)

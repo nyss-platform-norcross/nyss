@@ -1,6 +1,6 @@
 using System;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Handlers
@@ -16,7 +16,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
     public class ErrorReportData
     {
-        public string Sender { get; set; }
+        public DataCollector DataCollector { get; set; }
         public string LanguageCode { get; set; }
         public ReportErrorType ReportErrorType { get; set; }
         public int? ModemNumber { get; set; }

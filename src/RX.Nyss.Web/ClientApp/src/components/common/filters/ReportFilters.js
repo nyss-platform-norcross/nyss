@@ -1,10 +1,7 @@
-import styles from "./ReportFilters.module.scss";
+import styles from './ReportFilters.module.scss';
 
 import React, { useState } from 'react';
 import {
-  FormControlLabel,
-  Radio,
-  RadioGroup,
   Grid,
   TextField,
   MenuItem,
@@ -12,13 +9,16 @@ import {
   CardContent,
   FormControl,
   InputLabel,
-  Select,
+  Select
 } from '@material-ui/core';
-import { AreaFilter } from "./AreaFilter";
-import { strings, stringKeys } from "../../../strings";
-import { ReportListType } from './logic/reportFilterConstsants'
+import { AreaFilter } from './AreaFilter';
+import { strings, stringKeys } from '../../../strings';
+import { reportErrorFilterTypes, DataCollectorType } from './logic/reportFilterConstsants';
+import { Fragment } from 'react';
+import { ReportStatusFilter } from './ReportStatusFilter';
+import { ReportTypeFilter } from './ReportTypeFilter';
 
-export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showTrainingFilter, showUnknownSenderOption }) => {
+export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showCorrectReportFilters, showTrainingFilter }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -35,20 +35,23 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
+    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }));
   }
 
   const handleHealthRiskChange = event =>
-    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
+    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }));
 
-  const handleReportsTypeChange = event =>
-    onChange(updateValue({ reportsType: event.target.value }))
+  const handleDataCollectorTypeChange = event =>
+    onChange(updateValue({ dataCollectorType: event.target.value }));
 
-  const handleIsTrainingChange = event =>
-    onChange(updateValue({ isTraining: event.target.value === "true" }))
+  const handleErrorTypeChange = event =>
+    onChange(updateValue({ errorType: event.target.value }));
 
-  const handleStatusChange = event =>
-    onChange(updateValue({ status: event.target.value === "true" }))
+  const handleReportStatusChange = event =>
+    onChange(updateValue({ reportStatus: { ...value.reportStatus, [event.target.name]: event.target.checked }}));
+
+  const handleReportTypeChange = event => 
+    onChange(updateValue({ reportType: { ...value.reportType, [event.target.name]: event.target.checked }}));
 
   if (!value) {
     return null;
@@ -67,70 +70,84 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
           </Grid>
 
           <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.filters.report.healthRisk)}
-              onChange={handleHealthRiskChange}
-              value={value.healthRiskId || 0}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value={0}>{strings(stringKeys.filters.report.healthRiskAll)}</MenuItem>
-
-              {healthRisks.map(healthRisk => (
-                <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
-                  {healthRisk.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item>
             <FormControl className={styles.filterItem}>
               <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>
               <Select
-                onChange={handleReportsTypeChange}
-                value={filters.reportsType}
+                onChange={handleDataCollectorTypeChange}
+                value={filters.dataCollectorType}
               >
-                {showUnknownSenderOption &&
-                <MenuItem value={ReportListType.unknownSender}>
+                <MenuItem value={DataCollectorType.unknownSender}>
                   {strings(stringKeys.filters.report.unknownSenderReportListType)}
                 </MenuItem>
-                }
-                <MenuItem value={ReportListType.main}>
+                <MenuItem value={DataCollectorType.human}>
                   {strings(stringKeys.filters.report.mainReportsListType)}
                 </MenuItem>
-                <MenuItem value={ReportListType.fromDcp}>
+                <MenuItem value={DataCollectorType.collectionPoint}>
                   {strings(stringKeys.filters.report.dcpReportListType)}
                 </MenuItem>
               </Select>
             </FormControl>
           </Grid>
 
-          <Grid item>
-            <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.status)}</InputLabel>
-            <RadioGroup
-              value={filters.status}
-              onChange={handleStatusChange}
-              className={styles.filterRadioGroup}
-            >
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.success)} value={true} />
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.error)} value={false} />
-            </RadioGroup>
-          </Grid>
+          {showCorrectReportFilters && (
+            <Fragment>
+              <Grid item>
+                <TextField
+                  select
+                  label={strings(stringKeys.filters.report.healthRisk)}
+                  onChange={handleHealthRiskChange}
+                  value={value.healthRiskId || 0}
+                  className={styles.filterItem}
+                  InputLabelProps={{ shrink: true }}
+                >
+                  <MenuItem value={0}>{strings(stringKeys.filters.report.healthRiskAll)}</MenuItem>
 
-          {showTrainingFilter &&
-            <Grid item>
-              <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.reportType)}</InputLabel>
-              <RadioGroup
-                value={filters.isTraining}
-                onChange={handleIsTrainingChange}
-                className={styles.filterRadioGroup}
-              >
-                <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.nonTrainingReports)} value={false} />
-                <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.trainingReports)} value={true} />
-              </RadioGroup>
-            </Grid>
-          }
+                  {healthRisks.map(healthRisk => (
+                    <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
+                      {healthRisk.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid item>
+                <ReportStatusFilter
+                  filter={value.reportStatus}
+                  onChange={handleReportStatusChange}
+                  correctReports={showCorrectReportFilters}
+                  showTrainingFilter={showTrainingFilter}
+                />
+              </Grid>
+            </Fragment>
+          )}
+
+          {!showCorrectReportFilters && (
+            <Fragment>
+              <Grid item>
+                <FormControl className={styles.filterItem}>
+                  <InputLabel>{strings(stringKeys.filters.report.selectErrorType)}</InputLabel>
+                  <Select
+                    onChange={handleErrorTypeChange}
+                    value={filters.errorType}
+                  >
+                    {reportErrorFilterTypes.map(errorType => (
+                      <MenuItem value={errorType} key={`errorfilter_${errorType}`}>
+                        {strings(stringKeys.filters.report.errorTypes[errorType])}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item>
+                <ReportTypeFilter
+                  filter={value.reportType}
+                  onChange={handleReportTypeChange}
+                  showTrainingFilter={showTrainingFilter}
+                />
+              </Grid>
+            </Fragment>
+          )}
         </Grid>
       </CardContent>
     </Card>

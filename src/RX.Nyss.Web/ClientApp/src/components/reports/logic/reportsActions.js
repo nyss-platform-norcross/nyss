@@ -1,26 +1,40 @@
 import { push } from "connected-react-router";
 import {
-  OPEN_REPORTS_LIST, GET_REPORTS,
+  OPEN_CORRECT_REPORTS_LIST,
   OPEN_REPORT_EDITION, EDIT_REPORT,
-  EXPORT_TO_EXCEL, MARK_AS_ERROR, EXPORT_TO_CSV, SEND_REPORT, OPEN_SEND_REPORT, ACCEPT_REPORT, DISMISS_REPORT
+  EXPORT_TO_EXCEL, MARK_AS_ERROR, EXPORT_TO_CSV, SEND_REPORT, OPEN_SEND_REPORT, ACCEPT_REPORT, DISMISS_REPORT, OPEN_INCORRECT_REPORTS_LIST, GET_INCORRECT_REPORTS, GET_CORRECT_REPORTS
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
 export const goToEdition = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
 export const goToAlert = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/assess`);
 
-export const openList = {
-  invoke: (projectId) => ({ type: OPEN_REPORTS_LIST.INVOKE, projectId }),
-  request: () => ({ type: OPEN_REPORTS_LIST.REQUEST }),
-  success: (projectId, filtersData) => ({ type: OPEN_REPORTS_LIST.SUCCESS, projectId, filtersData }),
-  failure: (message) => ({ type: OPEN_REPORTS_LIST.FAILURE, message })
+export const openCorrectReportsList = {
+  invoke: (projectId) => ({ type: OPEN_CORRECT_REPORTS_LIST.INVOKE, projectId }),
+  request: () => ({ type: OPEN_CORRECT_REPORTS_LIST.REQUEST }),
+  success: (projectId, filtersData) => ({ type: OPEN_CORRECT_REPORTS_LIST.SUCCESS, projectId, filtersData }),
+  failure: (message) => ({ type: OPEN_CORRECT_REPORTS_LIST.FAILURE, message })
 };
 
-export const getList = {
-  invoke: (projectId, pageNumber, filters, sorting) => ({ type: GET_REPORTS.INVOKE, projectId, pageNumber, filters, sorting }),
-  request: () => ({ type: GET_REPORTS.REQUEST }),
-  success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
-  failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
+export const openIncorrectReportsList = {
+  invoke: (projectId) => ({ type: OPEN_INCORRECT_REPORTS_LIST.INVOKE, projectId }),
+  request: () => ({ type: OPEN_INCORRECT_REPORTS_LIST.REQUEST }),
+  success: (projectId) => ({ type: OPEN_INCORRECT_REPORTS_LIST.SUCCESS, projectId }),
+  failure: (message) => ({ type: OPEN_INCORRECT_REPORTS_LIST.FAILURE, message })
+};
+
+export const getCorrectList = {
+  invoke: (projectId, pageNumber, filters, sorting) => ({ type: GET_CORRECT_REPORTS.INVOKE, projectId, pageNumber, filters, sorting }),
+  request: () => ({ type: GET_CORRECT_REPORTS.REQUEST }),
+  success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_CORRECT_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
+  failure: (message) => ({ type: GET_CORRECT_REPORTS.FAILURE, message })
+};
+
+export const getIncorrectList = {
+  invoke: (projectId, pageNumber, filters, sorting) => ({ type: GET_INCORRECT_REPORTS.INVOKE, projectId, pageNumber, filters, sorting }),
+  request: () => ({ type: GET_INCORRECT_REPORTS.REQUEST }),
+  success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_INCORRECT_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
+  failure: (message) => ({ type: GET_INCORRECT_REPORTS.FAILURE, message })
 };
 
 export const openEdition = {

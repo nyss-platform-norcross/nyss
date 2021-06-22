@@ -13,7 +13,8 @@ namespace RX.Nyss.Web.Services
     public interface IExcelExportService
     {
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
-        ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListType reportListType);
+        ExcelPackage CorrectReportsToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType);
+        ExcelPackage IncorrectReportsToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title);
         ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title);
     }
 
@@ -49,7 +50,7 @@ namespace RX.Nyss.Web.Services
             return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
         }
 
-        public ExcelPackage ToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListType reportListType)
+        public ExcelPackage CorrectReportsToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType)
         {
             var package = new ExcelPackage();
             package.Workbook.Properties.Title = title;
@@ -89,7 +90,7 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 19].Value = data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
                 worksheet.Cells[columnIndex, 20].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive + data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
 
-                if (reportListType == ReportListType.FromDcp)
+                if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
                 {
                     worksheet.Cells[columnIndex, 21].Value = data.ReferredCount;
                     worksheet.Cells[columnIndex, 22].Value = data.DeathCount;
@@ -104,15 +105,15 @@ namespace RX.Nyss.Web.Services
                     worksheet.Cells[columnIndex, 21].Value = data.DataCollectorDisplayName;
                     worksheet.Cells[columnIndex, 22].Value = data.PhoneNumber;
                     worksheet.Cells[columnIndex, 23].Value = data.Message;
-                    worksheet.Cells[columnIndex, 24].Value = data.ReportStatus;
-                    worksheet.Cells[columnIndex, 25].Value = data.ReportAlertId;
-                    worksheet.Cells[columnIndex, 26].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
+                    worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;
+                    worksheet.Cells[columnIndex, 25].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
                 }
             }
             worksheet.Column(2).Width = 12; //Date
+            worksheet.Column(6).Width = 14; //ReportStatus
             worksheet.Column(11).Width = 20; //HealthRiskName
 
-            if (reportListType == ReportListType.FromDcp)
+            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
             {
                 worksheet.Column(24).Width = 20; //DcpName
                 worksheet.Column(25).Width = 20; //PhoneNr
@@ -124,9 +125,52 @@ namespace RX.Nyss.Web.Services
                 worksheet.Column(21).Width = 20; //DcName
                 worksheet.Column(22).Width = 20; //PhoneNr
                 worksheet.Column(23).Width = 12; //Message
-                worksheet.Column(24).Width = 14; //ReportStatus
-                worksheet.Column(26).Width = 37; //Location
+                worksheet.Column(25).Width = 37; //Location
             }
+
+            return package;
+        }
+
+        public ExcelPackage IncorrectReportsToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title)
+        {
+            var package = new ExcelPackage();
+            package.Workbook.Properties.Title = title;
+
+            var worksheet = package.Workbook.Worksheets.Add(title);
+
+            foreach (var label in columnLabels)
+            {
+                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Value = label;
+                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
+            }
+
+            foreach (var reportListResponseDto in columnData)
+            {
+                var data = (ExportReportListResponseDto)reportListResponseDto;
+                var columnIndex = columnData.IndexOf(data) + 2;
+                worksheet.Cells[columnIndex, 1].Value = data.Id;
+                worksheet.Cells[columnIndex, 2].Value = data.DateTime;
+                worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+                worksheet.Cells[columnIndex, 3].Value = data.DateTime;
+                worksheet.Cells[columnIndex, 3].Style.Numberformat.Format = "HH:mm";
+                worksheet.Cells[columnIndex, 4].Value = data.EpiYear;
+                worksheet.Cells[columnIndex, 5].Value = data.EpiWeek;
+                worksheet.Cells[columnIndex, 6].Value = data.Message;
+                worksheet.Cells[columnIndex, 7].Value = data.ErrorType;
+                worksheet.Cells[columnIndex, 8].Value = data.Region;
+                worksheet.Cells[columnIndex, 9].Value = data.District;
+                worksheet.Cells[columnIndex, 10].Value = data.Village;
+                worksheet.Cells[columnIndex, 11].Value = data.Zone;
+                worksheet.Cells[columnIndex, 12].Value = data.DataCollectorDisplayName;
+                worksheet.Cells[columnIndex, 13].Value = data.PhoneNumber;
+                worksheet.Cells[columnIndex, 14].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
+            }
+
+            worksheet.Column(2).Width = 12; //Date
+            worksheet.Column(7).Width = 50; //ErrorType
+            worksheet.Column(12).Width = 20; //DcName
+            worksheet.Column(13).Width = 20; //PhoneNr
+            worksheet.Column(14).Width = 37; //Location
 
             return package;
         }
@@ -187,7 +231,7 @@ namespace RX.Nyss.Web.Services
             return package;
         }
 
-        public string EscapeCharacters(object data)
+        private string EscapeCharacters(object data)
         {
             if (data == null)
             {

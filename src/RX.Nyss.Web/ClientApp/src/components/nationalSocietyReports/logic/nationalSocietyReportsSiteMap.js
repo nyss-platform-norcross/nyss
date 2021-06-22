@@ -12,5 +12,23 @@ export const nationalSocietyReportsSiteMap = [
     placeholder: placeholders.leftMenu,
     access: accessMap.nationalSocietyReports.list,
     placeholderIndex: nationalSocietyLeftMenuOrder.nationalSocietyReports
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/reports",
+    path: "/nationalsocieties/:nationalSocietyId/reports/correct",
+    title: () => strings(stringKeys.reports.correctReportsTitle),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.nationalSocietyReports.list,
+    placeholderIndex: 1,
+    middleStepOnly: true
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/reports",
+    path: "/nationalsocieties/:nationalSocietyId/reports/incorrect",
+    title: () => strings(stringKeys.reports.incorrectReportsTitle),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.nationalSocietyReports.list,
+    placeholderIndex: 1,
+    middleStepOnly: true
   }
 ];

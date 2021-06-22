@@ -7,7 +7,7 @@ import * as reportsActions from './logic/reportsActions';
 import TableActions from '../common/tableActions/TableActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import ReportsTable from './ReportsTable';
+import IncorrectReportsTable from './IncorrectReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { strings, stringKeys } from "../../strings";
@@ -17,7 +17,7 @@ import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";
 import { useState } from "react";
 
-const ReportsListPageComponent = (props) => {
+const IncorrectReportsListPageComponent = (props) => {
   const [open, setOpen] = useState(false);
 
   const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor, roles.Supervisor, roles.HeadSupervisor]
@@ -42,10 +42,6 @@ const ReportsListPageComponent = (props) => {
 
   const handleSortChange = (sorting) =>
     props.getList(props.projectId, props.page, props.filters, sorting);
-
-  const handleMarkAsError = (reportId) => {
-    props.markAsError(reportId);
-  }
 
   const handleSendReport = (e) => {
     e.stopPropagation();
@@ -86,16 +82,15 @@ const ReportsListPageComponent = (props) => {
 
       <div className={styles.filtersGrid}>
         <ReportFilters
-          healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
-          showUnknownSenderOption={true}
+          showCorrectReportFilters={false}
           showTrainingFilter={true}
         />
       </div>
 
-      <ReportsTable
+      <IncorrectReportsTable
         list={props.data.data}
         isListFetching={props.isListFetching}
         page={props.data.page}
@@ -108,19 +103,14 @@ const ReportsListPageComponent = (props) => {
         onSort={handleSortChange}
         projectId={props.projectId}
         goToEdition={props.goToEdition}
-        markAsError={handleMarkAsError}
-        isMarkingAsError={props.isMarkingAsError}
         user={props.user}
         projectIsClosed={props.projectIsClosed}
-        goToAlert={props.goToAlert}
-        acceptReport={props.acceptReport}
-        dismissReport={props.dismissReport}
       />
     </Fragment>
   );
 }
 
-ReportsListPageComponent.propTypes = {
+IncorrectReportsListPageComponent.propTypes = {
   getReports: PropTypes.func,
   isFetching: PropTypes.bool,
   list: PropTypes.array
@@ -129,32 +119,26 @@ ReportsListPageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: state.appData.siteMap.parameters.nationalSocietyId,
-  data: state.reports.paginatedListData,
+  data: state.reports.incorrectReportsPaginatedListData,
   isListFetching: state.reports.listFetching,
   isRemoving: state.reports.listRemoving,
-  filters: state.reports.filters,
-  sorting: state.reports.sorting,
-  healthRisks: state.reports.filtersData.healthRisks,
+  filters: state.reports.incorrectReportsFilters,
+  sorting: state.reports.incorrectReportsSorting,
   user: state.appData.user,
-  isMarkingAsError: state.reports.markingAsError,
   projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
 });
 
 const mapDispatchToProps = {
-  openReportsList: reportsActions.openList.invoke,
-  getList: reportsActions.getList.invoke,
+  openReportsList: reportsActions.openIncorrectReportsList.invoke,
+  getList: reportsActions.getIncorrectList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
-  markAsError: reportsActions.markAsError.invoke,
   goToEdition: reportsActions.goToEdition,
   openSendReport: reportsActions.openSendReport.invoke,
-  sendReport: reportsActions.sendReport.invoke,
-  goToAlert: reportsActions.goToAlert,
-  acceptReport: reportsActions.acceptReport.invoke,
-  dismissReport: reportsActions.dismissReport.invoke
+  sendReport: reportsActions.sendReport.invoke
 };
 
-export const ReportsListPage = withLayout(
+export const IncorrectReportsListPage = withLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(ReportsListPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(IncorrectReportsListPageComponent)
 );
