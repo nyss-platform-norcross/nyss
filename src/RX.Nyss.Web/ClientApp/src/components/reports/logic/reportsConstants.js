@@ -85,3 +85,10 @@ export const reportDetailedFormatErrors = [
   ReportErrorType.aggregateReportNonHumanHealthRisk,
   ReportErrorType.tooLong
 ];
+
+export const ReportType = {
+single: 'Single',
+aggregate: 'Aggregate',
+event: 'Event',
+dataCollectionPoint: 'DataCollectionPoint'
+};

@@ -137,7 +137,6 @@ const ReportsEditPageComponent = (props) => {
 
     if (props.data.reportType === ReportType.single) {
       Object.keys(reportCountToSexAge).forEach(comb => values[comb] = '0');
-      console.log(findSexAgeCombinationHelper());
       values[findSexAgeCombinationHelper()] = '1';
     }
 
