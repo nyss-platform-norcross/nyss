@@ -212,6 +212,34 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 LogItems = list.OrderBy(x => x.Date).ToList()
             });
         }
+        public async Task<Result<AlertEventCreateFormDto>> GetFormData()
+        {
+            var eventTypes = await _nyssContext.AlertEventTypes
+                .Include((a => a.AlertEventSubtype))
+                .ToListAsync();
+
+            var types = eventTypes.Select(e => new AlertEventsTypeDto
+            {
+                Id = e.Id,
+                Name = e.Name
+            });
+
+            var subtypes = eventTypes
+                .SelectMany(alertEventType =>
+                        alertEventType.AlertEventSubtype,
+                    (alertEventType, alertEventSubtype) => new AlertEventsSubtypeDto
+                    {
+                        Id = alertEventSubtype.Id,
+                        Name = alertEventSubtype.Name,
+                        TypeId = alertEventSubtype.AlertEventTypeId
+                    });
+
+            return Success(new AlertEventCreateFormDto
+            {
+                EventTypes = types,
+                EventSubtypes = subtypes,
+            });
+        }
 
         public async Task<Result> CreateAlertEventLogItem(int alertId, CreateAlertEventRequestDto createDto)
         {
@@ -286,35 +314,6 @@ namespace RX.Nyss.Web.Features.AlertEvents
             await _nyssContext.SaveChangesAsync();
 
             return SuccessMessage(ResultKey.AlertEvent.DeleteSuccess);
-        }
-
-        public async Task<Result<AlertEventCreateFormDto>> GetFormData()
-        {
-            var eventTypes = await _nyssContext.AlertEventTypes
-                .Include((a => a.AlertEventSubtype))
-                .ToListAsync();
-
-            var types = eventTypes.Select(e => new AlertEventsTypeDto
-            {
-                Id = e.Id,
-                Name = e.Name
-            });
-
-            var subtypes = eventTypes
-                .SelectMany(alertEventType =>
-                    alertEventType.AlertEventSubtype,
-                (alertEventType, alertEventSubtype) => new AlertEventsSubtypeDto
-                            {
-                                Id = alertEventSubtype.Id,
-                                Name = alertEventSubtype.Name,
-                                TypeId = alertEventSubtype.AlertEventTypeId
-                            });
-
-            return Success(new AlertEventCreateFormDto
-            {
-                EventTypes = types,
-                EventSubtypes = subtypes,
-            });
         }
     }
 }

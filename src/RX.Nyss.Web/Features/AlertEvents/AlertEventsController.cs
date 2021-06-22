@@ -20,6 +20,26 @@ namespace RX.Nyss.Web.Features.AlertEvents
         }
 
         /// <summary>
+        /// Retrieves the log of events for an alert
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="utcOffset">The offset from utc in hours</param>
+        [HttpGet("{alertId:int}/eventLog")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public async Task<Result<AlertEventsLogResponseDto>> GetAlertEventLogItems(int alertId, int utcOffset) =>
+            await _alertEventsService.GetLogItems(alertId, utcOffset);
+
+
+        /// <summary>
+        /// Gets form data
+        /// </summary>
+        [HttpGet("eventLog/formData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        public async Task<Result<AlertEventCreateFormDto>> GetFormData() =>
+            await _alertEventsService.GetFormData();
+
+        /// <summary>
         /// Adds a new alert event to an alert
         /// </summary>
         [HttpPost("{alertId:int}/eventLog/add")]
@@ -45,26 +65,5 @@ namespace RX.Nyss.Web.Features.AlertEvents
         [NeedsPolicy(Policy.AlertAccess)]
         public async Task<Result> DeleteAlertEventLogItem(int alertEventLogId) =>
             await _alertEventsService.DeleteAlertEventLogItem(alertEventLogId);
-
-        /// <summary>
-        /// Retrieves the log of events for an alert
-        /// </summary>
-        /// <param name="alertId">An identifier of the alert</param>
-        /// <param name="utcOffset">The offset from utc in hours</param>
-        [HttpGet("{alertId:int}/eventLog")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.AlertAccess)]
-        public async Task<Result<AlertEventsLogResponseDto>> GetAlertEventLogItems(int alertId, int utcOffset) =>
-            await _alertEventsService.GetLogItems(alertId, utcOffset);
-
-
-        /// <summary>
-        /// Gets form data
-        /// </summary>
-        [HttpGet("eventLog/formData")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
-        public async Task<Result<AlertEventCreateFormDto>> GetFormData() =>
-            await _alertEventsService.GetFormData();
-
     }
 }
