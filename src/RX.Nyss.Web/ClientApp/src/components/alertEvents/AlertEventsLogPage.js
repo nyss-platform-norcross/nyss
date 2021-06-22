@@ -56,13 +56,14 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
         edit={props.edit}
       />
 
-      <CreateAlertEventDialog
-        open={createDialogOpened}
-        close={() => setCreateDialogOpened(false)}
-        openCreation={props.openCreation}
-        create={props.create}
-        alertId={alertId}
-      />
+      {createDialogOpened && (
+        <CreateAlertEventDialog
+          close={() => setCreateDialogOpened(false)}
+          openCreation={props.openCreation}
+          create={props.create}
+          alertId={alertId}
+        />
+      )}
     </Fragment>
   );
 }

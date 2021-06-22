@@ -25,7 +25,7 @@ import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
 import { getUtcOffset } from "../../../utils/date";
 
-export const CreateAlertEventDialog = ({ open, close, alertId, openCreation, create }) => {
+export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   dayjs.extend(utc);
@@ -96,7 +96,7 @@ export const CreateAlertEventDialog = ({ open, close, alertId, openCreation, cre
   };
 
   return !!form && (
-    <Dialog open={open} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
+    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
       <DialogTitle id="form-dialog-title">
         {strings(stringKeys.alerts.eventLog.addNew)}
