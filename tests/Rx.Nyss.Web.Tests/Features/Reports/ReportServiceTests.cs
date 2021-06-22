@@ -697,7 +697,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Id = i,
                     DataCollector = dataCollector,
-                    Status = (isTraining != null && (bool) isTraining) ? ReportStatus.New : ReportStatus.Pending,
+                    Status = isTraining.HasValue && isTraining.Value ? ReportStatus.New : ReportStatus.Pending,
                     ProjectHealthRisk = projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     DataCollectionPointCase = new DataCollectionPointCase(),

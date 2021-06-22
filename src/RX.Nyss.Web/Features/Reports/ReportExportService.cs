@@ -6,6 +6,7 @@ using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -59,16 +60,9 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
-            var reportsQuery = _nyssContext.RawReports
-                .FilterByProject(projectId, filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
-                .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByReportType(filter.ReportType)
-                .FilterByDataCollectorType(filter.DataCollectorType)
-                .FilterByReportStatus(filter.ReportStatus)
-                .FilterByArea(ReportService.MapToArea(filter.Area))
-                .FilterByFormatCorrectness(filter.FormatCorrect)
-                .FilterByErrorType(filter.ErrorType)
-                .Select(r => new ExportReportListResponseDto
+            var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
+
+            var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
@@ -397,5 +391,35 @@ namespace RX.Nyss.Web.Features.Reports
                 GetStringResource(stringResources, "reports.export.location"),
                 GetStringResource(stringResources, "reports.export.corrected")
             };
+
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
+            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
+            {
+                var nationalSocietyId = await _nyssContext.Projects
+                    .Where(p => p.Id == projectId)
+                    .Select(p => p.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+
+                return _nyssContext.RawReports
+                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
+                    .FilterByDataCollectorType(filter.DataCollectorType)
+                    .FilterByHealthRisk(filter.HealthRiskId)
+                    .FilterByFormatCorrectness(filter.FormatCorrect)
+                    .FilterByErrorType(filter.ErrorType)
+                    .FilterByArea(ReportService.MapToArea(filter.Area))
+                    .FilterByReportStatus(filter.ReportStatus)
+                    .FilterByReportType(filter.ReportType);
+            }
+
+            return _nyssContext.RawReports
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByDataCollectorType(filter.DataCollectorType)
+                .FilterByArea(ReportService.MapToArea(filter.Area))
+                .FilterByFormatCorrectness(filter.FormatCorrect)
+                .FilterByErrorType(filter.ErrorType)
+                .FilterByReportStatus(filter.ReportStatus)
+                .FilterByReportType(filter.ReportType);
+        }
     }
 }
