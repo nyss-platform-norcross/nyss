@@ -132,19 +132,19 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             try
             {
-                var report = await _nyssContext.Reports
-                    .Include(r => r.DataCollector)
-                    .Include(r => r.ProjectHealthRisk).ThenInclude(phr => phr.HealthRisk)
+                var rawReport = await _nyssContext.RawReports
+                    .Include(r => r.Report).ThenInclude(r => r.DataCollector)
+                    .Include(r => r.Report).ThenInclude(r => r.ProjectHealthRisk.HealthRisk)
                     .Where(r => r.Id == reportId)
                     .SingleOrDefaultAsync();
 
-                if (report == null)
+                if (rawReport?.Report == null)
                 {
                     _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
                     return false;
                 }
 
-                await ReportAdded(report);
+                await ReportAdded(rawReport.Report);
                 return true;
             }
             catch (Exception e)
