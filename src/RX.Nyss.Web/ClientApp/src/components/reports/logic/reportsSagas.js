@@ -137,8 +137,17 @@ function* openReportEdition({ projectId, reportId }) {
   try {
     const humanHealthRisksforProject = yield call(http.get, `/api/report/humanHealthRisksForProject/${projectId}/get`);
     const response = yield call(http.get, `/api/report/${reportId}/get`);
+    const filters = {
+      area: null,
+      sex: null,
+      supervisorId: null,
+      trainingStatus: null,
+      name: null,
+      dataCollectorType: response.value.dataCollectorType
+    };
+    const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
     yield openReportsModule(projectId);
-    yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks));
+    yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks, dataCollectors.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }
@@ -147,12 +156,13 @@ function* openReportEdition({ projectId, reportId }) {
 function* editReport({ projectId, reportId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/report/${reportId}/edit`, data);
+    const response = yield call(http.post, `/api/report/${reportId}/edit?projectId=${projectId}`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.reports.list.editedSuccesfully));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
+    yield put(appActions.showMessage(error.message));
   }
 };
 

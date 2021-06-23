@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
@@ -24,6 +23,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
         Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId);
+        Task<bool> RecalculateAlertForReport(int reportId);
     }
 
     public class AlertService : IAlertService
@@ -63,7 +63,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
             var healthRiskTypeIsActivity = report.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity;
 
-            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
+            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity || report.Location == null)
             {
                 return new AlertData
                 {
@@ -126,6 +126,32 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var message = await CreateNotificationMessageForExistingAlert(alert);
 
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
+        }
+
+        public async Task<bool> RecalculateAlertForReport(int reportId)
+        {
+            try
+            {
+                var rawReport = await _nyssContext.RawReports
+                    .Include(r => r.Report).ThenInclude(r => r.DataCollector)
+                    .Include(r => r.Report).ThenInclude(r => r.ProjectHealthRisk.HealthRisk)
+                    .Where(r => r.Id == reportId)
+                    .SingleOrDefaultAsync();
+
+                if (rawReport?.Report == null)
+                {
+                    _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                    return false;
+                }
+
+                await ReportAdded(rawReport.Report);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Could not recalculate alert for report with id: '{reportId}'.");
+                return false;
+            }
         }
 
         public async Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId)

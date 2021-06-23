@@ -11,6 +11,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
@@ -48,6 +49,7 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAlertReportService _alertReportService;
 
         public ReportService(INyssContext nyssContext,
             IUserService userService,
@@ -55,7 +57,8 @@ namespace RX.Nyss.Web.Features.Reports
             INyssWebConfig config,
             IAuthorizationService authorizationService,
             IStringsResourcesService stringsResourcesService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IAlertReportService alertReportService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -64,24 +67,33 @@ namespace RX.Nyss.Web.Features.Reports
             _authorizationService = authorizationService;
             _stringsResourcesService = stringsResourcesService;
             _dateTimeProvider = dateTimeProvider;
+            _alertReportService = alertReportService;
         }
 
         public async Task<Result<ReportResponseDto>> Get(int reportId)
         {
-            var report = await _nyssContext.Reports
+            var report = await _nyssContext.RawReports
                 .Select(r => new ReportResponseDto
                 {
                     Id = r.Id,
-                    ReportType = r.ReportType,
+                    DataCollectorId = r.DataCollector.Id,
+                    DataCollectorType = r.Report.ReportType == ReportType.DataCollectionPoint ? DataCollectorType.CollectionPoint : DataCollectorType.Human,
+                    ReportType = r.Report.ReportType,
+                    ReportStatus = r.Report.Status,
+                    LocationId = r.DataCollector.DataCollectorLocations
+                        .Where(dcl => dcl.Village == r.Village && (dcl.Zone == null || dcl.Zone == r.Zone))
+                        .Select(dcl => dcl.Id)
+                        .FirstOrDefault(),
                     Date = r.ReceivedAt.Date,
-                    HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
-                    CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive.Value,
-                    CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive.Value,
-                    CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive.Value,
-                    CountFemalesAtLeastFive = r.ReportedCase.CountFemalesAtLeastFive.Value,
-                    ReferredCount = r.DataCollectionPointCase.ReferredCount.Value,
-                    DeathCount = r.DataCollectionPointCase.DeathCount.Value,
-                    FromOtherVillagesCount = r.DataCollectionPointCase.FromOtherVillagesCount.Value
+                    HealthRiskId = r.Report.ProjectHealthRisk.HealthRiskId,
+                    CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive.Value,
+                    CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive.Value,
+                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive.Value,
+                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive.Value,
+                    CountUnspecifiedSexAndAge = r.Report.ReportedCase.CountUnspecifiedSexAndAge.Value,
+                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount.Value,
+                    DeathCount = r.Report.DataCollectionPointCase.DeathCount.Value,
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount.Value
                 })
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
@@ -135,7 +147,7 @@ namespace RX.Nyss.Web.Features.Reports
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
-                        .Single(),
+                        .SingleOrDefault(),
                     IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
                         || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
                     IsValid = r.Report != null,
@@ -215,62 +227,79 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
         {
-            var report = await _nyssContext.Reports
-                .Include(r => r.RawReport)
-                .Include(r => r.ProjectHealthRisk)
-                .ThenInclude(phr => phr.Project)
-                .SingleOrDefaultAsync(r => r.Id == reportId);
+            var locationChanged = false;
 
-            if (report == null)
+            try
             {
-                return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
-            }
+                var rawReport = await _nyssContext.RawReports
+                    .Include(raw => raw.Zone)
+                    .Include(r => r.Report)
+                    .ThenInclude(r => r.ProjectHealthRisk)
+                    .Include(r => r.DataCollector).ThenInclude(phr => phr.Project)
+                    .Include(r => r.DataCollector).ThenInclude(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Village)
+                    .Include(r => r.DataCollector).ThenInclude(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Zone)
+                    .SingleOrDefaultAsync(r => r.Id == reportId);
 
-            if (report.ReportType != ReportType.Aggregate &&
-                report.ReportType != ReportType.DataCollectionPoint)
+                if (rawReport?.Report == null)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
+                }
+
+                if (rawReport.Report.Status != ReportStatus.New)
+                {
+                    return Error<ReportResponseDto>(ResultKey.Report.Edit.OnlyNewReportsEditable);
+                }
+
+                if (rawReport.Report.ProjectHealthRisk.Id != reportRequestDto.HealthRiskId)
+                {
+                    await SetProjectHealthRisk(rawReport.Report, reportRequestDto.HealthRiskId, reportRequestDto.DataCollectorId);
+                }
+
+                if (rawReport.DataCollector == null || rawReport.DataCollector.Id != reportRequestDto.DataCollectorId)
+                {
+                    await UpdateDataCollectorForReport(rawReport.Report, reportRequestDto.DataCollectorId);
+                }
+
+                var dataCollectorLocations = rawReport.DataCollector != null
+                    ? rawReport.DataCollector.DataCollectorLocations.ToList()
+                    : new List<DataCollectorLocation>();
+
+                if (LocationNeedsUpdate(rawReport.Report, reportRequestDto, dataCollectorLocations))
+                {
+                    await UpdateLocationForReport(rawReport.Report, reportRequestDto.DataCollectorLocationId, reportRequestDto.DataCollectorId);
+                    locationChanged = true;
+                }
+
+                UpdateReportedCaseCountForReport(rawReport.Report, reportRequestDto);
+
+                var updatedReceivedAt = new DateTime(reportRequestDto.Date.Year, reportRequestDto.Date.Month, reportRequestDto.Date.Day,
+                    rawReport.ReceivedAt.Hour, rawReport.ReceivedAt.Minute, rawReport.ReceivedAt.Second);
+
+                rawReport.ReceivedAt = updatedReceivedAt;
+                rawReport.Report.ReceivedAt = updatedReceivedAt;
+
+                if (rawReport.Report.ReportType != ReportType.DataCollectionPoint &&
+                    rawReport.Report.ReportType != ReportType.Aggregate)
+                {
+                    rawReport.Report.Status = reportRequestDto.ReportStatus;
+                }
+
+                rawReport.Report.ModifiedAt = _dateTimeProvider.UtcNow;
+                rawReport.Report.ModifiedBy = _authorizationService.GetCurrentUserName();
+
+                await _nyssContext.SaveChangesAsync();
+
+                if (locationChanged && rawReport.Report.Status != ReportStatus.Rejected)
+                {
+                    await _alertReportService.RecalculateAlertForReport(rawReport.Id);
+                }
+
+                return SuccessMessage(ResultKey.Report.Edit.EditSuccess);
+            }
+            catch (ResultException e)
             {
-                return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
+                return Error(e.Result.Message.Key);
             }
-
-            var projectHealthRisk = await _nyssContext.ProjectHealthRisks
-                .Include(phr => phr.HealthRisk)
-                .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
-                    phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
-                    phr.Project.Id == report.ProjectHealthRisk.Project.Id);
-
-            if (projectHealthRisk == null)
-            {
-                return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskNotAssignedToProject);
-            }
-
-            var updatedReceivedAt = new DateTime(reportRequestDto.Date.Year, reportRequestDto.Date.Month, reportRequestDto.Date.Day,
-                report.ReceivedAt.Hour, report.ReceivedAt.Minute, report.ReceivedAt.Second);
-            report.RawReport.ReceivedAt = updatedReceivedAt;
-            report.ReceivedAt = updatedReceivedAt;
-            report.ProjectHealthRisk = projectHealthRisk;
-            report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
-            report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
-            report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
-            report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
-
-            report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
-                reportRequestDto.CountMalesAtLeastFive +
-                reportRequestDto.CountFemalesBelowFive +
-                reportRequestDto.CountFemalesAtLeastFive;
-
-            if (report.ReportType == ReportType.DataCollectionPoint)
-            {
-                report.DataCollectionPointCase.ReferredCount = reportRequestDto.ReferredCount;
-                report.DataCollectionPointCase.DeathCount = reportRequestDto.DeathCount;
-                report.DataCollectionPointCase.FromOtherVillagesCount = reportRequestDto.FromOtherVillagesCount;
-            }
-
-            report.ModifiedAt = _dateTimeProvider.UtcNow;
-            report.ModifiedBy = _authorizationService.GetCurrentUserName();
-
-            await _nyssContext.SaveChangesAsync();
-
-            return SuccessMessage(ResultKey.Report.Edit.EditSuccess);
         }
 
         public IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters) =>
@@ -297,17 +326,18 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> MarkAsError(int reportId)
         {
-            var report = await _nyssContext.Reports
-                .Where(r => !r.ReportAlerts.Any())
-                .Include(r => r.ProjectHealthRisk.Project)
+            var rawReport = await _nyssContext.RawReports
+                .Include(r => r.Report)
+                .Include(r => r.DataCollector.Project)
+                .Where(r => r.Report != null && !r.Report.ReportAlerts.Any())
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
-            if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
+            if (rawReport.DataCollector.Project.State != ProjectState.Open)
             {
                 return Error(ResultKey.Report.ProjectIsClosed);
             }
 
-            report.MarkedAsError = true;
+            rawReport.Report.MarkedAsError = true;
             await _nyssContext.SaveChangesAsync();
 
             return Success();
@@ -334,6 +364,11 @@ namespace RX.Nyss.Web.Features.Reports
             if (report.MarkedAsError)
             {
                 return Error(ResultKey.Report.CannotCrossCheckErrorReport);
+            }
+
+            if (report.ReportType == ReportType.DataCollectionPoint)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckDcpReport);
             }
 
             report.AcceptedAt = _dateTimeProvider.UtcNow;
@@ -367,6 +402,11 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.CannotCrossCheckErrorReport);
             }
 
+            if (report.ReportType == ReportType.DataCollectionPoint)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckDcpReport);
+            }
+
             report.RejectedAt = _dateTimeProvider.UtcNow;
             report.RejectedBy = currentUser;
             report.Status = ReportStatus.Rejected;
@@ -375,7 +415,8 @@ namespace RX.Nyss.Web.Features.Reports
             return Success();
         }
 
-        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId)
+        {
             if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
@@ -403,6 +444,103 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByReportType(filter.ReportType);
+        }
+
+        private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId, int dataCollectorId)
+        {
+            var projectId = report.DataCollector?.Project.Id ?? await _nyssContext.DataCollectors
+                .Where(dc => dc.Id == dataCollectorId)
+                .Select(dc => dc.Project.Id)
+                .SingleOrDefaultAsync();
+
+            var projectHealthRisk = await _nyssContext.ProjectHealthRisks
+                .Include(phr => phr.HealthRisk)
+                .SingleOrDefaultAsync(phr => phr.HealthRiskId == projectHealthRiskId
+                    && phr.Project.Id == projectId);
+
+            if (projectHealthRisk == null)
+            {
+                throw new ResultException(ResultKey.Report.Edit.HealthRiskNotAssignedToProject);
+            }
+
+            report.ProjectHealthRisk = projectHealthRisk;
+        }
+
+        private static bool LocationNeedsUpdate(Report report, ReportRequestDto reportRequestDto, List<DataCollectorLocation> dataCollectorLocations)
+        {
+            if (report.RawReport.Village == null && report.RawReport.Zone == null)
+            {
+                return true;
+            }
+
+            var location = dataCollectorLocations
+                .SingleOrDefault(dcl => dcl.Village == report.RawReport.Village && (dcl.Zone == null || dcl.Zone == report.RawReport.Zone));
+
+            return reportRequestDto.DataCollectorLocationId != location?.Id;
+        }
+
+        private async Task UpdateDataCollectorForReport(Report report, int dataCollectorId)
+        {
+            var newDataCollector = await _nyssContext.DataCollectors
+                .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Village)
+                .Include(dc => dc.DataCollectorLocations).ThenInclude(dcl => dcl.Zone)
+                .SingleOrDefaultAsync(dc => dc.Id == dataCollectorId);
+
+            if (newDataCollector == null)
+            {
+                throw new ResultException(ResultKey.Report.Edit.SenderDoesNotExist);
+            }
+
+            if ((newDataCollector.DataCollectorType == DataCollectorType.CollectionPoint && report.ReportType != ReportType.DataCollectionPoint)
+                || (newDataCollector.DataCollectorType == DataCollectorType.Human && report.ReportType == ReportType.DataCollectionPoint))
+            {
+                throw new ResultException(ResultKey.Report.Edit.DataCollectorTypeCannotBeChanged);
+            }
+
+            report.DataCollector = newDataCollector;
+            report.RawReport.DataCollector = newDataCollector;
+        }
+
+        private async Task UpdateLocationForReport(Report report, int locationId, int dataCollectorId)
+        {
+            var location = await _nyssContext.DataCollectorLocations
+                .Include(dcl => dcl.Village)
+                .Include(dcl => dcl.Zone)
+                .Where(dcl => dcl.DataCollectorId == dataCollectorId && dcl.Id == locationId)
+                .SingleOrDefaultAsync();
+
+            if (location == null)
+            {
+                throw new ResultException(ResultKey.Report.Edit.LocationNotFound);
+            }
+
+            report.Location = location.Location;
+            report.RawReport.Village = location.Village;
+            report.RawReport.Zone = location.Zone;
+        }
+
+        private void UpdateReportedCaseCountForReport(Report report, ReportRequestDto reportRequestDto)
+        {
+            if (report.ReportType != ReportType.Event)
+            {
+                report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
+                report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
+                report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
+                report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
+                report.ReportedCase.CountUnspecifiedSexAndAge = reportRequestDto.CountUnspecifiedSexAndAge;
+            }
+
+            report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
+                reportRequestDto.CountMalesAtLeastFive +
+                reportRequestDto.CountFemalesBelowFive +
+                reportRequestDto.CountFemalesAtLeastFive;
+
+            if (report.ReportType == ReportType.DataCollectionPoint)
+            {
+                report.DataCollectionPointCase.ReferredCount = reportRequestDto.ReferredCount;
+                report.DataCollectionPointCase.DeathCount = reportRequestDto.DeathCount;
+                report.DataCollectionPointCase.FromOtherVillagesCount = reportRequestDto.FromOtherVillagesCount;
+            }
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>

@@ -1,7 +1,7 @@
-import styles from "./ReportsEditPage.module.scss";
+import styles from './ReportsEditPage.module.scss';
 
-import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from "react-redux";
+import React, { useEffect, useState, Fragment, useReducer } from 'react';
+import { connect } from 'react-redux';
 import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as reportsActions from './logic/reportsActions';
@@ -10,212 +10,382 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import DateInputField from "../forms/DateInputField";
+import DateInputField from '../forms/DateInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Button, Grid } from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import { reportAges, reportCountToSexAge, reportSexes, reportStatus, ReportType } from './logic/reportsConstants';
 
 const ReportsEditPageComponent = (props) => {
-    const [form, setForm] = useState(null);
+  const [form, setForm] = useState(null);
+  const [selectedDataCollector, setSelectedDataCollector] = useState(null);
+  const [availableReportStatus, setAvailableReportStatus] = useState(null);
+  const [reportSex, setReportSex] = useState(null);
+  const [reportAge, setReportAge] = useState(null);
 
-    useMount(() => {
-        props.openEdition(props.projectId, props.reportId);
-    });
-
-    useEffect(() => {
-        if (!props.data) {
-            return;
-        }
-
-        const fields = {
-            id: props.data.id,
-            date: dayjs(props.data.date),
-            healthRiskId: props.data.healthRiskId.toString(),
-            countMalesBelowFive: props.data.countMalesBelowFive.toString(),
-            countMalesAtLeastFive: props.data.countMalesAtLeastFive.toString(),
-            countFemalesBelowFive: props.data.countFemalesBelowFive.toString(),
-            countFemalesAtLeastFive: props.data.countFemalesAtLeastFive.toString(),
-            referredCount: props.data.referredCount.toString(),
-            deathCount: props.data.deathCount.toString(),
-            fromOtherVillagesCount: props.data.fromOtherVillagesCount.toString()
-        };
-
-        const validation = {
-            date: [validators.required],
-            healthRiskId: [validators.required],
-            countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
-            countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
-            countFemalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
-            countFemalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
-            referredCount: [validators.integer, validators.nonNegativeNumber],
-            deathCount: [validators.integer, validators.nonNegativeNumber],
-            fromOtherVillagesCount: [validators.integer, validators.nonNegativeNumber]
-        };
-
-        setForm(createForm(fields, validation));
-    }, [props.data, props.match]);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (!form.isValid()) {
-            return;
-        };
-
-        const values = form.getValues();
-        props.edit(props.projectId, props.reportId, {
-            date: values.date.format('YYYY-MM-DDTHH:mm:ss'),
-            healthRiskId: parseInt(values.healthRiskId),
-            countMalesBelowFive: parseInt(values.countMalesBelowFive),
-            countMalesAtLeastFive: parseInt(values.countMalesAtLeastFive),
-            countFemalesBelowFive: parseInt(values.countFemalesBelowFive),
-            countFemalesAtLeastFive: parseInt(values.countFemalesAtLeastFive),
-            referredCount: values.referredCount === "" ? null : parseInt(values.referredCount),
-            deathCount: values.deathCount === "" ? null : parseInt(values.deathCount),
-            fromOtherVillagesCount: values.fromOtherVillagesCount === "" ? null : parseInt(values.fromOtherVillagesCount)
-        });
-    };
-
-    if (props.isFetching || !form || !props.data) {
-        return <Loading />;
+  const [selectedLocation, setLocation] = useReducer((state, locationId) => {
+    if (props.data !== null && state.id !== locationId) {
+      return props.dataCollectors.find(dc => dc.id === selectedDataCollector.id)
+        .locations.find(lc => lc.id.toString() === locationId) || state;
     }
 
-    return (
-        <Fragment>
-            {props.error && <ValidationMessage message={props.error} />}
-            <Form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <DateInputField
-                            className={styles.fullWidth}
-                            label={strings(stringKeys.reports.form.date)}
-                            name="date"
-                            field={form.fields.date}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <SelectField
-                            label={strings(stringKeys.reports.form.healthRisk)}
-                            name="healthRiskId"
-                            field={form.fields.healthRiskId}
-                        >
-                            {props.healthRisks.map(healthRisk => (
-                                <MenuItem key={`healthRisk_${healthRisk.id}`} value={healthRisk.id.toString()}>
-                                    {healthRisk.name}
-                                </MenuItem>
-                            ))}
-                        </SelectField>
-                    </Grid>
-                </Grid>
+    return state;
+  }, { id: 0 });
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.malesBelowFive)}
-                            name="countMalesBelowFive"
-                            field={form.fields.countMalesBelowFive}
-                        />
-                    </Grid>
-                </Grid>
+  useMount(() => {
+    props.openEdition(props.projectId, props.reportId);
+  });
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.malesAtLeastFive)}
-                            name="countMalesAtLeastFive"
-                            field={form.fields.countMalesAtLeastFive}
-                        />
-                    </Grid>
-                </Grid>
+  useEffect(() => {
+    if (!props.data) {
+      return;
+    }
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.femalesBelowFive)}
-                            name="countFemalesBelowFive"
-                            field={form.fields.countFemalesBelowFive}
-                        />
-                    </Grid>
-                </Grid>
+    if (!!props.data.dataCollectorId && !!props.data.locationId) {
+      setLocation(props.data.locationId.toString());
+    }
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.femalesAtLeastFive)}
-                            name="countFemalesAtLeastFive"
-                            field={form.fields.countFemalesAtLeastFive}
-                        />
-                    </Grid>
-                </Grid>
+    if (props.data.reportStatus === reportStatus.new) {
+      setAvailableReportStatus([reportStatus.new, reportStatus.accepted, reportStatus.rejected]);
+    }
+    if (props.data.reportStatus !== reportStatus.new && props.data.reportStatus !== reportStatus.closed) {
+      setAvailableReportStatus([reportStatus.pending, reportStatus.accepted, reportStatus.rejected]);
+    }
+    if (props.data.reportStatus === reportStatus.closed) {
+      setAvailableReportStatus([reportStatus.closed]);
+    }
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.referredCount)}
-                            name="referredCount"
-                            field={form.fields.referredCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
-                    </Grid>
-                </Grid>
+    const fields = {
+      id: props.data.id,
+      date: dayjs(props.data.date),
+      dataCollectorId: !!props.data.dataCollectorId ? props.data.dataCollectorId.toString() : '',
+      reportStatus: props.data.reportStatus,
+      healthRiskId: props.data.healthRiskId.toString(),
+      locationId: !!props.data.locationId ? props.data.locationId.toString() : '',
+      reportSex: findSexAgeHelper(props.data).sex,
+      reportAge: findSexAgeHelper(props.data).age,
+      countMalesBelowFive: props.data.countMalesBelowFive.toString(),
+      countMalesAtLeastFive: props.data.countMalesAtLeastFive.toString(),
+      countFemalesBelowFive: props.data.countFemalesBelowFive.toString(),
+      countFemalesAtLeastFive: props.data.countFemalesAtLeastFive.toString(),
+      countUnspecifiedSexAndAge: props.data.countUnspecifiedSexAndAge.toString(),
+      referredCount: props.data.referredCount.toString(),
+      deathCount: props.data.deathCount.toString(),
+      fromOtherVillagesCount: props.data.fromOtherVillagesCount.toString()
+    };
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.deathCount)}
-                            name="deathCount"
-                            field={form.fields.deathCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
-                    </Grid>
-                </Grid>
+    const validation = {
+      date: [validators.required],
+      dataCollectorId: [validators.required],
+      reportStatus: [validators.required],
+      locationId: [validators.required],
+      reportSex: [validators.requiredWhen(() => props.data.reportType === ReportType.single), validators.sexAge(x => x.reportAge)],
+      reportAge: [validators.requiredWhen(() => props.data.reportType === ReportType.single), validators.sexAge(x => x.reportSex)],
+      healthRiskId: [validators.required],
+      countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+      countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+      countFemalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+      countFemalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+      referredCount: [validators.integer, validators.nonNegativeNumber],
+      deathCount: [validators.integer, validators.nonNegativeNumber],
+      fromOtherVillagesCount: [validators.integer, validators.nonNegativeNumber]
+    };
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextInputField
-                            label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
-                            name="fromOtherVillagesCount"
-                            field={form.fields.fromOtherVillagesCount}
-                            disabled={props.data.reportType !== "DataCollectionPoint"}
-                        />
-                    </Grid>
-                </Grid>
+    const newForm = createForm(fields, validation);
 
-                <FormActions>
-                    <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
-                    <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
-                </FormActions>
-            </Form>
-        </Fragment>
-    );
+
+    setSelectedDataCollector(props.dataCollectors.find(dc => dc.id === props.data.dataCollectorId));
+    setReportSex(fields.reportSex);
+    setReportAge(fields.reportAge);
+
+    newForm.fields.locationId.subscribe(({ newValue }) => setLocation(newValue));
+    newForm.fields.reportSex.subscribe(({ newValue, form }) => {
+      setReportSex(newValue);
+      newForm.revalidateField(form.reportAge, form);
+    });
+    newForm.fields.reportAge.subscribe(({ newValue, form }) => {
+      setReportAge(newValue);
+      newForm.revalidateField(form.reportSex, form);
+    });
+
+    setForm(newForm);
+  }, [props.data, props.dataCollectors]);
+
+  const handleDataCollectorChange = (event) => {
+    form.fields.locationId.update('', true);
+
+    const newDataCollector = props.dataCollectors.find(dc => dc.id.toString() === event.target.value);
+    setSelectedDataCollector(newDataCollector);
+    if (newDataCollector?.locations.length === 1) {
+      form.fields.locationId.update(newDataCollector.locations[0].id.toString());
+      setLocation(newDataCollector.locations[0].id.toString());
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!form.isValid()) {
+      return;
+    };
+
+    const values = form.getValues();
+
+    if (props.data.reportType === ReportType.single) {
+      Object.keys(reportCountToSexAge).forEach(comb => values[comb] = '0');
+      values[findSexAgeCombinationHelper()] = '1';
+    }
+
+    props.edit(props.projectId, props.reportId, {
+      date: values.date.format('YYYY-MM-DDTHH:mm:ss'),
+      dataCollectorId: parseInt(values.dataCollectorId),
+      dataCollectorLocationId: parseInt(values.locationId),
+      reportStatus: values.reportStatus,
+      healthRiskId: parseInt(values.healthRiskId),
+      countMalesBelowFive: parseInt(values.countMalesBelowFive),
+      countMalesAtLeastFive: parseInt(values.countMalesAtLeastFive),
+      countFemalesBelowFive: parseInt(values.countFemalesBelowFive),
+      countFemalesAtLeastFive: parseInt(values.countFemalesAtLeastFive),
+      countUnspecifiedSexAndAge: parseInt(values.countUnspecifiedSexAndAge),
+      referredCount: values.referredCount === '' ? null : parseInt(values.referredCount),
+      deathCount: values.deathCount === '' ? null : parseInt(values.deathCount),
+      fromOtherVillagesCount: values.fromOtherVillagesCount === '' ? null : parseInt(values.fromOtherVillagesCount)
+    });
+  };
+
+  const findSexAgeCombinationHelper = () =>
+    Object.keys(reportCountToSexAge).find(key => reportCountToSexAge[key].sex === reportSex && reportCountToSexAge[key].age === reportAge);
+
+  const findSexAgeHelper = (data) => {
+    const key = Object.keys(reportCountToSexAge).find(key => data[key] > 0);
+    return key ? reportCountToSexAge[key] : { sex: '', age: '' };
+  }
+
+  const dataCollectorAndLocationSelected = () => selectedDataCollector && selectedLocation.villageId !== 0;
+
+  if (props.isFetching || !form || !props.data) {
+    return <Loading />;
+  }
+
+  return (
+    <Fragment>
+      {props.error && <ValidationMessage message={props.error} />}
+
+      <Form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.senderSectionTitle)}</div>
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.reports.form.dataCollector)}
+              name='dataCollectorId'
+              field={form.fields.dataCollectorId}
+              disabled={props.data.reportStatus !== reportStatus.new}
+              disabledlabel={strings(stringKeys.reports.form.reportPartOfAlertLabel)}
+              onChange={handleDataCollectorChange}
+            >
+              {props.dataCollectors.map(dataCollector => (
+                <MenuItem key={`dataCollector_${dataCollector.id}`} value={dataCollector.id.toString()}>
+                  {dataCollector.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.reports.form.dataCollectorLocations)}
+              name='locationId'
+              field={form.fields.locationId}
+              disabled={props.data.reportStatus !== reportStatus.new || !selectedDataCollector}
+              disabledlabel={!selectedDataCollector ? strings(stringKeys.reports.form.selectDcFirst) : null}
+            >
+              {selectedDataCollector && selectedDataCollector.locations.map(location => (
+                <MenuItem key={`dataCollectorLocations_${location.id}`} value={location.id.toString()}>
+                  {location.village + (location.zone ? (' > ' + location.zone) : '')}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
+
+          {(props.data.reportType !== ReportType.dataCollectionPoint && props.data.reportType !== ReportType.aggregate) && (
+            <Fragment>
+              <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.statusSectionTitle)}</div>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.reports.form.reportStatus)}
+                  name='reportStatus'
+                  field={form.fields.reportStatus}
+                  disabled={props.data.reportStatus === reportStatus.closed || !dataCollectorAndLocationSelected()}
+                  disabledlabel={!dataCollectorAndLocationSelected() ? strings(stringKeys.reports.form.selectDcAndLocationFirst) : null}
+                >
+                  {availableReportStatus.map(status => (
+                    <MenuItem key={`status_${status}`} value={status.toString()}>
+                      {strings(stringKeys.reports.status[status])}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+            </Fragment>
+          )}
+
+          {props.data.reportType !== ReportType.event && (
+            <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.contentSectionTitle)}</div>
+          )}
+
+          {props.data.reportType === ReportType.single && (
+            <Fragment>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.reports.form.reportSex)}
+                  name='reportSex'
+                  field={form.fields.reportSex}
+                >
+                  {Object.keys(reportSexes).map(sex => (
+                    <MenuItem key={`sex_${reportSexes[sex]}`} value={reportSexes[sex].toString()}>
+                      {reportSexes[sex]}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.reports.form.reportAge)}
+                  name='reportAge'
+                  field={form.fields.reportAge}
+                >
+                  {Object.keys(reportAges).map(age => (
+                    <MenuItem key={`age_${reportAges[age]}`} value={reportAges[age].toString()}>
+                      {reportAges[age]}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+            </Fragment>
+          )}
+
+          {(props.data.reportType === ReportType.dataCollectionPoint || props.data.reportType === ReportType.aggregate) && (
+            <Fragment>
+              <Grid item xs={12}>
+                <DateInputField
+                  className={styles.fullWidth}
+                  label={strings(stringKeys.reports.form.date)}
+                  name='date'
+                  field={form.fields.date}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.reports.form.healthRisk)}
+                  name='healthRiskId'
+                  field={form.fields.healthRiskId}
+                >
+                  {props.healthRisks.map(healthRisk => (
+                    <MenuItem key={`healthRisk_${healthRisk.id}`} value={healthRisk.id.toString()}>
+                      {healthRisk.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.malesBelowFive)}
+                  name='countMalesBelowFive'
+                  field={form.fields.countMalesBelowFive}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.malesAtLeastFive)}
+                  name='countMalesAtLeastFive'
+                  field={form.fields.countMalesAtLeastFive}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.femalesBelowFive)}
+                  name='countFemalesBelowFive'
+                  field={form.fields.countFemalesBelowFive}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.femalesAtLeastFive)}
+                  name='countFemalesAtLeastFive'
+                  field={form.fields.countFemalesAtLeastFive}
+                />
+              </Grid>
+            </Fragment>
+          )}
+
+          {props.data.reportType === ReportType.dataCollectionPoint && (
+            <Fragment>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.referredCount)}
+                  name='referredCount'
+                  field={form.fields.referredCount}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.deathCount)}
+                  name='deathCount'
+                  field={form.fields.deathCount}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.reports.form.fromOtherVillagesCount)}
+                  name='fromOtherVillagesCount'
+                  field={form.fields.fromOtherVillagesCount}
+                />
+              </Grid>
+            </Fragment>
+          )}
+
+          <FormActions className={styles.tableActionsContainer}>
+            <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+            <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
+          </FormActions>
+        </Grid>
+      </Form>
+    </Fragment>
+  );
 }
 
 ReportsEditPageComponent.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-    reportId: ownProps.match.params.reportId,
-    projectId: ownProps.match.params.projectId,
-    isFetching: state.reports.formFetching,
-    isSaving: state.reports.formSaving,
-    data: state.reports.formData,
-    error: state.reports.formError,
-    healthRisks: state.reports.formHealthRisks
+  reportId: ownProps.match.params.reportId,
+  projectId: ownProps.match.params.projectId,
+  isFetching: state.reports.formFetching,
+  isSaving: state.reports.formSaving,
+  data: state.reports.formData,
+  error: state.reports.formError,
+  healthRisks: state.reports.editReport.formHealthRisks,
+  dataCollectors: state.reports.editReport.formDataCollectors
 });
 
 const mapDispatchToProps = {
-    openEdition: reportsActions.openEdition.invoke,
-    edit: reportsActions.edit.invoke,
-    goToList: reportsActions.goToList
+  openEdition: reportsActions.openEdition.invoke,
+  edit: reportsActions.edit.invoke,
+  goToList: reportsActions.goToList
 };
 
 export const ReportsEditPage = withLayout(
-    Layout,
-    connect(mapStateToProps, mapDispatchToProps)(ReportsEditPageComponent)
+  Layout,
+  connect(mapStateToProps, mapDispatchToProps)(ReportsEditPageComponent)
 );

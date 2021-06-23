@@ -1,5 +1,6 @@
 import { strings, stringKeys, stringsFormat, extractString, isStringKey } from "../strings";
 import { useEffect } from "react";
+import { reportAges } from "../components/reports/logic/reportsConstants";
 
 const validateField = (field, formValues) => {
   if (field._validators && field._validators.length !== 0) {
@@ -18,7 +19,6 @@ const validateField = (field, formValues) => {
       }
     }
   }
-
   if (field._customError) {
     return {
       isValid: false,
@@ -31,6 +31,10 @@ const validateField = (field, formValues) => {
     errorMessage: null
   };
 };
+
+const revalidateField = (field, form) => {
+  field.error = validateField(field, getFormValues(form)).errorMessage;
+}
 
 const onChange = (name, newValue, subscribers, form, suspendValidation, formSubscribers) => {
   const field = form[name];
@@ -183,7 +187,8 @@ export const createForm = (fields, validators) => {
         callback();
         unsubscribe();
       });
-    }
+    },
+    revalidateField: (field, formValues) => revalidateField(field, formValues)
   };
 };
 
@@ -203,5 +208,7 @@ export const validators = {
   moduloTen: [() => strings(stringKeys.validation.invalidModuloTen), (value) => (Number(value) % 10 === 0)],
   nonNegativeNumber: [() => strings(stringKeys.validation.valueCannotBeNegative), (value) => !value || (!isNaN(Number(value)) && Number(value) >= 0)],
   inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)],
-  time: [() => strings(stringKeys.validation.invalidTimeFormat), (value) => !value || timeRegex.test(value)]
+  time: [() => strings(stringKeys.validation.invalidTimeFormat), (value) => !value || timeRegex.test(value)],
+  sexAge: (fieldGetter) => [() => strings(stringKeys.validation.sexOrAgeUnspecified), (value, fields) => fieldGetter(fields) === value || value !== reportAges.unspecified],
+  uniqueLocation: (fieldGetter, allLocations) => [() => strings(stringKeys.validation.duplicateLocation), (value, fields) => allLocations.length === 1 || allLocations.filter(l => l.villageId.toString() === value && (l.zoneId == null || l.zoneId.toString() === fieldGetter(fields))).length === 1]
 };

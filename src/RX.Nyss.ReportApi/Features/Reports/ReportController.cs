@@ -20,5 +20,6 @@ namespace RX.Nyss.ReportApi.Features.Reports
             await _reportService.ReceiveReport(report)
                 ? (StatusCodeResult)new OkResult()
                 : new BadRequestResult();
+
     }
 }

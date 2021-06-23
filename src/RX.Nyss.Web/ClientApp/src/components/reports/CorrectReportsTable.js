@@ -13,7 +13,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
-import { DateColumnName, reportStatus } from './logic/reportsConstants';
+import { DateColumnName, reportStatus, ReportType } from './logic/reportsConstants';
 import {
   Table,
   TableBody,
@@ -24,8 +24,8 @@ import {
 } from '@material-ui/core';
 import { alertStatus } from '../alerts/logic/alertsConstants';
 
-export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
-  list, page, onChangePage, rowsPerPage, totalRows, dataCollectorType, filters, sorting, onSort, projectIsClosed,
+export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEditing, projectId,
+  list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed,
   goToAlert, acceptReport, dismissReport }) => {
 
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
@@ -80,6 +80,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && report.isValid
     && !report.isMarkedAsError
     && !report.isActivityReport
+    && report.reportType !== ReportType.dataCollectionPoint
     && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
 
   const getRowMenu = (row) => [
@@ -87,7 +88,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
       title: strings(stringKeys.reports.list.markAsError),
       roles: accessMap.reports.markAsError,
       disabled: !canMarkAsError(row),
-      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.id, isMarkedAsError: row.isMarkedAsError })
     },
     {
       title: strings(stringKeys.reports.list.goToAlert),
@@ -108,6 +109,11 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
       action: () => dismissReport(row.id)
     }
   ];
+
+  const canEdit = (row) => 
+    (!row.isAnonymized || !row.dataCollector)
+    && !row.isActivityReport
+    && !projectIsClosed;
 
   return (
     <Fragment>
@@ -133,7 +139,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
               <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
               <TableCell style={{ width: '7%' }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
               <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
-              {dataCollectorType === DataCollectorType.collectionPoint &&
+              {filters.dataCollectorType === DataCollectorType.collectionPoint &&
                 <Fragment>
                   <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
                   <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
@@ -153,7 +159,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                 <TableCell>
                   {row.dataCollectorDisplayName}
                   {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || dataCollectorType === DataCollectorType.unknownSender) && row.phoneNumber}
+                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
@@ -161,7 +167,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                 <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
-                {dataCollectorType === DataCollectorType.collectionPoint &&
+                {filters.dataCollectorType === DataCollectorType.collectionPoint &&
                   <Fragment>
                     <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
                     <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
@@ -177,11 +183,11 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       items={getRowMenu(row)}
                     />
                     <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId)}
+                      onClick={() => goToEditing(projectId, row.id)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
+                      condition={canEdit(row)} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>

@@ -287,7 +287,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
                 .FilterByDeployedMode(dataCollectorsFilters.DeployedMode)
-                .FilterByName(dataCollectorsFilters.Name);
+                .FilterByName(dataCollectorsFilters.Name)
+                .FilterByType(dataCollectorsFilters.DataCollectorType);
 
             var dataCollectors = await dataCollectorsQuery
                 .Select(dc => new DataCollectorResponseDto
@@ -304,9 +305,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Locations = dc.DataCollectorLocations
                         .Select(dcl => new DataCollectorLocationResponseDto
                         {
+                            Id = dcl.Id,
                             Region = dcl.Village.District.Region.Name,
                             District = dcl.Village.District.Name,
-                            Village = dcl.Village.Name
+                            Village = dcl.Village.Name,
+                            VillageId = dcl.Village.Id,
+                            ZoneId = dcl.Zone.Id,
+                            Zone = dcl.Zone.Name
                         })
                 })
                 .OrderBy(dc => dc.Name)

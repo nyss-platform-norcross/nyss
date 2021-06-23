@@ -19,6 +19,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId);
         Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId);
         Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId);
+        Task RecalculateAlertForReport(int reportId);
     }
 
     public class AlertReportService : IAlertReportService
@@ -153,6 +154,8 @@ namespace RX.Nyss.Web.Features.Alerts
 
             return Success(response);
         }
+
+        public async Task RecalculateAlertForReport(int reportId) => await _queueService.Send(_config.ServiceBusQueues.RecalculateAlertsQueue, reportId);
 
         private async Task<bool> HasCurrentUserReportAssessAccess(int reportId)
         {

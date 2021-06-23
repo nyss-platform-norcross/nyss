@@ -48,7 +48,7 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_REPORT_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data, formHealthRisks: action.healthRisks };
+      return { ...state, formFetching: false, formData: action.data, editReport: { formHealthRisks: action.healthRisks, formDataCollectors: action.dataCollectors } };
 
     case actions.OPEN_REPORT_EDITION.FAILURE:
       return { ...state, formFetching: false };
@@ -92,8 +92,20 @@ export function reportsReducer(state = initialState.reports, action) {
     case actions.ACCEPT_REPORT.REQUEST:
       return { ...state, listFetching: true };
 
+    case actions.ACCEPT_REPORT.SUCCESS:
+      return { ...state, listFetching: false };
+
+    case actions.ACCEPT_REPORT.FAILURE:
+      return { ...state, listFetching: false };
+
     case actions.DISMISS_REPORT.REQUEST:
       return { ...state, listFetching: true };
+
+    case actions.DISMISS_REPORT.SUCCESS:
+      return { ...state, listFetching: false };
+
+    case actions.DISMISS_REPORT.FAILURE:
+      return { ...state, listFetching: false };
 
     default:
       return state;

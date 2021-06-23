@@ -284,12 +284,17 @@ export const initialState = {
     incorrectReportsListStale: true,
     listProjectId: null,
     markingAsError: false,
-    sendReport: {
-      dataCollectors: []
-    },
-    formHealthRisks: [],
     filtersData: {
       healthRisks: []
+    },
+    filters: null,
+    sorting: null,
+    editReport: {
+      formHealthRisks: [],
+      formDataCollectors: []
+    },
+    sendReport: {
+      dataCollectors: []
     },
     correctReportsPaginatedListData: null,
     correctReportsFilters: null,

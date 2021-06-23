@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
+using Microsoft.CodeAnalysis;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.DataCollectors.Validation;
@@ -74,6 +75,10 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     .Must(dcl => dcl.VillageId > 0
                         && dcl.Latitude >= -90 && dcl.Latitude <= 90
                         && dcl.Longitude >= -180 && dcl.Longitude <= 180);
+
+                RuleForEach(dc => dc.Locations)
+                    .Must((model, location, t) => model.Locations.Count(l => l.VillageId == location.VillageId && l.ZoneId == location.ZoneId) == 1)
+                    .WithMessageKey(ResultKey.DataCollector.DuplicateLocation);
             }
         }
     }

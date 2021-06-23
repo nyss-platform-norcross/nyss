@@ -6,7 +6,7 @@ import {
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
-export const goToEdition = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
+export const goToEditing = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
 export const goToAlert = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/assess`);
 
 export const openCorrectReportsList = {
@@ -40,7 +40,7 @@ export const getIncorrectList = {
 export const openEdition = {
   invoke: (projectId, reportId) => ({ type: OPEN_REPORT_EDITION.INVOKE, projectId, reportId }),
   request: () => ({ type: OPEN_REPORT_EDITION.REQUEST }),
-  success: (data, healthRisks) => ({ type: OPEN_REPORT_EDITION.SUCCESS, data, healthRisks }),
+  success: (data, healthRisks, dataCollectors) => ({ type: OPEN_REPORT_EDITION.SUCCESS, data, healthRisks, dataCollectors }),
   failure: (message) => ({ type: OPEN_REPORT_EDITION.FAILURE, message })
 };
 

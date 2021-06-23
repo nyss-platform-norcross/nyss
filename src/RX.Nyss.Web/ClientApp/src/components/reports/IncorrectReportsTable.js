@@ -7,11 +7,6 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from 'dayjs';
 import TablePager from '../common/tablePagination/TablePager';
 import { TableContainer } from '../common/table/TableContainer';
-import { TableRowActions } from '../common/tableRowAction/TableRowActions';
-import { TableRowAction } from '../common/tableRowAction/TableRowAction';
-import EditIcon from '@material-ui/icons/Edit';
-import { accessMap } from '../../authentication/accessMap';
-import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
 import { DateColumnName, ReportErrorType, reportDetailedFormatErrors } from './logic/reportsConstants';
 import {
   Typography,
@@ -23,8 +18,7 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 
-export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
-  list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed }) => {
+export const IncorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort }) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -90,8 +84,7 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
               <TableCell style={{ width: '30%' }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: '20%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
-              <TableCell style={{ width: '3%' }} />
+              <TableCell style={{ width: '23%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -105,19 +98,9 @@ export const IncorrectReportsTable = ({ isListFetching, goToEdition, projectId,
                 <TableCell>
                   {row.dataCollectorDisplayName}
                   {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || filters.dataCollectorType === DataCollectorType.unknownSender) && row.phoneNumber}
+                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
-                <TableCell>
-                  <TableRowActions>
-                    <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId)}
-                      icon={<EditIcon />}
-                      title={strings(stringKeys.reports.list.editReport)}
-                      roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && !projectIsClosed && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
-                  </TableRowActions>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

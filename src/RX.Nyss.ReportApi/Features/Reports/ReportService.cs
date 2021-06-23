@@ -4,6 +4,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Handlers;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.ReportApi.Features.Alerts;
 
 namespace RX.Nyss.ReportApi.Features.Reports
 {

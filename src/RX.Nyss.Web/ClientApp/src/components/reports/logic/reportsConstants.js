@@ -24,6 +24,41 @@ export const reportStatus = {
   closed: 'Closed'
 }
 
+export const reportSexes = {
+  male: 'male',
+  female: 'female',
+  unspecified: 'unspecified'
+}
+
+export const reportAges = {
+  belowFive : 'belowFive',
+  aboveFour : 'aboveFour',
+  unspecified: 'unspecified'
+}
+
+export const reportCountToSexAge = {
+  countMalesAtLeastFive: {
+    sex: reportSexes.male, 
+    age: reportAges.aboveFour
+  },
+  countMalesBelowFive: {
+    sex: reportSexes.male, 
+    age: reportAges.belowFive
+  },
+  countFemalesAtLeastFive: {
+    sex: reportSexes.female, 
+    age: reportAges.aboveFour
+  },
+  countFemalesBelowFive: {
+    sex: reportSexes.female, 
+    age: reportAges.belowFive
+  },
+  countUnspecifiedSexAndAge: {
+    sex: reportSexes.unspecified, 
+    age: reportAges.unspecified
+  },
+}
+
 export const ReportErrorType = {
   formatError: 'FormatError',
   healthRiskNotFound: 'HealthRiskNotFound',
@@ -50,3 +85,10 @@ export const reportDetailedFormatErrors = [
   ReportErrorType.aggregateReportNonHumanHealthRisk,
   ReportErrorType.tooLong
 ];
+
+export const ReportType = {
+single: 'Single',
+aggregate: 'Aggregate',
+event: 'Event',
+dataCollectionPoint: 'DataCollectionPoint'
+};

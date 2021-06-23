@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="reportId">An identifier of a report</param>
         /// <returns>A report</returns>
         [HttpGet("{reportId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
         public Task<Result<ReportResponseDto>> Get(int reportId) =>
             _reportService.Get(reportId);
 
@@ -93,7 +93,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         [HttpGet("humanHealthRisksForProject/{projectId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId) =>
             await _reportService.GetHumanHealthRisksForProject(projectId);
 
@@ -101,9 +101,10 @@ namespace RX.Nyss.Web.Features.Reports
         /// Edits a report.
         /// </summary>
         /// <param name="reportId">An identifier of a report</param>
+        /// <param name="projectId">An identifier of a project</param>
         /// <param name="reportRequestDto">A report</param>
         [HttpPost("{reportId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> Edit(int reportId, [FromBody] ReportRequestDto reportRequestDto) =>
             await _reportService.Edit(reportId, reportRequestDto);
 
