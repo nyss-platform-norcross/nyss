@@ -38,10 +38,12 @@ namespace RX.Nyss.Web.Features.AlertEvents
         {
             var currentUser = await _authorizationService.GetCurrentUser();
             var currentUserOrganization = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSociety == _nyssContext.Alerts
-                    .Where(a => a.Id == alertId)
-                    .Select(a => a.ProjectHealthRisk.Project.NationalSociety)
-                    .Single())
+                .Where(uns =>
+                    uns.UserId == currentUser.Id
+                    && uns.NationalSociety == _nyssContext.Alerts
+                        .Where(a => a.Id == alertId)
+                        .Select(a => a.ProjectHealthRisk.Project.NationalSociety)
+                        .Single())
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
@@ -209,7 +211,9 @@ namespace RX.Nyss.Web.Features.AlertEvents
             {
                 HealthRisk = alert.HealthRisk,
                 CreatedAt = alert.CreatedAt.AddHours(utcOffset),
-                LogItems = list.OrderBy(x => x.Date).ToList()
+                LogItems = list
+                    .OrderBy(x => x.Date)
+                    .ToList()
             });
         }
         public async Task<Result<AlertEventCreateFormDto>> GetFormData()
@@ -261,23 +265,27 @@ namespace RX.Nyss.Web.Features.AlertEvents
                 return Error(ResultKey.AlertEvent.AlertEventTypeNotFound);
             }
 
-            var hasValidSubtype = alertEventType.AlertEventSubtype
-                .Any(x => x.Id == createDto.EventSubtypeId);
-
-            if (!hasValidSubtype)
-            {
-                return Error(ResultKey.AlertEvent.SubtypeMustBelongToType);
-            }
-
             var alertEventLogItem = new AlertEventLog
             {
                 AlertId = alert,
                 CreatedAt = createDto.Timestamp.ToUniversalTime(),
                 AlertEventTypeId = createDto.EventTypeId,
-                AlertEventSubtypeId = createDto.EventSubtypeId,
                 LoggedBy = currentUser,
                 Text = createDto.Text
             };
+
+            if (alertEventType.AlertEventSubtypes.Any())
+            {
+                var hasValidSubtype = alertEventType.AlertEventSubtypes
+                    .Any(x => x.Id == createDto.EventSubtypeId);
+
+                if (!hasValidSubtype)
+                {
+                    return Error(ResultKey.AlertEvent.SubtypeMustBelongToType);
+                }
+
+                alertEventLogItem.AlertEventSubtypeId = createDto.EventSubtypeId;
+            }
 
             await _nyssContext.AddAsync(alertEventLogItem);
             await _nyssContext.SaveChangesAsync();
