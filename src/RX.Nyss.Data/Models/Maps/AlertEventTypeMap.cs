@@ -13,7 +13,7 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.HasMany(x => x.AlertEventSubtype)
+            builder.HasMany(x => x.AlertEventSubtypes)
                 .WithOne(x => x.AlertEventType);
         }
     }

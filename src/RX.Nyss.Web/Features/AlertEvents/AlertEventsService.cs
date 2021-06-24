@@ -215,7 +215,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
         public async Task<Result<AlertEventCreateFormDto>> GetFormData()
         {
             var eventTypes = await _nyssContext.AlertEventTypes
-                .Include((a => a.AlertEventSubtype))
+                .Include((a => a.AlertEventSubtypes))
                 .ToListAsync();
 
             var types = eventTypes.Select(e => new AlertEventsTypeDto
@@ -226,7 +226,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
             var subtypes = eventTypes
                 .SelectMany(alertEventType =>
-                        alertEventType.AlertEventSubtype,
+                        alertEventType.AlertEventSubtypes,
                     (alertEventType, alertEventSubtype) => new AlertEventsSubtypeDto
                     {
                         Id = alertEventSubtype.Id,
@@ -253,7 +253,7 @@ namespace RX.Nyss.Web.Features.AlertEvents
 
             var alertEventType = await _nyssContext.AlertEventTypes
                 .Where(x => x.Id == createDto.EventTypeId)
-                .Include(x => x.AlertEventSubtype)
+                .Include(x => x.AlertEventSubtypes)
                 .SingleOrDefaultAsync();
 
             if (alertEventType == null)

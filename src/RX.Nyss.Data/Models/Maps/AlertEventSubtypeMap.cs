@@ -10,7 +10,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasKey(x => x.Id);
 
             builder.HasOne(x => x.AlertEventType)
-                .WithMany(x => x.AlertEventSubtype)
+                .WithMany(x => x.AlertEventSubtypes)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(x => x.Name)
