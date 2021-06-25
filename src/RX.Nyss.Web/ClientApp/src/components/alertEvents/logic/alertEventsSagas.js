@@ -67,6 +67,7 @@ function* createAlertEvent({ alertId, data }) {
     yield put(appActions.showMessage(response.message.key));
   } catch (error) {
     yield put(actions.create.failure(error.message));
+    yield put(appActions.showMessage(error.message));
   }
 };
 
@@ -77,10 +78,10 @@ function* editAlertEvent({ alertId, alertEventLogId, text }) {
       {alertEventLogId, text});
     yield call(getEventLog, {alertId})
     yield put(actions.edit.success(response.value));
-
     yield put(appActions.showMessage(response.message.key));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
+    yield put(appActions.showMessage(error.message));
   }
 };
 
@@ -94,9 +95,9 @@ function* deleteAlertEvent({ alertId, alertEventLogId }) {
     yield call(getEventLog, {alertId})
     yield put(actions.remove.success(response.value));
     yield put(appActions.showMessage(response.message.key));
-
   } catch (error) {
     yield put(actions.remove.failure(alertEventLogId, error.message));
+    yield put(appActions.showMessage(error.message));
   }
 };
 

@@ -1,5 +1,4 @@
 import React, {useEffect, Fragment, useState} from 'react';
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -67,9 +66,6 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
     </Fragment>
   );
 }
-
-AlertEventsLogPageComponent.propTypes = {
-};
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
