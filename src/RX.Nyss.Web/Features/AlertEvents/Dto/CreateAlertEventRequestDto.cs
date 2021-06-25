@@ -5,11 +5,10 @@ namespace RX.Nyss.Web.Features.AlertEvents.Dto
 {
     public class CreateAlertEventRequestDto
     {
-        public DateTime Timestamp { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
         public int EventTypeId { get; set; }
         public int? EventSubtypeId { get; set; }
         public string Text { get; set; }
-        public int UtcOffset { get; set; }
 
         public class Validator : AbstractValidator<CreateAlertEventRequestDto>
         {
@@ -18,8 +17,6 @@ namespace RX.Nyss.Web.Features.AlertEvents.Dto
                 RuleFor(x => x.EventTypeId)
                     .NotEmpty();
                 RuleFor(x => x.Timestamp)
-                    .NotEmpty();
-                RuleFor(x => x.UtcOffset)
                     .NotEmpty();
                 RuleFor(x => x.Text)
                     .MaximumLength(4000);

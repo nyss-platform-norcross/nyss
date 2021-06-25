@@ -268,13 +268,13 @@ namespace RX.Nyss.Web.Features.AlertEvents
             var alertEventLogItem = new AlertEventLog
             {
                 AlertId = alert,
-                CreatedAt = createDto.Timestamp.ToUniversalTime(),
+                CreatedAt = createDto.Timestamp.DateTime,
                 AlertEventTypeId = createDto.EventTypeId,
                 LoggedBy = currentUser,
                 Text = createDto.Text
             };
 
-            if (alertEventType.AlertEventSubtypes.Any())
+            if (createDto.EventSubtypeId.HasValue || alertEventType.AlertEventSubtypes.Any())
             {
                 var hasValidSubtype = alertEventType.AlertEventSubtypes
                     .Any(x => x.Id == createDto.EventSubtypeId);
