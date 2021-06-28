@@ -300,83 +300,104 @@ namespace RX.Nyss.Web.Tests.Features.AlertEvents
         [Fact]
         public async Task CreateAlertEventLogItem_ShouldReturnSuccess()
         {
+            // Arrange
             var logItem = new CreateAlertEventRequestDto
             {
                 Timestamp = TestData.Event1CreatedAt,
                 EventTypeId = 1,
                 EventSubtypeId = 1,
-                Text = "The doctor found nothing wrong.",
-                UtcOffset = 1,
+                Text = "The doctor found nothing wrong."
             };
 
-            await _alertEventsService.CreateAlertEventLogItem(alertId: TestData.AlertId, createDto: logItem);
+            // Act
+            var res = await _alertEventsService.CreateAlertEventLogItem(alertId: TestData.AlertId, createDto: logItem);
 
+            // Assert
             await _nyssContext.Received(1)
                 .AddAsync(Arg.Any<AlertEventLog>());
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.CreateSuccess);
         }
 
         [Fact]
-        public void CreateAlertEventLogItem_WhenEventTypeIsMissing_ShouldReturnSuccess()
+        public async Task CreateAlertEventLogItem_WhenEventTypeIsMissing_ShouldReturnError()
         {
+            // Arrange
             var logItem = new CreateAlertEventRequestDto
             {
                 Timestamp = TestData.Event1CreatedAt,
                 EventTypeId = 0,
                 EventSubtypeId = TestData.AlertEventSubtypeNotInvestigatedId,
-                Text = "My event type is missing.",
-                UtcOffset = 1,
+                Text = "My event type is missing."
             };
 
-            Should.ThrowAsync<Exception>(() => _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem));
+            // Act
+            var res = await _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem);
+
+            // Assert
+            res.IsSuccess.ShouldBeFalse();
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.AlertEventTypeNotFound);
         }
 
         [Fact]
         public async Task CreateAlertEventLogItem_WhenEventTypeDoesntHaveSubtype_ShouldReturnSuccess()
         {
+            // Arrange
             var logItem = new CreateAlertEventRequestDto
             {
                 Timestamp = TestData.Event1CreatedAt,
                 EventTypeId = TestData.AlertEventTypeDetailsId,
                 EventSubtypeId = null,
-                Text = "My name is details and I dont need subtypes.",
-                UtcOffset = 1,
+                Text = "My name is details and I dont need subtypes."
             };
 
-            await _alertEventsService.CreateAlertEventLogItem(alertId: TestData.AlertId, createDto: logItem);
+            // Act
+            var res = await _alertEventsService.CreateAlertEventLogItem(alertId: TestData.AlertId, createDto: logItem);
 
+            // Assert
             await _nyssContext.Received(1)
                 .AddAsync(Arg.Any<AlertEventLog>());
+            res.IsSuccess.ShouldBeTrue();
         }
 
 
         [Fact]
-        public void CreateAlertEvent_WhenEventTypeDoesntExist_ShouldThrowException()
+        public async Task CreateAlertEvent_WhenEventTypeDoesntExist_ShouldReturnError()
         {
+            // Arrange
             var logItem = new CreateAlertEventRequestDto
             {
                 Timestamp = TestData.Event1CreatedAt,
                 EventTypeId = 3,
                 EventSubtypeId = TestData.AlertEventSubtypeInvestigatedId,
-                Text = "Event type 3 doesnt exist.",
-                UtcOffset = 1,
+                Text = "Event type 3 doesnt exist."
             };
 
-            Should.ThrowAsync<Exception>(() => _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem));
+            // Act
+            var res = await _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem);
+
+            // Assert
+            res.IsSuccess.ShouldBeFalse();
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.AlertEventTypeNotFound);
         }
 
         [Fact]
-        public void CreateAlertEvent_WhenSubtypeIsNotValid_ShouldThrowException()
+        public async Task CreateAlertEvent_WhenSubtypeIsNotValid_ShouldReturnError()
         {
+            // Arrange
             var logItem = new CreateAlertEventRequestDto
             {
                 Timestamp = TestData.Event1CreatedAt,
                 EventTypeId = TestData.AlertEventTypeDetailsId,
                 EventSubtypeId = TestData.AlertEventSubtypeInvestigatedId,
-                Text = "Details doesnt have a subtype.",
-                UtcOffset = 1,
+                Text = "Details doesnt have a subtype."
             };
 
-            Should.ThrowAsync<Exception>(() => _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem));
+            // Act
+            var res = await _alertEventsService.CreateAlertEventLogItem(TestData.AlertId, logItem);
+
+            // Assert
+            res.IsSuccess.ShouldBeFalse();
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.SubtypeMustBelongToType);
         }
 
         #endregion
@@ -386,29 +407,38 @@ namespace RX.Nyss.Web.Tests.Features.AlertEvents
         [Fact]
         public async Task EditAlertEvent_WhenTextIsEdited_ShouldReturnSuccess()
         {
+            // Arrange
             var logItem = new EditAlertEventRequestDto
             {
                 AlertEventLogId = 1,
                 Text = "I do exist."
             };
 
+            // Act
             var result = await _alertEventsService.EditAlertEventLogItem(logItem);
 
+            // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.AlertEvent.EditSuccess);
         }
 
 
         [Fact]
-        public void EditAlertEvent_WhenLogItemDoesntExist_ShouldThrowException()
+        public async Task EditAlertEvent_WhenLogItemDoesntExist_ShouldReturnError()
         {
+            // Arrange
             var logItem = new EditAlertEventRequestDto
             {
                 AlertEventLogId = 4,
                 Text = "I do not exist."
             };
 
-            Should.ThrowAsync<Exception>(() => _alertEventsService.EditAlertEventLogItem(logItem));
+            // Act
+            var res = await _alertEventsService.EditAlertEventLogItem(logItem);
+
+            // Assert
+            res.IsSuccess.ShouldBeFalse();
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.AlertEventNotFound);
         }
 
         #endregion
@@ -419,15 +449,24 @@ namespace RX.Nyss.Web.Tests.Features.AlertEvents
         [Fact]
         public async Task DeleteAlertEvent_ShouldReturnSuccess()
         {
+            // Act
             var result = await _alertEventsService.DeleteAlertEventLogItem(1);
 
+            // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.AlertEvent.DeleteSuccess);
         }
 
         [Fact]
-        public void DeleteAlertEvent_WhenLogItemIdDoesntExist_ShouldThrowException() =>
-            Should.ThrowAsync<Exception>(() => _alertEventsService.DeleteAlertEventLogItem(5));
+        public async Task DeleteAlertEvent_WhenLogItemIdDoesntExist_ShouldReturnError()
+        {
+            // Act
+            var res = await _alertEventsService.DeleteAlertEventLogItem(5);
+
+            //  Assert
+            res.IsSuccess.ShouldBeFalse();
+            res.Message.Key.ShouldBe(ResultKey.AlertEvent.AlertEventNotFound);
+        }
 
         #endregion
 
