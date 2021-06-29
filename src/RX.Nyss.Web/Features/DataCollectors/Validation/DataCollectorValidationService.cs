@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
         public async Task<bool> LocationHasDuplicateVillageAndZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
             await _nyssContext.DataCollectorLocations
                 .AnyAsync(dcl => dcl.DataCollectorId == dataCollectorId
-                    && !dataCollectorLocation.Id.HasValue
+                    && dcl.Id != dataCollectorLocation.Id
                     && dcl.Village.Id == dataCollectorLocation.VillageId
                     && (dcl.Zone == null || dcl.Zone.Id == dataCollectorLocation.ZoneId));
     }

@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                         && dcl.Longitude >= -180 && dcl.Longitude <= 180);
 
                 RuleForEach(dc => dc.Locations)
-                    .MustAsync(async (model, location, t) => await dataCollectorValidationService.LocationHasDuplicateVillageAndZone(model.Id, location))
+                    .MustAsync(async (model, location, t) => !await dataCollectorValidationService.LocationHasDuplicateVillageAndZone(model.Id, location))
                     .WithMessageKey(ResultKey.DataCollector.DuplicateLocation);
             }
         }
