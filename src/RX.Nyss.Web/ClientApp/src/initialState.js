@@ -333,6 +333,17 @@ export const initialState = {
     filters: null,
     filtersData: null
   },
+  alertEvents: {
+    eventTypes: [],
+    eventSubtypes: [],
+    logFetching: false,
+    logRemoving: {},
+    listStale: true,
+    logItems: null,
+    formFetching: false,
+    formSaving: false,
+    formError: null
+  },
   translations: {
     listFetching: false,
     listLanguages: [],

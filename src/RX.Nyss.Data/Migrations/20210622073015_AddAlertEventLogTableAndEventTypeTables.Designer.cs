@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20210622073015_AddAlertEventLogTableAndEventTypeTables")]
+    partial class AddAlertEventLogTableAndEventTypeTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2609,9 +2611,6 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("DataCollectorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ErrorType")
-                        .HasColumnType("int");
-
                     b.Property<int?>("IncomingMessageId")
                         .HasColumnType("int");
 
@@ -2702,16 +2701,10 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("AcceptedById")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CorrectedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CorrectedById")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DataCollectorId")
+                    b.Property<int>("DataCollectorId")
                         .HasColumnType("int");
 
                     b.Property<int>("EpiWeek")
@@ -2779,8 +2772,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AcceptedById");
-
-                    b.HasIndex("CorrectedById");
 
                     b.HasIndex("CreatedAt");
 
@@ -3480,15 +3471,11 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("AcceptedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("RX.Nyss.Data.Models.User", "CorrectedBy")
-                        .WithMany()
-                        .HasForeignKey("CorrectedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")
                         .WithMany("Reports")
                         .HasForeignKey("DataCollectorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Reports")

@@ -8,14 +8,16 @@ namespace RX.Nyss.Data
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
-            SeedContentLanguages(modelBuilder);
-            SeedCountries(modelBuilder);
             SeedApplicationLanguages(modelBuilder);
+            SeedContentLanguages(modelBuilder);
             SeedAdministrator(modelBuilder);
+            SeedAlertEventTypes(modelBuilder);
+            SeedAlertEventSubtypes(modelBuilder);
+            SeedCountries(modelBuilder);
         }
-
         private static void SeedApplicationLanguages(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<ApplicationLanguage>().HasData(
+            modelBuilder.Entity<ApplicationLanguage>().
+                HasData(
                 new ApplicationLanguage
                 {
                     Id = 1,
@@ -41,8 +43,38 @@ namespace RX.Nyss.Data
                     DisplayName = "العربية"
                 });
 
+        private static void SeedContentLanguages(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<ContentLanguage>()
+                .HasData(
+                    new ContentLanguage
+                    {
+                        Id = 1,
+                        DisplayName = "English",
+                        LanguageCode = "en"
+                    },
+                    new ContentLanguage
+                    {
+                        Id = 2,
+                        DisplayName = "Français",
+                        LanguageCode = "fr"
+                    },
+                    new ContentLanguage
+                    {
+                        Id = 3,
+                        DisplayName = "Español",
+                        LanguageCode = "es"
+                    },
+                    new ContentLanguage
+                    {
+                        Id = 4,
+                        DisplayName = "العربية",
+                        LanguageCode = "ar"
+                    }
+                );
+
         private static void SeedAdministrator(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<AdministratorUser>().HasData(new
+            modelBuilder.Entity<AdministratorUser>().
+                HasData(new
             {
                 Id = 1,
                 IdentityUserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
@@ -54,8 +86,181 @@ namespace RX.Nyss.Data
                 ApplicationLanguageId = 1
             });
 
+        private static void SeedAlertEventTypes(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<AlertEventType>()
+                .HasData(
+                    new AlertEventType
+                    {
+                        Id = 1,
+                        Name = "Investigation"
+                    },
+                    new AlertEventType
+                    {
+                        Id = 2,
+                        Name = "PresumedCasePositive"
+                    },
+                    new AlertEventType
+                    {
+                        Id = 3,
+                        Name = "PresumedCaseNegative"
+                    },
+                    new AlertEventType
+                    {
+                        Id = 4,
+                        Name = "Outcome"
+                    },
+                    new AlertEventType
+                    {
+                        Id = 5,
+                        Name = "Details"
+                    },
+                    new AlertEventType
+                    {
+                        Id = 6,
+                        Name = "PublicHealthActionTaken"
+                    }
+                );
+
+        private static void SeedAlertEventSubtypes(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<AlertEventSubtype>()
+                .HasData(
+                    new AlertEventSubtype
+                    {
+                        Id = 1,
+                        Name = "Investigated",
+                        AlertEventTypeId = 1
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 2,
+                        Name = "NotInvestigated",
+                        AlertEventTypeId = 1
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 3,
+                        Name = "Unknown",
+                        AlertEventTypeId = 1
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 4,
+                        Name = "Lab",
+                        AlertEventTypeId = 2
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 5,
+                        Name = "Clinical",
+                        AlertEventTypeId = 2
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 6,
+                        Name = "Unknown",
+                        AlertEventTypeId = 2
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 7,
+                        Name = "Lab",
+                        AlertEventTypeId = 3
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 8,
+                        Name = "Clinical",
+                        AlertEventTypeId = 3
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 9,
+                        Name = "Unknown",
+                        AlertEventTypeId = 3
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 10,
+                        Name = "Recovered",
+                        AlertEventTypeId = 4
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 11,
+                        Name = "Deceased",
+                        AlertEventTypeId = 4
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 12,
+                        Name = "ImmunizationCampaign",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 13,
+                        Name = "HealthMessagesAwarenessRaising",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 14,
+                        Name = "Referral",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 15,
+                        Name = "Isolation",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 16,
+                        Name = "ProvidedORS",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 17,
+                        Name = "AnimalsDisposed",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 18,
+                        Name = "SafeDignifiedBurials",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 19,
+                        Name = "CommunityMeeting",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 20,
+                        Name = "AssistedInvestigation",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 21,
+                        Name = "CleanupFogging",
+                        AlertEventTypeId = 6
+                    },
+                    new AlertEventSubtype
+                    {
+                        Id = 22,
+                        Name = "Other",
+                        AlertEventTypeId = 6
+                    }
+                );
+
         private static void SeedCountries(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<Country>().HasData(
+            modelBuilder.Entity<Country>().
+                HasData(
                 new Country
                 {
                     Id = 1,
@@ -1507,34 +1712,6 @@ namespace RX.Nyss.Data
                     Id = 242,
                     CountryCode = "ZW",
                     Name = "Zimbabwe"
-                }
-            );
-
-        private static void SeedContentLanguages(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<ContentLanguage>().HasData(
-                new ContentLanguage
-                {
-                    Id = 1,
-                    DisplayName = "English",
-                    LanguageCode = "en"
-                },
-                new ContentLanguage
-                {
-                    Id = 2,
-                    DisplayName = "Français",
-                    LanguageCode = "fr"
-                },
-                new ContentLanguage
-                {
-                    Id = 3,
-                    DisplayName = "Español",
-                    LanguageCode = "es"
-                },
-                new ContentLanguage
-                {
-                    Id = 4,
-                    DisplayName = "العربية",
-                    LanguageCode = "ar"
                 }
             );
     }

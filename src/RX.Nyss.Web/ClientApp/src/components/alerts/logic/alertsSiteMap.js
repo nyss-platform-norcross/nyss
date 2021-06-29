@@ -25,13 +25,5 @@ export const alertsSiteMap = [
     placeholder: placeholders.tabMenu,
     access: accessMap.alerts.assess,
     middleStepOnly: true
-  },
-  {
-    parentPath: "/projects/:projectId/alerts/:alertId/details",
-    path: "/projects/:projectId/alerts/:alertId/logs",
-    title: () => strings(stringKeys.alerts.logs.title),
-    placeholder: placeholders.tabMenu,
-    access: accessMap.alerts.assess,
-    middleStepOnly: true
   }
 ];

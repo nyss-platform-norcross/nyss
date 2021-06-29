@@ -88,6 +88,12 @@ export const accessMap = {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor, Coordinator],
     assess: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor, Coordinator],
   },
+  alertEvents: {
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    add: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    edit: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+  },
   translations: {
     list: [Administrator, GlobalCoordinator]
   }

@@ -927,12 +927,22 @@ export const stringKeys = {
         linkedToSupervisor: "alerts.assess.report.linkedToSupervisor"
       }
     },
-    logs: {
-      title: "alerts.logs.title",
+    eventLog: {
+      title: "alerts.eventLog.title",
+      addNew: "alerts.eventLog.addNew",
+      edit: "alerts.eventLog.edit",      
       list: {
-        date: "alerts.logs.list.date",
-        logType: "alerts.logs.list.logType",
-        userName: "alerts.logs.list.userName"
+        date: "alerts.eventLog.list.date",
+        userName: "alerts.eventLog.list.userName",
+        type: "alerts.eventLog.list.type",
+        subtype: "alerts.eventLog.list.subtype",
+        comment: "alerts.eventLog.list.comment",
+        removalConfirmation: "alerts.eventLog.list.removalConfirmation"
+      },
+      form: {
+        dateOfEvent: "alerts.eventLog.form.dateOfEvent",
+        timeOfEvent: "alerts.eventLog.form.timeOfEvent",
+        comment: "alerts.eventLog.form.comment",
       }
     },
     constants: {
@@ -953,6 +963,34 @@ export const stringKeys = {
         "Accepted": "alerts.reportStatus.accepted",
         "Pending": "alerts.reportStatus.pending",
         "Closed": "alerts.reportStatus.closed"
+      },
+      eventTypes: {
+        "Investigation": "alerts.eventTypes.investigation",
+        "PresumedCasePositive": "alerts.eventTypes.presumedCasePositive",
+        "PresumedCaseNegative": "alerts.eventTypes.presumedCaseNegative",
+        "Outcome": "alerts.eventTypes.outcome",
+        "Details": "alerts.eventTypes.details",
+        "PublicHealthActionTaken": "alerts.eventTypes.publicHealthActionTaken",        
+      },
+      eventSubtypes: {
+        "Investigated": "alerts.eventTypes.subtypes.investigated",
+        "NotInvestigated": "alerts.eventTypes.subtypes.notInvestigated",
+        "Unknown": "alerts.eventTypes.subtypes.unknown",
+        "Lab": "alerts.eventTypes.subtypes.lab",
+        "Clinical": "alerts.eventTypes.subtypes.clinical",
+        "Recovered": "alerts.eventTypes.subtypes.recovered",
+        "Deceased": "alerts.eventTypes.subtypes.deceased",
+        "ImmunizationCampaign": "alerts.eventTypes.subtypes.immunizationCampaign",
+        "HealthMessagesAwarenessRaising": "alerts.eventTypes.subtypes.healthMessagesAwareNessRaising",
+        "Referral": "alerts.eventTypes.subtypes.referral",
+        "Isolation": "alerts.eventTypes.subtypes.isolation",
+        "ProvidedORS": "alerts.eventTypes.subtypes.providedORS",
+        "AnimalsDisposed": "alerts.eventTypes.subtypes.AnimalsDisposed",
+        "SafeDignifiedBurials": "alerts.eventTypes.subtypes.SafeDignifiedBurials",
+        "CommunityMeeting": "alerts.eventTypes.subtypes.communityMeeting",
+        "AssistedInvestigation": "alerts.eventTypes.subtypes.assistedInvestigation",
+        "CleanupFogging": "alerts.eventTypes.subtypes.cleanupAndOrFogging",
+        "Other": "alerts.eventTypes.subtypes.other",
       },
       sex: {
         "Female": "alerts.sex.female",

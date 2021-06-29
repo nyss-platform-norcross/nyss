@@ -373,6 +373,17 @@ namespace RX.Nyss.Common.Utils.DataContract
             }
         }
 
+        public static class AlertEvent
+        {
+            public const string CreateSuccess = "alertEvent.create.success";
+            public const string EditSuccess = "alertEvent.edit.success";
+            public const string DeleteSuccess = "alertEvent.delete.success";
+            public const string AlertEventNotFound = "alertEvent.notFound";
+            public const string AlertEventTypeNotFound = "alertEvent.typeNotFound";
+            public const string SubtypeMustBelongToType = "alertEvent.subtypeMustBelongToType";
+
+        }
+        
         public static class Consent
         {
             public const string NoPendingConsent = "consent.noPendingConsent";
