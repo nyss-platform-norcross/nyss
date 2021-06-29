@@ -21,17 +21,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   const [villages, setVillages] = useState(initialVillages || []);
   const [zones, setZones] = useState(initialZones || []);
 
-  const [selectedVillage, setSelectedVillage] = useReducer((state, action) => {
-    if (action.initialValue) {
-      return { value: action.initialValue, changed: false }
-    }
-    if (state.value !== action) {
-      return { ...state, changed: true, value: action }
-    } else {
-      return { ...state, changed: false }
-    }
-  }, { value: '', changed: false });
-
   const [mapLocation, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'latitude': return { ...state, lat: action.value };
@@ -83,13 +72,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   useEffect(() => setIsExpanded(!isDefaultCollapsed && isLastLocation),
     [isLastLocation, isDefaultCollapsed]);
 
-  useEffect(() => {
-    if (form && form.fields && selectedVillage.changed) {
-      form.fields[`location_${locationNumber}_latitude`].update('');
-      form.fields[`location_${locationNumber}_longitude`].update('');
-    }
-  }, [form, selectedVillage, locationNumber]);
-
   const onLocationChange = (e) => {
     form.fields[`location_${locationNumber}_latitude`].update(e.lat);
     form.fields[`location_${locationNumber}_longitude`].update(e.lng);
@@ -127,8 +109,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     setZones([]);
 
     getFormZones(villageId, setZones);
-
-    setSelectedVillage(villageId);
   }
 
   const renderCollapsedLocationData = () => {
