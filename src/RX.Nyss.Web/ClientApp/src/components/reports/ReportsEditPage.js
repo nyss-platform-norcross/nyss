@@ -246,7 +246,7 @@ const ReportsEditPageComponent = (props) => {
                 >
                   {Object.keys(reportSexes).map(sex => (
                     <MenuItem key={`sex_${reportSexes[sex]}`} value={reportSexes[sex].toString()}>
-                      {reportSexes[sex]}
+                      {strings(stringKeys.reports.sexAgeConstants[reportSexes[sex]])}
                     </MenuItem>
                   ))}
                 </SelectField>
@@ -260,7 +260,7 @@ const ReportsEditPageComponent = (props) => {
                 >
                   {Object.keys(reportAges).map(age => (
                     <MenuItem key={`age_${reportAges[age]}`} value={reportAges[age].toString()}>
-                      {reportAges[age]}
+                      {strings(stringKeys.reports.sexAgeConstants[reportAges[age]])}
                     </MenuItem>
                   ))}
                 </SelectField>

@@ -825,6 +825,13 @@ export const stringKeys = {
       "Pending": "report.status.notCrossChecked",
       "Closed": "report.status.notCrossChecked"
     },
+    sexAgeConstants: {
+      "male": "report.sexAgeConstants.male",
+      "female": "report.sexAgeConstants.female",
+      "unspecified": "report.sexAgeConstants.unspecified",
+      "belowFive": "report.sexAgeConstants.belowFive",
+      "aboveFour": "report.sexAgeConstants.aboveFour"
+    }
   },
   nationalSocietyReports: {
     list: {
