@@ -81,7 +81,8 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && !report.isMarkedAsError
     && !report.isActivityReport
     && report.reportType !== ReportType.dataCollectionPoint
-    && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)))
+    && report.status !== reportStatus
+    && (!report.alert || alertAllowsCrossCheckingOfReport(report.alert))
     && !!report.village;
 
   const getRowMenu = (row) => [
@@ -178,18 +179,18 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                 }
                 <TableCell>
                   <TableRowActions>
-                    <TableRowMenu
-                      id={row.id}
-                      icon={<MoreVertIcon />}
-                      isFetching={isMarkingAsError[row.id]}
-                      items={getRowMenu(row)}
-                    />
                     <TableRowAction
                       onClick={() => goToEditing(projectId, row.id)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
                       condition={canEdit(row)} />
+                    <TableRowMenu
+                      id={row.id}
+                      icon={<MoreVertIcon />}
+                      isFetching={isMarkingAsError[row.id]}
+                      items={getRowMenu(row)}
+                    />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
