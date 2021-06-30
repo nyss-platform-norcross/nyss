@@ -6,6 +6,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSocietyDashboard;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard;
@@ -77,7 +78,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             nyssContext.Projects.Returns(projectsDbSet);
             nyssContext.Alerts.Returns(alertsDbSet);
             nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
-            nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
             nyssContext.Villages.Returns(villagesDbSet);
             nyssContext.Districts.Returns(districtsDbSet);
 
@@ -88,7 +88,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectKeptReportCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -116,7 +126,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectDismissedReportCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -144,7 +164,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectNotCrossCheckedReportCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -192,7 +222,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectTotalReportCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -256,7 +296,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectActiveDataCollectorCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
 
             var rawReports = new List<RawReport>
             {
@@ -297,7 +347,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectInactiveDataCollectorCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
 
             var rawReports = new List<RawReport>
             {
@@ -368,7 +428,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var filters = new ReportsFilter
+            {
+                NationalSocietyId = NationalSocietyId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = false,
+                    Kept = true,
+                    NotCrossChecked = false,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport

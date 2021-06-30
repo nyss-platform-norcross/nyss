@@ -6,6 +6,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard;
@@ -76,7 +77,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectKeptReportCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -101,7 +112,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectDismissedReportCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -127,7 +148,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectNotCrossCheckedReportCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -172,7 +203,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectTotalReportCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
             var reports = new List<RawReport>
             {
                 new RawReport
@@ -233,7 +274,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectActiveDataCollectorCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
 
             var rawReports = new List<RawReport>
             {
@@ -274,7 +325,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectInactiveDataCollectorCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
 
             var rawReports = new List<RawReport>
             {
@@ -345,7 +406,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         [Fact]
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var filters = new ReportsFilter
+            {
+                ProjectId = ProjectId,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Dismissed = true,
+                    Kept = true,
+                    NotCrossChecked = true,
+                    Training = false
+                }
+            };
             var rawReports = new List<RawReport>
             {
                 new RawReport
