@@ -75,13 +75,15 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     alert.status === alertStatus.pending
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
 
-  const canCrossCheck = (report, reportStatus) =>
+  const canCrossCheck = (report, reportStatus) => 
     !report.isAnonymized
     && report.isValid
     && !report.isMarkedAsError
     && !report.isActivityReport
     && report.reportType !== ReportType.dataCollectionPoint
-    && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
+    && report.status !== reportStatus
+    && (!report.alert || alertAllowsCrossCheckingOfReport(report.alert))
+    && !!report.village;
 
   const getRowMenu = (row) => [
     {
@@ -111,8 +113,9 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
   ];
 
   const canEdit = (row) => 
-    (!row.isAnonymized || !row.dataCollector)
+    !row.isAnonymized
     && !row.isActivityReport
+    && row.status === reportStatus.new
     && !projectIsClosed;
 
   return (
@@ -176,18 +179,18 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                 }
                 <TableCell>
                   <TableRowActions>
-                    <TableRowMenu
-                      id={row.id}
-                      icon={<MoreVertIcon />}
-                      isFetching={isMarkingAsError[row.id]}
-                      items={getRowMenu(row)}
-                    />
                     <TableRowAction
                       onClick={() => goToEditing(projectId, row.id)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
                       condition={canEdit(row)} />
+                    <TableRowMenu
+                      id={row.id}
+                      icon={<MoreVertIcon />}
+                      isFetching={isMarkingAsError[row.id]}
+                      items={getRowMenu(row)}
+                    />
                   </TableRowActions>
                 </TableCell>
               </TableRow>

@@ -341,7 +341,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 1,
                     Report = new Report
                     {
-                        Status = ReportStatus.New
+                        Status = ReportStatus.New,
+                        Location = new Point(0, 0)
                     }
                 }
             };
@@ -356,6 +357,32 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var report = _nyssContextMock.RawReports.First(r => r.Id == 1);
             report.Report.AcceptedAt.ShouldNotBeNull();
             report.Report.Status.ShouldBe(ReportStatus.Accepted);
+        }
+
+        [Fact]
+        public async Task AcceptReport_WhenReportHasNoLocation_ShouldFail()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.New
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.AcceptReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
         }
 
         [Fact]
@@ -437,7 +464,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 1,
                     Report = new Report
                     {
-                        Status = ReportStatus.New
+                        Status = ReportStatus.New,
+                        Location = new Point(0, 0)
                     }
                 }
             };
@@ -452,6 +480,32 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var report = _nyssContextMock.RawReports.First(r => r.Id == 1);
             report.Report.RejectedAt.ShouldNotBeNull();
             report.Report.Status.ShouldBe(ReportStatus.Rejected);
+        }
+
+        [Fact]
+        public async Task DismissReport_WhenReportHasNoLocation_ShouldFail()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.New
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.DismissReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
         }
 
         [Fact]

@@ -134,11 +134,11 @@ namespace RX.Nyss.Web.Features.Reports
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
-                    IsAnonymized = isSupervisor || isHeadSupervisor
+                    IsAnonymized = r.DataCollector != null && (isSupervisor || isHeadSupervisor
                         ? (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id != currentUserId)
                         || (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUserId)
                         : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
-                            nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
+                            nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id)),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
                         .Select(nsu => nsu.Organization.Name)
@@ -371,6 +371,11 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.CannotCrossCheckDcpReport);
             }
 
+            if (report.Location == null)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
+            }
+
             report.AcceptedAt = _dateTimeProvider.UtcNow;
             report.AcceptedBy = currentUser;
             report.Status = ReportStatus.Accepted;
@@ -405,6 +410,11 @@ namespace RX.Nyss.Web.Features.Reports
             if (report.ReportType == ReportType.DataCollectionPoint)
             {
                 return Error(ResultKey.Report.CannotCrossCheckDcpReport);
+            }
+
+            if (report.Location == null)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
             }
 
             report.RejectedAt = _dateTimeProvider.UtcNow;

@@ -206,6 +206,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string AlreadyCrossChecked = "report.alreadyCrossChecked";
             public const string CannotCrossCheckErrorReport = "report.cannotCrossCheckErrorReport";
             public const string CannotCrossCheckDcpReport = "report.cannotCrossCheckDcpReport";
+            public const string CannotCrossCheckReportWithoutLocation = "report.cannotCrossCheckReportWithoutLocation";
 
             public static class Status
             {
@@ -383,7 +384,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string SubtypeMustBelongToType = "alertEvent.subtypeMustBelongToType";
 
         }
-        
+
         public static class Consent
         {
             public const string NoPendingConsent = "consent.noPendingConsent";

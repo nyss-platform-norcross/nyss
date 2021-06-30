@@ -165,7 +165,7 @@ const ReportsEditPageComponent = (props) => {
     return key ? reportCountToSexAge[key] : { sex: '', age: '' };
   }
 
-  const dataCollectorAndLocationSelected = () => selectedDataCollector && selectedLocation.villageId !== 0;
+  const dataCollectorAndLocationSelected = () => selectedDataCollector && selectedLocation.id !== 0;
 
   if (props.isFetching || !form || !props.data) {
     return <Loading />;
