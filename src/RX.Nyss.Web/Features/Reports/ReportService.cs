@@ -371,6 +371,11 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.CannotCrossCheckDcpReport);
             }
 
+            if (report.Location == null)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
+            }
+
             report.AcceptedAt = _dateTimeProvider.UtcNow;
             report.AcceptedBy = currentUser;
             report.Status = ReportStatus.Accepted;
@@ -405,6 +410,11 @@ namespace RX.Nyss.Web.Features.Reports
             if (report.ReportType == ReportType.DataCollectionPoint)
             {
                 return Error(ResultKey.Report.CannotCrossCheckDcpReport);
+            }
+
+            if (report.Location == null)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckReportWithoutLocation);
             }
 
             report.RejectedAt = _dateTimeProvider.UtcNow;
