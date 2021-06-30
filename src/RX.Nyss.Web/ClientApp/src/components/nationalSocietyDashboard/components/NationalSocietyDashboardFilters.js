@@ -86,29 +86,74 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
         <CardContent className={styles.collapsedFilterBar} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} />
+              <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)}/>
             </Grid>
             {!isFilterExpanded && (
               <Fragment>
                 <Grid item>
-                  <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+                  <Chip icon={<DateRange/>}
+                        label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`}
+                        onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
                 </Grid>
                 <Grid item>
                   <Chip label={
                     value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
-                  } onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+                  } onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
                 </Grid>
               </Fragment>
             )}
-            {!isFilterExpanded && selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.dataCollectorType !== "all" && (<Grid item><Chip label={collectionsTypes[value.dataCollectorType]} onDelete={() => onChange(updateValue({ dataCollectorType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.kept && (<Grid item><Chip label={strings(stringKeys.filters.report.kept)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, kept: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
-            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.notCrossChecked && (<Grid item><Chip label={strings(stringKeys.filters.report.notCrossChecked)} onDelete={() => onChange(updateValue({ reportStatus: { ...value.reportStatus, notCrossChecked: false } }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {!isFilterExpanded && selectedArea && (
+              <Grid item>
+                <Chip label={selectedArea.name}
+                      onDelete={() => handleAreaChange(null)}
+                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
+            {!isFilterExpanded && value.healthRiskId && (
+              <Grid item>
+                <Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name}
+                      onDelete={() => onChange(updateValue({healthRiskId: null}))}
+                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
+            {!isFilterExpanded && value.dataCollectorType !== "all" && (
+              <Grid item>
+                <Chip label={collectionsTypes[value.dataCollectorType]}
+                      onDelete={() => onChange(updateValue({dataCollectorType: "all"}))}
+                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
+            {!isFilterExpanded && value.organizationId && (
+              <Grid item>
+                <Chip label={organizations.filter(o => o.id === value.organizationId)[0].name}
+                      onDelete={() => onChange(updateValue({organizationId: null}))}
+                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.kept && (
+              <Grid item>
+                <Chip label={strings(stringKeys.filters.report.kept)} onDelete={() => onChange(updateValue({
+                  reportStatus: {
+                    ...value.reportStatus,
+                    kept: false
+                  }
+                }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
+            {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.notCrossChecked && (
+              <Grid item>
+                <Chip label={strings(stringKeys.filters.report.notCrossChecked)}
+                      onDelete={() => onChange(updateValue({
+                        reportStatus: {
+                          ...value.reportStatus,
+                          notCrossChecked: false
+                        }
+                      }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+              </Grid>
+            )}
             <Grid item className={styles.expandFilterButton}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
-                <ExpandMore />
+                <ExpandMore/>
               </IconButton>
             </Grid>
           </Grid>
