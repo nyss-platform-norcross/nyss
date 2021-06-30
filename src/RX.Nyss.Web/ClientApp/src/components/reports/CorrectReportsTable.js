@@ -81,7 +81,9 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && !report.isMarkedAsError
     && !report.isActivityReport
     && report.reportType !== ReportType.dataCollectionPoint
-    && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
+    && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)))
+    && !!report.dataCollector
+    && !!report.village;
 
   const getRowMenu = (row) => [
     {
