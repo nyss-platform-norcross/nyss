@@ -75,14 +75,13 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     alert.status === alertStatus.pending
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
 
-  const canCrossCheck = (report, reportStatus) =>
+  const canCrossCheck = (report, reportStatus) => 
     !report.isAnonymized
     && report.isValid
     && !report.isMarkedAsError
     && !report.isActivityReport
     && report.reportType !== ReportType.dataCollectionPoint
     && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)))
-    && !!report.dataCollector
     && !!report.village;
 
   const getRowMenu = (row) => [
@@ -113,8 +112,9 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
   ];
 
   const canEdit = (row) => 
-    (!row.isAnonymized || !row.dataCollector)
+    !row.isAnonymized
     && !row.isActivityReport
+    && row.status === reportStatus.new
     && !projectIsClosed;
 
   return (
