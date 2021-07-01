@@ -18,7 +18,7 @@ import { Fragment } from 'react';
 import { ReportStatusFilter } from './ReportStatusFilter';
 import { ReportTypeFilter } from './ReportTypeFilter';
 
-export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showCorrectReportFilters, showTrainingFilter }) => {
+export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showCorrectReportFilters, showTrainingFilter, hideReportTypeFilter }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -139,13 +139,16 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
                 </FormControl>
               </Grid>
 
-              <Grid item>
-                <ReportTypeFilter
-                  filter={value.reportType}
-                  onChange={handleReportTypeChange}
-                  showTrainingFilter={showTrainingFilter}
-                />
-              </Grid>
+              {!hideReportTypeFilter && (
+                <Grid item>
+                  <ReportTypeFilter
+                    filter={value.reportType}
+                    onChange={handleReportTypeChange}
+                    showTrainingFilter={showTrainingFilter}
+                    showCorrectedFilter={false}
+                  />
+                </Grid>
+              )}
             </Fragment>
           )}
         </Grid>

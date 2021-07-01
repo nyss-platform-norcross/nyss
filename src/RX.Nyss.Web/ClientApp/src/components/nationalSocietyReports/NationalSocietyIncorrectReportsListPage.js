@@ -36,6 +36,7 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
+          hideReportTypeFilter
         />
       </div>
 
