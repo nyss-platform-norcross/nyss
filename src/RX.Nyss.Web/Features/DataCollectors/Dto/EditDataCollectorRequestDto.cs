@@ -76,13 +76,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     .Must(locations => locations.Any());
 
                 RuleForEach(dc => dc.Locations)
-                    .Must(dcl => dcl.VillageId > 0
-                        && dcl.Latitude >= -90 && dcl.Latitude <= 90
-                        && dcl.Longitude >= -180 && dcl.Longitude <= 180);
-
-                RuleForEach(dc => dc.Locations)
-                    .MustAsync(async (model, location, t) => !await dataCollectorValidationService.LocationHasDuplicateVillageAndZone(model.Id, location))
-                    .WithMessageKey(ResultKey.DataCollector.DuplicateLocation);
+                    .SetValidator(x => new DataCollectorLocationRequestDto.Validator(x.Id, dataCollectorValidationService));
             }
         }
     }
