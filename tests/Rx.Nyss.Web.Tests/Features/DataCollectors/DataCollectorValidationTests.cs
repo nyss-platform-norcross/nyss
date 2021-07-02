@@ -12,6 +12,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
     {
         private CreateDataCollectorRequestDto.Validator CreateValidator { get; set; }
         private EditDataCollectorRequestDto.Validator EditValidator { get; set; }
+        private DataCollectorLocationRequestDto.Validator LocationValidator { get; set; }
 
         public DataCollectorValidationTests()
         {
@@ -21,6 +22,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             validationService.PhoneNumberExistsToOther(2, "+4712345678").Returns(false);
             CreateValidator = new CreateDataCollectorRequestDto.Validator(validationService);
             EditValidator = new EditDataCollectorRequestDto.Validator(validationService);
+            LocationValidator = new DataCollectorLocationRequestDto.Validator(1, validationService);
         }
 
         [Fact]
@@ -75,16 +77,48 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         }
 
         [Fact]
-        public void Edit_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
+        public void Location_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
         {
-            EditValidator.ShouldHaveValidationErrorFor(dc => dc.Locations, new List<DataCollectorLocationRequestDto>
+            var result = LocationValidator.TestValidate(new DataCollectorLocationRequestDto
             {
-                new DataCollectorLocationRequestDto
-                {
-                    Latitude = 100,
-                    Longitude = -200
-                }
+                Latitude = 100,
+                Longitude = -200
             });
+
+            result.ShouldHaveValidationErrorFor(l => l.Latitude);
+            result.ShouldHaveValidationErrorFor(l => l.Longitude);
+        }
+
+        [Fact]
+        public void Location_WhenDuplicateVillage_ShouldHaveError()
+        {
+            // Arrange
+            var dto = new DataCollectorLocationRequestDto { VillageId = 1 };
+            var validationService = Substitute.For<IDataCollectorValidationService>();
+            validationService.LocationHasDuplicateVillage(1, dto).Returns(true);
+            LocationValidator = new DataCollectorLocationRequestDto.Validator(1, validationService);
+
+            // Act
+            var result = LocationValidator.TestValidate(dto);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(l => l.VillageId);
+        }
+
+        [Fact]
+        public void Location_WhenDuplicateZone_ShouldHaveError()
+        {
+            // Arrange
+            var dto = new DataCollectorLocationRequestDto { ZoneId = 1 };
+            var validationService = Substitute.For<IDataCollectorValidationService>();
+            validationService.LocationHasDuplicateZone(1, dto).Returns(true);
+            LocationValidator = new DataCollectorLocationRequestDto.Validator(1, validationService);
+
+            // Act
+            var result = LocationValidator.TestValidate(dto);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(l => l.ZoneId);
         }
 
         [Fact]
