@@ -147,7 +147,9 @@ export const createForm = (fields, validators) => {
       }
 
       const field = form[name];
-      const customErrorKey = customErrorsKeys.find(e => e.toLowerCase() === name.toLowerCase());
+      const customErrorKey = customErrorsKeys.find(e => e.indexOf('[') > -1
+        ? e.replace('[', '_').replace('].', '_').toLowerCase() === name.toLowerCase()
+        : e.toLowerCase() === name.toLowerCase());
 
       if (customErrorKey) {
         const errorMessages = errors[customErrorKey];
@@ -210,5 +212,5 @@ export const validators = {
   inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)],
   time: [() => strings(stringKeys.validation.invalidTimeFormat), (value) => !value || timeRegex.test(value)],
   sexAge: (fieldGetter) => [() => strings(stringKeys.validation.sexOrAgeUnspecified), (value, fields) => fieldGetter(fields) === value || value !== reportAges.unspecified],
-  uniqueLocation: (fieldGetter, allLocations) => [() => strings(stringKeys.validation.duplicateLocation), (value, fields) => allLocations.length === 1 || allLocations.filter(l => l.villageId.toString() === value && (l.zoneId == null || l.zoneId.toString() === fieldGetter(fields))).length === 1]
+  uniqueLocation: (fieldGetter, allLocations) => [() => strings(stringKeys.validation.duplicateLocation), (value, fields) => allLocations.length === 1 || allLocations.filter(l => l.villageId.toString() === value && (l.zoneId == null || l.zoneId.toString() === fieldGetter(fields))).length <= 1]
 };

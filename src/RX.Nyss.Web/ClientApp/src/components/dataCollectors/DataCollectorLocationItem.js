@@ -45,43 +45,52 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
       getFormVillages(location.districtId, setVillages);
     }
 
-    form.addField(`location_${locationNumber}_latitude`, location.latitude, [validators.required, validators.integer, validators.inRange(-90, 90)]);
-    form.addField(`location_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)]);
-    form.addField(`location_${locationNumber}_regionId`, location.regionId.toString(), [validators.required]);
-    form.addField(`location_${locationNumber}_districtId`, location.districtId.toString(), [validators.required]);
-    form.addField(`location_${locationNumber}_villageId`, location.villageId.toString(), [validators.required, validators.uniqueLocation(x => x[`location_${locationNumber}_zoneId`], allLocations)]);
-    form.addField(`location_${locationNumber}_zoneId`, !!location.zoneId ? location.zoneId.toString() : '');
+    form.addField(`locations_${locationNumber}_latitude`, location.latitude, [validators.required, validators.integer, validators.inRange(-90, 90)]);
+    form.addField(`locations_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)]);
+    form.addField(`locations_${locationNumber}_regionId`, location.regionId.toString(), [validators.required]);
+    form.addField(`locations_${locationNumber}_districtId`, location.districtId.toString(), [validators.required]);
+    form.addField(`locations_${locationNumber}_villageId`, location.villageId.toString(), [validators.required, validators.uniqueLocation(x => x[`locations_${locationNumber}_zoneId`], allLocations)]);
+    form.addField(`locations_${locationNumber}_zoneId`, !!location.zoneId ? location.zoneId.toString() : '');
 
 
-    form.fields[`location_${locationNumber}_latitude`].subscribe(({ newValue }) => dispatch({ type: 'latitude', value: newValue }));
-    form.fields[`location_${locationNumber}_longitude`].subscribe(({ newValue }) => dispatch({ type: 'longitude', value: newValue }));
-    form.fields[`location_${locationNumber}_zoneId`].subscribe(({ newValue }) => location.zoneId = newValue);
+    form.fields[`locations_${locationNumber}_latitude`].subscribe(({ newValue }) => dispatch({ type: 'latitude', value: newValue }));
+    form.fields[`locations_${locationNumber}_longitude`].subscribe(({ newValue }) => dispatch({ type: 'longitude', value: newValue }));
+    form.fields[`locations_${locationNumber}_zoneId`].subscribe(({ newValue }) => location.zoneId = newValue);
 
     setReady(true);
 
     return () => {
-      form.removeField(`location_${locationNumber}_latitude`);
-      form.removeField(`location_${locationNumber}_longitude`);
-      form.removeField(`location_${locationNumber}_regionId`);
-      form.removeField(`location_${locationNumber}_districtId`);
-      form.removeField(`location_${locationNumber}_villageId`);
-      form.removeField(`location_${locationNumber}_zoneId`);
+      form.removeField(`locations_${locationNumber}_latitude`);
+      form.removeField(`locations_${locationNumber}_longitude`);
+      form.removeField(`locations_${locationNumber}_regionId`);
+      form.removeField(`locations_${locationNumber}_districtId`);
+      form.removeField(`locations_${locationNumber}_villageId`);
+      form.removeField(`locations_${locationNumber}_zoneId`);
     }
   });
+
+  useEffect(() => {
+    allLocations.forEach(l => {
+      const field = form.fields[`locations_${l.number}_villageId`];
+      if (!!field) {
+        field.setValidators([validators.required, validators.uniqueLocation(x => x[`locations_${l.number}_zoneId`], allLocations)]);
+      }
+    })
+  }, [allLocations]);
 
   useEffect(() => setIsExpanded(!isDefaultCollapsed && isLastLocation),
     [isLastLocation, isDefaultCollapsed]);
 
   const onLocationChange = (e) => {
-    form.fields[`location_${locationNumber}_latitude`].update(e.lat);
-    form.fields[`location_${locationNumber}_longitude`].update(e.lng);
+    form.fields[`locations_${locationNumber}_latitude`].update(e.lat);
+    form.fields[`locations_${locationNumber}_longitude`].update(e.lng);
   }
 
   const onRegionChange = (event) => {
     const regionId = event.target.value;
-    form.fields[`location_${locationNumber}_districtId`].update('', true);
-    form.fields[`location_${locationNumber}_villageId`].update('', true);
-    form.fields[`location_${locationNumber}_zoneId`].update('', true);
+    form.fields[`locations_${locationNumber}_districtId`].update('', true);
+    form.fields[`locations_${locationNumber}_villageId`].update('', true);
+    form.fields[`locations_${locationNumber}_zoneId`].update('', true);
 
     setDistricts([]);
     setVillages([]);
@@ -92,8 +101,8 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
 
   const onDistrictChange = (event) => {
     const districtId = event.target.value;
-    form.fields[`location_${locationNumber}_villageId`].update('', true);
-    form.fields[`location_${locationNumber}_zoneId`].update('', true);
+    form.fields[`locations_${locationNumber}_villageId`].update('', true);
+    form.fields[`locations_${locationNumber}_zoneId`].update('', true);
 
     setVillages([]);
     setZones([]);
@@ -103,7 +112,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
 
   const onVillageChange = (event) => {
     const villageId = event.target.value;
-    form.fields[`location_${locationNumber}_zoneId`].update('', true);
+    form.fields[`locations_${locationNumber}_zoneId`].update('', true);
     location.villageId = villageId;
 
     setZones([]);
@@ -112,10 +121,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   }
 
   const renderCollapsedLocationData = () => {
-    const region = regions.find(r => r.id === parseInt(form.fields[`location_${locationNumber}_regionId`].value));
-    const district = districts.find(d => d.id === parseInt(form.fields[`location_${locationNumber}_districtId`].value));
-    const village = villages.find(v => v.id === parseInt(form.fields[`location_${locationNumber}_villageId`].value));
-    const zone = zones.find(z => z.id === parseInt(form.fields[`location_${locationNumber}_zoneId`].value));
+    const region = regions.find(r => r.id === parseInt(form.fields[`locations_${locationNumber}_regionId`].value));
+    const district = districts.find(d => d.id === parseInt(form.fields[`locations_${locationNumber}_districtId`].value));
+    const village = villages.find(v => v.id === parseInt(form.fields[`locations_${locationNumber}_villageId`].value));
+    const zone = zones.find(z => z.id === parseInt(form.fields[`locations_${locationNumber}_zoneId`].value));
 
     return `${!!region ? region.name : ''} ${!!district ? `> ${district.name}` : ''} ${!!village ? `> ${village.name}` : ''} ${!!zone ? `> ${zone.name}` : ''}`;
   }
@@ -132,13 +141,21 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     removeLocation(location);
   }
 
+  const hasError = () => 
+    !!form.fields[`locations_${locationNumber}_latitude`].error
+    || !!form.fields[`locations_${locationNumber}_longitude`].error
+    || !!form.fields[`locations_${locationNumber}_regionId`].error
+    || !!form.fields[`locations_${locationNumber}_districtId`].error
+    || !!form.fields[`locations_${locationNumber}_villageId`].error
+    || !!form.fields[`locations_${locationNumber}_zoneId`].error;
+
   if (!ready) {
     return null;
   }
 
   return (
     <Grid item xs={12}>
-      <Card className={styles.requiredMapLocation} data-missing-location={form.fields[`location_${locationNumber}_latitude`].error !== null || form.fields[`location_${locationNumber}_longitude`].error !== null}>
+      <Card className={styles.requiredMapLocation} data-with-error={hasError()}>
         <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
           <Grid item xs={12} className={styles.locationHeader}>
             <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
@@ -163,7 +180,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollector.form.region)}
-                  field={form.fields[`location_${locationNumber}_regionId`]}
+                  field={form.fields[`locations_${locationNumber}_regionId`]}
                   name='regionId'
                   onChange={onRegionChange}
                 >
@@ -179,7 +196,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollector.form.district)}
-                  field={form.fields[`location_${locationNumber}_districtId`]}
+                  field={form.fields[`locations_${locationNumber}_districtId`]}
                   name='districtId'
                   onChange={onDistrictChange}
                 >
@@ -195,7 +212,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollector.form.village)}
-                  field={form.fields[`location_${locationNumber}_villageId`]}
+                  field={form.fields[`locations_${locationNumber}_villageId`]}
                   name='villageId'
                   onChange={onVillageChange}
                 >
@@ -211,7 +228,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollector.form.zone)}
-                  field={form.fields[`location_${locationNumber}_zoneId`]}
+                  field={form.fields[`locations_${locationNumber}_zoneId`]}
                   name='zoneId'
                 >
                   <MenuItem value=''>
@@ -241,7 +258,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                   <TextInputField
                     label={strings(stringKeys.dataCollector.form.latitude)}
                     name='latitude'
-                    field={form.fields[`location_${locationNumber}_latitude`]}
+                    field={form.fields[`locations_${locationNumber}_latitude`]}
                     type='number'
                     inputMode={'decimal'}
                   />
@@ -250,7 +267,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                   <TextInputField
                     label={strings(stringKeys.dataCollector.form.longitude)}
                     name='longitude'
-                    field={form.fields[`location_${locationNumber}_longitude`]}
+                    field={form.fields[`locations_${locationNumber}_longitude`]}
                     type='number'
                     inputMode={'decimal'}
                   />

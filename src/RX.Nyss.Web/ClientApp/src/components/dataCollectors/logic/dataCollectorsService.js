@@ -29,12 +29,12 @@ export const getSaveFormModel = (values, type, locations) =>
     deployed: values.deployed,
     locations: locations.map(location => ({
       id: location.id || null,
-      latitude: parseFloat(values[`location_${location.number}_latitude`]),
-      longitude: parseFloat(values[`location_${location.number}_longitude`]),
-      regionId: parseInt(values[`location_${location.number}_regionId`]),
-      districtId: parseInt(values[`location_${location.number}_districtId`]),
-      villageId: parseInt(values[`location_${location.number}_villageId`]),
-      zoneId: values[`location_${location.number}_zoneId`] ? parseInt(values[`location_${location.number}_zoneId`]) : null
+      latitude: parseFloat(values[`locations_${location.number}_latitude`]),
+      longitude: parseFloat(values[`locations_${location.number}_longitude`]),
+      regionId: parseInt(values[`locations_${location.number}_regionId`]),
+      districtId: parseInt(values[`locations_${location.number}_districtId`]),
+      villageId: parseInt(values[`locations_${location.number}_villageId`]),
+      zoneId: values[`locations_${location.number}_zoneId`] ? parseInt(values[`locations_${location.number}_zoneId`]) : null
     }))
   });
 
