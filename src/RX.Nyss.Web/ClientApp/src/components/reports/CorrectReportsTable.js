@@ -116,7 +116,8 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     !row.isAnonymized
     && !row.isActivityReport
     && row.status === reportStatus.new
-    && !projectIsClosed;
+    && !projectIsClosed
+    && !row.dataCollectorIsDeleted;
 
   return (
     <Fragment>

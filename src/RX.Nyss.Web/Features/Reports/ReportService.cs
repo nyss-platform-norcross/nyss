@@ -181,7 +181,8 @@ namespace RX.Nyss.Web.Features.Reports
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
                     Status = r.Report.Status,
-                    ReportErrorType = r.ErrorType
+                    ReportErrorType = r.ErrorType,
+                    DataCollectorIsDeleted = r.DataCollector.Name == Anonymization.Text
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);

@@ -48,6 +48,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public ReportStatus Status { get; set; }
         public ReportListAlert Alert { get; set; }
         public ReportErrorType? ReportErrorType { get; set; }
+        public bool DataCollectorIsDeleted { get; set; }
     }
 
     public class ReportListAlert
