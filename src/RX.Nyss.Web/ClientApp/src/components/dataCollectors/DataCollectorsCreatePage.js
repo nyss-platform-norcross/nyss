@@ -86,8 +86,8 @@ const DataCollectorsCreatePageComponent = (props) => {
 
   const addDataCollectorLocation = () => {
     const previousLocation = locations[locations.length - 1];
-    const previousRegionId = form.fields[`location_${previousLocation.number}_regionId`].value || '';
-    const previousDistrictId = form.fields[`location_${previousLocation.number}_districtId`].value || '';
+    const previousRegionId = form.fields[`locations_${previousLocation.number}_regionId`].value || '';
+    const previousDistrictId = form.fields[`locations_${previousLocation.number}_districtId`].value || '';
 
     setLocations([...locations, {
       latitude: '',
@@ -112,7 +112,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-    
+
     props.create(props.projectId, getSaveFormModel(values, values.dataCollectorType, locations));
   };
 

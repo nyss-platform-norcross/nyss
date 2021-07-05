@@ -14,7 +14,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
         Task<bool> PhoneNumberExists(string phoneNumber);
         Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber);
         Task<bool> IsAllowedToCreateForSupervisor(int supervisorId);
-        Task<bool> LocationHasDuplicateVillageAndZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation);
+        Task<bool> LocationHasDuplicateVillage(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation);
+        Task<bool> LocationHasDuplicateZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation);
     }
 
     public class DataCollectorValidationService : IDataCollectorValidationService
@@ -44,11 +45,17 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
                     && await _nyssContext.Users.Where(u => u.Id == supervisorId).Select(u => (SupervisorUser)u).Select(u => u.HeadSupervisor.Id).FirstOrDefaultAsync() == currentUser.Id);
         }
 
-        public async Task<bool> LocationHasDuplicateVillageAndZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
+        public async Task<bool> LocationHasDuplicateVillage(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
             await _nyssContext.DataCollectorLocations
                 .AnyAsync(dcl => dcl.DataCollectorId == dataCollectorId
                     && dcl.Id != dataCollectorLocation.Id
                     && dcl.Village.Id == dataCollectorLocation.VillageId
                     && (dcl.Zone == null || dcl.Zone.Id == dataCollectorLocation.ZoneId));
+
+        public async Task<bool> LocationHasDuplicateZone(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
+            await _nyssContext.DataCollectorLocations
+                .AnyAsync(dcl => dcl.DataCollectorId == dataCollectorId
+                    && dcl.Id != dataCollectorLocation.Id
+                    && dcl.Zone.Id == dataCollectorLocation.ZoneId);
     }
 }

@@ -1,5 +1,5 @@
 .requiredMapLocation {
-  &[data-missing-location=true] {
+  &[data-with-error=true] {
     border-color: #f44336;
   }
 }
