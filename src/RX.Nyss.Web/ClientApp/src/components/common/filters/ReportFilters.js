@@ -50,7 +50,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
   const handleReportStatusChange = event =>
     onChange(updateValue({ reportStatus: { ...value.reportStatus, [event.target.name]: event.target.checked }}));
 
-  const handleReportTypeChange = event => 
+  const handleReportTypeChange = event =>
     onChange(updateValue({ reportType: { ...value.reportType, [event.target.name]: event.target.checked }}));
 
   if (!value) {
@@ -66,6 +66,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
               nationalSocietyId={nationalSocietyId}
               selectedItem={selectedArea}
               onChange={handleAreaChange}
+              showUnknown={true}
             />
           </Grid>
 

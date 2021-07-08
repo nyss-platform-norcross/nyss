@@ -34,7 +34,7 @@ const StructureTreeItem = ({ data, onSelect, isSelected, children }) => {
   );
 }
 
-export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
+export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange, showUnknown=false }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [, setIsFetching] = useState(false);
   const [structureLoaded, setStructureLoaded] = useState(false);
@@ -124,13 +124,14 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
               label={strings(stringKeys.filters.area.all)}>
             </TreeItem>
 
+            {showUnknown &&
             <IconTreeItem
               nodeId='unknown'
               className={!selectedItemKey ? styles.selected : null}
               onSelect={handleChange}
               labelText={strings(stringKeys.filters.area.unknown)}
               labelIcon={ErrorOutlineIcon}
-            />
+            />}
 
             {regions.map(region => ({ key: `region_${region.id}`, data: region })).map(region => (
               <StructureTreeItem
