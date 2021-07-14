@@ -37,7 +37,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
-                .SingleOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
+                .FirstOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
                     ((dataCollector != null && phr.Project.Id == dataCollector.Project.Id) || (phr.Project.NationalSocietyId == nationalSocietyId && dataCollector == null)));
 
             if (projectHealthRisk == null)
