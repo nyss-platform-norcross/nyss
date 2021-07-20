@@ -19,7 +19,7 @@ import { strings, stringKeys } from "../../strings";
 import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
 import SubmitButton from "../forms/submitButton/SubmitButton";
 
-const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, ...props }) => {
+const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, userRoles, ...props }) => {
   useMount(() => {
     openDashbaord(projectId);
   });
@@ -57,6 +57,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
           isGeneratingPdf={isGeneratingPdf}
           isFilterExpanded={isFilterExpanded}
           setIsFilterExpanded={setIsFilterExpanded}
+          userRoles={userRoles}
         />
       </Grid>
 
@@ -129,7 +130,8 @@ const mapStateToProps = state => ({
   reportsGroupedByLocationDetailsFetching: state.projectDashboard.reportsGroupedByLocationDetailsFetching,
   dataCollectionPointsReportData: state.projectDashboard.dataCollectionPointsReportData,
   isGeneratingPdf: state.projectDashboard.isGeneratingPdf,
-  isFetching: state.projectDashboard.isFetching
+  isFetching: state.projectDashboard.isFetching,
+  userRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

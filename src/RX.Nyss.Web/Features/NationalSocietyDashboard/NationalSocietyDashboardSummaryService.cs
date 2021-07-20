@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .FilterByArea(filters.Area)
                 .FilterByType(filters.DataCollectorType)
                 .FilterByNationalSociety(nationalSocietyId)
-                .FilterByTrainingMode(filters.IsTraining)
+                .FilterByTrainingMode(filters.ReportStatus.Training)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
     }

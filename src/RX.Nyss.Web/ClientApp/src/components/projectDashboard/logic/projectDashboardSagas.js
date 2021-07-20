@@ -35,8 +35,13 @@ function* openProjectDashboard({ projectId }) {
         startDate: endDate.add(-7, 'day'),
         endDate: endDate,
         groupingType: 'Day',
-        isTraining: false,
-        reportsType: 'all',
+        dataCollectorType: 'all',
+        reportStatus: {
+          kept: true,
+          dismissed: false,
+          notCrossChecked: true,
+          training: false
+        },
         utcOffset: utcOffset
       };
 

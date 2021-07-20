@@ -117,6 +117,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
                   onChange={handleReportStatusChange}
                   correctReports={showCorrectReportFilters}
                   showTrainingFilter={showTrainingFilter}
+                  showDismissedFilter
                 />
               </Grid>
             </Fragment>

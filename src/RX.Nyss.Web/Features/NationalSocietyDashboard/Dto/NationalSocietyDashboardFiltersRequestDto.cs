@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
     public class NationalSocietyDashboardFiltersRequestDto
     {
-        public enum NationalSocietyReportsTypeDto
+        public enum NationalSocietyDataCollectorTypeDto
         {
             All,
             DataCollector,
@@ -25,9 +25,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public DatesGroupingType GroupingType { get; set; }
 
-        public NationalSocietyReportsTypeDto ReportsType { get; set; }
+        public NationalSocietyDataCollectorTypeDto DataCollectorType { get; set; }
 
-        public bool IsTraining { get; set; }
+        public ReportStatusFilterDto ReportStatus { get; set; }
 
         public int UtcOffset { get; set; }
     }

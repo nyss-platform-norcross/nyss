@@ -3,7 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@
 import { Fragment } from 'react';
 import { stringKeys, strings } from '../../../strings';
 
-export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrainingFilter }) => {
+export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrainingFilter, showDismissedFilter }) => {
 
   return (
     <Fragment>
@@ -19,14 +19,16 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrain
               />
               <FormControlLabel
                 className={styles.checkbox}
-                control={<Checkbox checked={filter.dismissed} onChange={onChange} name='dismissed' color='primary' />}
-                label={strings(stringKeys.filters.report.dismissed)}
-              />
-              <FormControlLabel
-                className={styles.checkbox}
                 control={<Checkbox checked={filter.notCrossChecked} onChange={onChange} name='notCrossChecked' color='primary' />}
                 label={strings(stringKeys.filters.report.notCrossChecked)}
               />
+              {showDismissedFilter && (
+                <FormControlLabel
+                  className={styles.checkbox}
+                  control={<Checkbox checked={filter.dismissed} onChange={onChange} name='dismissed' color='primary' />}
+                  label={strings(stringKeys.filters.report.dismissed)}
+                />
+              )}
               {showTrainingFilter && (
                 <FormControlLabel
                   className={styles.checkbox}

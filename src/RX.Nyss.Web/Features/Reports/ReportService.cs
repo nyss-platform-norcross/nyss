@@ -305,7 +305,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters) =>
             _nyssContext.RawReports
-                .FilterByTrainingMode(filters.IsTraining)
+                .FilterByReportStatus(filters.ReportStatus)
                 .FromKnownDataCollector()
                 .FilterByArea(filters.Area)
                 .FilterByDataCollectorType(filters.DataCollectorType)
