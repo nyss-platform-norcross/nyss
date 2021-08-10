@@ -18,7 +18,7 @@ export const projectDashboardSagas = () => [
 ];
 
 function* openProjectDashboard({ projectId }) {
-  yield put(actions.openDashbaord.request());
+  yield put(actions.openDashboard.request());
   try {
     yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/projectDashboard/filters?projectId=${projectId}`);
@@ -47,9 +47,9 @@ function* openProjectDashboard({ projectId }) {
 
     yield call(getProjectDashboardData, { projectId, filters })
 
-    yield put(actions.openDashbaord.success(projectId, filtersData.value));
+    yield put(actions.openDashboard.success(projectId, filtersData.value));
   } catch (error) {
-    yield put(actions.openDashbaord.failure(error.message));
+    yield put(actions.openDashboard.failure(error.message));
   }
 };
 

@@ -15,7 +15,7 @@ export const nationalSocietyDashboardSagas = () => [
 ];
 
 function* openNationalSocietyDashboard({ nationalSocietyId }) {
-  yield put(actions.openDashbaord.request());
+  yield put(actions.openDashboard.request());
   try {
     yield call(openNationalSocietyDashboardModule, nationalSocietyId);
     const filtersData = yield call(http.get, `/api/nationalSocietyDashboard/filters?nationalSocietyId=${nationalSocietyId}`);
@@ -45,9 +45,9 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
 
     yield call(getNationalSocietyDashboardData, { nationalSocietyId, filters })
 
-    yield put(actions.openDashbaord.success(nationalSocietyId, filtersData.value));
+    yield put(actions.openDashboard.success(nationalSocietyId, filtersData.value));
   } catch (error) {
-    yield put(actions.openDashbaord.failure(error.message));
+    yield put(actions.openDashboard.failure(error.message));
   }
 };
 

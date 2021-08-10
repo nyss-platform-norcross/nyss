@@ -13,9 +13,10 @@ import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDas
 import { NationalSocietyDashboardReportsMap } from './components/NationalSocietyDashboardReportsMap';
 import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
 
+const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, ...props }) => {
 const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
-    openDashbaord(props.nationalSocietyId);
+    openDashboard(props.nationalSocietyId);
   });
 
   const dashboardElement = useRef(null);
@@ -69,7 +70,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData
 }
 
 NationalSocietyDashboardPageComponent.propTypes = {
-  openDashbaord: PropTypes.func
+  openDashboard: PropTypes.func
 };
 
 const mapStateToProps = state => ({
@@ -89,7 +90,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  openDashbaord: nationalSocietyDashboardActions.openDashbaord.invoke,
+  openDashboard: nationalSocietyDashboardActions.openDashboard.invoke,
   getReportHealthRisks: nationalSocietyDashboardActions.getReportHealthRisks.invoke,
   getDashboardData: nationalSocietyDashboardActions.getDashboardData.invoke
 };

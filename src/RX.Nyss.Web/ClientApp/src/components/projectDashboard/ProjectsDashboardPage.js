@@ -19,9 +19,10 @@ import { strings, stringKeys } from "../../strings";
 import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
 import SubmitButton from "../forms/submitButton/SubmitButton";
 
+const ProjectDashboardPageComponent = ({ openDashboard, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, ...props }) => {
 const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, userRoles, ...props }) => {
   useMount(() => {
-    openDashbaord(projectId);
+    openDashboard(projectId);
   });
 
   const dashboardElement = useRef(null);
@@ -111,7 +112,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
 }
 
 ProjectDashboardPageComponent.propTypes = {
-  openDashbaord: PropTypes.func
+  openDashboard: PropTypes.func
 };
 
 const mapStateToProps = state => ({
@@ -135,7 +136,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  openDashbaord: projectDashboardActions.openDashbaord.invoke,
+  openDashboard: projectDashboardActions.openDashboard.invoke,
   getReportHealthRisks: projectDashboardActions.getReportHealthRisks.invoke,
   getDashboardData: projectDashboardActions.getDashboardData.invoke,
   generatePdf: projectDashboardActions.generatePdf.invoke

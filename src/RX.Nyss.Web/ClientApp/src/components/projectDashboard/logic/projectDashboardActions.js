@@ -5,7 +5,7 @@ import {
 
 export const goToDashboard = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/dashboard`);
 
-export const openDashbaord = {
+export const openDashboard = {
   invoke: (projectId, filters) => ({ type: OPEN_PROJECT_DASHBOARD.INVOKE, projectId, filters }),
   request: () => ({ type: OPEN_PROJECT_DASHBOARD.REQUEST }),
   success: (projectId, filtersData) => ({ type: OPEN_PROJECT_DASHBOARD.SUCCESS, projectId, filtersData }),
