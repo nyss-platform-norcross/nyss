@@ -16,7 +16,6 @@ const getOptions = (valuesLabel, series, categories) => ({
     text: ''
   },
   xAxis: {
-    type: 'category',
     categories: categories
   },
   yAxis: {
