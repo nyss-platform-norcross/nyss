@@ -184,6 +184,7 @@ export const initialState = {
     listFetching: false,
     listRemoving: {},
     listStale: true,
+    filtersStale: true,
     listData: {
       data: [],
       page: null,
