@@ -19,8 +19,7 @@ import { strings, stringKeys } from "../../strings";
 import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
 import SubmitButton from "../forms/submitButton/SubmitButton";
 
-const ProjectDashboardPageComponent = ({ openDashboard, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, ...props }) => {
-const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, userRoles, ...props }) => {
+const ProjectDashboardPageComponent = ({ openDashboard, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, userRoles, ...props }) => {
   useMount(() => {
     openDashboard(projectId);
   });

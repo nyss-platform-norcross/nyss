@@ -13,8 +13,7 @@ import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDas
 import { NationalSocietyDashboardReportsMap } from './components/NationalSocietyDashboardReportsMap';
 import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
 
-const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, ...props }) => {
-const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
+const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
     openDashboard(props.nationalSocietyId);
   });
