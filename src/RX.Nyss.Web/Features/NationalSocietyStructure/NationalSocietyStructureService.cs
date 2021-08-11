@@ -122,6 +122,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> DeleteRegion(int regionId)
         {
+            if (await _nyssContext.DataCollectorLocations.AnyAsync(dcl => dcl.Village.District.Region.Id == regionId))
+            {
+                return Error(ResultKey.NationalSociety.Structure.RegionLinkedToDataCollector);
+            }
+
             var entity = await _nyssContext.Regions
                 .Include(r => r.Districts).ThenInclude(d => d.Villages).ThenInclude(v => v.Zones)
                 .Where(r => !r.NationalSociety.IsArchived)
@@ -177,6 +182,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> DeleteDistrict(int districtId)
         {
+            if (await _nyssContext.DataCollectorLocations.AnyAsync(dcl => dcl.Village.District.Id == districtId))
+            {
+                return Error(ResultKey.NationalSociety.Structure.DistrictLinkedToDataCollector);
+            }
+
             var entity = await _nyssContext.Districts
                 .Include(d => d.Villages).ThenInclude(v => v.Zones)
                 .Where(r => !r.Region.NationalSociety.IsArchived)
@@ -231,6 +241,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> DeleteVillage(int villageId)
         {
+            if (await _nyssContext.DataCollectorLocations.AnyAsync(dcl => dcl.Village.Id == villageId))
+            {
+                return Error(ResultKey.NationalSociety.Structure.VillageLinkedToDataCollector);
+            }
+
             var entity = await _nyssContext.Villages
                 .Include(v => v.Zones)
                 .Where(v => !v.District.Region.NationalSociety.IsArchived)
