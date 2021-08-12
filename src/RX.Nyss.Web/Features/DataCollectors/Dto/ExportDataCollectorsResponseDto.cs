@@ -19,5 +19,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Zone { get; set; }
         public string Supervisor { get; set; }
         public string TrainingStatus { get; set; }
+        public string Deployed { get; set; }
     }
 }
