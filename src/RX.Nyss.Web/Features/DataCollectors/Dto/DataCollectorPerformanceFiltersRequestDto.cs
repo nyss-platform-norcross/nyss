@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
@@ -12,27 +13,14 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public TrainingStatusDto TrainingStatus { get; set; }
 
-        public PerformanceStatusFilterDto LastWeek { get; set; }
-
-        public PerformanceStatusFilterDto TwoWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto ThreeWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto FourWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto FiveWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto SixWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto SevenWeeksAgo { get; set; }
-
-        public PerformanceStatusFilterDto EightWeeksAgo { get; set; }
+        public IEnumerable<PerformanceStatusFilterDto> EpiWeekFilters { get; set; }
 
         public int PageNumber { get; set; }
     }
 
     public class PerformanceStatusFilterDto
     {
+        public int EpiWeek { get; set; }
         public bool ReportingCorrectly { get; set; }
 
         public bool ReportingWithErrors { get; set; }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 
@@ -5,7 +6,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
     public class DataCollectorPerformanceResponseDto
     {
-        public DataCollectorCompleteness Completeness { get; set; }
+        public List<Completeness> Completeness { get; set; }
         public PaginatedList<DataCollectorPerformance> Performance { get; set; }
     }
 
@@ -15,14 +16,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string PhoneNumber { get; set; }
         public string VillageName { get; set; }
         public int? DaysSinceLastReport { get; set; }
-        public ReportingStatus StatusLastWeek { get; set; }
-        public ReportingStatus StatusTwoWeeksAgo { get; set; }
-        public ReportingStatus StatusThreeWeeksAgo { get; set; }
-        public ReportingStatus StatusFourWeeksAgo { get; set; }
-        public ReportingStatus StatusFiveWeeksAgo { get; set; }
-        public ReportingStatus StatusSixWeeksAgo { get; set; }
-        public ReportingStatus StatusSevenWeeksAgo { get; set; }
-        public ReportingStatus StatusEightWeeksAgo { get; set; }
+        public List<PerformanceInEpiWeek> PerformanceInEpiWeeks { get; set; }
     }
 
     public class DataCollectorCompleteness
@@ -37,8 +31,15 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public Completeness EightWeeksAgo { get; set; }
     }
 
+    public class PerformanceInEpiWeek
+    {
+        public int EpiWeek { get; set; }
+        public ReportingStatus ReportingStatus { get; set; }
+    }
+
     public class Completeness
     {
+        public int EpiWeek { get; set; }
         public int ActiveDataCollectors { get; set; }
         public int TotalDataCollectors { get; set; }
         public int Percentage { get; set; }

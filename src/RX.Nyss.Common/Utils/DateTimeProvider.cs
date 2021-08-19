@@ -14,6 +14,7 @@ namespace RX.Nyss.Common.Utils
         EpiDate GetEpiDate(DateTime date);
 
         IEnumerable<EpiDate> GetEpiWeeksRange(DateTime startDate, DateTime endDate);
+        DateTime GetFirstDateOfEpiWeek(int year, int epiWeek);
     }
 
     public class DateTimeProvider : IDateTimeProvider
@@ -61,11 +62,22 @@ namespace RX.Nyss.Common.Utils
                 .Distinct()
                 .ToList();
 
-        public TimeZoneInfo GetTimeZoneInfo(string timeZoneName) =>
-            TimeZoneInfo.GetSystemTimeZones().First(tzi => tzi.Id == timeZoneName
-                || tzi.DisplayName == timeZoneName
-                || tzi.StandardName == timeZoneName
-                || tzi.DaylightName == timeZoneName);
+        public DateTime GetFirstDateOfEpiWeek(int year, int epiWeek)
+        {
+            var jan1 = new DateTime(year, 1, 1);
+            var dayOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+
+            var firstThursdayInYear = jan1.AddDays(dayOffset);
+            var firstWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(firstThursdayInYear, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+            var epiWeekNumber = epiWeek;
+
+            if (firstWeek == 1)
+            {
+                epiWeekNumber -= 1;
+            }
+
+            return firstThursdayInYear.AddDays((epiWeekNumber * 7) - 4);
+        }
     }
 
     public struct EpiDate
