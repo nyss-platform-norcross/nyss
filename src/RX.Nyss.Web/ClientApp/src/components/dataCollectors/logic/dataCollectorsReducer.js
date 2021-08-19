@@ -125,13 +125,13 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.updatingDataCollector) };
 
     case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
-      return { ...state, filtersData: action.filtersData };
+      return { ...state, performanceListFilters: action.filters, filtersData: action.filtersData };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.REQUEST:
       return { ...state, performanceListFetching: true, performanceListData: { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS:
-      return { ...state, performanceListFetching: false, performanceListData: action.list, completeness: action.completeness, performanceListFilters: action.filters };
+      return { ...state, performanceListFetching: false, performanceListData: action.list, completeness: action.completeness };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
       return { ...state, performanceListFetching: false, performanceListData: [] };

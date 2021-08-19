@@ -214,7 +214,7 @@ function* openDataCollectorsPerformanceList({ projectId }) {
     }
 
     yield call(getDataCollectorsPerformance, { projectId, filters });
-    yield put(actions.openDataCollectorsPerformanceList.success(filtersData));
+    yield put(actions.openDataCollectorsPerformanceList.success(filters, filtersData));
   } catch (error) {
     yield put(actions.openDataCollectorsPerformanceList.failure(error.message));
   }
@@ -224,7 +224,7 @@ function* getDataCollectorsPerformance({ projectId, filters }) {
   yield put(actions.getDataCollectorsPerformanceList.request());
   try {
     const response = yield call(http.post, `/api/dataCollector/performance?projectId=${projectId}`, filters);
-    yield put(actions.getDataCollectorsPerformanceList.success(response.value.performance, response.value.completeness, filters));
+    yield put(actions.getDataCollectorsPerformanceList.success(response.value.performance, response.value.completeness));
   } catch (error) {
     yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
   }
