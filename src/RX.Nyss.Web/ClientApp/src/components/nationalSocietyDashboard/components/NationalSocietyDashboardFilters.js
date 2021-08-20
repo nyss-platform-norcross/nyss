@@ -277,6 +277,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
                 <ReportStatusFilter
                   filter={value.reportStatus}
                   correctReports
+                  showDismissedFilter
                   onChange={handleReportStatusChange}
                 />
               </Grid>
