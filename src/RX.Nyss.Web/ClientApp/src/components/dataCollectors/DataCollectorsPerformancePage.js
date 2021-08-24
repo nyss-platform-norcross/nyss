@@ -29,7 +29,12 @@ const onSort = (state, week, filters) => {
   return {
     value: {
       ...state,
-      epiWeekFilters: assignInArray(state.epiWeekFilters, (filter) => filter.epiWeek === week, (filter) => ({ ...filter, reportingCorrectly: filters.reportingCorrectly, reportingWithErrors: filters.reportingWithErrors, notReporting: filters.notReporting }))
+      epiWeekFilters: assignInArray(state.epiWeekFilters, (filter) => filter.epiWeek === week, (filter) => ({
+        ...filter,
+        reportingCorrectly: filters.reportingCorrectly,
+        reportingWithErrors: filters.reportingWithErrors,
+        notReporting: filters.notReporting
+      }))
     },
     changed: !shallowEqual(state.epiWeekFilters.find(f => f.epiWeek === week), filters)
   }
