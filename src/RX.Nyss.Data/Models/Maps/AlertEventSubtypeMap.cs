@@ -11,7 +11,7 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.HasOne(x => x.AlertEventType)
                 .WithMany(x => x.AlertEventSubtypes)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(x => x.Name)
                 .HasMaxLength(100)

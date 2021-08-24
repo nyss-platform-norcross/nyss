@@ -12,9 +12,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.Name)
                 .HasMaxLength(100)
                 .IsRequired();
-
-            builder.HasMany(x => x.AlertEventSubtypes)
-                .WithOne(x => x.AlertEventType);
         }
     }
 }

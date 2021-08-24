@@ -96,23 +96,13 @@ namespace RX.Nyss.Data
                     },
                     new AlertEventType
                     {
-                        Id = 2,
-                        Name = "PresumedCasePositive"
-                    },
-                    new AlertEventType
-                    {
-                        Id = 3,
-                        Name = "PresumedCaseNegative"
-                    },
-                    new AlertEventType
-                    {
                         Id = 4,
                         Name = "Outcome"
                     },
                     new AlertEventType
                     {
                         Id = 5,
-                        Name = "Details"
+                        Name = "Summary"
                     },
                     new AlertEventType
                     {
@@ -145,38 +135,38 @@ namespace RX.Nyss.Data
                     new AlertEventSubtype
                     {
                         Id = 4,
-                        Name = "Lab",
-                        AlertEventTypeId = 2
+                        Name = "PresumedCasePositiveLab",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
                         Id = 5,
-                        Name = "Clinical",
-                        AlertEventTypeId = 2
+                        Name = "PresumedCasePositiveClinical",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
                         Id = 6,
-                        Name = "Unknown",
-                        AlertEventTypeId = 2
+                        Name = "PresumedCasePositiveUnknown",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
                         Id = 7,
-                        Name = "Lab",
-                        AlertEventTypeId = 3
+                        Name = "PresumedCaseNegativeLab",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
                         Id = 8,
-                        Name = "Clinical",
-                        AlertEventTypeId = 3
+                        Name = "PresumedCaseNegativeClinical",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
                         Id = 9,
-                        Name = "Unknown",
-                        AlertEventTypeId = 3
+                        Name = "PresumedCaseNegativeUnknown",
+                        AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
                     {
