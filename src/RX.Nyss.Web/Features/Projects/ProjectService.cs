@@ -182,8 +182,13 @@ namespace RX.Nyss.Web.Features.Projects
                     {
                         ns.IsArchived,
                         OrganizationsCount = ns.Organizations.Count,
-                        FirstOrganizationId = (int?)ns.Organizations.Select(o => o.Id).FirstOrDefault(),
-                        UserOrganizationId = ns.NationalSocietyUsers.Where(nsu => nsu.User == currentUser).Select(nsu => nsu.OrganizationId).FirstOrDefault()
+                        FirstOrganizationId = (int?)ns.Organizations
+                            .Select(o => o.Id)
+                            .FirstOrDefault(),
+                        UserOrganizationId = ns.NationalSocietyUsers
+                            .Where(nsu => nsu.User == currentUser && nsu.NationalSocietyId == nationalSocietyId)
+                            .Select(nsu => nsu.OrganizationId)
+                            .FirstOrDefault()
                     })
                     .SingleOrDefaultAsync();
 
@@ -468,7 +473,7 @@ namespace RX.Nyss.Web.Features.Projects
         {
             var currentUser = await _authorizationService.GetCurrentUser();
             var currentUserOrganizationId = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.User == currentUser)
+                .Where(uns => uns.User == currentUser && uns.NationalSocietyId == nationalSocietyId)
                 .Select(uns => uns.OrganizationId)
                 .FirstOrDefaultAsync();
 

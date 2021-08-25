@@ -78,6 +78,15 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 return true;
             }
 
+            if (currentUser.Role == Role.TechnicalAdvisor)
+            {
+                return await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == userId || uns.User == currentUser)
+                    .Select(uns => uns.OrganizationId)
+                    .GroupBy(org => org)
+                    .AnyAsync(g => g.Count() > 1);
+            }
+
             var userOrganizations = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == userId || uns.User == currentUser)
                 .Select(uns => uns.OrganizationId)
