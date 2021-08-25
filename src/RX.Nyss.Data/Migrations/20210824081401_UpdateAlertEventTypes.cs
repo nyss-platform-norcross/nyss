@@ -11,6 +11,10 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss",
                 table: "AlertEventSubtypes");
 
+            migrationBuilder.Sql(@"
+                UPDATE [nyss].[AlertEventLogs] SET [AlertEventTypeId]=4 WHERE [AlertEventTypeId]=2 OR [AlertEventTypeId]=3
+            ");
+
             migrationBuilder.DeleteData(
                 schema: "nyss",
                 table: "AlertEventTypes",
@@ -96,6 +100,11 @@ namespace RX.Nyss.Data.Migrations
                 name: "FK_AlertEventSubtypes_AlertEventTypes_AlertEventTypeId",
                 schema: "nyss",
                 table: "AlertEventSubtypes");
+
+            migrationBuilder.Sql(@"
+                UPDATE [nyss].[AlertEventLogs] SET [AlertEventTypeId]=2 WHERE [AlertEventTypeId]=4 AND ([AlertEventSubtypeId]=4 OR [AlertEventSubtypeId]=5 OR [AlertEventSubtypeId]=6)
+                UPDATE [nyss].[AlertEventLogs] SET [AlertEventTypeId]=3 WHERE [AlertEventTypeId]=4 AND ([AlertEventSubtypeId]=7 OR [AlertEventSubtypeId]=8 OR [AlertEventSubtypeId]=9)
+            ");
 
             migrationBuilder.UpdateData(
                 schema: "nyss",
