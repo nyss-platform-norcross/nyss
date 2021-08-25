@@ -9,6 +9,7 @@ import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
+import { assignInArray } from '../../utils/immutable';
 
 const initFilter = (filters) => {
   return {
@@ -28,13 +29,14 @@ const onSort = (state, week, filters) => {
   return {
     value: {
       ...state,
-      [week]: {
+      epiWeekFilters: assignInArray(state.epiWeekFilters, (filter) => filter.epiWeek === week, (filter) => ({
+        ...filter,
         reportingCorrectly: filters.reportingCorrectly,
         reportingWithErrors: filters.reportingWithErrors,
         notReporting: filters.notReporting
-      }
+      }))
     },
-    changed: !shallowEqual(state[week], filters)
+    changed: !shallowEqual(state.epiWeekFilters.find(f => f.epiWeek === week), filters)
   }
 }
 

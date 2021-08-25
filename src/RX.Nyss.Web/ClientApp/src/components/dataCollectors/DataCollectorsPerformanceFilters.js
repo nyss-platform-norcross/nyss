@@ -49,12 +49,14 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   useEffect(() => {
     debouncedName.changed && onChange({ type: 'updateName', name: debouncedName.value });
   }, [debouncedName, onChange]);
-
+  
   const filterIsSet = filters && (
     filters.area !== null ||
     (filters.name !== null && filters.name !== '') ||
     filters.trainingStatus !== trainingStatusTrained ||
-    Object.values(filters).slice(3).some(f => Object.values(f).some(v => !v))
+    Object.values(filters).slice(4).some(f => 
+      Object.values(f).some(week => 
+        Object.values(week).slice(1).some(v => !v)))
   );
 
   const resetFilters = () => {

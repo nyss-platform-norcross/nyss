@@ -19,6 +19,17 @@ namespace RX.Nyss.Common.Tests.Utils
             new object[] { new DateTime(2020, 1, 1), 1, 2020 }
         };
 
+        public static object[][] EpiWeekToFirstDateTestData =
+        {
+            new object[] { 1, 2020, new DateTime(2019, 12, 29) },
+            new object[] { 15, 2020, new DateTime(2020, 4, 5) },
+            new object[] { 40, 2020, new DateTime(2020, 9, 27) },
+            new object[] { 53, 2020, new DateTime(2020, 12, 27) },
+            new object[] { 1, 2021, new DateTime(2021, 1, 3) },
+            new object[] { 18, 2021, new DateTime(2021, 5, 2) },
+            new object[] { 27, 2021, new DateTime(2021, 7, 4) }
+        };
+
         private readonly IDateTimeProvider _dateTimeProvider;
 
 
@@ -78,6 +89,16 @@ namespace RX.Nyss.Common.Tests.Utils
             result.Count().ShouldBe(2);
             result.ElementAt(0).ShouldBe(new EpiDate(1, 2020));
             result.ElementAt(1).ShouldBe(new EpiDate(2, 2020));
+        }
+
+        [Theory, MemberData(nameof(EpiWeekToFirstDateTestData))]
+        public void GetFirstDateOfEpiWeek_ShouldReturnDateOfTheSundayInTheEpiWeek(int weekNumber, int year, DateTime firstDateInWeek)
+        {
+            // Act
+            var result = _dateTimeProvider.GetFirstDateOfEpiWeek(year, weekNumber);
+
+            // Assert
+            result.ShouldBe(firstDateInWeek);
         }
     }
 }

@@ -1,6 +1,6 @@
 import styles from './DataCollectorsPerformanceTable.module.scss';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
@@ -16,40 +16,26 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [statusFilters, setStatusFilters] = useState(null);
+  const [epiWeeks, setEpiWeeks] = useState(null);
+
+  useEffect(() => {
+    !!filters && setEpiWeeks(filters.epiWeekFilters.map(filter => filter.epiWeek).reverse());
+  }, [filters]);
 
   const openFilter = (event) => {
     setAnchorEl(event.currentTarget);
-    setSelectedWeek(event.currentTarget.id);
-    setStatusFilters(getStatusFilter(event.currentTarget.id));
+    setSelectedWeek(parseInt(event.currentTarget.id));
+    setStatusFilters(getStatusFilter(parseInt(event.currentTarget.id)));
     setIsOpen(true);
   }
 
-  const getStatusFilter = (status) => {
-    switch (status) {
-      case 'lastWeek': return Object.assign({}, filters.lastWeek);
-      case 'twoWeeksAgo': return Object.assign({}, filters.twoWeeksAgo);
-      case 'threeWeeksAgo': return Object.assign({}, filters.threeWeeksAgo);
-      case 'fourWeeksAgo': return Object.assign({}, filters.fourWeeksAgo);
-      case 'fiveWeeksAgo': return Object.assign({}, filters.fiveWeeksAgo);
-      case 'sixWeeksAgo': return Object.assign({}, filters.sixWeeksAgo);
-      case 'sevenWeeksAgo': return Object.assign({}, filters.sevenWeeksAgo);
-      case 'eightWeeksAgo': return Object.assign({}, filters.eightWeeksAgo);
-      default: return null;
-    }
+  const getStatusFilter = (week) => {
+    return Object.assign({}, filters.epiWeekFilters.find(epiWeekFilter => epiWeekFilter.epiWeek === week));
   }
 
-  const filterIsActive = (status) => {
-    switch (status) {
-      case 'lastWeek': return !filters.lastWeek.reportingCorrectly || !filters.lastWeek.reportingWithErrors || !filters.lastWeek.notReporting;
-      case 'twoWeeksAgo': return !filters.twoWeeksAgo.reportingCorrectly || !filters.twoWeeksAgo.reportingWithErrors || !filters.twoWeeksAgo.notReporting;
-      case 'threeWeeksAgo': return !filters.threeWeeksAgo.reportingCorrectly || !filters.threeWeeksAgo.reportingWithErrors || !filters.threeWeeksAgo.notReporting;
-      case 'fourWeeksAgo': return !filters.fourWeeksAgo.reportingCorrectly || !filters.fourWeeksAgo.reportingWithErrors || !filters.fourWeeksAgo.notReporting;
-      case 'fiveWeeksAgo': return !filters.fiveWeeksAgo.reportingCorrectly || !filters.fiveWeeksAgo.reportingWithErrors || !filters.fiveWeeksAgo.notReporting;
-      case 'sixWeeksAgo': return !filters.sixWeeksAgo.reportingCorrectly || !filters.sixWeeksAgo.reportingWithErrors || !filters.sixWeeksAgo.notReporting;
-      case 'sevenWeeksAgo': return !filters.sevenWeeksAgo.reportingCorrectly || !filters.sevenWeeksAgo.reportingWithErrors || !filters.sevenWeeksAgo.notReporting;
-      case 'eightWeeksAgo': return !filters.eightWeeksAgo.reportingCorrectly || !filters.eightWeeksAgo.reportingWithErrors || !filters.eightWeeksAgo.notReporting;
-      default: return false;
-    }
+  const filterIsActive = (week) => {
+    const filter = filters.epiWeekFilters.find(epiWeekFilter => epiWeekFilter.epiWeek === week);
+    return !!filter && (!filter.reportingCorrectly || !filter.reportingWithErrors || !filter.notReporting);
   }
 
   const onChangePage = (e, page) => {
@@ -74,62 +60,23 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
     return text;
   }
 
-  return !!filters && (
+  return !!filters && !!epiWeeks && (
     <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
-            <TableCell>
-              <div id="lastWeek" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusLastWeek)}
-                <Icon className={styles.filterIcon}>{filterIsActive('lastWeek') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
+            <TableCell className={styles.nameColumn}>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
+            <TableCell className={`${styles.villageColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
+            <TableCell className={`${styles.daysColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
+
+            {epiWeeks.map(week => (
+              <TableCell key={`filter_week_${week}`} className={styles.weekColumn}>
+                <div id={week} onClick={openFilter} className={styles.filterHeader}>
+                  {`${strings(stringKeys.dataCollector.performanceList.epiWeek)} ${week}`}
+                  <Icon className={styles.filterIcon}>{filterIsActive(week) ? 'filter_alt' : 'expand_more'}</Icon>
+                </div>
               </TableCell>
-              <TableCell>
-              <div id="twoWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusTwoWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('twoWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="threeWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusThreeWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('threeWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="fourWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusFourWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('fourWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="fiveWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusFiveWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('fiveWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="sixWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusSixWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('sixWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="sevenWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusSevenWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('sevenWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div id="eightWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
-                {strings(stringKeys.dataCollector.performanceList.statusEightWeeksAgo)}
-                <Icon className={styles.filterIcon}>{filterIsActive('eightWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
-              </div>
-            </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -145,46 +92,15 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
               </TableCell>
               <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
               <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.lastWeek)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.lastWeek.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.twoWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.twoWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.threeWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.threeWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.fourWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.fourWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.fiveWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.fiveWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.sixWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.sixWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.sevenWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.sevenWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className={styles.completenessAlignmentAndBorder}>
-                <Tooltip title={renderTooltipText(completeness.eightWeeksAgo)} onClick={handleTooltipClick} arrow>
-                  <span>{`${completeness.eightWeeksAgo.percentage} %`}</span>
-                </Tooltip>
-              </TableCell>
+
+              {completeness.map(week => (
+                <TableCell className={styles.completenessAlignmentAndBorder} key={`completeness_${week.epiWeek}`}>
+                  <Tooltip title={renderTooltipText(week)} onClick={handleTooltipClick} arrow>
+                    <span>{`${week.percentage} %`}</span>
+                  </Tooltip>
+                </TableCell>
+              ))}
+
             </TableRow>
           )}
           {!isListFetching && (
@@ -197,30 +113,11 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
                 </TableCell>
                 <TableCell className={styles.centeredText}>{row.villageName}</TableCell>
                 <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getIconFromStatus(row.statusTwoWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getIconFromStatus(row.statusThreeWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getIconFromStatus(row.statusFourWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getIconFromStatus(row.statusFiveWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getIconFromStatus(row.statusSixWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getIconFromStatus(row.statusSevenWeeksAgo)} />
-                </TableCell>
-                <TableCell className={styles.centeredText}>
-                  <DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getIconFromStatus(row.statusEightWeeksAgo)} />
-                </TableCell>
+                {row.performanceInEpiWeeks.map(week => (
+                  <TableCell className={styles.centeredText} key={`dc_performance_${week.epiWeek}`}>
+                    <DataCollectorStatusIcon status={week.reportingStatus} icon={getIconFromStatus(week.reportingStatus)} />
+                  </TableCell>
+                ))}
               </TableRow>
             ))
           )}

@@ -1,3 +1,5 @@
+import { generateEpiWeekFilters } from "./utils/date";
+
 export const initialState = {
   appData: {
     appReady: false,
@@ -218,46 +220,7 @@ export const initialState = {
       supervisorId: null,
       trainingStatus: 'Trained',
       pageNumber: 1,
-      lastWeek: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      twoWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      threeWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      fourWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      fiveWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      sixWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      sevenWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      eightWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      }
+      epiWeekFilters: generateEpiWeekFilters()
     },
     filtersData: {
       supervisors: [],

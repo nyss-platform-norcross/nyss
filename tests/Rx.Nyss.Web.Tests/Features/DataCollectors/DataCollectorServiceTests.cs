@@ -50,6 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly ISmsPublisherService _smsPublisherService;
         private List<NationalSociety> _nationalSocieties;
+        private static DateTime DateForPerformance = new DateTime(2021, 8, 1);
 
         public DataCollectorServiceTests()
         {
@@ -68,6 +69,9 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             config.PaginationRowsPerPage.Returns(5);
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
+            dateTimeProvider.GetEpiWeek(DateForPerformance).Returns(31);
+            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-8)).Returns(29);
+            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-35)).Returns(25);
             _dataCollectorService = new DataCollectorService(
                 _nyssContextMock,
                 config,
@@ -658,7 +662,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
         [Theory]
         [MemberData(nameof(GetPerformanceTestData))]
-        public async Task GetDataCollectorPerformance_WhenDataCollectorsHaveReported_ShouldReturnCorrectStatus(string phoneNumber, List<RawReport> reports)
+        public async Task GetDataCollectorPerformance_WhenDataCollectorsHaveReported_ShouldReturnCorrectStatus(string phoneNumber, List<RawReport> reports, List<ReportingStatusForEpiWeek> reportingStatusForEpiWeeks)
         {
             // Arrange
             var rawReportsMockDbSet = reports.AsQueryable().BuildMockDbSet();
@@ -689,78 +693,35 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
             _nyssContextMock.DataCollectors.Returns(dataCollectorsMockDbSet);
 
-            var dateTimeNow = DateTime.UtcNow;
+            var epiWeekStart = 24;
 
             // Act
             var result = await _dataCollectorPerformanceService.Performance(ProjectId, new DataCollectorPerformanceFiltersRequestDto
             {
-                LastWeek = new PerformanceStatusFilterDto
+                EpiWeekFilters = Enumerable.Range(epiWeekStart, 8).Select(week => new PerformanceStatusFilterDto
                 {
-                    NotReporting = true,
+                    EpiWeek = week,
                     ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                TwoWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                ThreeWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                FourWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                FiveWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                SixWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                SevenWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                },
-                EightWeeksAgo = new PerformanceStatusFilterDto
-                {
-                    NotReporting = true,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true
-                }
+                    ReportingWithErrors = true,
+                    NotReporting = true
+                })
             });
 
             // Assert
-            result.Value.Performance.Data[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
-            result.Value.Performance.Data[0].StatusTwoWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 1)));
-            result.Value.Performance.Data[0].StatusThreeWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 2)));
-            result.Value.Performance.Data[0].StatusFourWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 3)));
-            result.Value.Performance.Data[0].StatusFiveWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 4)));
-            result.Value.Performance.Data[0].StatusSixWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
-            result.Value.Performance.Data[0].StatusSevenWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
-            result.Value.Performance.Data[0].StatusEightWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
-            result.Value.Completeness.LastWeek.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
-            result.Value.Completeness.TwoWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 1)));
-            result.Value.Completeness.ThreeWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 2)));
-            result.Value.Completeness.FourWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 3)));
-            result.Value.Completeness.FiveWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 4)));
-            result.Value.Completeness.SixWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
-            result.Value.Completeness.SevenWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
-            result.Value.Completeness.EightWeeksAgo.Percentage.ShouldBe(CompletenessPercentageFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
+            reportingStatusForEpiWeeks.ForEach(rs =>
+            {
+                result.Value.Performance.Data[0].PerformanceInEpiWeeks
+                    .Where(p => p.EpiWeek == rs.EpiWeek)
+                    .Select(p => p.ReportingStatus)
+                    .First()
+                    .ShouldBe(rs.ReportingStatus);
+
+                result.Value.Completeness
+                    .Where(c => c.EpiWeek == rs.EpiWeek)
+                    .Select(c => c.Percentage)
+                    .First()
+                    .ShouldBe(rs.Completeness);
+            });
         }
 
         [Fact]
@@ -856,10 +817,55 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 {
                     new RawReport
                     {
-                        ReceivedAt = DateTime.UtcNow,
+                        ReceivedAt = DateForPerformance,
                         IsTraining = false,
                         Report = new Report(),
                         ReportId = 1
+                    }
+                },
+                new List<ReportingStatusForEpiWeek>
+                {
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 24,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    },
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 25,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 26,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 27,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 28,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 29,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 30,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 31,
+                        ReportingStatus = ReportingStatus.ReportingCorrectly,
+                        Completeness = 100
                     }
                 }
             };
@@ -871,20 +877,114 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 {
                     new RawReport
                     {
-                        ReceivedAt = DateTime.UtcNow.AddDays(-8),
+                        ReceivedAt = DateForPerformance.AddDays(-8),
                         IsTraining = false,
                         Report = new Report(),
                         ReportId = 2
                     },
                     new RawReport
                     {
-                        ReceivedAt = DateTime.UtcNow,
+                        ReceivedAt = DateForPerformance,
                         IsTraining = false
+                    }
+                },
+                new List<ReportingStatusForEpiWeek>
+                {
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 24,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    },
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 25,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 26,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 27,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 28,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 29,
+                        ReportingStatus = ReportingStatus.ReportingCorrectly,
+                        Completeness = 100
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 30,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 31,
+                        ReportingStatus = ReportingStatus.ReportingWithErrors,
+                        Completeness = 100
                     }
                 }
             };
 
-            yield return new object[] { DataCollectorPhoneNumber1, new List<RawReport>() };
+            yield return new object[]
+            {
+                DataCollectorPhoneNumber1,
+                new List<RawReport>(),
+                new List<ReportingStatusForEpiWeek>
+                {
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 24,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    },
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 25,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 26,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 27,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 28,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 29,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 30,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 31,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }
+                }
+            };
 
             yield return new object[]
             {
@@ -893,18 +993,70 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 {
                     new RawReport
                     {
-                        ReceivedAt = DateTime.UtcNow.AddDays(-8),
+                        ReceivedAt = DateForPerformance.AddDays(-8),
                         IsTraining = false,
                         Report = new Report(),
                         ReportId = 3
                     },
                     new RawReport
                     {
-                        ReceivedAt = DateTime.UtcNow.AddDays(-35),
+                        ReceivedAt = DateForPerformance.AddDays(-35),
                         IsTraining = false
+                    }
+                },
+                new List<ReportingStatusForEpiWeek>
+                {
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 24,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    },
+                    new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 25,
+                        ReportingStatus = ReportingStatus.ReportingWithErrors,
+                        Completeness = 100
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 26,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 27,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 28,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 29,
+                        ReportingStatus = ReportingStatus.ReportingCorrectly,
+                        Completeness = 100
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 30,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
+                    }, new ReportingStatusForEpiWeek
+                    {
+                        EpiWeek = 31,
+                        ReportingStatus = ReportingStatus.NotReporting,
+                        Completeness = 0
                     }
                 }
             };
         }
+    }
+
+    public class ReportingStatusForEpiWeek
+    {
+        public int EpiWeek { get; set; }
+        public ReportingStatus ReportingStatus { get; set; }
+        public int Completeness { get; set; }
     }
 }
