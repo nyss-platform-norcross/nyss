@@ -65,11 +65,12 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
+            <TableCell className={styles.nameColumn}>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
+            <TableCell className={`${styles.villageColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
+            <TableCell className={`${styles.daysColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
+
             {epiWeeks.map(week => (
-              <TableCell key={`filter_week_${week}`}>
+              <TableCell key={`filter_week_${week}`} className={styles.weekColumn}>
                 <div id={week} onClick={openFilter} className={styles.filterHeader}>
                   {`${strings(stringKeys.dataCollector.performanceList.epiWeek)} ${week}`}
                   <Icon className={styles.filterIcon}>{filterIsActive(week) ? 'filter_alt' : 'expand_more'}</Icon>
