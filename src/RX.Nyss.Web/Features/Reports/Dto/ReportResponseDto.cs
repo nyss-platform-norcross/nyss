@@ -22,5 +22,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public ReportType ReportType { get; set; }
         public ReportStatus ReportStatus { get; set; }
         public int LocationId { get; set; }
+        public bool IsActivityReport { get; set; }
     }
 }
