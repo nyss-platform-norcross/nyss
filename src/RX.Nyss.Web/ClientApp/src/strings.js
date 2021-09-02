@@ -217,6 +217,7 @@ export const stringKeys = {
   smsGateway: {
     title: "smsGateway.title",
     addNew: "smsGateway.addNew",
+    apiKeyCopied: "smsGateway.apiKeyCopied",
     form: {
       creationTitle: "smsGateway.form.creationTitle",
       editionTitle: "smsGateway.form.editionTitle",

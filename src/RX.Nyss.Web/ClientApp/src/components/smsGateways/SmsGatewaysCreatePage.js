@@ -1,3 +1,4 @@
+import styles from './SmsGatewaysCreateOrEditPage.module.scss';
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
@@ -14,17 +15,21 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import { Typography, MenuItem, Button, Grid, Icon } from '@material-ui/core';
+import { Typography, MenuItem, Button, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { v4 as uuidv4 } from 'uuid';
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);
   const [selectedIotDevice, setSelectedIotDevice] = useState("");
   const [pingIsRequired, setPingIsRequired] = useState(null);
-  const [useDualModem, setUseDualModem] = useState(null);
+  const [, setUseDualModem] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
   const [form] = useState(() => {
     const fields = {
       name: "",
-      apiKey: "",
+      apiKey: uuidv4(),
       gatewayType: smsEagle,
       emailAddress: "",
       useIotHub: false,
@@ -97,6 +102,15 @@ const SmsGatewaysCreatePageComponent = (props) => {
     props.pingIotDevice(form.fields.iotHubDeviceName.value);
   }
 
+  const copyApiKey = () => {
+    navigator.clipboard.writeText(form.fields.apiKey.value);
+    setSnackbarOpen(true);
+  }
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  }
+
   useCustomErrors(form, props.error);
 
   return (
@@ -118,6 +132,14 @@ const SmsGatewaysCreatePageComponent = (props) => {
               label={strings(stringKeys.smsGateway.form.apiKey)}
               name="apiKey"
               field={form.fields.apiKey}
+              disabled
+              endAdornment={(
+                <InputAdornment position="end">
+                <IconButton onClick={copyApiKey} className={styles.endAdornmentButton}>
+                  <FileCopyIcon />
+                </IconButton>
+                </InputAdornment>
+              )}
             />
           </Grid>
 
@@ -220,6 +242,13 @@ const SmsGatewaysCreatePageComponent = (props) => {
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.create)}</SubmitButton>
         </FormActions>
       </Form>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        message={strings(stringKeys.smsGateway.apiKeyCopied)}
+        onClose={handleSnackbarClose} />
+
     </Fragment>
   );
 }
