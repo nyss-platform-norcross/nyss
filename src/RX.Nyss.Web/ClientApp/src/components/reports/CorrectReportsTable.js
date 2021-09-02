@@ -69,7 +69,8 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && row.isValid
     && !row.alert
     && !row.isMarkedAsError
-    && !row.isActivityReport;
+    && !row.isActivityReport
+    && !!row.dataCollectorDisplayName;
 
   const alertAllowsCrossCheckingOfReport = (alert) =>
     alert.status === alertStatus.pending
