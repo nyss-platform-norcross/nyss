@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
                 {
-                    Id = r.Id,
+                    Id = r.Report.Id,
                     DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
