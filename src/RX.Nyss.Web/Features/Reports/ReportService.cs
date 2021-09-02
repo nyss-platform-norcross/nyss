@@ -93,7 +93,9 @@ namespace RX.Nyss.Web.Features.Reports
                     CountUnspecifiedSexAndAge = r.Report.ReportedCase.CountUnspecifiedSexAndAge.Value,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount.Value,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount.Value,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount.Value
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount.Value,
+                    IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98
+                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
                 })
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 

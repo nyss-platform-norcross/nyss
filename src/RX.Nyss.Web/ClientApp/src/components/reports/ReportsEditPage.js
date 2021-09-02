@@ -211,7 +211,7 @@ const ReportsEditPageComponent = (props) => {
             </SelectField>
           </Grid>
 
-          {(props.data.reportType !== ReportType.dataCollectionPoint && props.data.reportType !== ReportType.aggregate) && (
+          {(props.data.reportType !== ReportType.dataCollectionPoint && props.data.reportType !== ReportType.aggregate && !props.data.isActivityReport) && (
             <Fragment>
               <div className={styles.formSectionTitle}>{strings(stringKeys.reports.form.statusSectionTitle)}</div>
               <Grid item xs={12}>

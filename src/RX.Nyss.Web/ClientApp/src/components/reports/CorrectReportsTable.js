@@ -114,7 +114,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
 
   const canEdit = (row) => 
     !row.isAnonymized
-    && !row.isActivityReport
+    && (!row.isActivityReport || filters.dataCollectorType === DataCollectorType.unknownSender)
     && row.status === reportStatus.new
     && !projectIsClosed
     && !row.dataCollectorIsDeleted;
