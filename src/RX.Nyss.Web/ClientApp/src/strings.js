@@ -217,6 +217,7 @@ export const stringKeys = {
   smsGateway: {
     title: "smsGateway.title",
     addNew: "smsGateway.addNew",
+    apiKeyCopied: "smsGateway.apiKeyCopied",
     form: {
       creationTitle: "smsGateway.form.creationTitle",
       editionTitle: "smsGateway.form.editionTitle",
@@ -232,8 +233,7 @@ export const stringKeys = {
       pingIsRequired: "smsGateway.form.pingIsRequired",
       useDualModem: "smsGateway.form.useDualModem",
       modemOneName: "smsGateway.form.modemOneName",
-      modemTwoName: "smsGateway.form.modemTwoName",
-      generateKey: "smsGateway.form.generateKey"
+      modemTwoName: "smsGateway.form.modemTwoName"
     },
     create: {
       success: "smsGateway.create.success"

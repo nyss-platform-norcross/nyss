@@ -16,7 +16,9 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import { Typography, MenuItem, Button, Grid, Icon, InputAdornment } from '@material-ui/core';
+import { Typography, MenuItem, Button, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { v4 as uuidv4 } from 'uuid';
 
 const SmsGatewaysEditPageComponent = (props) => {
@@ -25,6 +27,7 @@ const SmsGatewaysEditPageComponent = (props) => {
   const [selectedIotDevice, setSelectedIotDevice] = useState(null);
   const [pingIsRequired, setPingIsRequired] = useState(null);
   const [useDualModem, setUseDualModem] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
@@ -73,7 +76,7 @@ const SmsGatewaysEditPageComponent = (props) => {
     const newForm = createForm(fields, validation)
     newForm.fields.useIotHub.subscribe(({ newValue }) => setUseIotHub(newValue));
     newForm.fields.iotHubDeviceName.subscribe(({ newValue }) => setSelectedIotDevice(newValue));
-    newForm.fields.useDualModem.subscribe(({newValue}) => setUseDualModem(newValue));
+    newForm.fields.useDualModem.subscribe(({ newValue }) => setUseDualModem(newValue));
     setForm(newForm);
   }, [props.data, props.match]);
 
@@ -121,6 +124,15 @@ const SmsGatewaysEditPageComponent = (props) => {
     form.fields.apiKey.update(uuidv4());
   }
 
+  const copyApiKey = () => {
+    navigator.clipboard.writeText(form.fields.apiKey.value);
+    setSnackbarOpen(true);
+  }
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  }
+
   return (
     <Fragment>
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
@@ -140,9 +152,15 @@ const SmsGatewaysEditPageComponent = (props) => {
               label={strings(stringKeys.smsGateway.form.apiKey)}
               name="apiKey"
               field={form.fields.apiKey}
+              disabled
               endAdornment={(
                 <InputAdornment position="end">
-                  <Button onClick={generateUuid} className={styles.generateButton}>{strings(stringKeys.smsGateway.form.generateKey)}</Button>
+                  <IconButton onClick={generateUuid} className={styles.endAdornmentButton}>
+                    <RefreshIcon />
+                  </IconButton>
+                  <IconButton onClick={copyApiKey} className={styles.endAdornmentButton}>
+                    <FileCopyIcon />
+                  </IconButton>
                 </InputAdornment>
               )}
             />
@@ -248,6 +266,12 @@ const SmsGatewaysEditPageComponent = (props) => {
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.update)}</SubmitButton>
         </FormActions>
       </Form>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        message={strings(stringKeys.smsGateway.apiKeyCopied)}
+        onClose={handleSnackbarClose} />
     </Fragment>
   );
 }
