@@ -126,12 +126,11 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Closes the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
-        /// <param name="dto">Details related to closing process</param>
         [HttpPost("{alertId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
-            _alertService.Close(alertId, dto.Comments, dto.EscalatedOutcome);
+        public Task<Result> Close(int alertId) =>
+            _alertService.Close(alertId);
 
         /// <summary>
         /// Exports the alert list to excel
