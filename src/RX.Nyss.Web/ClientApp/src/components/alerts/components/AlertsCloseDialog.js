@@ -8,9 +8,9 @@ import {
   Button,
   DialogContent,
   useMediaQuery,
-  DialogActions,
   Typography,
 } from "@material-ui/core";
+import FormActions from "../../forms/formActions/FormActions";
 
 export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAlert }) => {
   const theme = useTheme();
@@ -26,16 +26,15 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
       <DialogTitle>{strings(stringKeys.alerts.assess.alert.closeConfirmation)}</DialogTitle>
       <DialogContent>
         <Typography variant="body1">{strings(stringKeys.alerts.assess.alert.closeDescription)}</Typography>
+        <FormActions>
+          <Button onClick={close}>
+            {strings(stringKeys.form.cancel)}
+          </Button>
+          <SubmitButton isFetching={isClosing} onClick={handleClose}>
+            {strings(stringKeys.alerts.assess.alert.close)}
+          </SubmitButton>
+        </FormActions>
       </DialogContent>
-
-      <DialogActions>
-        <Button onClick={close}>
-          {strings(stringKeys.form.cancel)}
-        </Button>
-        <SubmitButton isFetching={isClosing} onClick={handleClose}>
-          {strings(stringKeys.alerts.assess.alert.close)}
-        </SubmitButton>
-      </DialogActions>
     </Dialog>
   );
 }
