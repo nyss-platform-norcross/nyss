@@ -164,14 +164,14 @@ function* dismissAlert({ alertId }) {
   }
 };
 
-function* closeAlert({ alertId, comments, escalatedOutcome }) {
+function* closeAlert({ alertId }) {
   const projectId = yield select(state => state.appData.route.params.projectId);
 
   yield put(actions.closeAlert.request());
   try {
-    yield call(http.post, `/api/alert/${alertId}/close`, { comments, escalatedOutcome });
+    yield call(http.post, `/api/alert/${alertId}/close`);
     yield put(actions.closeAlert.success());
-    yield put(actions.goToList(projectId))
+    yield put(actions.goToEventLog(projectId, alertId));
     yield put(appActions.showMessage(stringKeys.alerts.assess.alert.closedSuccessfully));
   } catch (error) {
     yield put(appActions.showMessage(error.message));

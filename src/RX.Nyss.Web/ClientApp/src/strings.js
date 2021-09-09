@@ -895,6 +895,7 @@ export const stringKeys = {
         close: "alerts.assess.alert.close",
         closeComments: "alerts.assess.alert.closeComments",
         closeConfirmation: "alerts.assess.alert.closeConfirmation",
+        closeDescription: "alerts.assess.alert.closeDescription",
         escalate: "alerts.assess.alert.escalate",
         escalateConfirmation: "alerts.assess.alert.escalateConfirmation",
         escalateConfirmationInformDataCollectors: "alerts.assess.alert.escalateConfirmationInformDataCollectors",

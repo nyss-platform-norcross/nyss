@@ -19,7 +19,7 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
   const selectTypeAndFormat = (row) => {
 
     if (row.logType != null) {
-      if (row.logType === logType.closedAlert && row.metadata.escalatedOutcome !== escalatedOutcomes.other) {
+      if (row.logType === logType.closedAlert && !!row.metadata.escalatedOutcome && row.metadata.escalatedOutcome !== escalatedOutcomes.other) {
         return `${stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)} - ${strings(stringKeys.alerts.constants.escalatedOutcomes[row.metadata.escalatedOutcome])}`;
       } else {
         return stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata);
@@ -64,7 +64,7 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
               <TableCell style={{ width: "20%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.subtype)}</TableCell>
               <TableCell style={{ width: "10%", minWidth: 150 }}>{strings(stringKeys.alerts.eventLog.list.userName)}</TableCell>
               <TableCell style={{ width: "35%", minWidth: 200 }}>{strings(stringKeys.alerts.eventLog.list.comment)}</TableCell>
-              <TableCell style={{ width: "5%", minWidth: 50 }}/>
+              <TableCell style={{ width: "5%", minWidth: 50 }} />
             </TableRow>
           </TableHead>
 
@@ -76,26 +76,26 @@ export const AlertEventsTable = ({ alertId, list, edit, remove, isRemoving }) =>
                 <TableCell>{formatEventSubtype(row)}</TableCell>
                 <TableCell>{dashIfEmpty(row.loggedBy)}</TableCell>
                 <TableCell>
-                  <AlertEventExpandableText text={row.text} maxLength={70}/>
+                  <AlertEventExpandableText text={row.text} maxLength={70} />
                 </TableCell>
 
                 <TableCell>
                   {row.alertEventType &&
-                  <TableRowActions>
-                    <TableRowAction
-                      onClick={() => showEditDialog(row, formatEventType(row), formatEventSubtype(row)) }
-                      roles={accessMap.alertEvents.edit}
-                      icon={<EditIcon />}
-                      title={"Edit"}
-                    />
-                    <TableRowAction
-                      onClick={() => remove(alertId, row.alertEventLogId)}
-                      roles={accessMap.alertEvents.delete}
-                      confirmationText={strings(stringKeys.alerts.eventLog.list.removalConfirmation)}
-                      icon={<ClearIcon />} title={"Delete"}
-                      isFetching={isRemoving[row.alertEventLogId]}
-                    />
-                  </TableRowActions>
+                    <TableRowActions>
+                      <TableRowAction
+                        onClick={() => showEditDialog(row, formatEventType(row), formatEventSubtype(row))}
+                        roles={accessMap.alertEvents.edit}
+                        icon={<EditIcon />}
+                        title={"Edit"}
+                      />
+                      <TableRowAction
+                        onClick={() => remove(alertId, row.alertEventLogId)}
+                        roles={accessMap.alertEvents.delete}
+                        confirmationText={strings(stringKeys.alerts.eventLog.list.removalConfirmation)}
+                        icon={<ClearIcon />} title={"Delete"}
+                        isFetching={isRemoving[row.alertEventLogId]}
+                      />
+                    </TableRowActions>
                   }
                 </TableCell>
               </TableRow>

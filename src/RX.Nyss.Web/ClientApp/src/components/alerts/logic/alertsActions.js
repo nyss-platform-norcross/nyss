@@ -7,6 +7,7 @@ import {
 
 export const goToList = (projectId) => push(`/projects/${projectId}/alerts`);
 export const goToAssessment = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/assess`);
+export const goToEventLog = (projectId, alertId) => push(`/projects/${projectId}/alerts/${alertId}/eventLog`);
 
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_ALERTS_LIST.INVOKE, projectId }),
@@ -65,7 +66,7 @@ export const dismissAlert = {
 };
 
 export const closeAlert = {
-  invoke: (alertId, comments, escalatedOutcome) => ({ type: CLOSE_ALERT.INVOKE, alertId, comments, escalatedOutcome }),
+  invoke: (alertId) => ({ type: CLOSE_ALERT.INVOKE, alertId }),
   request: () => ({ type: CLOSE_ALERT.REQUEST }),
   success: () => ({ type: CLOSE_ALERT.SUCCESS }),
   failure: (message) => ({ type: CLOSE_ALERT.FAILURE, message })

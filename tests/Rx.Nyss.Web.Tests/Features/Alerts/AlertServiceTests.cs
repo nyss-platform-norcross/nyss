@@ -585,7 +585,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.Close(TestData.AlertId, "", EscalatedAlertOutcomes.Dismissed);
+            var result = await _alertService.Close(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
@@ -594,16 +594,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task CloseAlert_WhenAlertMeetsTheCriteria_ChangesAlertStatus()
         {
-            var comments = "abc";
-
             _alerts.First().Status = AlertStatus.Escalated;
 
-            var result = await _alertService.Close(TestData.AlertId, comments, EscalatedAlertOutcomes.Other);
+            var result = await _alertService.Close(TestData.AlertId);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Closed);
             _alerts.First().ClosedAt.ShouldBe(_now);
             _alerts.First().ClosedBy.ShouldBe(_currentUser);
-            _alerts.First().Comments.ShouldBe(comments);
             await _nyssContext.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
         }

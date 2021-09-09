@@ -1,5 +1,4 @@
 import styles from '../../common/table/Table.module.scss';
-import alertTableStyles from './AlertsTable.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import { strings, stringKeys } from '../../../strings';
@@ -7,9 +6,8 @@ import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import { assessmentStatus, escalatedOutcomes, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
-import { TableSortLabel, Tooltip, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { assessmentStatus, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
+import { TableSortLabel, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, onChangePage, onSort, page, rowsPerPage, totalRows }) => {
@@ -28,28 +26,8 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
     onSort({ ...filters, orderBy: column, sortAscending: !isAscending });
   }
 
-  const handleTooltipClick = (event) => {
-    event.stopPropagation();
-  }
-
   if (!list.length) {
     return <TableNoData />;
-  }
-
-  const renderStatus = (alert) => {
-    if (alert.status === assessmentStatus.closed) {
-      const tooltipText = alert.escalatedOutcome === undefined || alert.escalatedOutcome === escalatedOutcomes.other ? alert.comments : strings(stringKeys.alerts.constants.escalatedOutcomes[alert.escalatedOutcome]);
-      return (
-        <div className={alertTableStyles.closeStatus}>
-          {strings(stringKeys.alerts.constants.alertStatus[alert.status])}
-          <Tooltip title={tooltipText} onClick={handleTooltipClick} arrow className={alertTableStyles.tooltip}>
-            <InfoIcon fontSize="small" />
-          </Tooltip>
-        </div>
-      );
-    } else {
-      return strings(stringKeys.alerts.constants.alertStatus[alert.status]);
-    }
   }
 
   return !!filters && (
@@ -71,6 +49,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
             <TableCell style={{ width: "18%" }}>{strings(stringKeys.alerts.list.village)}</TableCell>
             <TableCell style={{ width: "7%" }}>
               <TableSortLabel
+                hideSortIcon={false}
                 active={filters.orderBy === statusColumn}
                 direction={filters.sortAscending ? 'asc' : 'desc'}
                 onClick={createSortHandler(statusColumn)}
@@ -88,7 +67,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
               <TableCell>{row.healthRisk}</TableCell>
               <TableCell>{row.reportCount}</TableCell>
               <TableCell>{[row.lastReportRegion, row.lastReportDistrict, row.lastReportVillage].filter(l => l).join(", ")}</TableCell>
-              <TableCell>{renderStatus(row)}</TableCell>
+              <TableCell>{strings(stringKeys.alerts.constants.alertStatus[row.status])}</TableCell>
               <TableCell>{row.id}</TableCell>
             </TableRow>
           ))}

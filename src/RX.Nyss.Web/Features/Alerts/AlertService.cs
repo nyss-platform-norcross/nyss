@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset);
         Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
-        Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome);
+        Task<Result> Close(int alertId);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
         Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
@@ -388,7 +388,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        public async Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome)
+        public async Task<Result> Close(int alertId)
         {
             if (!await HasCurrentUserAlertEditAccess(alertId))
             {
@@ -397,31 +397,21 @@ namespace RX.Nyss.Web.Features.Alerts
 
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            var alertData = await _nyssContext.Alerts
+            var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
-                .Select(alert => new
-                {
-                    Alert = alert,
-                    LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.AlertNotificationRecipients.Select(ar => ar.Email).ToList(),
-                    CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
-                    MaximumAcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted || r.Report.Status == ReportStatus.Pending)
-                })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Escalated)
+            if (alert.Status != AlertStatus.Escalated)
             {
                 return Error(ResultKey.Alert.CloseAlert.WrongStatus);
             }
 
-            alertData.Alert.Status = AlertStatus.Closed;
-            alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
-            alertData.Alert.ClosedBy = await _authorizationService.GetCurrentUser();
-            alertData.Alert.EscalatedOutcome = escalatedOutcome;
-            alertData.Alert.Comments = comments;
+            alert.Status = AlertStatus.Closed;
+            alert.ClosedAt = _dateTimeProvider.UtcNow;
+            alert.ClosedBy = await _authorizationService.GetCurrentUser();
 
             FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}
-                                AND Id IN (SELECT ReportId FROM Nyss.AlertReports WHERE AlertId = {alertData.Alert.Id}) ";
+                                AND Id IN (SELECT ReportId FROM Nyss.AlertReports WHERE AlertId = {alert.Id}) ";
             await _nyssContext.ExecuteSqlInterpolatedAsync(updateReportsCommand);
 
             await _nyssContext.SaveChangesAsync();
@@ -498,7 +488,15 @@ namespace RX.Nyss.Web.Features.Alerts
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
-                        .Single()
+                        .Single(),
+                    InvestigationEventSubtype = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 1)
+                        .Select(log => log.AlertEventSubtype)
+                        .First(),
+                    OutcomeEventSubtype = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 4)
+                        .Select(log => log.AlertEventSubtype)
+                        .First()
                 })
                 .ToListAsync();
 
@@ -520,7 +518,13 @@ namespace RX.Nyss.Web.Features.Alerts
                         : a.LastReport.VillageName,
                     LastReportDistrict = a.LastReport.DistrictName,
                     LastReportRegion = a.LastReport.RegionName,
-                    HealthRisk = a.HealthRisk
+                    HealthRisk = a.HealthRisk,
+                    Investigation = a.InvestigationEventSubtype != null
+                        ? GetStringResource(stringResources, $"alerts.eventTypes.subtypes.{a.InvestigationEventSubtype.Name.ToString().ToCamelCase()}")
+                        : null,
+                    Outcome = a.OutcomeEventSubtype != null
+                        ? GetStringResource(stringResources, $"alerts.eventTypes.subtypes.{a.OutcomeEventSubtype.Name.ToString().ToCamelCase()}")
+                        : null
                 }).ToList();
 
             var documentTitle = GetStringResource(stringResources, "alerts.export.title");
@@ -559,7 +563,9 @@ namespace RX.Nyss.Web.Features.Alerts
             new List<string>
             {
                 GetStringResource(stringResources, "alerts.export.id"),
+                GetStringResource(stringResources, "alerts.export.dateTriggered"),
                 GetStringResource(stringResources, "alerts.export.timeTriggered"),
+                GetStringResource(stringResources, "alerts.export.dateOfLastReport"),
                 GetStringResource(stringResources, "alerts.export.timeOfLastReport"),
                 GetStringResource(stringResources, "alerts.export.healthRisk"),
                 GetStringResource(stringResources, "alerts.export.reports"),
@@ -568,9 +574,14 @@ namespace RX.Nyss.Web.Features.Alerts
                 GetStringResource(stringResources, "alerts.export.lastReportDistrict"),
                 GetStringResource(stringResources, "alerts.export.lastReportVillage"),
                 GetStringResource(stringResources, "alerts.export.lastReportZone"),
+                GetStringResource(stringResources, "alerts.export.dateEscalated"),
                 GetStringResource(stringResources, "alerts.export.timeEscalated"),
+                GetStringResource(stringResources, "alerts.export.dateClosed"),
                 GetStringResource(stringResources, "alerts.export.timeClosed"),
+                GetStringResource(stringResources, "alerts.export.dateDismissed"),
                 GetStringResource(stringResources, "alerts.export.timeDismissed"),
+                GetStringResource(stringResources, "alerts.export.investigation"),
+                GetStringResource(stringResources, "alerts.export.outcome"),
                 GetStringResource(stringResources, "alerts.export.escalatedOutcome"),
                 GetStringResource(stringResources, "alerts.export.closedComments")
             };
