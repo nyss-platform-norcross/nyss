@@ -76,7 +76,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     alert.status === alertStatus.pending
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
 
-  const canCrossCheck = (report, reportStatus) => 
+  const canCrossCheck = (report, reportStatus) =>
     !report.isAnonymized
     && report.isValid
     && !report.isMarkedAsError
@@ -113,7 +113,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     }
   ];
 
-  const canEdit = (row) => 
+  const canEdit = (row) =>
     !row.isAnonymized
     && (!row.isActivityReport || filters.dataCollectorType === DataCollectorType.unknownSender)
     && row.status === reportStatus.new
@@ -185,12 +185,14 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
                       condition={canEdit(row)} />
+                    { !row.isActivityReport &&
                     <TableRowMenu
                       id={row.id}
                       icon={<MoreVertIcon />}
                       isFetching={isMarkingAsError[row.id]}
                       items={getRowMenu(row)}
                     />
+                    }
                   </TableRowActions>
                 </TableCell>
               </TableRow>
