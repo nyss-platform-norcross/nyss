@@ -121,7 +121,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var phoneNumbers = supervisors.Select(s => new SendSmsRecipient
             {
                 PhoneNumber = s.PhoneNumber,
-                Modem = s.Modem.ModemId
+                Modem = s.Modem?.ModemId
             }).ToList();
             var message = await CreateNotificationMessageForExistingAlert(alert);
 
@@ -144,7 +144,33 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     return false;
                 }
 
-                await ReportAdded(rawReport.Report);
+                var alertData = await ReportAdded(rawReport.Report);
+
+                if (alertData.Alert == null)
+                {
+                    return true;
+                }
+
+                var gatewaySetting = await _nyssContext.GatewaySettings
+                    .Include(gs => gs.Modems)
+                    .Where(gs => gs.ApiKey == rawReport.ApiKey)
+                    .SingleOrDefaultAsync();
+
+                if (gatewaySetting == null)
+                {
+                    _loggerAdapter.ErrorFormat("Could not send notification to Supervisor. GatewaySetting with API key: {0} not found.", rawReport.ApiKey);
+                    return true;
+                }
+
+                if (alertData.IsExistingAlert)
+                {
+                    await SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
+                }
+                else
+                {
+                    await SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
+                }
+
                 return true;
             }
             catch (Exception e)
@@ -293,6 +319,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore))
                     .Include(r => r.DataCollector)
                     .ThenInclude(dc => dc.Supervisor)
+                    .ThenInclude(s => s.Modem)
                     .ToListAsync();
 
                 var supervisorsConnectedToExistingAlert = await GetSupervisorsConnectedToExistingAlert(existingActiveAlertForLabel);
