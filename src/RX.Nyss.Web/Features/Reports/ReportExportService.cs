@@ -81,8 +81,10 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
                     SupervisorName = r.DataCollector.Supervisor.Name,
-                    Status = GetReportStatusString(stringResources, r.Report.Status),
-                    MarkedAsError = r.Report.MarkedAsError,
+                    Status = r.Text.Trim() != "99"
+                    ? GetReportStatusString(stringResources, r.Report.Status)
+                    : null,
+                        MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
