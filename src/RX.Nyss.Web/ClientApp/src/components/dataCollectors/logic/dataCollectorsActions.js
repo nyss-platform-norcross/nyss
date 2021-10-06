@@ -14,7 +14,8 @@ import {
   SELECT_DATA_COLLECTOR,
   SELECT_ALL_DATA_COLLECTOR,
   REPLACE_SUPERVISOR,
-  SET_DATA_COLLECTORS_DEPLOYED_STATE
+  SET_DATA_COLLECTORS_DEPLOYED_STATE,
+  EXPORT_DATA_COLLECTOR_PERFORMANCE
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
@@ -141,4 +142,11 @@ export const setDeployedState = {
   request: (dataCollectorIds) => ({ type: REPLACE_SUPERVISOR.REQUEST, dataCollectorIds }),
   success: (dataCollectorIds) => ({ type: REPLACE_SUPERVISOR.SUCCESS, dataCollectorIds }),
   failure: (dataCollectorIds, error) => ({ type: REPLACE_SUPERVISOR.FAILURE, error, dataCollectorIds })
+}
+
+export const exportDataCollectorPerformance = {
+  invoke: (projectId, filters) => ({ type: EXPORT_DATA_COLLECTOR_PERFORMANCE.INVOKE, projectId, filters }),
+  request: () => ({ type: EXPORT_DATA_COLLECTOR_PERFORMANCE.REQUEST }),
+  success: () => ({ type: EXPORT_DATA_COLLECTOR_PERFORMANCE.SUCCESS }),
+  failure: (message) => ({ type: EXPORT_DATA_COLLECTOR_PERFORMANCE.FAILURE, message })
 }

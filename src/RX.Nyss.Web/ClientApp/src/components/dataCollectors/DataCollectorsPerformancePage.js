@@ -10,6 +10,10 @@ import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFil
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
 import { assignInArray } from '../../utils/immutable';
+import TableActions from '../common/tableActions/TableActions';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { stringKeys, strings } from '../../strings';
+import { accessMap } from '../../authentication/accessMap';
 
 const initFilter = (filters) => {
   return {
@@ -40,7 +44,7 @@ const onSort = (state, week, filters) => {
   }
 }
 
-const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerformanceList, ...props}) => {
+const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPerformanceList, ...props }) => {
   useMount(() => {
     props.openDataCollectorsPerformanceList(projectId, props.filters);
   });
@@ -50,7 +54,7 @@ const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerf
       case 'updateArea': return { value: { ...state.value, area: action.area, pageNumber: action.pageNumber }, changed: !shallowEqual(state.value.area, action.area) };
       case 'updateName': return { value: { ...state.value, name: action.name }, changed: state.value.name !== action.name };
       case 'updateSupervisor': return { value: { ...state.value, supervisorId: action.supervisorId }, changed: state.value.supervisorId !== action.supervisorId };
-      case 'updateTrainingStatus': return {value: {...state.value, trainingStatus: action.trainingStatus }, changed: state.value.trainingStatus !== action.trainingStatus};
+      case 'updateTrainingStatus': return { value: { ...state.value, trainingStatus: action.trainingStatus }, changed: state.value.trainingStatus !== action.trainingStatus };
       case 'updateSorting': return onSort(state.value, action.week, action.filters);
       case 'changePage': return { value: { ...state.value, pageNumber: action.pageNumber }, changed: state.value.pageNumber !== action.pageNumber };
       case 'reset': return resetFilter(initialState.dataCollectors.performanceListFilters);
@@ -66,6 +70,12 @@ const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerf
 
   return (
     <Fragment>
+      <TableActions>
+        <TableActionsButton onClick={() => props.exportPerformance(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          {strings(stringKeys.dataCollector.exportExcel)}
+        </TableActionsButton>
+      </TableActions>
+
       <DataCollectorsPerformanceFilters
         onChange={setFilters}
         filters={filters.value}
@@ -104,7 +114,8 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openDataCollectorsPerformanceList: dataCollectorActions.openDataCollectorsPerformanceList.invoke,
-  getDataCollectorPerformanceList: dataCollectorActions.getDataCollectorsPerformanceList.invoke
+  getDataCollectorPerformanceList: dataCollectorActions.getDataCollectorsPerformanceList.invoke,
+  exportPerformance: dataCollectorActions.exportDataCollectorPerformance.invoke
 };
 
 export const DataCollectorsPerformancePage = withLayout(
