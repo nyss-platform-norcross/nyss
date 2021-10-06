@@ -19,17 +19,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IDataCollectorExportService _dataCollectorExportService;
         private readonly IDataCollectorAccessService _dataCollectorAccessService;
         private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
+        private readonly IDataCollectorPerformanceExportService _dataCollectorPerformanceExportService;
 
         public DataCollectorController(
             IDataCollectorService dataCollectorService,
             IDataCollectorExportService dataCollectorExportService,
             IDataCollectorAccessService dataCollectorAccessService,
-            IDataCollectorPerformanceService dataCollectorPerformanceService)
+            IDataCollectorPerformanceService dataCollectorPerformanceService,
+            IDataCollectorPerformanceExportService dataCollectorPerformanceExportService)
         {
             _dataCollectorService = dataCollectorService;
             _dataCollectorExportService = dataCollectorExportService;
             _dataCollectorAccessService = dataCollectorAccessService;
             _dataCollectorPerformanceService = dataCollectorPerformanceService;
+            _dataCollectorPerformanceExportService = dataCollectorPerformanceExportService;
         }
 
         [HttpGet, Route("{dataCollectorId:int}/get")]
@@ -111,5 +114,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
         public Task<Result> SetDeployedState([FromBody] SetDeployedStateRequestDto dto) =>
             _dataCollectorService.SetDeployedState(dto);
+
+        [HttpPost, Route("exportPerformance")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> ExportPerformance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
+            File(await _dataCollectorPerformanceExportService.Export(projectId, dataCollectorsFiltersDto), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 }

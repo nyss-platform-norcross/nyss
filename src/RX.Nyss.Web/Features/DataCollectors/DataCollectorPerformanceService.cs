@@ -48,18 +48,21 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var currentDate = _dateTimeProvider.UtcNow;
             var fromEpiWeek = dataCollectorsFilters.EpiWeekFilters.First().EpiWeek;
-            var fromDate = _dateTimeProvider.GetFirstDateOfEpiWeek(currentDate.Year, fromEpiWeek);
+            var toEpiWeek = dataCollectorsFilters.EpiWeekFilters.Last().EpiWeek;
+            var fromDate = _dateTimeProvider.GetFirstDateOfEpiWeek(currentDate.AddDays(-8 * 7).Year, fromEpiWeek);
+            var previousEpiWeekDate = _dateTimeProvider.GetFirstDateOfEpiWeek(currentDate.AddDays(-7).Year, toEpiWeek);
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalRows = await dataCollectors.CountAsync();
+            var epiDateRange = _dateTimeProvider.GetEpiDateRange(fromDate, previousEpiWeekDate).ToList();
 
             var dataCollectorsWithReportsData = await GetDataCollectorsWithReportData(dataCollectors, fromDate, currentDate);
 
-            var dataCollectorCompleteness = GetDataCollectorCompleteness(dataCollectorsFilters, dataCollectorsWithReportsData, totalRows, fromEpiWeek);
+            var dataCollectorCompleteness = GetDataCollectorCompleteness(dataCollectorsFilters, dataCollectorsWithReportsData, totalRows, epiDateRange);
 
             var paginatedDataCollectorsWithReportsData = dataCollectorsWithReportsData
                 .Page(dataCollectorsFilters.PageNumber, rowsPerPage);
 
-            var dataCollectorPerformances = GetDataCollectorPerformance(paginatedDataCollectorsWithReportsData, currentDate, fromEpiWeek)
+            var dataCollectorPerformances = GetDataCollectorPerformance(paginatedDataCollectorsWithReportsData, currentDate, epiDateRange)
                 .FilterByStatusForEpiWeeks(dataCollectorsFilters.EpiWeekFilters)
                 .AsPaginatedList(dataCollectorsFilters.PageNumber, totalRows, rowsPerPage);
 
@@ -89,7 +92,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         })
                 }).ToListAsync();
 
-        private List<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, int fromEpiWeek)
+        private List<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, List<EpiDate> epiDateRange)
         {
             if (IsWeekFiltersActive(filters) || totalDataCollectors == 0)
             {
@@ -113,16 +116,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         : 0)
                 }).ToList();
 
-            return Enumerable.Range(fromEpiWeek, 8).Select(week => new Completeness
+            return epiDateRange.Select(epiDate => new Completeness
             {
-                EpiWeek = week,
+                EpiWeek = epiDate.EpiWeek,
                 TotalDataCollectors = totalDataCollectors,
-                ActiveDataCollectors = dataCollectorCompleteness.FirstOrDefault(dc => dc.EpiWeek == week)?.Active ?? 0,
-                Percentage = (dataCollectorCompleteness.FirstOrDefault(dc => dc.EpiWeek == week)?.Active ?? 0) * 100 / totalDataCollectors
+                ActiveDataCollectors = dataCollectorCompleteness.FirstOrDefault(dc => dc.EpiWeek == epiDate.EpiWeek)?.Active ?? 0,
+                Percentage = (dataCollectorCompleteness.FirstOrDefault(dc => dc.EpiWeek == epiDate.EpiWeek)?.Active ?? 0) * 100 / totalDataCollectors
             }).Reverse().ToList();
         }
 
-        private IEnumerable<DataCollectorPerformance> GetDataCollectorPerformance(IEnumerable<DataCollectorWithRawReportData> dataCollectorsWithReportsData, DateTime currentDate, int fromEpiWeek) =>
+        private IEnumerable<DataCollectorPerformance> GetDataCollectorPerformance(IEnumerable<DataCollectorWithRawReportData> dataCollectorsWithReportsData, DateTime currentDate, List<EpiDate> epiDateRange) =>
             dataCollectorsWithReportsData
                 .Select(dc =>
                 {
@@ -140,11 +143,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                                 .OrderByDescending(r => r.ReceivedAt)
                                 .First().ReceivedAt).TotalDays
                             : -1,
-                        PerformanceInEpiWeeks = Enumerable.Range(fromEpiWeek, 8)
-                            .Select(week => new PerformanceInEpiWeek
+                        PerformanceInEpiWeeks = epiDateRange
+                            .Select(epiDate => new PerformanceInEpiWeek
                             {
-                                EpiWeek = week,
-                                ReportingStatus = GetDataCollectorStatus(reportsGroupedByWeek.FirstOrDefault(r => r.Key == week))
+                                EpiWeek = epiDate.EpiWeek,
+                                ReportingStatus = GetDataCollectorStatus(reportsGroupedByWeek.FirstOrDefault(r => r.Key == epiDate.EpiWeek))
                             }).Reverse().ToList()
                     };
                 });

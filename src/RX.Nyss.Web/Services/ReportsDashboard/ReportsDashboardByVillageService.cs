@@ -195,7 +195,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToList();
 
-            var allPeriods = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+            var allPeriods = _dateTimeProvider.GetEpiDateRange(startDate, endDate)
                 .Select(day => day.EpiWeek.ToString());
 
             return new ReportByVillageAndDateResponseDto
