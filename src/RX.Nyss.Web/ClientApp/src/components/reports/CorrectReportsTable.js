@@ -76,7 +76,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     alert.status === alertStatus.pending
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
 
-  const canCrossCheck = (report, reportStatus) => 
+  const canCrossCheck = (report, reportStatus) =>
     !report.isAnonymized
     && report.isValid
     && !report.isMarkedAsError
@@ -113,7 +113,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     }
   ];
 
-  const canEdit = (row) => 
+  const canEdit = (row) =>
     !row.isAnonymized
     && (!row.isActivityReport || filters.dataCollectorType === DataCollectorType.unknownSender)
     && row.status === reportStatus.new
@@ -145,11 +145,11 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
               <TableCell style={{ width: '7%' }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
               <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
               {filters.dataCollectorType === DataCollectorType.collectionPoint &&
-                <Fragment>
-                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                  <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
-                </Fragment>
+              <Fragment>
+                <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: '10%', minWidth: '50px' }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+              </Fragment>
               }
               <TableCell style={{ width: '3%' }} />
             </TableRow>
@@ -158,9 +158,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
             {list.map(row => (
               <TableRow key={row.id} hover>
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
-                <TableCell>
-                  {strings(stringKeys.reports.status[row.status])}
-                </TableCell>
+                <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
                 <TableCell>
                   {row.dataCollectorDisplayName}
                   {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
@@ -173,11 +171,11 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                 <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
                 <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
                 {filters.dataCollectorType === DataCollectorType.collectionPoint &&
-                  <Fragment>
-                    <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
-                    <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
-                    <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
-                  </Fragment>
+                <Fragment>
+                  <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
+                </Fragment>
                 }
                 <TableCell>
                   <TableRowActions>
@@ -187,12 +185,14 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
                       condition={canEdit(row)} />
+                    { !row.isActivityReport &&
                     <TableRowMenu
                       id={row.id}
                       icon={<MoreVertIcon />}
                       isFetching={isMarkingAsError[row.id]}
                       items={getRowMenu(row)}
                     />
+                    }
                   </TableRowActions>
                 </TableCell>
               </TableRow>

@@ -213,11 +213,11 @@ namespace RX.Nyss.Common.Utils.DataContract
 
             public static class Status
             {
-                public const string New = "report.status.new";
-                public const string Pending = "report.status.pending";
+                public const string New = "report.status.notCrossChecked";
+                public const string Pending = "report.status.notCrossChecked";
                 public const string Rejected = "report.status.rejected";
                 public const string Accepted = "report.status.accepted";
-                public const string Closed = "report.status.closed";
+                public const string Closed = "report.status.notCrossChecked";
             }
 
             public static class Edit
