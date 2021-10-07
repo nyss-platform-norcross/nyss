@@ -94,8 +94,7 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount.Value,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount.Value,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount.Value,
-                    IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98
-                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
+                    IsActivityReport = r.Report.IsActivityReport(),
                 })
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 

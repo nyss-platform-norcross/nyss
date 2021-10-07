@@ -158,7 +158,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
             {list.map(row => (
               <TableRow key={row.id} hover>
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
-                <TableCell>{!row.isActivityReport && (strings(stringKeys.reports.status[row.status]))}</TableCell>
+                <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
                 <TableCell>
                   {row.dataCollectorDisplayName}
                   {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}

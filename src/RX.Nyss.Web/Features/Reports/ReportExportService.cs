@@ -81,10 +81,10 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
                     SupervisorName = r.DataCollector.Supervisor.Name,
-                    Status = r.Text.Trim() != "99"
-                    ? GetReportStatusString(stringResources, r.Report.Status)
-                    : null,
-                        MarkedAsError = r.Report.MarkedAsError,
+                    Status = !r.Report.IsActivityReport()
+                        ? GetReportStatusString(stringResources, r.Report.Status)
+                        : null,
+                    MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
@@ -414,6 +414,9 @@ namespace RX.Nyss.Web.Features.Reports
             }
 
             return _nyssContext.RawReports
+                .Include(r => r.Report)
+                .ThenInclude(r => r.ProjectHealthRisk)
+                .ThenInclude(p => p.HealthRisk)
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByDataCollectorType(filter.DataCollectorType)
