@@ -403,6 +403,9 @@ namespace RX.Nyss.Web.Features.Reports
                     .SingleOrDefaultAsync();
 
                 return _nyssContext.RawReports
+                    .Include(r => r.Report)
+                    .ThenInclude(r => r.ProjectHealthRisk)
+                    .ThenInclude(r => r.HealthRisk)
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByDataCollectorType(filter.DataCollectorType)
                     .FilterByHealthRisk(filter.HealthRiskId)
@@ -416,7 +419,7 @@ namespace RX.Nyss.Web.Features.Reports
             return _nyssContext.RawReports
                 .Include(r => r.Report)
                 .ThenInclude(r => r.ProjectHealthRisk)
-                .ThenInclude(p => p.HealthRisk)
+                .ThenInclude(r => r.HealthRisk)
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByDataCollectorType(filter.DataCollectorType)
