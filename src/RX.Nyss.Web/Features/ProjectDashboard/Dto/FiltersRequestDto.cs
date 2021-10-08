@@ -27,6 +27,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public ReportStatusFilterDto ReportStatus { get; set; }
 
+        public TrainingStatusDto? DataCollectorStatus { get; set; }
+
         public int? OrganizationId { get; set; }
 
         public int UtcOffset { get; set; }

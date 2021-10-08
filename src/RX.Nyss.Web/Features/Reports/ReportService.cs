@@ -335,7 +335,8 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
                 .FilterByDate(filters.StartDate, filters.EndDate)
-                .FilterByHealthRisk(filters.HealthRiskId);
+                .FilterByHealthRisk(filters.HealthRiskId)
+                .FilterByTrainingMode(filters.DataCollectorStatus);
 
 
         public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>

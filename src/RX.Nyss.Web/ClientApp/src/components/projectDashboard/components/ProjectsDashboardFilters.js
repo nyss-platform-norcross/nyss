@@ -99,6 +99,9 @@ export const ProjectsDashboardFilters = ({
       })
     );
 
+  const handleDataCollectorStatusChange = (event) =>
+    onChange(updateValue({ dataCollectorStatus: event.target.value }));
+
   const collectionsTypes = {
     all: strings(stringKeys.project.dashboard.filters.allReportsType),
     dataCollector: strings(
@@ -263,6 +266,24 @@ export const ProjectsDashboardFilters = ({
                   />
                 </Grid>
               )}
+            {!isFilterExpanded &&
+              !userRoles.some((r) => r === DataConsumer) &&
+              value.dataCollectorStatus !== "Trained" && (
+                <Grid item>
+                  <Chip
+                    label={strings(stringKeys.dataCollector.constants.trainingStatus.InTraining)}
+                    onDelete={() =>
+                      onChange(
+                        updateValue({
+                          ...value,
+                          dataCollectorStatus: "Trained"
+                        })
+                      )
+                    }
+                    onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+                  />
+                </Grid>
+              )}              
             <Grid item className={styles.expandFilterButton}>
               <IconButton
                 data-expanded={isFilterExpanded}
@@ -390,7 +411,7 @@ export const ProjectsDashboardFilters = ({
                   {collectionsTypes["dataCollectionPoint"]}
                 </MenuItem>
               </TextField>
-            </Grid>
+            </Grid>          
 
             <Grid item>
               <TextField
@@ -419,6 +440,36 @@ export const ProjectsDashboardFilters = ({
                 ))}
               </TextField>
             </Grid>
+
+            <Grid item>
+              <FormControl>
+                <FormLabel component="legend">
+                  {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
+                </FormLabel>
+                <RadioGroup
+                  value={value.dataCollectorStatus}
+                  onChange={handleDataCollectorStatusChange}
+                  className={styles.radioGroup}
+                >
+                  <FormControlLabel
+                    className={styles.radio}
+                    label={strings(
+                      stringKeys.dataCollector.constants.trainingStatus.Trained
+                    )}
+                    value={"Trained"}
+                    control={<Radio color="primary" />}
+                  />
+                  <FormControlLabel
+                    className={styles.radio}
+                    label={strings(
+                      stringKeys.dataCollector.constants.trainingStatus.InTraining
+                    )}
+                    value={"InTraining"}
+                    control={<Radio color="primary" />}
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Grid>            
 
             {!userRoles.some((r) => r === DataConsumer) && (
               <Grid item>

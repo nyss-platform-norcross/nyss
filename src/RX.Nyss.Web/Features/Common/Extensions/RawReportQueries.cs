@@ -117,5 +117,13 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                     || (filterDto.Corrected && r.Report != null && r.Report.CorrectedAt.HasValue)
                     || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
                 : rawReports;
+
+        public static IQueryable<RawReport> FilterByTrainingMode(this IQueryable<RawReport> rawReports, TrainingStatusDto? trainingStatus) =>
+            trainingStatus switch
+            {
+                TrainingStatusDto.InTraining => rawReports.Where(r => r.DataCollector.IsInTrainingMode),
+                TrainingStatusDto.Trained => rawReports.Where(r => !r.DataCollector.IsInTrainingMode),
+                _ => rawReports
+            };
     }
 }

@@ -25,6 +25,8 @@ namespace RX.Nyss.Web.Features.Reports
 
         public ReportStatusFilterDto ReportStatus { get; set; }
 
+        public TrainingStatusDto? DataCollectorStatus { get; set; }
+
         public int UtcOffset { get; set; }
     }
 }

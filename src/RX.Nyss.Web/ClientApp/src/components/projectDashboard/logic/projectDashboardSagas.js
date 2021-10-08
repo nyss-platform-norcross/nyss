@@ -41,7 +41,8 @@ function* openProjectDashboard({ projectId }) {
           dismissed: false,
           notCrossChecked: true,
         },
-        utcOffset: utcOffset
+        utcOffset: utcOffset,
+        dataCollectorStatus: 'Trained',
       };
 
     yield call(getProjectDashboardData, { projectId, filters })

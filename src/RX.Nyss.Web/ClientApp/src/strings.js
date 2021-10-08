@@ -440,7 +440,8 @@ export const stringKeys = {
         dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
         trainingReportsListType: "project.dashboard.filters.trainingReportsListType",
         notInTraining: "project.dashboard.filters.notInTraining",
-        inTraining: "project.dashboard.filters.inTraining"
+        inTraining: "project.dashboard.filters.inTraining",
+        dataCollectorStatus: "project.dashboard.filters.dataCollectorStatus",
       },
       reportsPerHealthRisk: {
         title: "project.dashboard.reportsPerHealthRisk.title",
