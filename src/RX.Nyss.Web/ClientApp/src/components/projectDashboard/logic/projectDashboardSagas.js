@@ -40,7 +40,6 @@ function* openProjectDashboard({ projectId }) {
           kept: true,
           dismissed: false,
           notCrossChecked: true,
-          training: false
         },
         utcOffset: utcOffset
       };

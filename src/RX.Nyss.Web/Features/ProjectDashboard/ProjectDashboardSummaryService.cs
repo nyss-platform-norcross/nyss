@@ -19,7 +19,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public class ProjectDashboardSummaryService : IProjectDashboardSummaryService
     {
         private readonly IReportService _reportService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
 
         public ProjectDashboardSummaryService(
@@ -69,8 +71,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _nyssContext.DataCollectors
                 .FilterByArea(filters.Area)
                 .FilterByType(filters.DataCollectorType)
-                .FilterByProject(filters.ProjectId.Value)
-                .FilterByTrainingMode(filters.ReportStatus.Training)
+                .FilterByProject(filters.ProjectId.GetValueOrDefault())
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
     }

@@ -18,12 +18,19 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
     public class NationalSocietyDashboardSummaryServiceTests
     {
         private const int NationalSocietyId = 1;
+
         private readonly NationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
+
         private readonly IReportService _reportService;
+
         private readonly List<DataCollector> _dataCollectors;
+
         private readonly List<NationalSociety> _nationalSocieties;
+
         private readonly List<Village> _villages;
+
         private readonly List<District> _districts;
+
         private readonly List<Project> _projects;
 
         public NationalSocietyDashboardSummaryServiceTests()
@@ -96,7 +103,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -134,7 +140,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -172,7 +177,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -230,7 +234,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -304,7 +307,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
 
@@ -355,7 +357,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
 
@@ -436,7 +437,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>

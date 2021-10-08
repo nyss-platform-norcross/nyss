@@ -19,7 +19,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
     public class NationalSocietyDashboardSummaryService : INationalSocietyDashboardSummaryService
     {
         private readonly IReportService _reportService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
 
         public NationalSocietyDashboardSummaryService(
@@ -72,7 +74,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .FilterByArea(filters.Area)
                 .FilterByType(filters.DataCollectorType)
                 .FilterByNationalSociety(nationalSocietyId)
-                .FilterByTrainingMode(filters.ReportStatus.Training)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
     }

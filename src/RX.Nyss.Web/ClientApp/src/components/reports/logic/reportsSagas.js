@@ -75,7 +75,6 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
       kept: true,
       dismissed: true,
       notCrossChecked: true,
-      training: false
     },
     reportType: null,
     utcOffset: getUtcOffset()
@@ -110,7 +109,6 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
     reportStatus: null,
     reportType: {
       real: true,
-      training: false,
       corrected: false
     },
     utcOffset: getUtcOffset()

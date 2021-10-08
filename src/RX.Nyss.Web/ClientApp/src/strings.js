@@ -1033,7 +1033,6 @@ export const stringKeys = {
       unknownSenderReportListType: "filters.report.unknownSenderReportListType",
       status: "filters.report.status",
       reportType: "filters.report.reportType",
-      trainingReports: "filters.report.trainingReports",
       nonTrainingReports: "filters.report.nonTrainingReports",
       correctedReports: "filters.report.correctedReports",
       kept: "filters.report.keptReports",

@@ -33,7 +33,6 @@ function* openNationalSocietyCorrectReportsList({ nationalSocietyId }) {
         kept: true,
         dismissed: true,
         notCrossChecked: true,
-        training: false
       },
       utcOffset: getUtcOffset()
     };
@@ -69,7 +68,6 @@ function* openNationalSocietyIncorrectReportsList({ nationalSocietyId }) {
       reportType: {
         real: true,
         corrected: false,
-        training: false
       },
       utcOffset: getUtcOffset()
     };

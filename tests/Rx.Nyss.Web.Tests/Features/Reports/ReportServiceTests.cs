@@ -31,6 +31,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 {
     public class ReportServiceTests
     {
+        private const int RowsPerPage = 10;
+
         private readonly IUserService _userService;
 
         private readonly IProjectService _projectService;
@@ -59,10 +61,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
+
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();
+
         private readonly List<int> _trainingReportIds = Enumerable.Range(25, 100).ToList();
+
         private readonly List<int> _dcpReportIds = Enumerable.Range(125, 20).ToList();
+
         private readonly List<int> _unknownSenderReportIds = Enumerable.Range(145, 5).ToList();
+
         private readonly List<int> _errorReportIds = Enumerable.Range(150, 10).ToList();
 
         private readonly ServiceBusQueuesOptions _serviceBusQueuesOptions = new ServiceBusQueuesOptions
@@ -75,14 +82,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock = Substitute.For<INyssContext>();
 
             _config = Substitute.For<INyssWebConfig>();
-            _config.PaginationRowsPerPage.Returns(_rowsPerPage);
+            _config.PaginationRowsPerPage.Returns(RowsPerPage);
             _config.ServiceBusQueues.Returns(_serviceBusQueuesOptions);
 
             _userService = Substitute.For<IUserService>();
             _userService.GetUserApplicationLanguageCode(Arg.Any<string>()).Returns(Task.FromResult("en"));
 
             _projectService = Substitute.For<IProjectService>();
-            _projectService.GetHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
+            _projectService.GetHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(
+                Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
 
@@ -95,7 +103,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _queueService = Substitute.For<IQueueService>();
             _stringsService = Substitute.For<IStringsService>();
 
-            _alertReportService = new AlertReportService(_config, _nyssContextMock, _alertService, _queueService, _dateTimeProvider, _authorizationService);
+            _alertReportService = new AlertReportService(
+                _config,
+                _nyssContextMock,
+                _alertService,
+                _queueService,
+                _dateTimeProvider,
+                _authorizationService);
             _reportService = new ReportService(
                 _nyssContextMock,
                 _userService,
@@ -134,7 +148,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Dismissed = true,
                     Kept = true,
-                    Training = false,
                     NotCrossChecked = true
                 },
                 ReportType = new ReportTypeFilterDto(),
@@ -164,7 +177,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             });
 
@@ -185,34 +197,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             });
 
             //assert
             result.Value.Data.Count.ShouldBe(1);
-        }
-
-        [Fact]
-        public async Task List_WhenListFilterIsTraining_ShouldReturnOnlyTraining()
-        {
-            //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
-            {
-                DataCollectorType = ReportListDataCollectorType.Human,
-                FormatCorrect = true,
-                ReportStatus = new ReportStatusFilterDto
-                {
-                    Kept = false,
-                    Dismissed = false,
-                    NotCrossChecked = false,
-                    Training = true
-                }
-            });
-
-            //assert
-            result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
-            result.Value.TotalRows.ShouldBe(100);
         }
 
         [Fact]
@@ -228,12 +217,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             });
 
             //assert
-            result.Value.Data.Count.ShouldBe(Math.Min(20, _rowsPerPage));
+            result.Value.Data.Count.ShouldBe(Math.Min(20, RowsPerPage));
             result.Value.TotalRows.ShouldBe(20);
         }
 
@@ -250,12 +238,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             });
 
             //assert
-            result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
+            result.Value.Data.Count.ShouldBe(Math.Min(11, RowsPerPage));
             result.Value.TotalRows.ShouldBe(11);
         }
 
@@ -272,7 +259,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 },
                 Area = new AreaDto
                 {
@@ -282,7 +268,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             });
 
             //assert
-            result.Value.Data.Count.ShouldBe(Math.Min(13, _rowsPerPage));
+            result.Value.Data.Count.ShouldBe(Math.Min(13, RowsPerPage));
             result.Value.TotalRows.ShouldBe(13);
         }
 
@@ -299,14 +285,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     Dismissed = true,
                     NotCrossChecked = true,
-                    Training = false
                 },
-                HealthRiskId = 2
+                HealthRiskId = 2,
             });
 
 
             //assert
-            result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
+            result.Value.Data.Count.ShouldBe(Math.Min(11, RowsPerPage));
             result.Value.TotalRows.ShouldBe(11);
         }
 

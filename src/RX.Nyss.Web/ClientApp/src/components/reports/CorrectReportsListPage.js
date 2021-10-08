@@ -91,7 +91,6 @@ const CorrectReportsListPageComponent = (props) => {
           onChange={handleFiltersChange}
           filters={props.filters}
           showCorrectReportFilters={true}
-          showTrainingFilter={true}
         />
       </div>
 
