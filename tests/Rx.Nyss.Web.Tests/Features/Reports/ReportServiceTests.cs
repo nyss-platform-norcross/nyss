@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();
 
-        private readonly List<int> _trainingReportIds = Enumerable.Range(25, 100).ToList();
+        private readonly List<int> _trainingReportIds = Enumerable.Range(25, 2).ToList();
 
         private readonly List<int> _dcpReportIds = Enumerable.Range(125, 20).ToList();
 
@@ -191,6 +191,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var result = await _reportService.List(2, 2, new ReportListFilterRequestDto
             {
                 DataCollectorType = ReportListDataCollectorType.Human,
+                DataCollectorStatus = TrainingStatusDto.Trained,
                 FormatCorrect = true,
                 ReportStatus = new ReportStatusFilterDto
                 {
@@ -232,6 +233,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
                 DataCollectorType = ReportListDataCollectorType.Human,
+                DataCollectorStatus = TrainingStatusDto.Trained,
                 FormatCorrect = true,
                 ReportStatus = new ReportStatusFilterDto
                 {
@@ -273,6 +275,27 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         }
 
         [Fact]
+        public async Task List_WhenListFilterIsDataColletorStatusInTraining_ShouldReturnOnlyReportsInTraining()
+        {
+            //act
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
+            {
+                DataCollectorType = ReportListDataCollectorType.Human,
+                FormatCorrect = true,
+                DataCollectorStatus = TrainingStatusDto.InTraining,
+                ReportStatus = new ReportStatusFilterDto
+                {
+                    Kept = true,
+                    Dismissed = true,
+                    NotCrossChecked = true,
+                },
+            });
+
+            //assert
+            result.Value.Data.Count.ShouldBe(2);
+        }
+
+        [Fact]
         public async Task List_WhenListFilterIsHealthRisk_ShouldReturnOnlyReportsForHealthRisk()
         {
             //act
@@ -303,6 +326,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         {
             // Arrange
             ArrangeData(useInMemoryDataBase: true, onlyErrorReports: true);
+
             var requestDto = new ReportListFilterRequestDto
             {
                 Area = null,
@@ -612,20 +636,22 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             reportAfterEdit.RawReport.Village.Id.ShouldBe(dataCollector.DataCollectorLocations.First().Village.Id);
         }
 
-        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, bool? isTraining = false)
+        private static List<Report> BuildReports(
+            DataCollector dataCollector,
+            List<int> ids,
+            ProjectHealthRisk projectHealthRisk)
         {
-
             var reports = ids
                 .Select(i => new Report
                 {
                     Id = i,
                     DataCollector = dataCollector,
-                    Status = isTraining.HasValue && isTraining.Value ? ReportStatus.New : ReportStatus.Pending,
+                    Status = ReportStatus.Pending,
                     ProjectHealthRisk = projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     DataCollectionPointCase = new DataCollectionPointCase(),
                     CreatedAt = new DateTime(2020, 1, 1),
-                    IsTraining = isTraining ?? false,
+                    IsTraining = false,
                     Location = GetMockPoint(52.411269, 17.025807),
                     ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint
                         ? ReportType.DataCollectionPoint
@@ -920,6 +946,27 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     {
                         Name = "Super"
                     }
+                },
+                new DataCollector
+                {
+                    Id = 4,
+                    Name = "Trainee",
+                    Project = projects[1],
+                    DataCollectorType = DataCollectorType.Human,
+                    IsInTrainingMode = true,
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Id = 4,
+                            DataCollectorId = 4,
+                            Village = villages[0]
+                        }
+                    },
+                    Supervisor = new SupervisorUser
+                    {
+                        Name = "Super"
+                    }
                 }
             };
 
@@ -932,21 +979,58 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 }
             };
 
-            var (reports, rawReports) = ArrangeReports(dataCollectors, nationalSocieties, villages, zones, withUnknownSenderReports, onlyErrorReports);
+            var (reports, rawReports) = ArrangeReports(
+                dataCollectors,
+                nationalSocieties,
+                villages,
+                zones,
+                withUnknownSenderReports,
+                onlyErrorReports);
 
             if (useInMemoryDataBase)
             {
-                ArrangeInMemoryDb(nationalSocieties, contentLanguages, languageContents, healthRisks, alertRules, projects,
-                    projectHealthRisks, regions, districts, villages, dataCollectors, reports, rawReports, users);
+                ArrangeInMemoryDb(
+                    nationalSocieties,
+                    contentLanguages,
+                    languageContents,
+                    healthRisks,
+                    alertRules,
+                    projects,
+                    projectHealthRisks,
+                    regions,
+                    districts,
+                    villages,
+                    dataCollectors,
+                    rawReports,
+                    users);
             }
             else
             {
-                ArrangeMockDb(nationalSocieties, contentLanguages, languageContents, healthRisks, alertRules, projects,
-                    projectHealthRisks, regions, districts, villages, dataCollectors, reports, rawReports, users);
+                ArrangeMockDb(
+                    nationalSocieties,
+                    contentLanguages,
+                    languageContents,
+                    healthRisks,
+                    alertRules,
+                    projects,
+                    projectHealthRisks,
+                    regions,
+                    districts,
+                    villages,
+                    dataCollectors,
+                    reports,
+                    rawReports,
+                    users);
             }
         }
 
-        private (List<Report>, List<RawReport>) ArrangeReports(List<DataCollector> dataCollectors, List<NationalSociety> nationalSocieties, List<Village> villages, List<Zone> zones, bool withUnknownSenderReports, bool onlyErrorReports = false)
+        private (List<Report>, List<RawReport>) ArrangeReports(
+            List<DataCollector> dataCollectors,
+            List<NationalSociety> nationalSocieties,
+            List<Village> villages,
+            List<Zone> zones,
+            bool withUnknownSenderReports,
+            bool onlyErrorReports = false)
         {
             if (onlyErrorReports)
             {
@@ -960,16 +1044,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
             var rawReports2 = BuildRawReports(reports2, villages[0], zones[0], nationalSocieties[0]);
 
-            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
-            var trainingRawReports = BuildRawReports(trainingReports, villages[0], zones[0], nationalSocieties[0]);
+            var inTrainingReports = BuildReports(dataCollectors[3], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+            var inTrainingRawReports = BuildRawReports(inTrainingReports, villages[0], zones[0], nationalSocieties[0]);
 
             var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
             var dcpRawReports = BuildRawReports(dcpReports, villages[0], zones[0], nationalSocieties[0]);
 
 
 
-            var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
-            var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
+            var reports = reports1.Concat(reports2).Concat(inTrainingReports).Concat(dcpReports).ToList();
+            var rawReports = rawReports1.Concat(rawReports2).Concat(inTrainingRawReports).Concat(dcpRawReports).ToList();
 
             if (withUnknownSenderReports)
             {
@@ -989,9 +1073,21 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             return (reports, rawReports);
         }
 
-        private void ArrangeMockDb(List<NationalSociety> nationalSocieties, List<ContentLanguage> contentLanguages, List<HealthRiskLanguageContent> languageContents, List<HealthRisk> healthRisks
-        , List<AlertRule> alertRules, List<Project> projects, List<ProjectHealthRisk> projectHealthRisks, List<Region> regions, List<District> districts, List<Village> villages, List<DataCollector> dataCollectors
-        , List<Report> reports, List<RawReport> rawReports, List<User> users)
+        private void ArrangeMockDb(
+            List<NationalSociety> nationalSocieties,
+            List<ContentLanguage> contentLanguages,
+            List<HealthRiskLanguageContent> languageContents,
+            List<HealthRisk> healthRisks,
+            List<AlertRule> alertRules,
+            List<Project> projects,
+            List<ProjectHealthRisk> projectHealthRisks,
+            List<Region> regions,
+            List<District> districts,
+            List<Village> villages,
+            List<DataCollector> dataCollectors,
+            List<Report> reports,
+            List<RawReport> rawReports,
+            List<User> users)
         {
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -1031,9 +1127,20 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private void ArrangeInMemoryDb(List<NationalSociety> nationalSocieties, List<ContentLanguage> contentLanguages, List<HealthRiskLanguageContent> languageContents, List<HealthRisk> healthRisks
-            , List<AlertRule> alertRules, List<Project> projects, List<ProjectHealthRisk> projectHealthRisks, List<Region> regions, List<District> districts, List<Village> villages, List<DataCollector> dataCollectors
-            , List<Report> reports, List<RawReport> rawReports, List<User> users)
+        private void ArrangeInMemoryDb(
+            List<NationalSociety> nationalSocieties,
+            List<ContentLanguage> contentLanguages,
+            List<HealthRiskLanguageContent> languageContents,
+            List<HealthRisk> healthRisks,
+            List<AlertRule> alertRules,
+            List<Project> projects,
+            List<ProjectHealthRisk> projectHealthRisks,
+            List<Region> regions,
+            List<District> districts,
+            List<Village> villages,
+            List<DataCollector> dataCollectors,
+            List<RawReport> rawReports,
+            List<User> users)
         {
             _nyssContextInMemory.Database.EnsureDeleted();
 
