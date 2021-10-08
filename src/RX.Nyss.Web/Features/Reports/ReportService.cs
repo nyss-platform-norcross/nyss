@@ -467,7 +467,8 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(MapToArea(filter.Area))
                     .FilterByReportStatus(filter.ReportStatus)
-                    .FilterByReportType(filter.ReportType);
+                    .FilterByReportType(filter.ReportType)
+                    .FilterByTrainingMode(filter.DataCollectorStatus);
             }
 
             return _nyssContext.RawReports
@@ -481,7 +482,8 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
-                .FilterByReportType(filter.ReportType);
+                .FilterByReportType(filter.ReportType)
+                .FilterByTrainingMode(filter.DataCollectorStatus);
         }
 
         private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId, int dataCollectorId)

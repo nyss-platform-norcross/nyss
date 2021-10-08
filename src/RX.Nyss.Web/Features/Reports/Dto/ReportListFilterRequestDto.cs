@@ -7,15 +7,27 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public class ReportListFilterRequestDto
     {
         public static readonly string DateColumnName = "date";
+
         public ReportListDataCollectorType DataCollectorType { get; set; } = ReportListDataCollectorType.Human;
+
         public ReportErrorFilterType? ErrorType { get; set; }
+
         public AreaDto Area { get; set; }
+
         public int? HealthRiskId { get; set; }
+
         public bool FormatCorrect { get; set; }
+
         public ReportStatusFilterDto ReportStatus { get; set; }
+
         public ReportTypeFilterDto ReportType { get; set; }
+
+        public TrainingStatusDto DataCollectorStatus { get; set; }
+
         public string OrderBy { get; set; }
+
         public bool SortAscending { get; set; }
+
         public int UtcOffset { get; set; }
 
         public class Validator : AbstractValidator<ReportListFilterRequestDto>

@@ -10,6 +10,10 @@ import {
   FormControl,
   InputLabel,
   Select,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@material-ui/core";
 import { AreaFilter } from "./AreaFilter";
 import { strings, stringKeys } from "../../../strings";
@@ -85,6 +89,14 @@ export const ReportFilters = ({
       })
     );
 
+  const handleDataCollectorStatusChange = (event) =>
+    onChange(
+      updateValue({
+        ...value,
+        dataCollectorStatus: event.target.value,
+      })
+    );
+
   if (!value) {
     return null;
   }
@@ -93,6 +105,36 @@ export const ReportFilters = ({
     <Card>
       <CardContent>
         <Grid container spacing={2}>
+        <Grid item>
+            <FormControl>
+              <FormLabel component="legend">
+                {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
+              </FormLabel>
+              <RadioGroup
+                value={value.dataCollectorStatus}
+                onChange={handleDataCollectorStatusChange}
+                className={styles.radioGroup}
+              >
+                <FormControlLabel
+                  className={styles.radio}
+                  label={strings(
+                    stringKeys.dataCollector.constants.trainingStatus.Trained
+                  )}
+                  value={"Trained"}
+                  control={<Radio color="primary" />}
+                />
+                <FormControlLabel
+                  className={styles.radio}
+                  label={strings(
+                    stringKeys.dataCollector.constants.trainingStatus.InTraining
+                  )}
+                  value={"InTraining"}
+                  control={<Radio color="primary" />}
+                />
+              </RadioGroup>
+            </FormControl>
+          </Grid>          
+          
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
@@ -124,7 +166,7 @@ export const ReportFilters = ({
                 </MenuItem>
               </Select>
             </FormControl>
-          </Grid>
+          </Grid>            
 
           {showCorrectReportFilters && (
             <Fragment>
@@ -187,7 +229,6 @@ export const ReportFilters = ({
                   </Select>
                 </FormControl>
               </Grid>
-
               {!hideReportTypeFilter && (
                 <Grid item>
                   <ReportTypeFilter
