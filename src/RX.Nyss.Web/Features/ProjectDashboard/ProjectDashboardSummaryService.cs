@@ -45,6 +45,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
 
             return await _nyssContext.Projects
+                .AsNoTracking()
                 .Where(p => p.Id == filters.ProjectId.Value)
                 .Select(p => new
                 {

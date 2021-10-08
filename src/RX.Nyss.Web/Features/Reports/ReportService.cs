@@ -97,7 +97,9 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     Id = r.Id,
                     DataCollectorId = r.DataCollector.Id,
-                    DataCollectorType = r.Report.ReportType == ReportType.DataCollectionPoint ? DataCollectorType.CollectionPoint : DataCollectorType.Human,
+                    DataCollectorType = r.Report.ReportType == ReportType.DataCollectionPoint
+                        ? DataCollectorType.CollectionPoint
+                        : DataCollectorType.Human,
                     ReportType = r.Report.ReportType,
                     ReportStatus = r.Report.Status,
                     LocationId = r.DataCollector.DataCollectorLocations
@@ -214,7 +216,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
 
-            if(filter.DataCollectorType != ReportListDataCollectorType.UnknownSender)
+            if (filter.DataCollectorType != ReportListDataCollectorType.UnknownSender)
             {
                 AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, strings);
             }
@@ -327,6 +329,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters) =>
             _nyssContext.RawReports
+                .AsNoTracking()
                 .FilterByReportStatus(filters.ReportStatus)
                 .FromKnownDataCollector()
                 .FilterByArea(filters.Area)
@@ -449,7 +452,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId)
         {
-            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
+            if (filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
                     .Where(p => p.Id == projectId)
@@ -457,6 +460,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .SingleOrDefaultAsync();
 
                 return _nyssContext.RawReports
+                    .AsNoTracking()
                     .Include(r => r.Report)
                     .ThenInclude(r => r.ProjectHealthRisk)
                     .ThenInclude(r => r.HealthRisk)
@@ -472,6 +476,7 @@ namespace RX.Nyss.Web.Features.Reports
             }
 
             return _nyssContext.RawReports
+                .AsNoTracking()
                 .Include(r => r.Report)
                 .ThenInclude(r => r.ProjectHealthRisk)
                 .ThenInclude(r => r.HealthRisk)
