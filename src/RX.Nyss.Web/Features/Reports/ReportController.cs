@@ -93,7 +93,6 @@ namespace RX.Nyss.Web.Features.Reports
         /// Edits a report.
         /// </summary>
         /// <param name="reportId">An identifier of a report</param>
-        /// <param name="projectId">An identifier of a project</param>
         /// <param name="reportRequestDto">A report</param>
         [HttpPost("{reportId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
