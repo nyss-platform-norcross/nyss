@@ -33,11 +33,10 @@ class FieldBase extends PureComponent {
     this.setState({ value: value });
     this.props.field._customError = null;
     this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
+    this.props.field.touched = true;
   }
 
   handleBlur = () => {
-    this.props.field.touched = true;
-    this.props.field.update(this.props.field.value);
   }
 
   getElementType = (element) => {

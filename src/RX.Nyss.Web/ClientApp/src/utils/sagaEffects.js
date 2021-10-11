@@ -6,7 +6,7 @@ export const autoRestart = (generator) => {
             try {
                 yield call(generator, ...args);
             } catch (e) {
-                console.log(`Unhandled error in '${generator.name}'`, e);
+                console.error(`Unhandled error in '${generator.name}'`, e);
             }
         }
     };

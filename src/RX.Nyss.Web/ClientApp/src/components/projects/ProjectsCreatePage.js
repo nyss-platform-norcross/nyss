@@ -60,7 +60,7 @@ const ProjectsCreatePageComponent = (props) => {
     e.preventDefault();
 
     if (selectedHealthRisks.length === 0) {
-      return;
+      setHealthRisksFieldTouched(true);
     }
 
     if (!form.isValid()) {
