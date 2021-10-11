@@ -61,7 +61,6 @@ const ProjectsCreatePageComponent = (props) => {
 
     if (selectedHealthRisks.length === 0) {
       setHealthRisksFieldTouched(true);
-      return;
     }
 
     if (!form.isValid()) {
