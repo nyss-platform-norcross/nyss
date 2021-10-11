@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using RX.Nyss.Common.Services.StringsResources;
-using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -19,14 +17,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
     public interface IDataCollectorExportService
     {
         Task<byte[]> ExportAsCsv(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFiltersDto);
+
         Task<byte[]> ExportAsXls(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilter);
     }
 
     public class DataCollectorExportService : IDataCollectorExportService
     {
         private readonly INyssContext _nyssContext;
+
         private readonly IExcelExportService _excelExportService;
+
         private readonly IStringsResourcesService _stringsResourcesService;
+
         private readonly IAuthorizationService _authorizationService;
 
         public DataCollectorExportService(
@@ -49,11 +51,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .Single();
 
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+            var strings = await _stringsResourcesService.GetStrings(userApplicationLanguage);
 
-            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources, dataCollectorsFiltersDto);
+            var dataCollectors = await GetDataCollectorsExportData(projectId, strings, dataCollectorsFiltersDto);
 
-            return GetCsvData(dataCollectors, stringResources);
+            return GetCsvData(dataCollectors, strings);
         }
 
         public async Task<byte[]> ExportAsXls(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilter)
@@ -64,7 +66,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .Single();
 
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+            var stringResources = await _stringsResourcesService.GetStrings(userApplicationLanguage);
 
             var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources, dataCollectorsFilter);
 
@@ -72,26 +74,26 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return excelSheet.GetAsByteArray();
         }
 
-        private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, StringResourceValue> stringResources)
+        private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, StringsResourcesVault strings)
         {
             var columnLabels = new List<string>
             {
-                GetStringResource(stringResources, "dataCollectors.export.dataCollectorType"),
-                GetStringResource(stringResources, "dataCollectors.export.name"),
-                GetStringResource(stringResources, "dataCollectors.export.displayName"),
-                GetStringResource(stringResources, "dataCollectors.export.phoneNumber"),
-                GetStringResource(stringResources, "dataCollectors.export.additionalPhoneNumber"),
-                GetStringResource(stringResources, "dataCollectors.export.sex"),
-                GetStringResource(stringResources, "dataCollectors.export.birthGroupDecade"),
-                GetStringResource(stringResources, "dataCollectors.export.region"),
-                GetStringResource(stringResources, "dataCollectors.export.district"),
-                GetStringResource(stringResources, "dataCollectors.export.village"),
-                GetStringResource(stringResources, "dataCollectors.export.zone"),
-                GetStringResource(stringResources, "dataCollectors.export.latitude"),
-                GetStringResource(stringResources, "dataCollectors.export.longitude"),
-                GetStringResource(stringResources, "dataCollectors.export.supervisor"),
-                GetStringResource(stringResources, "dataCollectors.export.trainingStatus"),
-                GetStringResource(stringResources, "dataCollectors.filters.deployedMode")
+                strings["dataCollectors.export.dataCollectorType"],
+                strings["dataCollectors.export.name"],
+                strings["dataCollectors.export.displayName"],
+                strings["dataCollectors.export.phoneNumber"],
+                strings["dataCollectors.export.additionalPhoneNumber"],
+                strings["dataCollectors.export.sex"],
+                strings["dataCollectors.export.birthGroupDecade"],
+                strings["dataCollectors.export.region"],
+                strings["dataCollectors.export.district"],
+                strings["dataCollectors.export.village"],
+                strings["dataCollectors.export.zone"],
+                strings["dataCollectors.export.latitude"],
+                strings["dataCollectors.export.longitude"],
+                strings["dataCollectors.export.supervisor"],
+                strings["dataCollectors.export.trainingStatus"],
+                strings["dataCollectors.filters.deployedMode"],
             };
 
             var dataCollectorsData = dataCollectors
@@ -118,30 +120,32 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
         }
 
-        private ExcelPackage GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, StringResourceValue> stringResources)
+        private ExcelPackage GetExcelData(
+            List<ExportDataCollectorsResponseDto> dataCollectors,
+            StringsResourcesVault strings)
         {
             var columnLabels = new List<string>
             {
-                GetStringResource(stringResources, "dataCollectors.export.dataCollectorType"),
-                GetStringResource(stringResources, "dataCollectors.export.name"),
-                GetStringResource(stringResources, "dataCollectors.export.displayName"),
-                GetStringResource(stringResources, "dataCollectors.export.phoneNumber"),
-                GetStringResource(stringResources, "dataCollectors.export.additionalPhoneNumber"),
-                GetStringResource(stringResources, "dataCollectors.export.sex"),
-                GetStringResource(stringResources, "dataCollectors.export.birthGroupDecade"),
-                GetStringResource(stringResources, "dataCollectors.export.region"),
-                GetStringResource(stringResources, "dataCollectors.export.district"),
-                GetStringResource(stringResources, "dataCollectors.export.village"),
-                GetStringResource(stringResources, "dataCollectors.export.zone"),
-                GetStringResource(stringResources, "dataCollectors.export.latitude"),
-                GetStringResource(stringResources, "dataCollectors.export.longitude"),
-                GetStringResource(stringResources, "dataCollectors.export.supervisor"),
-                GetStringResource(stringResources, "dataCollectors.export.trainingStatus"),
-                GetStringResource(stringResources, "dataCollectors.filters.deployedMode")
+                strings["dataCollectors.export.dataCollectorType"],
+                strings["dataCollectors.export.name"],
+                strings["dataCollectors.export.displayName"],
+                strings["dataCollectors.export.phoneNumber"],
+                strings["dataCollectors.export.additionalPhoneNumber"],
+                strings["dataCollectors.export.sex"],
+                strings["dataCollectors.export.birthGroupDecade"],
+                strings["dataCollectors.export.region"],
+                strings["dataCollectors.export.district"],
+                strings["dataCollectors.export.village"],
+                strings["dataCollectors.export.zone"],
+                strings["dataCollectors.export.latitude"],
+                strings["dataCollectors.export.longitude"],
+                strings["dataCollectors.export.supervisor"],
+                strings["dataCollectors.export.trainingStatus"],
+                strings["dataCollectors.filters.deployedMode"],
             };
 
             var package = new ExcelPackage();
-            var title = GetStringResource(stringResources, "dataCollectors.export.title");
+            var title = strings["dataCollectors.export.title"];
 
             package.Workbook.Properties.Title = title;
             var worksheet = package.Workbook.Worksheets.Add(title);
@@ -180,7 +184,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return package;
         }
 
-        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, StringResourceValue> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter)
+        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(
+            int projectId,
+            StringsResourcesVault strings,
+            DataCollectorsFiltersRequestDto dataCollectorsFilter)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
             var nationalSocietyId = await _nyssContext.Projects
@@ -203,8 +210,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Where(dc => dc.DeletedAt == null)
                 .SelectMany(dc => dc.DataCollectorLocations.Select(dcl => new ExportDataCollectorsResponseDto
                 {
-                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human") :
-                        dc.DataCollectorType == DataCollectorType.CollectionPoint ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint") : string.Empty,
+                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? strings["dataCollectors.dataCollectorType.human"] :
+                        dc.DataCollectorType == DataCollectorType.CollectionPoint ? strings["dataCollectors.dataCollectorType.collectionPoint"] : string.Empty,
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
                     PhoneNumber = dc.PhoneNumber,
@@ -219,20 +226,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Longitude = dcl.Location.X,
                     Supervisor = dc.Supervisor.Name,
                     TrainingStatus = dc.IsInTrainingMode
-                        ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
-                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining"),
+                        ? strings["dataCollectors.export.isInTraining"]
+                        : strings["dataCollectors.export.isNotInTraining"],
                     Deployed = dc.Deployed
-                        ? GetStringResource(stringResources, "dataCollectors.deployedMode.deployed")
-                        : GetStringResource(stringResources, "dataCollectors.deployedMode.notDeployed")
+                        ? strings["dataCollectors.deployedMode.deployed"]
+                        : strings["dataCollectors.deployedMode.notDeployed"]
                 }))
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
         }
-
-        private string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
-            stringResources.Keys.Contains(key)
-                ? stringResources[key].Value
-                : key;
     }
 }

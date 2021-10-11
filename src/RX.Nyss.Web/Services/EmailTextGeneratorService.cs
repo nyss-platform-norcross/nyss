@@ -11,9 +11,13 @@ namespace RX.Nyss.Web.Services
     public interface IEmailTextGeneratorService
     {
         Task<(string subject, string body)> GenerateResetPasswordEmail(string resetUrl, string name, string languageCode);
+
         Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode);
+
         Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode);
+
         Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode);
+
         Task<(string subject, string body)> GenerateAgreementDocumentEmail(string languageCode);
     }
 
@@ -50,8 +54,8 @@ namespace RX.Nyss.Web.Services
 
         public async Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode)
         {
-            var stringTranslations = await _stringsResourcesService.GetStringsResources(languageCode);
-            var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
+            var strings = await _stringsResourcesService.GetStrings(languageCode);
+            var roleName = strings.Get($"roles.{role.ToString().ToCamelCase()}");
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
             var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
@@ -67,8 +71,8 @@ namespace RX.Nyss.Web.Services
 
         public async Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode)
         {
-            var stringTranslations = await _stringsResourcesService.GetStringsResources(languageCode);
-            var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
+            var strings = await _stringsResourcesService.GetStrings(languageCode);
+            var roleName = strings.Get($"roles.{role.ToString().ToCamelCase()}");
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
             var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
@@ -100,16 +104,6 @@ namespace RX.Nyss.Web.Services
             }
 
             return value;
-        }
-
-        private static string GetTranslation(string key, IDictionary<string, StringResourceValue> translations)
-        {
-            if (!translations.TryGetValue(key, out var value))
-            {
-                throw new Exception($"Could not find translations for {key}");
-            }
-
-            return value.Value;
         }
     }
 }

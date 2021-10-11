@@ -13,17 +13,15 @@ namespace RX.Nyss.Web.Features.Reports
     public class ReportController : BaseController
     {
         private readonly IReportService _reportService;
+
         private readonly IReportSenderService _reportSenderService;
-        private readonly IReportExportService _reportExportService;
 
         public ReportController(
             IReportService reportService,
-            IReportSenderService reportSenderService,
-            IReportExportService reportExportService)
+            IReportSenderService reportSenderService)
         {
             _reportService = reportService;
             _reportSenderService = reportSenderService;
-            _reportExportService = reportExportService;
         }
 
         /// <summary>
@@ -60,11 +58,8 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="filterRequest">The filters object</param>
         [HttpPost("exportToCsv")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
-        {
-            var excelSheetBytes = await _reportExportService.Export(projectId, filterRequest);
-            return File(excelSheetBytes, "text/csv");
-        }
+        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] ReportListFilterRequestDto filterRequest) =>
+            await Sender.Send(new ExportReportCsvQuery(projectId, filterRequest)).AsFileResult();
 
         /// <summary>
         /// Export the list of reports in a project to a xlsx file.
@@ -73,11 +68,8 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="filterRequest">The filters object</param>
         [HttpPost("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
-        {
-            var excelSheetBytes = await _reportExportService.Export(projectId, filterRequest, useExcelFormat: true);
-            return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        }
+        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest) =>
+            await Sender.Send(new ExportReportExcelQuery(projectId, filterRequest)).AsFileResult();
 
         /// <summary>
         /// Mark the selected report as error.

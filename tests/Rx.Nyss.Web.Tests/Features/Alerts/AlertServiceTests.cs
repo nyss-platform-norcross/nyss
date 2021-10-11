@@ -656,7 +656,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var users = TestData.GetUsers();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
-            var stringResources = new Dictionary<string, StringResourceValue>();
             var excelDoc = new ExcelPackage();
             excelDoc.Workbook.Worksheets.Add("title");
             _nyssContext.Users.Returns(usersMockDbSet);
@@ -665,8 +664,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _nyssContext.Alerts.Returns(alertsMockDbSet);
             _authorizationService.GetCurrentUser().Returns(users[0]);
             _authorizationService.GetCurrentUserName().Returns(users[0].EmailAddress);
-            _stringsResourcesService.GetStringsResources("").Returns(Success<IDictionary<string, StringResourceValue>>(stringResources));
-            _excelExportService.ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>()).Returns(excelDoc);
+            _stringsResourcesService.GetStrings("").Returns(new StringsResourcesVault(new Dictionary<string, StringResourceValue>()));
+            _excelExportService.ToExcel(
+                Arg.Any<IReadOnlyList<AlertListExportResponseDto>>(),
+                Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<string>()).Returns(excelDoc);
 
             // Act
             await _alertService.Export(1, new AlertListFilterRequestDto
@@ -678,7 +680,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             });
 
             // Assert
-            _excelExportService.Received(1).ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>());
+            _excelExportService.Received(1).ToExcel(
+                Arg.Any<IReadOnlyList<AlertListExportResponseDto>>(),
+                Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<string>());
         }
 
         private AlertStatus MapToAlertStatus(AlertStatusFilter filter) =>

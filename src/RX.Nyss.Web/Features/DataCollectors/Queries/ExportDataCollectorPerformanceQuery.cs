@@ -10,7 +10,6 @@ using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
-using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
@@ -72,7 +71,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     .Select(u => u.ApplicationLanguage.LanguageCode)
                     .Single();
 
-                var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+                var strings = await _stringsResourcesService.GetStrings(userApplicationLanguage);
 
                 var dataCollectors = (await _dataCollectorService.GetDataCollectorsForCurrentUserInProject(projectId))
                     .FilterOnlyNotDeleted()
@@ -94,7 +93,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
 
                 var dataCollectorPerformance = GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange);
 
-                var excelSheet = GetExcelData(stringResources, dataCollectorPerformance, epiDateRange);
+                var excelSheet = GetExcelData(strings, dataCollectorPerformance, epiDateRange);
 
                 return new FileResultDto(
                     excelSheet.GetAsByteArray(),
@@ -150,12 +149,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                         };
                     }).ToList();
 
-            private ExcelPackage GetExcelData(IDictionary<string, StringResourceValue> stringResources, List<DataCollectorPerformance> dataCollectorPerformances, List<EpiDate> epiDateRange)
+            private ExcelPackage GetExcelData(StringsResourcesVault strings, List<DataCollectorPerformance> dataCollectorPerformances, List<EpiDate> epiDateRange)
             {
-                var columnLabels = GetColumnLabels(stringResources, epiDateRange);
-                var package = new ExcelPackage();
-                var title = GetStringResource(stringResources, "dataCollectors.performanceExport.title");
+                var columnLabels = GetColumnLabels(strings, epiDateRange);
+                var title = strings["dataCollectors.performanceExport.title"];
 
+                var package = new ExcelPackage();
                 package.Workbook.Properties.Title = title;
                 var worksheet = package.Workbook.Worksheets.Add(title);
 
@@ -203,24 +202,20 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     ? grouping.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
                     : ReportingStatus.NotReporting;
 
-            private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources, IEnumerable<EpiDate> epiDateRange)
+            private List<string> GetColumnLabels(StringsResourcesVault strings, IEnumerable<EpiDate> epiDateRange)
             {
-                var epiWeeks = epiDateRange.Select(epiDate => $"{epiDate.EpiYear}/{GetStringResource(stringResources, "dataCollectors.performanceExport.epiWeekIdentifier")} {epiDate.EpiWeek}");
+                var epiWeeks = epiDateRange.Select(epiDate => $"{epiDate.EpiYear}/{strings["dataCollectors.performanceExport.epiWeekIdentifier"]} {epiDate.EpiWeek}");
                 var columnbLabels = new List<string>
                 {
-                    GetStringResource(stringResources, "dataCollectors.performanceList.name"),
-                    GetStringResource(stringResources, "dataCollectors.performanceList.villageName"),
-                    GetStringResource(stringResources, "dataCollectors.performanceList.daysSinceLastReport")
+                    strings["dataCollectors.performanceList.name"],
+                    strings["dataCollectors.performanceList.villageName"],
+                    strings["dataCollectors.performanceList.daysSinceLastReport"],
                 };
 
                 columnbLabels.AddRange(epiWeeks);
+
                 return columnbLabels;
             }
-
-            private string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
-                stringResources.Keys.Contains(key)
-                    ? stringResources[key].Value
-                    : key;
 
             private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated)
             {

@@ -74,7 +74,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _authorizationService = Substitute.For<IAuthorizationService>();
 
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
-            _stringsResourcesService.GetStringsResources("en").Returns(Task.FromResult(new Result<IDictionary<string, StringResourceValue>>(new Dictionary<string, StringResourceValue>(), true)));
+            _stringsResourcesService.GetStrings("en").Returns(new StringsResourcesVault(new Dictionary<string, StringResourceValue>()));
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
