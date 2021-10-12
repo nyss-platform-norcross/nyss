@@ -8,6 +8,7 @@ using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Users;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.Reports
@@ -17,22 +18,14 @@ namespace RX.Nyss.Web.Features.Reports
     {
         private readonly IReportExportService _reportExportService;
 
-        private readonly IStringsResourcesService _stringsResourcesService;
-
-        private readonly IAuthorizationService _authorizationService;
-
-        private readonly IUserService _userService;
+        private readonly IStringsService _stringsService;
 
         protected ExportReportBaseHandler(
             IReportExportService reportExportService,
-            IStringsResourcesService stringsResourcesService,
-            IAuthorizationService authorizationService,
-            IUserService userService)
+            IStringsService stringsService)
         {
             _reportExportService = reportExportService;
-            _stringsResourcesService = stringsResourcesService;
-            _authorizationService = authorizationService;
-            _userService = userService;
+            _stringsService = stringsService;
         }
 
         public abstract Task<FileResultDto> Handle(TRequest request, CancellationToken cancellationToken);
@@ -40,12 +33,7 @@ namespace RX.Nyss.Web.Features.Reports
         protected async Task<IReadOnlyList<ExportReportListResponseDto>> FetchData(TRequest request) =>
             (await _reportExportService.FetchData(request.ProjectId, request.Filter)).Cast<ExportReportListResponseDto>().ToArray();
 
-        protected async Task<StringsResourcesVault> FetchStrings()
-        {
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
-
-            return await _stringsResourcesService.GetStrings(userApplicationLanguageCode);
-        }
+        protected async Task<StringsResourcesVault> FetchStrings() => await _stringsService.GetForCurrentUser();
 
         protected static IReadOnlyList<string> GetIncorrectReportsColumnLabels(StringsResourcesVault strings) =>
             new[]

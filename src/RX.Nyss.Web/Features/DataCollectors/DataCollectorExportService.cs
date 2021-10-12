@@ -6,7 +6,6 @@ using OfficeOpenXml;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Services;
@@ -27,31 +26,25 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         private readonly IExcelExportService _excelExportService;
 
-        private readonly IStringsResourcesService _stringsResourcesService;
-
         private readonly IAuthorizationService _authorizationService;
+
+        private readonly IStringsService _stringsService;
 
         public DataCollectorExportService(
             INyssContext nyssContext,
             IExcelExportService excelExportService,
-            IStringsResourcesService stringsResourcesService,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
             _excelExportService = excelExportService;
-            _stringsResourcesService = stringsResourcesService;
             _authorizationService = authorizationService;
+            _stringsService = stringsService;
         }
 
         public async Task<byte[]> ExportAsCsv(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFiltersDto)
         {
-            var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == userName)
-                .Select(u => u.ApplicationLanguage.LanguageCode)
-                .Single();
-
-            var strings = await _stringsResourcesService.GetStrings(userApplicationLanguage);
+            var strings = await _stringsService.GetForCurrentUser();
 
             var dataCollectors = await GetDataCollectorsExportData(projectId, strings, dataCollectorsFiltersDto);
 
@@ -60,17 +53,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<byte[]> ExportAsXls(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilter)
         {
-            var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == userName)
-                .Select(u => u.ApplicationLanguage.LanguageCode)
-                .Single();
+            var strings = await _stringsService.GetForCurrentUser();
 
-            var stringResources = await _stringsResourcesService.GetStrings(userApplicationLanguage);
+            var dataCollectors = await GetDataCollectorsExportData(projectId, strings, dataCollectorsFilter);
 
-            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources, dataCollectorsFilter);
-
-            var excelSheet = GetExcelData(dataCollectors, stringResources);
+            var excelSheet = GetExcelData(dataCollectors, strings);
             return excelSheet.GetAsByteArray();
         }
 

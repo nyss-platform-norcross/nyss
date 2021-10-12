@@ -7,9 +7,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.Reports
 {
@@ -29,16 +27,8 @@ namespace RX.Nyss.Web.Features.Reports
         {
             private readonly IExcelExportService _excelExportService;
 
-            public Handler(
-                IReportExportService reportExportService,
-                IStringsResourcesService stringsResourcesService,
-                IAuthorizationService authorizationService,
-                IUserService userService,
-                IExcelExportService excelExportService)
-                : base(reportExportService,
-                    stringsResourcesService,
-                    authorizationService,
-                    userService)
+            public Handler(IReportExportService reportExportService, IStringsService stringsService, IExcelExportService excelExportService)
+                : base(reportExportService, stringsService)
             {
                 _excelExportService = excelExportService;
             }

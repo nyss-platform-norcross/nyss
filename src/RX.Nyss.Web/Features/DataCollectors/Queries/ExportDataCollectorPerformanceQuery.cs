@@ -12,13 +12,12 @@ using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.DataContracts;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
-using RX.Nyss.Web.Services.Authorization;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Queries
 {
@@ -36,28 +35,24 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
 
         public class Handler : IRequestHandler<ExportDataCollectorPerformanceQuery, FileResultDto>
         {
-            private readonly INyssContext _nyssContext;
-
-            private readonly IStringsResourcesService _stringsResourcesService;
-
             private readonly IDataCollectorService _dataCollectorService;
 
             private readonly IDateTimeProvider _dateTimeProvider;
 
-            private readonly IAuthorizationService _authorizationService;
+            private readonly IStringsService _stringsService;
+
+            private readonly NyssContext _nyssContext;
 
             public Handler(
-                INyssContext nyssContext,
-                IStringsResourcesService stringsResourcesService,
                 IDataCollectorService dataCollectorService,
                 IDateTimeProvider dateTimeProvider,
-                IAuthorizationService authorizationService)
+                IStringsService stringsService,
+                NyssContext nyssContext)
             {
-                _nyssContext = nyssContext;
-                _stringsResourcesService = stringsResourcesService;
                 _dataCollectorService = dataCollectorService;
                 _dateTimeProvider = dateTimeProvider;
-                _authorizationService = authorizationService;
+                _stringsService = stringsService;
+                _nyssContext = nyssContext;
             }
 
             public async Task<FileResultDto> Handle(ExportDataCollectorPerformanceQuery request, CancellationToken cancellationToken)
@@ -65,13 +60,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var filters = request.Filter;
                 var projectId = request.ProjectId;
 
-                var userName = _authorizationService.GetCurrentUserName();
-                var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
-                    .Where(u => u.EmailAddress == userName)
-                    .Select(u => u.ApplicationLanguage.LanguageCode)
-                    .Single();
-
-                var strings = await _stringsResourcesService.GetStrings(userApplicationLanguage);
+                var strings = await _stringsService.GetForCurrentUser();
 
                 var dataCollectors = (await _dataCollectorService.GetDataCollectorsForCurrentUserInProject(projectId))
                     .FilterOnlyNotDeleted()

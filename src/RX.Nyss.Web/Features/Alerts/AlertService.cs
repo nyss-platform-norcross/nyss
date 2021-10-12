@@ -18,7 +18,6 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -43,24 +42,38 @@ namespace RX.Nyss.Web.Features.Alerts
     public class AlertService : IAlertService
     {
         private const string SexFemale = "Female";
+
         private const string SexMale = "Male";
+
         private const string AgeAtLeastFive = "AtLeastFive";
+
         private const string AgeBelowFive = "BelowFive";
+
         private const string Unspecified = "Unspecified";
 
         private readonly INyssContext _nyssContext;
+
         private readonly IEmailPublisherService _emailPublisherService;
+
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+
         private readonly ISmsPublisherService _smsPublisherService;
+
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
+
         private readonly INyssWebConfig _config;
+
         private readonly ILoggerAdapter _loggerAdapter;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IAuthorizationService _authorizationService;
+
         private readonly IProjectService _projectService;
+
         private readonly IExcelExportService _excelExportService;
-        private readonly IStringsResourcesService _stringsResourcesService;
-        private readonly IUserService _userService;
+
+        private readonly IStringsService _stringsService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -74,8 +87,7 @@ namespace RX.Nyss.Web.Features.Alerts
             ISmsPublisherService smsPublisherService,
             IProjectService projectService,
             IExcelExportService excelExportService,
-            IStringsResourcesService stringsResourcesService,
-            IUserService userService)
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -88,8 +100,7 @@ namespace RX.Nyss.Web.Features.Alerts
             _config = config;
             _projectService = projectService;
             _excelExportService = excelExportService;
-            _stringsResourcesService = stringsResourcesService;
-            _userService = userService;
+            _stringsService = stringsService;
         }
 
         public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId)
@@ -452,8 +463,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(uns => uns.OrganizationId)
                 .SingleOrDefaultAsync();
 
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
-            var strings = await _stringsResourcesService.GetStrings(userApplicationLanguageCode);
+            var strings = await _stringsService.GetForCurrentUser();
 
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)

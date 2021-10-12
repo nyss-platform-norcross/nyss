@@ -18,6 +18,7 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Users;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
@@ -60,29 +61,30 @@ namespace RX.Nyss.Web.Features.Reports
 
         private readonly IAuthorizationService _authorizationService;
 
-        private readonly IStringsResourcesService _stringsResourcesService;
-
         private readonly IDateTimeProvider _dateTimeProvider;
 
         private readonly IAlertReportService _alertReportService;
 
-        public ReportService(INyssContext nyssContext,
+        private readonly IStringsService _stringsService;
+
+        public ReportService(
+            INyssContext nyssContext,
             IUserService userService,
             IProjectService projectService,
             INyssWebConfig config,
             IAuthorizationService authorizationService,
-            IStringsResourcesService stringsResourcesService,
             IDateTimeProvider dateTimeProvider,
-            IAlertReportService alertReportService)
+            IAlertReportService alertReportService,
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _projectService = projectService;
             _config = config;
             _authorizationService = authorizationService;
-            _stringsResourcesService = stringsResourcesService;
             _dateTimeProvider = dateTimeProvider;
             _alertReportService = alertReportService;
+            _stringsService = stringsService;
         }
 
         public async Task<Result<ReportResponseDto>> Get(int reportId)
@@ -130,6 +132,7 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
             var currentRole = (await _authorizationService.GetCurrentUser()).Role;
+
             var isSupervisor = currentRole == Role.Supervisor;
             var isHeadSupervisor = currentRole == Role.HeadSupervisor;
             var currentUserId = await _nyssContext.Users.FilterAvailable()
@@ -138,7 +141,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .SingleAsync();
 
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
-            var strings = await _stringsResourcesService.GetStrings(userApplicationLanguageCode);
+            var strings = await _stringsService.GetForCurrentUser();
 
             var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
 

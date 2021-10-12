@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OfficeOpenXml;
@@ -8,8 +7,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
-using RX.Nyss.Web.Features.Users;
-using RX.Nyss.Web.Services.Authorization;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Reports
 {
@@ -27,15 +25,8 @@ namespace RX.Nyss.Web.Features.Reports
 
         public class Handler : ExportReportBaseHandler<ExportReportExcelQuery>
         {
-            public Handler(
-                IReportExportService reportExportService,
-                IStringsResourcesService stringsResourcesService,
-                IAuthorizationService authorizationService,
-                IUserService userService)
-                : base(reportExportService,
-                    stringsResourcesService,
-                    authorizationService,
-                    userService)
+            public Handler(IReportExportService reportExportService, IStringsService stringsService)
+                : base(reportExportService, stringsService)
             {
             }
 

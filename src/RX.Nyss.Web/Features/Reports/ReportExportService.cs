@@ -11,6 +11,7 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Users;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.Extensions;
 
@@ -25,31 +26,30 @@ namespace RX.Nyss.Web.Features.Reports
     {
         private readonly INyssContext _nyssContext;
 
-        private readonly IStringsResourcesService _stringsResourcesService;
-
         private readonly IAuthorizationService _authorizationService;
 
         private readonly IUserService _userService;
 
+        private readonly IStringsService _stringsService;
+
         public ReportExportService(
             INyssContext nyssContext,
-            IStringsResourcesService stringsResourcesService,
             IAuthorizationService authorizationService,
-            IUserService userService)
+            IUserService userService,
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
-            _stringsResourcesService = stringsResourcesService;
             _authorizationService = authorizationService;
             _userService = userService;
+            _stringsService = stringsService;
         }
 
         public async Task<IReadOnlyCollection<IReportListResponseDto>> FetchData(int projectId, ReportListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
-            var strings = await _stringsResourcesService.GetStrings(userApplicationLanguageCode);
-            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
-
+            var strings = await _stringsService.GetForCurrentUser();
             var currentUser = await _authorizationService.GetCurrentUser();
+            var currentRole = currentUser.Role;
 
             var currentUserOrganization = await _nyssContext
                 .Projects
