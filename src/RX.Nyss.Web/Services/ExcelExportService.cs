@@ -137,7 +137,7 @@ namespace RX.Nyss.Web.Services
 
         private static string EscapeCharacters(object data)
         {
-            var value = data.ToString();
+            var value = data?.ToString();
 
             if (string.IsNullOrWhiteSpace(value))
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using OfficeOpenXml;
-using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.Style;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
@@ -165,14 +166,23 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     {
                         var weekIndex = epiDateRange.IndexOf(new EpiDate(performanceInWeek.EpiWeek, performanceInWeek.EpiYear)) + 4;
                         worksheet.Cells[index, weekIndex].Value = (int?)performanceInWeek.ReportingStatus;
+
+                        if (performanceInWeek.ReportingStatus.HasValue)
+                        {
+                            worksheet.Cells[index, weekIndex].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            worksheet.Cells[index, weekIndex].Style.Fill.BackgroundColor.SetColor(performanceInWeek.ReportingStatus switch
+                            {
+                                // Colors are corresponding to those from front-end
+                                ReportingStatus.ReportingCorrectly => Color.FromArgb(1, 21, 171, 21),
+                                ReportingStatus.NotReporting => Color.FromArgb(1, 241, 183, 19),
+                                ReportingStatus.ReportingWithErrors => Color.FromArgb(1, 210, 50, 50),
+                                _ => Color.White,
+                            });
+                        }
                     }
                 }
 
                 var dimension = worksheet.Dimension;
-                var rangeAddress = $"D2:{dimension.End.Address}";
-                var excelAddress = new ExcelAddress(rangeAddress);
-                var formatting = worksheet.ConditionalFormatting.AddThreeIconSet(excelAddress, eExcelconditionalFormatting3IconsSetType.Symbols);
-                formatting.Reverse = true;
 
                 worksheet.Column(1).Width = 20;
                 worksheet.Column(2).Width = 20;
