@@ -20,7 +20,9 @@ export const generatePdfDocument = async (title, containerElement, reportFileNam
   currentPositionY += 10;
 
   for (const element of elements) {
-    const imageData = await domtoimage.toPng(element)
+    const imageData = await domtoimage.toJpeg(element, {
+      bgcolor: "white",
+    });
     const canvasHeightInMm = element.scrollHeight * contentWidth / element.scrollWidth;
 
     if (currentPositionY + canvasHeightInMm > (pageHeight - margin)) {
@@ -28,7 +30,7 @@ export const generatePdfDocument = async (title, containerElement, reportFileNam
       currentPositionY = margin;
     }
 
-    pdf.addImage(imageData, 'PNG', margin, currentPositionY, contentWidth, canvasHeightInMm);
+    pdf.addImage(imageData, 'JPG', margin, currentPositionY, contentWidth, canvasHeightInMm);
 
     currentPositionY += canvasHeightInMm + spacing;
   }
