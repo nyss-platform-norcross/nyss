@@ -278,6 +278,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
                   filter={value.reportStatus}
                   correctReports
                   showDismissedFilter
+                  doNotWrapp
                   onChange={handleReportStatusChange}
                 />
               </Grid>
