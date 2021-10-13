@@ -339,7 +339,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
                 .FilterByDate(filters.StartDate, filters.EndDate)
                 .FilterByHealthRisk(filters.HealthRiskId)
-                .FilterByTrainingMode(filters.DataCollectorStatus);
+                .FilterByTrainingMode(filters.TrainingStatus);
 
 
         public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
@@ -471,8 +471,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(MapToArea(filter.Area))
                     .FilterByReportStatus(filter.ReportStatus)
-                    .FilterByReportType(filter.ReportType)
-                    .FilterByTrainingMode(filter.DataCollectorStatus);
+                    .FilterByTrainingMode(filter.TrainingStatus);
             }
 
             return _nyssContext.RawReports
@@ -487,8 +486,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
-                .FilterByReportType(filter.ReportType)
-                .FilterByTrainingMode(filter.DataCollectorStatus);
+                .FilterByTrainingMode(filter.TrainingStatus);
         }
 
         private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId, int dataCollectorId)

@@ -37,6 +37,7 @@ const NationalSocietyCorrectReportsListPageComponent = (props) => {
           onChange={handleFiltersChange}
           filters={props.filters}
           showCorrectReportFilters={true}
+          hideTrainingStatusFilter
         />
       </div>
 

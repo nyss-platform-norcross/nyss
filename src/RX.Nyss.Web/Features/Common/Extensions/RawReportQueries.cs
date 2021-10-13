@@ -108,21 +108,14 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             filterDto != null
                 ? rawReports.Where(r => (filterDto.Kept && r.Report != null && r.Report.Status == ReportStatus.Accepted)
                     || (filterDto.Dismissed && r.Report != null && r.Report.Status == ReportStatus.Rejected)
-                    || (filterDto.NotCrossChecked && r.Report != null && ((r.Report.Status == ReportStatus.New && !r.IsTraining.Value) || r.Report.Status == ReportStatus.Pending || r.Report.Status == ReportStatus.Closed)))
-                : rawReports;
-
-        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> rawReports, ReportTypeFilterDto filterDto) =>
-            filterDto != null
-                ? rawReports.Where(r => (filterDto.Real && (!r.IsTraining.HasValue || !r.IsTraining.Value))
-                    || (filterDto.Corrected && r.Report != null && r.Report.CorrectedAt.HasValue)
-                    || (filterDto.Training && r.IsTraining.HasValue && r.IsTraining.Value))
+                    || (filterDto.NotCrossChecked && r.Report != null && (r.Report.Status == ReportStatus.New || r.Report.Status == ReportStatus.Pending || r.Report.Status == ReportStatus.Closed)))
                 : rawReports;
 
         public static IQueryable<RawReport> FilterByTrainingMode(this IQueryable<RawReport> rawReports, TrainingStatusDto? trainingStatus) =>
             trainingStatus switch
             {
-                TrainingStatusDto.InTraining => rawReports.Where(r => r.DataCollector.IsInTrainingMode),
-                TrainingStatusDto.Trained => rawReports.Where(r => !r.DataCollector.IsInTrainingMode),
+                TrainingStatusDto.InTraining => rawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value),
+                TrainingStatusDto.Trained => rawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value),
                 _ => rawReports
             };
     }

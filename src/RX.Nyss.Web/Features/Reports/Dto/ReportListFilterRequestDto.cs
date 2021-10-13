@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 
         public ReportTypeFilterDto ReportType { get; set; }
 
-        public TrainingStatusDto DataCollectorStatus { get; set; }
+        public TrainingStatusDto TrainingStatus { get; set; }
 
         public string OrderBy { get; set; }
 

@@ -99,8 +99,8 @@ export const ProjectsDashboardFilters = ({
       })
     );
 
-  const handleDataCollectorStatusChange = (event) =>
-    onChange(updateValue({ dataCollectorStatus: event.target.value }));
+  const handleTrainingStatusChange = (event) =>
+    onChange(updateValue({ trainingStatus: event.target.value }));
 
   const collectionsTypes = {
     all: strings(stringKeys.project.dashboard.filters.allReportsType),
@@ -268,7 +268,7 @@ export const ProjectsDashboardFilters = ({
               )}
             {!isFilterExpanded &&
               !userRoles.some((r) => r === DataConsumer) &&
-              value.dataCollectorStatus !== "Trained" && (
+              value.trainingStatus !== "Trained" && (
                 <Grid item>
                   <Chip
                     label={strings(stringKeys.dataCollector.constants.trainingStatus.InTraining)}
@@ -276,7 +276,7 @@ export const ProjectsDashboardFilters = ({
                       onChange(
                         updateValue({
                           ...value,
-                          dataCollectorStatus: "Trained"
+                          trainingStatus: "Trained"
                         })
                       )
                     }
@@ -447,8 +447,8 @@ export const ProjectsDashboardFilters = ({
                   {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
                 </FormLabel>
                 <RadioGroup
-                  value={value.dataCollectorStatus}
-                  onChange={handleDataCollectorStatusChange}
+                  value={value.trainingStatus}
+                  onChange={handleTrainingStatusChange}
                   className={styles.radioGroup}
                 >
                   <FormControlLabel

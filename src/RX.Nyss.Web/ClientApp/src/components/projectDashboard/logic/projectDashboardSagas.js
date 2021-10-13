@@ -42,7 +42,7 @@ function* openProjectDashboard({ projectId }) {
           notCrossChecked: true,
         },
         utcOffset: utcOffset,
-        dataCollectorStatus: 'Trained',
+        trainingStatus: 'Trained',
       };
 
     yield call(getProjectDashboardData, { projectId, filters })

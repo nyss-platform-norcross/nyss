@@ -177,7 +177,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,
                 UtcOffset = filtersDto.UtcOffset,
-                DataCollectorStatus = filtersDto.DataCollectorStatus,
+                TrainingStatus = filtersDto.TrainingStatus,
             };
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.DataCollectorTypeFilterDto dataCollectorTypeFilter) =>

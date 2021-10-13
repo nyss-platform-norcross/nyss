@@ -171,7 +171,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(ReportService.MapToArea(filter.Area))
                     .FilterByReportStatus(filter.ReportStatus)
-                    .FilterByReportType(filter.ReportType);
+                    .FilterByTrainingMode(filter.TrainingStatus);
             }
 
             return _nyssContext.RawReports
@@ -185,7 +185,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
-                .FilterByReportType(filter.ReportType);
+                .FilterByTrainingMode(filter.TrainingStatus);
         }
     }
 }

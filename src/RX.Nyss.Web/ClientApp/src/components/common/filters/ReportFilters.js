@@ -23,7 +23,6 @@ import {
 } from "./logic/reportFilterConstsants";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "./ReportStatusFilter";
-import { ReportTypeFilter } from "./ReportTypeFilter";
 
 export const ReportFilters = ({
   filters,
@@ -31,7 +30,7 @@ export const ReportFilters = ({
   healthRisks,
   onChange,
   showCorrectReportFilters,
-  hideReportTypeFilter,
+  hideTrainingStatusFilter,
 }) => {
   const [value, setValue] = useState(filters);
 
@@ -79,21 +78,11 @@ export const ReportFilters = ({
       })
     );
 
-  const handleReportTypeChange = (event) =>
-    onChange(
-      updateValue({
-        reportType: {
-          ...value.reportType,
-          [event.target.name]: event.target.checked,
-        },
-      })
-    );
-
-  const handleDataCollectorStatusChange = (event) =>
+  const handleTrainingStatusChange = (event) =>
     onChange(
       updateValue({
         ...value,
-        dataCollectorStatus: event.target.value,
+        trainingStatus: event.target.value,
       })
     );
 
@@ -101,40 +90,11 @@ export const ReportFilters = ({
     return null;
   }
 
+
   return (
     <Card>
       <CardContent>
         <Grid container spacing={2}>
-        <Grid item>
-            <FormControl>
-              <FormLabel component="legend">
-                {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
-              </FormLabel>
-              <RadioGroup
-                value={value.dataCollectorStatus}
-                onChange={handleDataCollectorStatusChange}
-                className={styles.radioGroup}
-              >
-                <FormControlLabel
-                  className={styles.radio}
-                  label={strings(
-                    stringKeys.dataCollector.constants.trainingStatus.Trained
-                  )}
-                  value={"Trained"}
-                  control={<Radio color="primary" />}
-                />
-                <FormControlLabel
-                  className={styles.radio}
-                  label={strings(
-                    stringKeys.dataCollector.constants.trainingStatus.InTraining
-                  )}
-                  value={"InTraining"}
-                  control={<Radio color="primary" />}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>          
-          
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
@@ -166,7 +126,7 @@ export const ReportFilters = ({
                 </MenuItem>
               </Select>
             </FormControl>
-          </Grid>            
+          </Grid>
 
           {showCorrectReportFilters && (
             <Fragment>
@@ -192,15 +152,6 @@ export const ReportFilters = ({
                     </MenuItem>
                   ))}
                 </TextField>
-              </Grid>
-
-              <Grid item>
-                <ReportStatusFilter
-                  filter={value.reportStatus}
-                  onChange={handleReportStatusChange}
-                  correctReports={showCorrectReportFilters}
-                  showDismissedFilter
-                />
               </Grid>
             </Fragment>
           )}
@@ -229,15 +180,53 @@ export const ReportFilters = ({
                   </Select>
                 </FormControl>
               </Grid>
-              {!hideReportTypeFilter && (
-                <Grid item>
-                  <ReportTypeFilter
-                    filter={value.reportType}
-                    onChange={handleReportTypeChange}
-                    showCorrectedFilter={false}
-                  />
-                </Grid>
-              )}
+            </Fragment>
+          )}
+
+          {!hideTrainingStatusFilter && (
+            <Fragment>
+              <Grid item>
+                <FormControl>
+                  <FormLabel component="legend">
+                    {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
+                  </FormLabel>
+                  <RadioGroup
+                    value={value.trainingStatus}
+                    onChange={handleTrainingStatusChange}
+                    className={styles.radioGroup}
+                  >
+                    <FormControlLabel
+                      className={styles.radio}
+                      label={strings(
+                        stringKeys.dataCollector.constants.trainingStatus.Trained
+                      )}
+                      value={"Trained"}
+                      control={<Radio color="primary" />}
+                    />
+                    <FormControlLabel
+                      className={styles.radio}
+                      label={strings(
+                        stringKeys.dataCollector.constants.trainingStatus.InTraining
+                      )}
+                      value={"InTraining"}
+                      control={<Radio color="primary" />}
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+            </Fragment>
+          )}
+
+          {showCorrectReportFilters && (
+            <Fragment>
+              <Grid item>
+                <ReportStatusFilter
+                  filter={value.reportStatus}
+                  onChange={handleReportStatusChange}
+                  correctReports={showCorrectReportFilters}
+                  showDismissedFilter
+                />
+              </Grid>
             </Fragment>
           )}
         </Grid>

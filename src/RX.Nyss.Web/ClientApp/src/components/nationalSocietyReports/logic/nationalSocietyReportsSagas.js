@@ -65,10 +65,6 @@ function* openNationalSocietyIncorrectReportsList({ nationalSocietyId }) {
       errorType: ReportErrorFilterType.all,
       area: null,
       formatCorrect: false,
-      reportType: {
-        real: true,
-        corrected: false,
-      },
       utcOffset: getUtcOffset()
     };
     const sorting = (yield select(state => state.nationalSocietyReports.incorrectReportsSorting)) ||

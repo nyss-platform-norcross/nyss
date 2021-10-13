@@ -13,7 +13,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public int? HealthRiskId { get; set; }
         public bool FormatCorrect { get; set; }
         public ReportStatusFilterDto ReportStatus { get; set; }
-        public ReportTypeFilterDto ReportType { get; set; }
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
         public int UtcOffset { get; set; }

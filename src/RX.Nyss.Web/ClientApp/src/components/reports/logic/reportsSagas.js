@@ -78,7 +78,7 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
     },
     reportType: null,
     utcOffset: getUtcOffset(),
-    dataCollectorStatus: "Trained",
+    trainingStatus: "Trained",
   };
 
   const requestSorting = sorting || (yield select(state => state.reports.correctReportsSorting)) ||
@@ -113,7 +113,7 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
       corrected: false
     },
     utcOffset: getUtcOffset(),
-    dataCollectorStatus: "Trained",
+    trainingStatus: "Trained",
   };
   const requestSorting = sorting || (yield select(state => state.reports.incorrectReportsSorting)) ||
   {
