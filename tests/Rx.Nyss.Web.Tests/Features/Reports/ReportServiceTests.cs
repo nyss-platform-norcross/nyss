@@ -191,7 +191,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var result = await _reportService.List(2, 2, new ReportListFilterRequestDto
             {
                 DataCollectorType = ReportListDataCollectorType.Human,
-                DataCollectorStatus = TrainingStatusDto.Trained,
+                TrainingStatus = TrainingStatusDto.Trained,
                 FormatCorrect = true,
                 ReportStatus = new ReportStatusFilterDto
                 {
@@ -233,7 +233,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
             {
                 DataCollectorType = ReportListDataCollectorType.Human,
-                DataCollectorStatus = TrainingStatusDto.Trained,
+                TrainingStatus = TrainingStatusDto.Trained,
                 FormatCorrect = true,
                 ReportStatus = new ReportStatusFilterDto
                 {
@@ -282,7 +282,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             {
                 DataCollectorType = ReportListDataCollectorType.Human,
                 FormatCorrect = true,
-                DataCollectorStatus = TrainingStatusDto.InTraining,
+                TrainingStatus = TrainingStatusDto.InTraining,
                 ReportStatus = new ReportStatusFilterDto
                 {
                     Kept = true,
@@ -639,7 +639,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private static List<Report> BuildReports(
             DataCollector dataCollector,
             List<int> ids,
-            ProjectHealthRisk projectHealthRisk)
+            ProjectHealthRisk projectHealthRisk,
+            bool isTraining = false)
         {
             var reports = ids
                 .Select(i => new Report
@@ -651,7 +652,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     ReportedCase = new ReportCase(),
                     DataCollectionPointCase = new DataCollectionPointCase(),
                     CreatedAt = new DateTime(2020, 1, 1),
-                    IsTraining = false,
+                    IsTraining = isTraining,
                     Location = GetMockPoint(52.411269, 17.025807),
                     ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint
                         ? ReportType.DataCollectionPoint
@@ -1044,7 +1045,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
             var rawReports2 = BuildRawReports(reports2, villages[0], zones[0], nationalSocieties[0]);
 
-            var inTrainingReports = BuildReports(dataCollectors[3], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+            var inTrainingReports = BuildReports(dataCollectors[3], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
             var inTrainingRawReports = BuildRawReports(inTrainingReports, villages[0], zones[0], nationalSocieties[0]);
 
             var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
