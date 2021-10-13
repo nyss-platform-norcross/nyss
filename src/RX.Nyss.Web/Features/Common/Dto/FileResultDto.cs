@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.DataCollectors.Dto
+﻿namespace RX.Nyss.Web.Features.Common.Dto
 {
     public class FileResultDto
     {

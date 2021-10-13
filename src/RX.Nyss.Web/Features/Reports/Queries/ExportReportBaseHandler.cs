@@ -5,13 +5,10 @@ using System.Threading.Tasks;
 using MediatR;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Web.Features.Common.Dto;
-using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Services.Authorization;
 
-namespace RX.Nyss.Web.Features.Reports
+namespace RX.Nyss.Web.Features.Reports.Queries
 {
     public abstract class ExportReportBaseHandler<TRequest> : IRequestHandler<TRequest, FileResultDto>
         where TRequest : IExportReportQuery

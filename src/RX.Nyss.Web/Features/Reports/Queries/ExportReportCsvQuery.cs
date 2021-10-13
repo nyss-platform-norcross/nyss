@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
-using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Services;
 
-namespace RX.Nyss.Web.Features.Reports
+namespace RX.Nyss.Web.Features.Reports.Queries
 {
     public class ExportReportCsvQuery : IExportReportQuery
     {

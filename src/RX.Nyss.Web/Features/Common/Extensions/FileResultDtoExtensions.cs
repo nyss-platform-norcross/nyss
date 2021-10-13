@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
-using RX.Nyss.Web.Features.DataCollectors.Dto;
+using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.Web.Features.Common.Dto;
 
-namespace Microsoft.AspNetCore.Mvc
+namespace RX.Nyss.Web.Features.Common.Extensions
 {
     public static class FileResultDtoExtensions
     {
