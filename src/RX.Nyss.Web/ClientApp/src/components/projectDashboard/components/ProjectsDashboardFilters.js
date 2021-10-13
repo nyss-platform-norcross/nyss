@@ -444,7 +444,7 @@ export const ProjectsDashboardFilters = ({
             <Grid item>
               <FormControl>
                 <FormLabel component="legend">
-                  {strings(stringKeys.project.dashboard.filters.dataCollectorStatus)}
+                  {strings(stringKeys.project.dashboard.filters.trainingStatus)}
                 </FormLabel>
                 <RadioGroup
                   value={value.trainingStatus}

@@ -150,7 +150,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Kept = true,
                     NotCrossChecked = true
                 },
-                ReportType = new ReportTypeFilterDto(),
                 SortAscending = true,
                 UtcOffset = 0,
                 DataCollectorType = ReportListDataCollectorType.Human,
@@ -333,7 +332,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 ErrorType = errorType,
                 FormatCorrect = false,
                 ReportStatus = null,
-                ReportType = null,
                 DataCollectorType = ReportListDataCollectorType.Human,
                 HealthRiskId = null
             };

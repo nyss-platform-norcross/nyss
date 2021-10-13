@@ -2,6 +2,7 @@
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
@@ -26,7 +27,9 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public AlertsSummaryResponseDto AlertsSummary(ReportsFilter filter)
         {
-            var alerts = GetAlerts(filter);
+            var alerts = filter.TrainingStatus == TrainingStatusDto.Trained
+                ? GetAlerts(filter)
+                : Enumerable.Empty<Alert>().AsQueryable();
 
             return new AlertsSummaryResponseDto
             {
