@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -8,6 +8,7 @@ import { useMount } from '../../utils/lifecycle';
 import { DataCollectorsPerformanceMap } from './DataCollectorsPerformanceMap';
 import { DataCollectorsPerformanceMapFilters } from './DataCollectorsPerformanceMapFilters';
 import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceMapLegend';
+import * as tracking from "../../utils/tracking";
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
   useMount(() => {
@@ -18,9 +19,13 @@ const DataCollectorsMapOverviewPageComponent = (props) => {
     props.getDataCollectorsMapOverview(props.projectId, value)
   };
 
+  useEffect(() => {
+    props.trackPage("DataCollectorsMapOverviewPage");
+  }, []);
+
   if (!props.filters) {
     return null;
-  }
+  }  
 
   return (
     <Fragment>
@@ -57,7 +62,8 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
   openDataCollectorsMapOverview: dataCollectorsActions.openMapOverview.invoke,
   getDataCollectorsMapOverview: dataCollectorsActions.getMapOverview.invoke,
-  getMapDetails: dataCollectorsActions.getMapDetails.invoke
+  getMapDetails: dataCollectorsActions.getMapDetails.invoke,
+  trackPage: tracking.actions.pageView,
 };
 
 export const DataCollectorsMapOverviewPage = withLayout(

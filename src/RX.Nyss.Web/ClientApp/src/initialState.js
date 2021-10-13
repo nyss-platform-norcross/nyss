@@ -316,5 +316,8 @@ export const initialState = {
     emailTranslations: [],
     smsLanguages: [],
     smsTranslations: []
+  },
+  tracking: {
+    appInsights: null,
   }
 };
