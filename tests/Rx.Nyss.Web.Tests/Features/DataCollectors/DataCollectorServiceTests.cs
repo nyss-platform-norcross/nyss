@@ -72,6 +72,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             dateTimeProvider.GetEpiWeek(DateForPerformance).Returns(31);
             dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-8)).Returns(29);
             dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-35)).Returns(25);
+            dateTimeProvider.GetEpiDateRange(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(Enumerable.Range(24, 8).Select(week => new EpiDate(week, 2021)));
             _dataCollectorService = new DataCollectorService(
                 _nyssContextMock,
                 config,

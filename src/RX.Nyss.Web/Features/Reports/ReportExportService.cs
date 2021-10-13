@@ -19,38 +19,37 @@ namespace RX.Nyss.Web.Features.Reports
 {
     public interface IReportExportService
     {
-        Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter, bool useExcelFormat = false);
+        Task<IReadOnlyCollection<IReportListResponseDto>> FetchData(int projectId, ReportListFilterRequestDto filter);
     }
 
     public class ReportExportService : IReportExportService
     {
         private readonly INyssContext _nyssContext;
-        private readonly IExcelExportService _excelExportService;
-        private readonly IStringsResourcesService _stringsResourcesService;
+
         private readonly IAuthorizationService _authorizationService;
+
         private readonly IUserService _userService;
+
+        private readonly IStringsService _stringsService;
 
         public ReportExportService(
             INyssContext nyssContext,
-            IExcelExportService excelExportService,
-            IStringsResourcesService stringsResourcesService,
             IAuthorizationService authorizationService,
-            IUserService userService)
+            IUserService userService,
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
-            _excelExportService = excelExportService;
-            _stringsResourcesService = stringsResourcesService;
             _authorizationService = authorizationService;
             _userService = userService;
+            _stringsService = stringsService;
         }
 
-        public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter, bool useExcelFormat = false)
+        public async Task<IReadOnlyCollection<IReportListResponseDto>> FetchData(int projectId, ReportListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
-            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
-
+            var strings = await _stringsService.GetForCurrentUser();
             var currentUser = await _authorizationService.GetCurrentUser();
+            var currentRole = currentUser.Role;
 
             var currentUserOrganization = await _nyssContext
                 .Projects
@@ -82,7 +81,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .FirstOrDefault(),
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     Status = !r.Report.IsActivityReport()
-                        ? GetReportStatusString(stringResources, r.Report.Status)
+                        ? GetReportStatusString(strings, r.Report.Status)
                         : null,
                     MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
@@ -110,7 +109,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
                         .FirstOrDefault(),
-                    ErrorType = GetReportErrorTypeString(stringResources, r.ErrorType),
+                    ErrorType = GetReportErrorTypeString(strings, r.ErrorType),
                     Corrected = r.Report.CorrectedAt.HasValue
                 })
                 //ToDo: order base on filter.OrderBy property
@@ -118,280 +117,39 @@ namespace RX.Nyss.Web.Features.Reports
 
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
 
-            ReportService.AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
+            ReportService.AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, strings);
 
-            if (!filter.FormatCorrect)
-            {
-                return useExcelFormat
-                    ? GetIncorrectReportsExcelData(reports, stringResources)
-                    : GetIncorrectReportsCsvData(reports, stringResources);
-            }
-
-            return useExcelFormat
-                ? GetCorrectReportsExcelData(reports, stringResources, filter.DataCollectorType)
-                : GetCorrectReportsCsvData(reports, stringResources, filter.DataCollectorType);
+            return reports;
         }
 
-        private byte[] GetCorrectReportsCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
-        {
-            var columnLabels = GetCorrectReportsColumnLabels(stringResources, reportListDataCollectorType);
-
-            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
-            {
-                var dcpReportData = reports.Select(r =>
-                {
-                    var report = (ExportReportListResponseDto)r;
-                    return new ExportCorrectDcpReportListCsvContentDto
-                    {
-                        Id = r.Id,
-                        Date = r.DateTime.ToString("yyyy-MM-dd"),
-                        Time = report.DateTime.ToString("HH:mm"),
-                        EpiWeek = report.EpiYear,
-                        EpiYear = report.EpiWeek,
-                        Status = report.Status,
-                        Region = report.Region,
-                        District = report.District,
-                        Village = report.Village,
-                        Zone = report.Zone,
-                        HealthRiskName = report.HealthRiskName,
-                        CountMalesBelowFive = report.CountMalesBelowFive,
-                        CountMalesAtLeastFive = report.CountMalesAtLeastFive,
-                        CountFemalesBelowFive = report.CountFemalesBelowFive,
-                        CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
-                        TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                        TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                        TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                        TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                        Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
-                        ReferredCount = report.ReferredCount,
-                        DeathCount = report.DeathCount,
-                        FromOtherVillagesCount = report.FromOtherVillagesCount,
-                        DataCollectorDisplayName = report.DataCollectorDisplayName,
-                        PhoneNumber = report.PhoneNumber,
-                        Message = report.Message,
-                        Location = report.Location != null
-                            ? $"{report.Location.Y}/{report.Location.X}"
-                            : "",
-                        Corrected = report.Corrected
-                        ? GetStringResource(stringResources, "report.export.corrected")
-                        : null
-                    };
-                });
-                return _excelExportService.ToCsv(dcpReportData, columnLabels);
-            }
-
-            var reportData = reports.Select(r =>
-            {
-                var report = (ExportReportListResponseDto)r;
-                return new ExportCorrectReportListCsvContentDto
-                {
-                    Id = r.Id,
-                    Date = r.DateTime.ToString("yyyy-MM-dd"),
-                    Time = report.DateTime.ToString("HH:mm"),
-                    EpiWeek = report.EpiYear,
-                    EpiYear = report.EpiWeek,
-                    Status = report.Status,
-                    Region = report.Region,
-                    District = report.District,
-                    Village = report.Village,
-                    Zone = report.Zone,
-                    HealthRiskName = report.HealthRiskName,
-                    CountMalesBelowFive = report.CountMalesBelowFive,
-                    CountMalesAtLeastFive = report.CountMalesAtLeastFive,
-                    CountFemalesBelowFive = report.CountFemalesBelowFive,
-                    CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
-                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
-                    DataCollectorDisplayName = report.DataCollectorDisplayName,
-                    PhoneNumber = report.PhoneNumber,
-                    Message = report.Message,
-                    ReportAlertId = report.ReportAlertId,
-                    Location = report.Location != null
-                        ? $"{report.Location.Y}/{report.Location.X}"
-                        : "",
-                    Corrected = report.Corrected
-                        ? GetStringResource(stringResources, "reports.export.corrected")
-                        : null
-                };
-            });
-            return _excelExportService.ToCsv(reportData, columnLabels);
-        }
-
-        private byte[] GetIncorrectReportsCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources)
-        {
-            var columnLabels = GetIncorrectReportsColumnLabels(stringResources);
-
-            var reportData = reports.Select(r =>
-            {
-                var report = (ExportReportListResponseDto)r;
-                return new ExportIncorrectReportListCsvContentDto
-                {
-                    Id = r.Id,
-                    Date = r.DateTime.ToString("yyyy-MM-dd"),
-                    Time = report.DateTime.ToString("HH:mm"),
-                    EpiWeek = report.EpiYear,
-                    EpiYear = report.EpiWeek,
-                    Region = report.Region,
-                    District = report.District,
-                    Village = report.Village,
-                    Zone = report.Zone,
-                    DataCollectorDisplayName = report.DataCollectorDisplayName,
-                    PhoneNumber = report.PhoneNumber,
-                    Message = report.Message,
-                    Location = report.Location != null
-                        ? $"{report.Location.Y}/{report.Location.X}"
-                        : "",
-                    ErrorType = report.ErrorType,
-                    Corrected = report.Corrected
-                        ? GetStringResource(stringResources, "report.export.corrected")
-                        : null
-                };
-            });
-            return _excelExportService.ToCsv(reportData, columnLabels);
-        }
-
-        private static string GetReportStatusString(IDictionary<string, StringResourceValue> stringResources, ReportStatus status) =>
+        private static string GetReportStatusString(StringsResourcesVault strings, ReportStatus status) =>
             status switch
             {
-                ReportStatus.New => GetStringResource(stringResources, ResultKey.Report.Status.New),
-                ReportStatus.Pending => GetStringResource(stringResources, ResultKey.Report.Status.Pending),
-                ReportStatus.Rejected => GetStringResource(stringResources, ResultKey.Report.Status.Rejected),
-                ReportStatus.Accepted => GetStringResource(stringResources, ResultKey.Report.Status.Accepted),
-                ReportStatus.Closed => GetStringResource(stringResources, ResultKey.Report.Status.Closed),
+                ReportStatus.New => strings[ResultKey.Report.Status.New],
+                ReportStatus.Pending => strings[ResultKey.Report.Status.Pending],
+                ReportStatus.Rejected => strings[ResultKey.Report.Status.Rejected],
+                ReportStatus.Accepted => strings[ResultKey.Report.Status.Accepted],
+                ReportStatus.Closed => strings[ResultKey.Report.Status.Closed],
                 _ => null
             };
 
-        private static string GetReportErrorTypeString(IDictionary<string, StringResourceValue> stringResources, ReportErrorType? errorType) =>
+        private static string GetReportErrorTypeString(StringsResourcesVault strings, ReportErrorType? errorType) =>
             errorType switch
             {
-                ReportErrorType.HealthRiskNotFound => GetStringResource(stringResources, ResultKey.Report.ErrorType.HealthRiskNotFound),
-                ReportErrorType.GlobalHealthRiskCodeNotFound => GetStringResource(stringResources, ResultKey.Report.ErrorType.GlobalHealthRiskCodeNotFound),
-                ReportErrorType.FormatError => GetStringResource(stringResources, ResultKey.Report.ErrorType.FormatError),
-                ReportErrorType.EventReportHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.EventReportHumanHealthRisk),
-                ReportErrorType.AggregateReportNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.AggregateReportNonHumanHealthRisk),
-                ReportErrorType.CollectionPointNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.CollectionPointNonHumanHealthRisk),
-                ReportErrorType.CollectionPointUsedDataCollectorFormat => GetStringResource(stringResources, ResultKey.Report.ErrorType.CollectionPointUsedDataCollectorFormat),
-                ReportErrorType.DataCollectorUsedCollectionPointFormat => GetStringResource(stringResources, ResultKey.Report.ErrorType.DataCollectorUsedCollectionPointFormat),
-                ReportErrorType.SingleReportNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.SingleReportNonHumanHealthRisk),
-                ReportErrorType.GenderAndAgeNonHumanHealthRisk => GetStringResource(stringResources, ResultKey.Report.ErrorType.GenderAndAgeNonHumanHealthRisk),
-                ReportErrorType.TooLong => GetStringResource(stringResources, ResultKey.Report.ErrorType.TooLong),
-                ReportErrorType.Gateway => GetStringResource(stringResources, ResultKey.Report.ErrorType.Gateway),
-                ReportErrorType.Other => GetStringResource(stringResources, ResultKey.Report.ErrorType.Other),
+                ReportErrorType.HealthRiskNotFound => strings[ResultKey.Report.ErrorType.HealthRiskNotFound],
+                ReportErrorType.GlobalHealthRiskCodeNotFound => strings[ResultKey.Report.ErrorType.GlobalHealthRiskCodeNotFound],
+                ReportErrorType.FormatError => strings[ResultKey.Report.ErrorType.FormatError],
+                ReportErrorType.EventReportHumanHealthRisk => strings[ResultKey.Report.ErrorType.EventReportHumanHealthRisk],
+                ReportErrorType.AggregateReportNonHumanHealthRisk => strings[ResultKey.Report.ErrorType.AggregateReportNonHumanHealthRisk],
+                ReportErrorType.CollectionPointNonHumanHealthRisk => strings[ResultKey.Report.ErrorType.CollectionPointNonHumanHealthRisk],
+                ReportErrorType.CollectionPointUsedDataCollectorFormat => strings[ResultKey.Report.ErrorType.CollectionPointUsedDataCollectorFormat],
+                ReportErrorType.DataCollectorUsedCollectionPointFormat => strings[ResultKey.Report.ErrorType.DataCollectorUsedCollectionPointFormat],
+                ReportErrorType.SingleReportNonHumanHealthRisk => strings[ResultKey.Report.ErrorType.SingleReportNonHumanHealthRisk],
+                ReportErrorType.GenderAndAgeNonHumanHealthRisk => strings[ResultKey.Report.ErrorType.GenderAndAgeNonHumanHealthRisk],
+                ReportErrorType.TooLong => strings[ResultKey.Report.ErrorType.TooLong],
+                ReportErrorType.Gateway => strings[ResultKey.Report.ErrorType.Gateway],
+                ReportErrorType.Other => strings[ResultKey.Report.ErrorType.Other],
                 _ => null
-            };
-
-        private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
-            stringResources.Keys.Contains(key)
-                ? stringResources[key]
-                    .Value
-                : key;
-
-        private byte[] GetCorrectReportsExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources,
-            ReportListDataCollectorType reportListDataCollectorType)
-        {
-            var documentTitle = GetStringResource(stringResources, "reports.export.title");
-            var columnLabels = GetCorrectReportsColumnLabels(stringResources, reportListDataCollectorType);
-            var excelDoc = _excelExportService.CorrectReportsToExcel(reports, columnLabels, documentTitle, reportListDataCollectorType);
-            return excelDoc.GetAsByteArray();
-        }
-
-        private byte[] GetIncorrectReportsExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources)
-        {
-            var documentTitle = GetStringResource(stringResources, "reports.export.title");
-            var columnLabels = GetIncorrectReportsColumnLabels(stringResources);
-            var excelDoc = _excelExportService.IncorrectReportsToExcel(reports, columnLabels, documentTitle);
-            return excelDoc.GetAsByteArray();
-        }
-
-        private List<string> GetCorrectReportsColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListDataCollectorType reportListDataCollectorType)
-        {
-            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
-            {
-                return new List<string>
-                {
-                    GetStringResource(stringResources, "reports.export.id"),
-                    GetStringResource(stringResources, "reports.export.date"),
-                    GetStringResource(stringResources, "reports.export.time"),
-                    GetStringResource(stringResources, "reports.export.epiYear"),
-                    GetStringResource(stringResources, "reports.export.epiWeek"),
-                    GetStringResource(stringResources, "reports.list.status"),
-                    GetStringResource(stringResources, "reports.list.region"),
-                    GetStringResource(stringResources, "reports.list.district"),
-                    GetStringResource(stringResources, "reports.list.village"),
-                    GetStringResource(stringResources, "reports.list.zone"),
-                    GetStringResource(stringResources, "reports.list.healthRisk"),
-                    GetStringResource(stringResources, "reports.list.malesBelowFive"),
-                    GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
-                    GetStringResource(stringResources, "reports.list.femalesBelowFive"),
-                    GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
-                    GetStringResource(stringResources, "reports.export.totalBelowFive"),
-                    GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
-                    GetStringResource(stringResources, "reports.export.totalMale"),
-                    GetStringResource(stringResources, "reports.export.totalFemale"),
-                    GetStringResource(stringResources, "reports.export.total"),
-                    GetStringResource(stringResources, "reports.export.referredCount"),
-                    GetStringResource(stringResources, "reports.export.deathCount"),
-                    GetStringResource(stringResources, "reports.export.fromOtherVillagesCount"),
-                    GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
-                    GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
-                    GetStringResource(stringResources, "reports.export.message"),
-                    GetStringResource(stringResources, "reports.export.location"),
-                    GetStringResource(stringResources, "reports.export.corrected")
-                };
-            }
-
-            return new List<string>
-            {
-                GetStringResource(stringResources, "reports.export.id"),
-                GetStringResource(stringResources, "reports.export.date"),
-                GetStringResource(stringResources, "reports.export.time"),
-                GetStringResource(stringResources, "reports.export.epiYear"),
-                GetStringResource(stringResources, "reports.export.epiWeek"),
-                GetStringResource(stringResources, "reports.list.status"),
-                GetStringResource(stringResources, "reports.list.region"),
-                GetStringResource(stringResources, "reports.list.district"),
-                GetStringResource(stringResources, "reports.list.village"),
-                GetStringResource(stringResources, "reports.list.zone"),
-                GetStringResource(stringResources, "reports.list.healthRisk"),
-                GetStringResource(stringResources, "reports.list.malesBelowFive"),
-                GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
-                GetStringResource(stringResources, "reports.list.femalesBelowFive"),
-                GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
-                GetStringResource(stringResources, "reports.export.totalBelowFive"),
-                GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
-                GetStringResource(stringResources, "reports.export.totalMale"),
-                GetStringResource(stringResources, "reports.export.totalFemale"),
-                GetStringResource(stringResources, "reports.export.total"),
-                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
-                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
-                GetStringResource(stringResources, "reports.export.message"),
-                GetStringResource(stringResources, "reports.export.reportAlertId"),
-                GetStringResource(stringResources, "reports.export.location"),
-                GetStringResource(stringResources, "reports.export.corrected")
-            };
-        }
-
-        private List<string> GetIncorrectReportsColumnLabels(IDictionary<string, StringResourceValue> stringResources) =>
-            new List<string>
-            {
-                GetStringResource(stringResources, "reports.export.id"),
-                GetStringResource(stringResources, "reports.export.date"),
-                GetStringResource(stringResources, "reports.export.time"),
-                GetStringResource(stringResources, "reports.export.epiYear"),
-                GetStringResource(stringResources, "reports.export.epiWeek"),
-                GetStringResource(stringResources, "reports.export.message"),
-                GetStringResource(stringResources, "reports.list.errorType"),
-                GetStringResource(stringResources, "reports.list.region"),
-                GetStringResource(stringResources, "reports.list.district"),
-                GetStringResource(stringResources, "reports.list.village"),
-                GetStringResource(stringResources, "reports.list.zone"),
-                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
-                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
-                GetStringResource(stringResources, "reports.export.location"),
-                GetStringResource(stringResources, "reports.export.corrected")
             };
 
         private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {

@@ -11,20 +11,31 @@ namespace RX.Nyss.Common.Services.StringsResources
 {
     public interface IStringsResourcesService
     {
+        Task<StringsResourcesVault> GetStrings(string languageCode);
+
         Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode);
+
         Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
+
         Task<StringsBlob> GetStringsBlob();
+
         Task<StringsBlob> GetEmailContentBlob();
+
         Task<StringsBlob> GetSmsContentBlob();
+
         Task SaveStringsBlob(StringsBlob blob);
+
         Task SaveEmailContentsBlob(StringsBlob blob);
+
         Task SaveSmsContentsBlob(StringsBlob blob);
+
         Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode);
     }
 
     public class StringsResourcesService : IStringsResourcesService
     {
         private readonly IGeneralBlobProvider _generalBlobProvider;
+
         private readonly ILoggerAdapter _loggerAdapter;
 
         public StringsResourcesService(
@@ -33,6 +44,13 @@ namespace RX.Nyss.Common.Services.StringsResources
         {
             _generalBlobProvider = generalBlobProvider;
             _loggerAdapter = loggerAdapter;
+        }
+
+        public async Task<StringsResourcesVault> GetStrings(string languageCode)
+        {
+            var result = await GetStringsResources(languageCode);
+
+            return new StringsResourcesVault(result.Value);
         }
 
         public async Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode)

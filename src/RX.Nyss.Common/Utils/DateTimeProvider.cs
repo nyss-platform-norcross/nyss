@@ -13,7 +13,7 @@ namespace RX.Nyss.Common.Utils
 
         EpiDate GetEpiDate(DateTime date);
 
-        IEnumerable<EpiDate> GetEpiWeeksRange(DateTime startDate, DateTime endDate);
+        IEnumerable<EpiDate> GetEpiDateRange(DateTime startDate, DateTime endDate);
         DateTime GetFirstDateOfEpiWeek(int year, int epiWeek);
     }
 
@@ -48,12 +48,14 @@ namespace RX.Nyss.Common.Utils
 
             var epiYear = date.Month == 12 && epiWeek == 1
                 ? date.Year + 1
-                : date.Year;
+                : date.Month == 1 && epiWeek == 53
+                    ? date.Year - 1
+                    : date.Year;
 
             return new EpiDate(epiWeek, epiYear);
         }
 
-        public IEnumerable<EpiDate> GetEpiWeeksRange(DateTime startDate, DateTime endDate) =>
+        public IEnumerable<EpiDate> GetEpiDateRange(DateTime startDate, DateTime endDate) =>
             Enumerable
                 .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
                 .Select(w => startDate.AddDays(w * 7))

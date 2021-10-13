@@ -66,7 +66,7 @@ namespace RX.Nyss.Common.Tests.Utils
             var endDate = new DateTime(2020, 1, 6);
 
             // act
-            var result = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate);
+            var result = _dateTimeProvider.GetEpiDateRange(startDate, endDate);
 
             // assert
             result.Count().ShouldBe(3);
@@ -83,7 +83,7 @@ namespace RX.Nyss.Common.Tests.Utils
             var endDate = new DateTime(2020, 1, 6);
 
             // act
-            var result = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate);
+            var result = _dateTimeProvider.GetEpiDateRange(startDate, endDate);
 
             // assert
             result.Count().ShouldBe(2);

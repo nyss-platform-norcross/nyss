@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
-using RX.Nyss.Web.Features.DataCollectors.Access;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
+using RX.Nyss.Web.Features.DataCollectors.Queries;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
@@ -16,19 +17,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
     public class DataCollectorController : BaseController
     {
         private readonly IDataCollectorService _dataCollectorService;
+
         private readonly IDataCollectorExportService _dataCollectorExportService;
-        private readonly IDataCollectorAccessService _dataCollectorAccessService;
+
         private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
 
         public DataCollectorController(
             IDataCollectorService dataCollectorService,
             IDataCollectorExportService dataCollectorExportService,
-            IDataCollectorAccessService dataCollectorAccessService,
             IDataCollectorPerformanceService dataCollectorPerformanceService)
         {
             _dataCollectorService = dataCollectorService;
             _dataCollectorExportService = dataCollectorExportService;
-            _dataCollectorAccessService = dataCollectorAccessService;
             _dataCollectorPerformanceService = dataCollectorPerformanceService;
         }
 
@@ -111,5 +111,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
         public Task<Result> SetDeployedState([FromBody] SetDeployedStateRequestDto dto) =>
             _dataCollectorService.SetDeployedState(dto);
+
+        [HttpPost, Route("exportPerformance")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> ExportPerformance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto filters) =>
+            await Sender.Send(new ExportDataCollectorPerformanceQuery(projectId, filters)).AsFileResult();
     }
 }

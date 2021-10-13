@@ -34,12 +34,14 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
     public class PerformanceInEpiWeek
     {
         public int EpiWeek { get; set; }
-        public ReportingStatus ReportingStatus { get; set; }
+        public int EpiYear { get; set; }
+        public ReportingStatus? ReportingStatus { get; set; }
     }
 
     public class Completeness
     {
         public int EpiWeek { get; set; }
+        public int EpiYear { get; set; }
         public int ActiveDataCollectors { get; set; }
         public int TotalDataCollectors { get; set; }
         public int Percentage { get; set; }

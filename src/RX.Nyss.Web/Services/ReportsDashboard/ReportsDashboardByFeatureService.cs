@@ -132,7 +132,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToListAsync();
 
-            var missingWeeks = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+            var missingWeeks = _dateTimeProvider.GetEpiDateRange(startDate, endDate)
                 .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
                 .Select(epiDate => new
                 {

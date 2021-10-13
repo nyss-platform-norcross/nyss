@@ -18,7 +18,6 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -43,24 +42,38 @@ namespace RX.Nyss.Web.Features.Alerts
     public class AlertService : IAlertService
     {
         private const string SexFemale = "Female";
+
         private const string SexMale = "Male";
+
         private const string AgeAtLeastFive = "AtLeastFive";
+
         private const string AgeBelowFive = "BelowFive";
+
         private const string Unspecified = "Unspecified";
 
         private readonly INyssContext _nyssContext;
+
         private readonly IEmailPublisherService _emailPublisherService;
+
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+
         private readonly ISmsPublisherService _smsPublisherService;
+
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
+
         private readonly INyssWebConfig _config;
+
         private readonly ILoggerAdapter _loggerAdapter;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IAuthorizationService _authorizationService;
+
         private readonly IProjectService _projectService;
+
         private readonly IExcelExportService _excelExportService;
-        private readonly IStringsResourcesService _stringsResourcesService;
-        private readonly IUserService _userService;
+
+        private readonly IStringsService _stringsService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -74,8 +87,7 @@ namespace RX.Nyss.Web.Features.Alerts
             ISmsPublisherService smsPublisherService,
             IProjectService projectService,
             IExcelExportService excelExportService,
-            IStringsResourcesService stringsResourcesService,
-            IUserService userService)
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -88,8 +100,7 @@ namespace RX.Nyss.Web.Features.Alerts
             _config = config;
             _projectService = projectService;
             _excelExportService = excelExportService;
-            _stringsResourcesService = stringsResourcesService;
-            _userService = userService;
+            _stringsService = stringsService;
         }
 
         public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId)
@@ -452,8 +463,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(uns => uns.OrganizationId)
                 .SingleOrDefaultAsync();
 
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
+            var strings = await _stringsService.GetForCurrentUser();
 
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
@@ -509,7 +519,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     EscalatedAt = a.EscalatedAt?.AddHours(filterRequestDto.UtcOffset),
                     DismissedAt = a.DismissedAt?.AddHours(filterRequestDto.UtcOffset),
                     ClosedAt = a.ClosedAt?.AddHours(filterRequestDto.UtcOffset),
-                    Status = GetStringResource(stringResources, $"alerts.alertStatus.{a.Status.ToString().ToLower()}"),
+                    Status = strings[$"alerts.alertStatus.{a.Status.ToString().ToLower()}"],
                     EscalatedOutcome = a.EscalatedOutcome,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
@@ -520,15 +530,15 @@ namespace RX.Nyss.Web.Features.Alerts
                     LastReportRegion = a.LastReport.RegionName,
                     HealthRisk = a.HealthRisk,
                     Investigation = a.InvestigationEventSubtype != null
-                        ? GetStringResource(stringResources, $"alerts.eventTypes.subtypes.{a.InvestigationEventSubtype.Name.ToString().ToCamelCase()}")
+                        ? strings[$"alerts.eventTypes.subtypes.{a.InvestigationEventSubtype.Name.ToString().ToCamelCase()}"]
                         : null,
                     Outcome = a.OutcomeEventSubtype != null
-                        ? GetStringResource(stringResources, $"alerts.eventTypes.subtypes.{a.OutcomeEventSubtype.Name.ToString().ToCamelCase()}")
+                        ? strings[$"alerts.eventTypes.subtypes.{a.OutcomeEventSubtype.Name.ToString().ToCamelCase()}"]
                         : null
                 }).ToList();
 
-            var documentTitle = GetStringResource(stringResources, "alerts.export.title");
-            var columnLabels = GetColumnLabels(stringResources);
+            var documentTitle = strings["alerts.export.title"];
+            var columnLabels = GetColumnLabels(strings);
             var excelDoc = _excelExportService.ToExcel(dtos, columnLabels, documentTitle);
 
             return excelDoc.GetAsByteArray();
@@ -559,37 +569,32 @@ namespace RX.Nyss.Web.Features.Alerts
             });
         }
 
-        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources) =>
-            new List<string>
+        private static IReadOnlyList<string> GetColumnLabels(StringsResourcesVault strings) =>
+            new []
             {
-                GetStringResource(stringResources, "alerts.export.id"),
-                GetStringResource(stringResources, "alerts.export.dateTriggered"),
-                GetStringResource(stringResources, "alerts.export.timeTriggered"),
-                GetStringResource(stringResources, "alerts.export.dateOfLastReport"),
-                GetStringResource(stringResources, "alerts.export.timeOfLastReport"),
-                GetStringResource(stringResources, "alerts.export.healthRisk"),
-                GetStringResource(stringResources, "alerts.export.reports"),
-                GetStringResource(stringResources, "alerts.export.status"),
-                GetStringResource(stringResources, "alerts.export.lastReportRegion"),
-                GetStringResource(stringResources, "alerts.export.lastReportDistrict"),
-                GetStringResource(stringResources, "alerts.export.lastReportVillage"),
-                GetStringResource(stringResources, "alerts.export.lastReportZone"),
-                GetStringResource(stringResources, "alerts.export.dateEscalated"),
-                GetStringResource(stringResources, "alerts.export.timeEscalated"),
-                GetStringResource(stringResources, "alerts.export.dateClosed"),
-                GetStringResource(stringResources, "alerts.export.timeClosed"),
-                GetStringResource(stringResources, "alerts.export.dateDismissed"),
-                GetStringResource(stringResources, "alerts.export.timeDismissed"),
-                GetStringResource(stringResources, "alerts.export.investigation"),
-                GetStringResource(stringResources, "alerts.export.outcome"),
-                GetStringResource(stringResources, "alerts.export.escalatedOutcome"),
-                GetStringResource(stringResources, "alerts.export.closedComments")
+                strings["alerts.export.id"],
+                strings["alerts.export.dateTriggered"],
+                strings["alerts.export.timeTriggered"],
+                strings["alerts.export.dateOfLastReport"],
+                strings["alerts.export.timeOfLastReport"],
+                strings["alerts.export.healthRisk"],
+                strings["alerts.export.reports"],
+                strings["alerts.export.status"],
+                strings["alerts.export.lastReportRegion"],
+                strings["alerts.export.lastReportDistrict"],
+                strings["alerts.export.lastReportVillage"],
+                strings["alerts.export.lastReportZone"],
+                strings["alerts.export.dateEscalated"],
+                strings["alerts.export.timeEscalated"],
+                strings["alerts.export.dateClosed"],
+                strings["alerts.export.timeClosed"],
+                strings["alerts.export.dateDismissed"],
+                strings["alerts.export.timeDismissed"],
+                strings["alerts.export.investigation"],
+                strings["alerts.export.outcome"],
+                strings["alerts.export.escalatedOutcome"],
+                strings["alerts.export.closedComments"],
             };
-
-        private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
-            stringResources.Keys.Contains(key)
-                ? stringResources[key].Value
-                : key;
 
         private async Task<List<AlertNotificationRecipient>> GetAlertRecipients(int alertId)
         {

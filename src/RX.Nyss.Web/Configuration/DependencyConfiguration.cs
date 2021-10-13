@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +60,8 @@ namespace RX.Nyss.Web.Configuration
             }
 
             RegisterServiceCollection(serviceCollection, config);
+
+            serviceCollection.AddMediatR(typeof(Startup));
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,

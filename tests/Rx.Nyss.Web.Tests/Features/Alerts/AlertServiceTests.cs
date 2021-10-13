@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using OfficeOpenXml;
-using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -17,52 +16,65 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Projects;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 using Project = RX.Nyss.Data.Models.Project;
-using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Tests.Features.Alerts
 {
     public class AlertServiceTests
     {
         private readonly INyssContext _nyssContext;
+
         private readonly IEmailPublisherService _emailPublisherService;
+
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
+
         private readonly AlertService _alertService;
+
         private readonly List<Alert> _alerts;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IAuthorizationService _authorizationService;
+
         private readonly DateTime _now = DateTime.UtcNow;
+
         private readonly User _currentUser = new GlobalCoordinatorUser();
+
         private readonly ISmsPublisherService _smsPublisherService;
+
         private readonly List<GatewaySetting> _gatewaySettings;
+
         private readonly List<AlertNotificationRecipient> _alertNotificationRecipients;
+
         private readonly IProjectService _projectService;
+
         private readonly IExcelExportService _excelExportService;
-        private readonly IStringsResourcesService _stringsResourcesService;
+
+        private readonly IStringsService _stringsService;
 
         public AlertServiceTests()
         {
-            _nyssContext = Substitute.For<INyssContext>();
-            _emailPublisherService = Substitute.For<IEmailPublisherService>();
-            var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
-            _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
             var config = Substitute.For<INyssWebConfig>();
             config.PaginationRowsPerPage.Returns(5);
             var loggerAdapter = Substitute.For<ILoggerAdapter>();
+            var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
+
+            _nyssContext = Substitute.For<INyssContext>();
+            _emailPublisherService = Substitute.For<IEmailPublisherService>();
+            _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
+            _stringsService = Substitute.For<IStringsService>();
 
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             _projectService = Substitute.For<IProjectService>();
             _excelExportService = Substitute.For<IExcelExportService>();
-            _stringsResourcesService = Substitute.For<IStringsResourcesService>();
-            var userService = Substitute.For<IUserService>();
+
             _alertService = new AlertService(_nyssContext,
                 _emailPublisherService,
                 emailTextGeneratorService,
@@ -74,8 +86,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 _smsPublisherService,
                 _projectService,
                 _excelExportService,
-                _stringsResourcesService,
-                userService);
+                _stringsService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
@@ -656,7 +667,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var users = TestData.GetUsers();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
-            var stringResources = new Dictionary<string, StringResourceValue>();
             var excelDoc = new ExcelPackage();
             excelDoc.Workbook.Worksheets.Add("title");
             _nyssContext.Users.Returns(usersMockDbSet);
@@ -665,8 +675,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _nyssContext.Alerts.Returns(alertsMockDbSet);
             _authorizationService.GetCurrentUser().Returns(users[0]);
             _authorizationService.GetCurrentUserName().Returns(users[0].EmailAddress);
-            _stringsResourcesService.GetStringsResources("").Returns(Success<IDictionary<string, StringResourceValue>>(stringResources));
-            _excelExportService.ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>()).Returns(excelDoc);
+            _stringsService.GetForCurrentUser().Returns(new StringsResourcesVault(new Dictionary<string, StringResourceValue>()));
+            _excelExportService.ToExcel(
+                Arg.Any<IReadOnlyList<AlertListExportResponseDto>>(),
+                Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<string>()).Returns(excelDoc);
 
             // Act
             await _alertService.Export(1, new AlertListFilterRequestDto
@@ -678,7 +691,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             });
 
             // Assert
-            _excelExportService.Received(1).ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>());
+            _excelExportService.Received(1).ToExcel(
+                Arg.Any<IReadOnlyList<AlertListExportResponseDto>>(),
+                Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<string>());
         }
 
         private AlertStatus MapToAlertStatus(AlertStatusFilter filter) =>

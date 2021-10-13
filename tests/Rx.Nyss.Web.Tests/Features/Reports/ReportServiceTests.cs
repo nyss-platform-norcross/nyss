@@ -32,17 +32,30 @@ namespace RX.Nyss.Web.Tests.Features.Reports
     public class ReportServiceTests
     {
         private readonly IUserService _userService;
+
         private readonly IProjectService _projectService;
+
         private IReportService _reportService;
+
         private readonly INyssContext _nyssContextMock;
+
         private readonly INyssWebConfig _config;
+
         private readonly IAuthorizationService _authorizationService;
+
         private readonly IStringsResourcesService _stringsResourcesService;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IAlertService _alertService;
+
         private readonly IAlertReportService _alertReportService;
+
         private readonly IQueueService _queueService;
+
         private readonly INyssContext _nyssContextInMemory;
+
+        private readonly IStringsService _stringsService;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -74,15 +87,24 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _authorizationService = Substitute.For<IAuthorizationService>();
 
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
-            _stringsResourcesService.GetStringsResources("en").Returns(Task.FromResult(new Result<IDictionary<string, StringResourceValue>>(new Dictionary<string, StringResourceValue>(), true)));
+            _stringsResourcesService.GetStrings("en").Returns(new StringsResourcesVault(new Dictionary<string, StringResourceValue>()));
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
             _alertService = Substitute.For<IAlertService>();
             _queueService = Substitute.For<IQueueService>();
+            _stringsService = Substitute.For<IStringsService>();
 
             _alertReportService = new AlertReportService(_config, _nyssContextMock, _alertService, _queueService, _dateTimeProvider, _authorizationService);
-            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _stringsResourcesService, _dateTimeProvider, _alertReportService);
+            _reportService = new ReportService(
+                _nyssContextMock,
+                _userService,
+                _projectService,
+                _config,
+                _authorizationService,
+                _dateTimeProvider,
+                _alertReportService,
+                _stringsService);
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
@@ -1048,7 +1070,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextInMemory.SaveChanges();
             _nyssContextInMemory.Database.EnsureCreated();
 
-            _reportService = new ReportService(_nyssContextInMemory, _userService, _projectService, _config, _authorizationService, _stringsResourcesService, _dateTimeProvider, _alertReportService);
+            _reportService = new ReportService(
+                _nyssContextInMemory,
+                _userService,
+                _projectService,
+                _config,
+                _authorizationService,
+                _dateTimeProvider,
+                _alertReportService,
+                _stringsService);
         }
     }
 }

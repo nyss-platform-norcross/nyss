@@ -2,28 +2,28 @@
 using System.Linq;
 using System.Text;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.Reports.Dto;
-using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Services
 {
     public interface IExcelExportService
     {
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
-        ExcelPackage CorrectReportsToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType);
-        ExcelPackage IncorrectReportsToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title);
-        ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title);
+
+        ExcelPackage ToExcel(
+            IReadOnlyList<AlertListExportResponseDto> exportAlertListResponseDtos,
+            IReadOnlyList<string> columnLabels,
+            string title);
     }
 
     public class ExcelExportService : IExcelExportService
     {
-        private readonly INyssWebConfig _config;
+        private const string Quote = "\"";
 
-        private readonly char[] _charsToEscape = { ',', ';' };
-        private readonly string _quote = "\"";
+        private static readonly char[] CharsToEscape = { ',', ';' };
+
+        private readonly INyssWebConfig _config;
 
         public ExcelExportService(INyssWebConfig config)
         {
@@ -50,152 +50,32 @@ namespace RX.Nyss.Web.Services
             return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
         }
 
-        public ExcelPackage CorrectReportsToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListDataCollectorType reportListDataCollectorType)
+        public ExcelPackage ToExcel(
+            IReadOnlyList<AlertListExportResponseDto> exportAlertListResponseDtos,
+            IReadOnlyList<string> columnLabels,
+            string title)
         {
             var package = new ExcelPackage();
             package.Workbook.Properties.Title = title;
 
             var worksheet = package.Workbook.Worksheets.Add(title);
 
-            foreach (var label in columnLabels)
+            for (var index = 0; index < columnLabels.Count; index++)
             {
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Value = label;
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
+                worksheet.Cells[1, 1 + index].Value = columnLabels[index];
+                worksheet.Cells[1, 1 + index].Style.Font.Bold = true;
             }
 
-            foreach (var reportListResponseDto in columnData)
+            for (var index = 0; index < exportAlertListResponseDtos.Count; index++)
             {
-                var data = (ExportReportListResponseDto)reportListResponseDto;
-                var columnIndex = columnData.IndexOf(data) + 2;
-                worksheet.Cells[columnIndex, 1].Value = data.Id;
-                worksheet.Cells[columnIndex, 2].Value = data.DateTime;
-                worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "yyyy-MM-dd";
-                worksheet.Cells[columnIndex, 3].Value = data.DateTime;
-                worksheet.Cells[columnIndex, 3].Style.Numberformat.Format = "HH:mm";
-                worksheet.Cells[columnIndex, 4].Value = data.EpiYear;
-                worksheet.Cells[columnIndex, 5].Value = data.EpiWeek;
-                worksheet.Cells[columnIndex, 6].Value = data.Status;
-                worksheet.Cells[columnIndex, 7].Value = data.Region;
-                worksheet.Cells[columnIndex, 8].Value = data.District;
-                worksheet.Cells[columnIndex, 9].Value = data.Village;
-                worksheet.Cells[columnIndex, 10].Value = data.Zone;
-                worksheet.Cells[columnIndex, 11].Value = data.HealthRiskName;
-                worksheet.Cells[columnIndex, 12].Value = data.CountMalesBelowFive;
-                worksheet.Cells[columnIndex, 13].Value = data.CountMalesAtLeastFive;
-                worksheet.Cells[columnIndex, 14].Value = data.CountFemalesBelowFive;
-                worksheet.Cells[columnIndex, 15].Value = data.CountFemalesAtLeastFive;
-                worksheet.Cells[columnIndex, 16].Value = data.CountMalesBelowFive + data.CountFemalesBelowFive;
-                worksheet.Cells[columnIndex, 17].Value = data.CountMalesAtLeastFive + data.CountFemalesAtLeastFive;
-                worksheet.Cells[columnIndex, 18].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive;
-                worksheet.Cells[columnIndex, 19].Value = data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
-                worksheet.Cells[columnIndex, 20].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive + data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
+                var alert = exportAlertListResponseDtos[index];
 
-                if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
-                {
-                    worksheet.Cells[columnIndex, 21].Value = data.ReferredCount;
-                    worksheet.Cells[columnIndex, 22].Value = data.DeathCount;
-                    worksheet.Cells[columnIndex, 23].Value = data.FromOtherVillagesCount;
-                    worksheet.Cells[columnIndex, 24].Value = data.DataCollectorDisplayName;
-                    worksheet.Cells[columnIndex, 25].Value = data.PhoneNumber;
-                    worksheet.Cells[columnIndex, 26].Value = data.Message;
-                    worksheet.Cells[columnIndex, 27].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-                }
-                else
-                {
-                    worksheet.Cells[columnIndex, 21].Value = data.DataCollectorDisplayName;
-                    worksheet.Cells[columnIndex, 22].Value = data.PhoneNumber;
-                    worksheet.Cells[columnIndex, 23].Value = data.Message;
-                    worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;
-                    worksheet.Cells[columnIndex, 25].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-                }
-            }
-            worksheet.Column(2).Width = 12; //Date
-            worksheet.Column(6).Width = 14; //ReportStatus
-            worksheet.Column(11).Width = 20; //HealthRiskName
-
-            if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
-            {
-                worksheet.Column(24).Width = 20; //DcpName
-                worksheet.Column(25).Width = 20; //PhoneNr
-                worksheet.Column(26).Width = 20; //Message
-                worksheet.Column(27).Width = 37; //Location
-            }
-            else
-            {
-                worksheet.Column(21).Width = 20; //DcName
-                worksheet.Column(22).Width = 20; //PhoneNr
-                worksheet.Column(23).Width = 12; //Message
-                worksheet.Column(25).Width = 37; //Location
-            }
-
-            return package;
-        }
-
-        public ExcelPackage IncorrectReportsToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title)
-        {
-            var package = new ExcelPackage();
-            package.Workbook.Properties.Title = title;
-
-            var worksheet = package.Workbook.Worksheets.Add(title);
-
-            foreach (var label in columnLabels)
-            {
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Value = label;
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
-            }
-
-            foreach (var reportListResponseDto in columnData)
-            {
-                var data = (ExportReportListResponseDto)reportListResponseDto;
-                var columnIndex = columnData.IndexOf(data) + 2;
-                worksheet.Cells[columnIndex, 1].Value = data.Id;
-                worksheet.Cells[columnIndex, 2].Value = data.DateTime;
-                worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "yyyy-MM-dd";
-                worksheet.Cells[columnIndex, 3].Value = data.DateTime;
-                worksheet.Cells[columnIndex, 3].Style.Numberformat.Format = "HH:mm";
-                worksheet.Cells[columnIndex, 4].Value = data.EpiYear;
-                worksheet.Cells[columnIndex, 5].Value = data.EpiWeek;
-                worksheet.Cells[columnIndex, 6].Value = data.Message;
-                worksheet.Cells[columnIndex, 7].Value = data.ErrorType;
-                worksheet.Cells[columnIndex, 8].Value = data.Region;
-                worksheet.Cells[columnIndex, 9].Value = data.District;
-                worksheet.Cells[columnIndex, 10].Value = data.Village;
-                worksheet.Cells[columnIndex, 11].Value = data.Zone;
-                worksheet.Cells[columnIndex, 12].Value = data.DataCollectorDisplayName;
-                worksheet.Cells[columnIndex, 13].Value = data.PhoneNumber;
-                worksheet.Cells[columnIndex, 14].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-            }
-
-            worksheet.Column(2).Width = 12; //Date
-            worksheet.Column(7).Width = 50; //ErrorType
-            worksheet.Column(12).Width = 20; //DcName
-            worksheet.Column(13).Width = 20; //PhoneNr
-            worksheet.Column(14).Width = 37; //Location
-
-            return package;
-        }
-
-        public ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title)
-        {
-            var package = new ExcelPackage();
-            package.Workbook.Properties.Title = title;
-
-            var worksheet = package.Workbook.Worksheets.Add(title);
-
-            foreach (var label in columnLabels)
-            {
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Value = label;
-                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
-            }
-
-            foreach (var alert in exportAlertListResponseDtos)
-            {
                 var triggeredAt = alert.TriggeredAt.ToOADate();
                 var lastReport = alert.LastReportTimestamp.ToOADate();
                 var escalatedAt = alert.EscalatedAt?.ToOADate();
                 var closedAt = alert.ClosedAt?.ToOADate();
                 var dismissedAt = alert.DismissedAt?.ToOADate();
-                var columnIndex = exportAlertListResponseDtos.IndexOf(alert) + 2;
+                var columnIndex = index + 2;
                 worksheet.Cells[columnIndex, 1].Value = alert.Id;
                 worksheet.Cells[columnIndex, 2].Value = triggeredAt;
                 worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "yyyy-MM-dd";
@@ -255,21 +135,18 @@ namespace RX.Nyss.Web.Services
             return package;
         }
 
-        private string EscapeCharacters(object data)
+        private static string EscapeCharacters(object data)
         {
-            if (data == null)
+            var value = data?.ToString();
+
+            if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
 
-            var value = data.ToString();
-
-            if (value.IndexOfAny(_charsToEscape) > -1)
-            {
-                return $"{_quote}{value}{_quote}";
-            }
-
-            return value;
+            return value.IndexOfAny(CharsToEscape) > -1
+                ? $"{Quote}{value}{Quote}"
+                : value;
         }
     }
 }

@@ -18,6 +18,7 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Users;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
@@ -28,46 +29,62 @@ namespace RX.Nyss.Web.Features.Reports
     public interface IReportService
     {
         Task<Result<ReportResponseDto>> Get(int reportId);
+
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
+
         Task<Result<ReportListFilterResponseDto>> GetFilters(int nationalSocietyId);
+
         Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId);
+
         Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
+
         Task<Result> MarkAsError(int reportId);
+
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
+
         IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
-        IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters);
+
         Task<Result> AcceptReport(int reportId);
+
         Task<Result> DismissReport(int reportId);
     }
 
     public class ReportService : IReportService
     {
         private readonly INyssWebConfig _config;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IUserService _userService;
+
         private readonly IProjectService _projectService;
+
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringsResourcesService _stringsResourcesService;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IAlertReportService _alertReportService;
 
-        public ReportService(INyssContext nyssContext,
+        private readonly IStringsService _stringsService;
+
+        public ReportService(
+            INyssContext nyssContext,
             IUserService userService,
             IProjectService projectService,
             INyssWebConfig config,
             IAuthorizationService authorizationService,
-            IStringsResourcesService stringsResourcesService,
             IDateTimeProvider dateTimeProvider,
-            IAlertReportService alertReportService)
+            IAlertReportService alertReportService,
+            IStringsService stringsService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _projectService = projectService;
             _config = config;
             _authorizationService = authorizationService;
-            _stringsResourcesService = stringsResourcesService;
             _dateTimeProvider = dateTimeProvider;
             _alertReportService = alertReportService;
+            _stringsService = stringsService;
         }
 
         public async Task<Result<ReportResponseDto>> Get(int reportId)
@@ -115,6 +132,7 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
             var currentRole = (await _authorizationService.GetCurrentUser()).Role;
+
             var isSupervisor = currentRole == Role.Supervisor;
             var isHeadSupervisor = currentRole == Role.HeadSupervisor;
             var currentUserId = await _nyssContext.Users.FilterAvailable()
@@ -123,7 +141,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .SingleAsync();
 
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
+            var strings = await _stringsService.GetForCurrentUser();
 
             var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
 
@@ -198,7 +216,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             if(filter.DataCollectorType != ReportListDataCollectorType.UnknownSender)
             {
-                AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
+                AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, strings);
             }
 
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
@@ -319,14 +337,12 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByDate(filters.StartDate, filters.EndDate)
                 .FilterByHealthRisk(filters.HealthRiskId);
 
-        public IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters) =>
+
+        public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
             GetRawReportsWithDataCollectorQuery(filters)
                 .AllSuccessfulReports()
                 .Select(r => r.Report)
-                .Where(r => !r.MarkedAsError);
-
-        public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
-            GetSuccessReportsQuery(filters)
+                .Where(r => !r.MarkedAsError)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
         public async Task<Result> MarkAsError(int reportId)
@@ -564,20 +580,18 @@ namespace RX.Nyss.Web.Features.Reports
             }
         }
 
-        private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
-            stringResources.Keys.Contains(key)
-                ? stringResources[key].Value
-                : key;
-
-        internal static void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports, string currentUserOrganizationName, IDictionary<string, StringResourceValue> stringsResources) =>
+        internal static void AnonymizeCrossOrganizationReports(
+            IEnumerable<IReportListResponseDto> reports,
+            string currentUserOrganizationName,
+            StringsResourcesVault strings) =>
             reports
                 .Where(r => r.IsAnonymized)
                 .ToList()
                 .ForEach(x =>
                 {
                     x.DataCollectorDisplayName = x.OrganizationName == currentUserOrganizationName
-                        ? $"{GetStringResource(stringsResources, ResultKey.Report.LinkedToSupervisor)} {x.SupervisorName}"
-                        : $"{GetStringResource(stringsResources, ResultKey.Report.LinkedToOrganization)} {x.OrganizationName}";
+                        ? $"{strings[ResultKey.Report.LinkedToSupervisor]} {x.SupervisorName}"
+                        : $"{strings[ResultKey.Report.LinkedToOrganization]} {x.OrganizationName}";
                     x.PhoneNumber = "***";
                     x.Zone = "";
                     x.Village = "";

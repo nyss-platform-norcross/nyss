@@ -23,7 +23,6 @@ namespace RX.Nyss.Web.Tests.Features.AlertEvents
         private readonly AlertEventsService _alertEventsService;
         private List<Alert> _alerts;
         private List<AlertEventLog> _alertEventLogItems;
-        private List<AlertEventType> _alertEventTypes;
         private readonly User _currentUser = new AdministratorUser() { Id = 1 };
 
         public AlertEventsServiceTests()

@@ -26,7 +26,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors),
   takeEvery(consts.REPLACE_SUPERVISOR.INVOKE, replaceSupervisor),
-  takeEvery(consts.SET_DATA_COLLECTORS_DEPLOYED_STATE.INVOKE, setDeployedState)
+  takeEvery(consts.SET_DATA_COLLECTORS_DEPLOYED_STATE.INVOKE, setDeployedState),
+  takeEvery(consts.EXPORT_DATA_COLLECTOR_PERFORMANCE.INVOKE, exportDataCollectorPerformance)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -289,4 +290,20 @@ function* setDeployedState({ dataCollectorIds, deployed }) {
     yield put(actions.setDeployedState.failure(dataCollectorIds, error));
   }
 };
+
+function* exportDataCollectorPerformance({ projectId, filters }) {
+  yield put(actions.exportDataCollectorPerformance.request());
+  try {
+    const date = new Date(Date.now());
+    yield downloadFile({
+      url: `/api/dataCollector/exportPerformance?projectId=${projectId}`,
+      fileName: `dataCollectorPerformance_${formatDate(date)}.xlsx`,
+      data: filters
+    });
+
+    yield put(actions.exportDataCollectorPerformance.success());
+  } catch (error) {
+    yield put(actions.exportDataCollectorPerformance.failure(error.message));
+  }
+}
 
