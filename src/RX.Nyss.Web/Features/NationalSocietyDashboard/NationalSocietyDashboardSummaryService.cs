@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
@@ -74,6 +75,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .FilterByArea(filters.Area)
                 .FilterByType(filters.DataCollectorType)
                 .FilterByNationalSociety(nationalSocietyId)
+                .FilterByTrainingMode(filters.TrainingStatus)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
     }
