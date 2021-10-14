@@ -20,16 +20,20 @@ namespace RX.Nyss.ReportApi.Tests.Features.Stats
     public class StatsServiceTests
     {
         private readonly INyssContext _nyssContext;
+
         private readonly IStatsService _statsService;
+
         private readonly IDataBlobService _dataBlobService;
 
         public StatsServiceTests()
         {
-            _nyssContext = Substitute.For<INyssContext>();
-            _dataBlobService = Substitute.For<IDataBlobService>();
             var config = Substitute.For<INyssReportApiConfig>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             dateTimeProvider.UtcNow.Returns(new DateTime(2020, 2, 6));
+
+            _nyssContext = Substitute.For<INyssContext>();
+            _dataBlobService = Substitute.For<IDataBlobService>();
+
             _statsService = new StatsService(_nyssContext, _dataBlobService, dateTimeProvider, config);
         }
 
@@ -67,12 +71,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Stats
                 },
                 new Project
                 {
-                    Id = 1,
+                    Id = 2,
                     State = ProjectState.Open,
                     NationalSocietyId = 1
-                },new Project
+                },
+                new Project
                 {
-                    Id = 1,
+                    Id = 3,
                     State = ProjectState.Closed,
                     NationalSocietyId = 1
                 }
@@ -93,25 +98,42 @@ namespace RX.Nyss.ReportApi.Tests.Features.Stats
                     RawReports = new List<RawReport>()
                 }
             };
-            var alerts = new List<Data.Models.Alert> { new Data.Models.Alert
+            var alerts = new List<Data.Models.Alert>
             {
-                EscalatedAt = new DateTime(2020, 2, 22, 10, 55, 43),
-                ProjectHealthRisk = new ProjectHealthRisk
+                new Data.Models.Alert
                 {
-                    Project = new Project()
+                    EscalatedAt = new DateTime(2020, 2, 22, 10, 55, 43),
+                    ProjectHealthRisk = new ProjectHealthRisk { Project = new Project() }
                 }
-            }
+            };
+
+            var rawReports = new[]
+            {
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Project = new Project { Id = 1 } },
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Project = new Project { Id = 2 } },
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Project = new Project { Id = 3 } },
+                },
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
             var alertsMockDbSet = alerts.AsQueryable().BuildMockDbSet();
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
 
             _nyssContext.NationalSocieties.Returns(nationalSocietiesMockDbSet);
             _nyssContext.Projects.Returns(projectsMockDbSet);
             _nyssContext.DataCollectors.Returns(dataCollectorsMockDbSet);
             _nyssContext.Alerts.Returns(alertsMockDbSet);
+            _nyssContext.RawReports.Returns(rawReportsMockDbSet);
         }
     }
 }
