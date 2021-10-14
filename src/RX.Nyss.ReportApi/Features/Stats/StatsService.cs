@@ -59,7 +59,7 @@ namespace RX.Nyss.ReportApi.Features.Stats
                 .Where(a => a.EscalatedAt.HasValue)
                 .CountAsync();
 
-            var withReportsProjectsIds = await _nyssContext.RawReports
+            var withReportsProjectIds = await _nyssContext.RawReports
                 .AsNoTracking()
                 .Include(r => r.DataCollector)
                 .ThenInclude(dc => dc.Project)
@@ -68,7 +68,7 @@ namespace RX.Nyss.ReportApi.Features.Stats
 
             var allProjects = await _nyssContext.Projects
                 .AsNoTracking()
-                .Where(p => !_nationalSocietiesToExclude.Contains(p.NationalSocietyId) && withReportsProjectsIds.Contains(p.Id))
+                .Where(p => !_nationalSocietiesToExclude.Contains(p.NationalSocietyId) && withReportsProjectIds.Contains(p.Id))
                 .Select(p => p.State)
                 .ToListAsync();
 
