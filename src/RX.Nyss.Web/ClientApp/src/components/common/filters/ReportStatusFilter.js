@@ -3,13 +3,13 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@
 import { Fragment } from 'react';
 import { stringKeys, strings } from '../../../strings';
 
-export const ReportStatusFilter = ({ filter, onChange, correctReports, showDismissedFilter, doNotWrapp }) => {
+export const ReportStatusFilter = ({ filter, onChange, correctReports, showDismissedFilter, doNotWrap }) => {
 
   return (
     <Fragment>
       <FormControl className={styles.filterItem}>
         <FormLabel component='legend'>{strings(stringKeys.filters.report.status)}</FormLabel>
-        <FormGroup className={[styles.filterCheckboxGroup, doNotWrapp && styles.noFlexWrapp]}>
+        <FormGroup className={[styles.filterCheckboxGroup, doNotWrap && styles.noFlexWrap]}>
           {correctReports && (
             <Fragment>
               <FormControlLabel
