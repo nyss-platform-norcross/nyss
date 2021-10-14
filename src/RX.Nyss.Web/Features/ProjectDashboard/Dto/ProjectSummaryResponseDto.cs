@@ -9,7 +9,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public int NotCrossCheckedReportCount { get; set; }
         public int TotalReportCount { get; set; }
         public int ActiveDataCollectorCount { get; set; }
-        public int InactiveDataCollectorCount { get; set; }
         public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; } = new DataCollectionPointsSummaryResponse();
         public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
         public int NumberOfVillages { get; set; }
