@@ -37,7 +37,6 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
         kept: true,
         dismissed: false,
         notCrossChecked: true,
-        training: false
       },
       dataCollectorType: "all",
       utcOffset: utcOffset

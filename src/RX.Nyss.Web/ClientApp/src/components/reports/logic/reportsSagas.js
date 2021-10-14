@@ -75,10 +75,10 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
       kept: true,
       dismissed: true,
       notCrossChecked: true,
-      training: false
     },
     reportType: null,
-    utcOffset: getUtcOffset()
+    utcOffset: getUtcOffset(),
+    trainingStatus: "Trained",
   };
 
   const requestSorting = sorting || (yield select(state => state.reports.correctReportsSorting)) ||
@@ -110,10 +110,10 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
     reportStatus: null,
     reportType: {
       real: true,
-      training: false,
       corrected: false
     },
-    utcOffset: getUtcOffset()
+    utcOffset: getUtcOffset(),
+    trainingStatus: "Trained",
   };
   const requestSorting = sorting || (yield select(state => state.reports.incorrectReportsSorting)) ||
   {

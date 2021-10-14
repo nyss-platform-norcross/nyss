@@ -18,12 +18,19 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
     public class ProjectDashboardSummaryServiceTests
     {
         private const int ProjectId = 1;
+
         private readonly ProjectDashboardSummaryService _projectDashboardDataService;
+
         private readonly IReportService _reportService;
+
         private readonly List<DataCollector> _dataCollectors;
+
         private readonly List<Project> _projects;
+
         private readonly List<Village> _villages;
+
         private readonly List<District> _districts;
+
         private readonly INyssContext _nyssContext;
 
         public ProjectDashboardSummaryServiceTests()
@@ -85,7 +92,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -120,7 +126,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -156,7 +161,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -211,7 +215,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -282,7 +285,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
 
@@ -323,87 +325,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Fact]
-        public async Task GetSummaryData_ReturnsCorrectInactiveDataCollectorCount()
-        {
-            var filters = new ReportsFilter
-            {
-                ProjectId = ProjectId,
-                ReportStatus = new ReportStatusFilterDto
-                {
-                    Dismissed = true,
-                    Kept = true,
-                    NotCrossChecked = true,
-                    Training = false
-                }
-            };
-
-            var rawReports = new List<RawReport>
-            {
-                new RawReport
-                {
-                    DataCollector = _dataCollectors.First(),
-                    Village = new Village { District = new District() }
-                },
-                new RawReport
-                {
-                    DataCollector = new DataCollector { Id = 2 },
-                    Village = new Village { District = new District() }
-                },
-                new RawReport
-                {
-                    DataCollector = new DataCollector { Id = 2 },
-                    Village = new Village { District = new District() }
-                }
-            };
-
-            _dataCollectors.AddRange(new[]
-            {
-                new DataCollector
-                {
-                    Id = 2,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                },
-                new DataCollector
-                {
-                    Id = 3,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                },
-                new DataCollector
-                {
-                    Id = 4,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                }
-            });
-
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
-
-            var summaryData = await _projectDashboardDataService.GetData(filters);
-
-            summaryData.InactiveDataCollectorCount.ShouldBe(2);
-        }
-
-        [Fact]
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
             var filters = new ReportsFilter
@@ -414,7 +335,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Dismissed = true,
                     Kept = true,
                     NotCrossChecked = true,
-                    Training = false
                 }
             };
             var rawReports = new List<RawReport>

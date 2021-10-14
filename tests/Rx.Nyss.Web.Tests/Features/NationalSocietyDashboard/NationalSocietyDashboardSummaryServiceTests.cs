@@ -18,12 +18,19 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
     public class NationalSocietyDashboardSummaryServiceTests
     {
         private const int NationalSocietyId = 1;
+
         private readonly NationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
+
         private readonly IReportService _reportService;
+
         private readonly List<DataCollector> _dataCollectors;
+
         private readonly List<NationalSociety> _nationalSocieties;
+
         private readonly List<Village> _villages;
+
         private readonly List<District> _districts;
+
         private readonly List<Project> _projects;
 
         public NationalSocietyDashboardSummaryServiceTests()
@@ -96,7 +103,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -134,7 +140,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -172,7 +177,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -230,7 +234,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>
@@ -304,7 +307,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
 
@@ -345,87 +347,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         }
 
         [Fact]
-        public async Task GetSummaryData_ReturnsCorrectInactiveDataCollectorCount()
-        {
-            var filters = new ReportsFilter
-            {
-                NationalSocietyId = NationalSocietyId,
-                ReportStatus = new ReportStatusFilterDto
-                {
-                    Dismissed = false,
-                    Kept = true,
-                    NotCrossChecked = false,
-                    Training = false
-                }
-            };
-
-            var rawReports = new List<RawReport>
-            {
-                new RawReport
-                {
-                    DataCollector = new DataCollector { Id = 1 },
-                    Village = _villages.First()
-                },
-                new RawReport
-                {
-                    DataCollector = new DataCollector { Id = 2 },
-                    Village = _villages.First()
-                },
-                new RawReport
-                {
-                    DataCollector = new DataCollector { Id = 2 },
-                    Village = _villages.First()
-                }
-            };
-
-            _dataCollectors.AddRange(new[]
-            {
-                new DataCollector
-                {
-                    Id = 2,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                },
-                new DataCollector
-                {
-                    Id = 3,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                },
-                new DataCollector
-                {
-                    Id = 4,
-                    Project = _projects.First(),
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = _villages.First()
-                        }
-                    },
-                }
-            });
-
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
-
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
-
-            summaryData.InactiveDataCollectorCount.ShouldBe(2);
-        }
-
-        [Fact]
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
             var filters = new ReportsFilter
@@ -436,7 +357,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Dismissed = false,
                     Kept = true,
                     NotCrossChecked = false,
-                    Training = false
                 }
             };
             var reports = new List<RawReport>

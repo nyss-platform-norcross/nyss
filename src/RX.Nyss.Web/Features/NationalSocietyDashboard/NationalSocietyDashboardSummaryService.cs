@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
@@ -19,7 +20,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
     public class NationalSocietyDashboardSummaryService : INationalSocietyDashboardSummaryService
     {
         private readonly IReportService _reportService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
 
         public NationalSocietyDashboardSummaryService(
@@ -48,7 +51,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new
                 {
-                    allDataCollectorCount = AllDataCollectorCount(filters, nationalSocietyId),
                     activeDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()
                 })
                 .Select(data => new NationalSocietySummaryResponseDto
@@ -58,7 +60,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending || r.Status == ReportStatus.Closed).Sum(r => r.ReportedCaseCount),
                     TotalReportCount = dashboardReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
-                    InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(dashboardReports),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
                     NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
@@ -66,14 +67,5 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 })
                 .FirstOrDefaultAsync();
         }
-
-        private int AllDataCollectorCount(ReportsFilter filters, int nationalSocietyId) =>
-            _nyssContext.DataCollectors
-                .FilterByArea(filters.Area)
-                .FilterByType(filters.DataCollectorType)
-                .FilterByNationalSociety(nationalSocietyId)
-                .FilterByTrainingMode(filters.ReportStatus.Training)
-                .FilterOnlyNotDeletedBefore(filters.StartDate)
-                .Count();
     }
 }

@@ -3,7 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@
 import { Fragment } from 'react';
 import { stringKeys, strings } from '../../../strings';
 
-export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrainingFilter, showDismissedFilter }) => {
+export const ReportStatusFilter = ({ filter, onChange, correctReports, showDismissedFilter }) => {
 
   return (
     <Fragment>
@@ -29,16 +29,8 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrain
                   label={strings(stringKeys.filters.report.dismissed)}
                 />
               )}
-              {showTrainingFilter && (
-                <FormControlLabel
-                  className={styles.checkbox}
-                  control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
-                  label={strings(stringKeys.filters.report.trainingReports)}
-                />
-              )}
             </Fragment>
           )}
-
           {!correctReports && (
             <Fragment>
               <FormControlLabel
@@ -46,13 +38,6 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showTrain
                 control={<Checkbox checked={filter.real} onChange={onChange} name='real' color='primary' />}
                 label={strings(stringKeys.filters.report.nonTrainingReports)}
               />
-              {showTrainingFilter && (
-                <FormControlLabel
-                  className={styles.checkbox}
-                  control={<Checkbox checked={filter.training} onChange={onChange} name='training' color='primary' />}
-                  label={strings(stringKeys.filters.report.trainingReports)}
-                />
-              )}
               <FormControlLabel
                 className={styles.checkbox}
                 control={<Checkbox checked={filter.corrected} onChange={onChange} name='corrected' color='primary' />}

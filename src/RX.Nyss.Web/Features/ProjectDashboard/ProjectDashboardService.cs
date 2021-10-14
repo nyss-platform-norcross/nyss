@@ -28,13 +28,21 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public class ProjectDashboardService : IProjectDashboardService
     {
         private readonly IProjectService _projectService;
+
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
+
         private readonly IReportsDashboardByFeatureService _reportsDashboardByFeatureService;
+
         private readonly IReportsDashboardByHealthRiskService _reportsDashboardByHealthRiskService;
+
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
+
         private readonly IReportsDashboardByDataCollectionPointService _reportsDashboardByDataCollectionPointService;
+
         private readonly IProjectDashboardSummaryService _projectDashboardSummaryService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IAuthorizationService _authorizationService;
 
         public ProjectDashboardService(
@@ -168,7 +176,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 ProjectId = projectId,
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,
-                UtcOffset = filtersDto.UtcOffset
+                UtcOffset = filtersDto.UtcOffset,
+                TrainingStatus = filtersDto.TrainingStatus,
             };
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.DataCollectorTypeFilterDto dataCollectorTypeFilter) =>

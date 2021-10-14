@@ -19,7 +19,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public class ProjectDashboardSummaryService : IProjectDashboardSummaryService
     {
         private readonly IReportService _reportService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
 
         public ProjectDashboardSummaryService(
@@ -43,10 +45,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
 
             return await _nyssContext.Projects
+                .AsNoTracking()
                 .Where(p => p.Id == filters.ProjectId.Value)
                 .Select(p => new
                 {
-                    AllDataCollectorCount = AllDataCollectorCount(filters),
                     ActiveDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()
                 })
                 .Select(data => new ProjectSummaryResponseDto
@@ -56,7 +58,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending || r.Status == ReportStatus.Closed).Sum(r => r.ReportedCaseCount),
                     TotalReportCount = dashboardReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.ActiveDataCollectorCount,
-                    InactiveDataCollectorCount = data.AllDataCollectorCount - data.ActiveDataCollectorCount,
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(dashboardReports),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
                     NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
@@ -64,14 +65,5 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .FirstOrDefaultAsync();
         }
-
-        private int AllDataCollectorCount(ReportsFilter filters) =>
-            _nyssContext.DataCollectors
-                .FilterByArea(filters.Area)
-                .FilterByType(filters.DataCollectorType)
-                .FilterByProject(filters.ProjectId.Value)
-                .FilterByTrainingMode(filters.ReportStatus.Training)
-                .FilterOnlyNotDeletedBefore(filters.StartDate)
-                .Count();
     }
 }

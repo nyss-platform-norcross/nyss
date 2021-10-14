@@ -438,9 +438,9 @@ export const stringKeys = {
         allReportsType: "project.dashboard.filters.allReportsType",
         dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
         dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
-        trainingReportsListType: "project.dashboard.filters.trainingReportsListType",
         notInTraining: "project.dashboard.filters.notInTraining",
-        inTraining: "project.dashboard.filters.inTraining"
+        inTraining: "project.dashboard.filters.inTraining",
+        trainingStatus: "project.dashboard.filters.trainingStatus",
       },
       reportsPerHealthRisk: {
         title: "project.dashboard.reportsPerHealthRisk.title",
@@ -738,7 +738,6 @@ export const stringKeys = {
       error: "reports.list.error",
       selectReportListType: "reports.list.selectReportListType",
       mainReportsListType: "reports.list.mainReportsListType",
-      trainingReportsListType: "reports.list.trainingReportsListType",
       training: "reports.list.training",
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType",
@@ -1033,7 +1032,6 @@ export const stringKeys = {
       unknownSenderReportListType: "filters.report.unknownSenderReportListType",
       status: "filters.report.status",
       reportType: "filters.report.reportType",
-      trainingReports: "filters.report.trainingReports",
       nonTrainingReports: "filters.report.nonTrainingReports",
       correctedReports: "filters.report.correctedReports",
       kept: "filters.report.keptReports",

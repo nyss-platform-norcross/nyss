@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByArea(MapToArea(filter.Area))
-                .FilterByReportType(filter.ReportType)
+                .FilterByTrainingMode(TrainingStatusDto.Trained)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByErrorType(filter.ErrorType);
 

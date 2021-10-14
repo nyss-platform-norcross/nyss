@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
@@ -138,6 +139,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     },
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,
+                TrainingStatus = TrainingStatusDto.Trained,
                 UtcOffset = filtersDto.UtcOffset
             };
 
