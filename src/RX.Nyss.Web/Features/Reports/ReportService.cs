@@ -598,7 +598,7 @@ namespace RX.Nyss.Web.Features.Reports
                     x.DataCollectorDisplayName = x.OrganizationName == currentUserOrganizationName
                         ? $"{strings[ResultKey.Report.LinkedToSupervisor]} {x.SupervisorName}"
                         : $"{strings[ResultKey.Report.LinkedToOrganization]} {x.OrganizationName}";
-                    x.PhoneNumber = "***";
+                    x.PhoneNumber = "";
                     x.Zone = "";
                     x.Village = "";
                 });

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
@@ -117,7 +118,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 if (report.IsAnonymized)
                 {
                     report.DataCollectorDisplayName = report.OrganizationName;
-                    report.PhoneNumber = report.PhoneNumber.Length > 4 ? "***" + report.PhoneNumber.SubstringFromEnd(4) : "***";
+                    report.PhoneNumber = AnonymizePhoneNumber(report.PhoneNumber);
                     report.Region = "";
                     report.Zone = "";
                     report.District = "";
@@ -153,5 +154,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     AreaType = area.Type,
                     AreaId = area.Id
                 };
+
+        private static string AnonymizePhoneNumber(string phoneNumber) =>
+            string.IsNullOrEmpty(phoneNumber)
+            || phoneNumber == Anonymization.Text
+            || phoneNumber.Length <= 4
+                ? ""
+                : $"***{phoneNumber.SubstringFromEnd(4)}";
     }
 }
