@@ -1,6 +1,6 @@
 import styles from "./AlertsAssessmentReport.module.scss";
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
@@ -17,6 +17,8 @@ import {
   Divider,
   Icon,
 } from "@material-ui/core";
+import { useSelector } from "react-redux";
+import { Manager, TechnicalAdvisor } from "../../../authentication/roles";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -36,6 +38,7 @@ const getReportIcon = (status) => {
 }
 
 export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
+  const currentUserRoles = useSelector(state => state.appData.user.roles);
   const showActions = status !== assessmentStatus.closed && status !== assessmentStatus.dismissed && report.status === "Pending" && !report.isAnonymized;
   const showResetOption = status !== assessmentStatus.closed
     && status !== assessmentStatus.dismissed
@@ -44,6 +47,9 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
     && !report.isAnonymized;
 
   const fromOtherOrg = report.dataCollector == null;
+
+  const showSupervisorDetails = currentUserRoles.some(r => r === Manager || r === TechnicalAdvisor);
+
   return (
     <Accordion disabled={fromOtherOrg}>
       <AccordionSummary expandIcon={!fromOtherOrg && <ExpandMoreIcon />}>
@@ -94,6 +100,12 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
               label={strings(stringKeys.alerts.assess.report.id)}
               value={report.id}
             />
+            {showSupervisorDetails && (
+              <ReportFormLabel
+                label={strings(stringKeys.alerts.assess.supervisor)}
+                value={`${report.supervisorName} / ${report.supervisorPhoneNumber}`}
+              />
+            )}
           </Grid>
         </Grid>
       </AccordionDetails>

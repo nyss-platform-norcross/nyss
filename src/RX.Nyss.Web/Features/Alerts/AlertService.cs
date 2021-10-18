@@ -225,6 +225,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         IsAnonymized = (currentUser.Role == Role.Supervisor && ar.Report.DataCollector.Supervisor.Id != currentUser.Id)
                             || (currentUser.Role == Role.HeadSupervisor && ar.Report.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id),
                         SupervisorName = ar.Report.DataCollector.Supervisor.Name,
+                        SupervisorPhoneNumber = ar.Report.DataCollector.Supervisor.PhoneNumber,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
                         Village = ar.Report.RawReport.Village.Name,
@@ -273,7 +274,9 @@ namespace RX.Nyss.Web.Features.Alerts
                         IsAnonymized = ar.IsAnonymized,
                         AcceptedAt = ar.AcceptedAt?.AddHours(utcOffset),
                         RejectedAt = ar.RejectedAt?.AddHours(utcOffset),
-                        ResetAt = ar.ResetAt?.AddHours(utcOffset)
+                        ResetAt = ar.ResetAt?.AddHours(utcOffset),
+                        SupervisorName = ar.SupervisorName,
+                        SupervisorPhoneNumber = ar.SupervisorPhoneNumber
                     }
                     : new AlertAssessmentResponseDto.ReportDto
                     {

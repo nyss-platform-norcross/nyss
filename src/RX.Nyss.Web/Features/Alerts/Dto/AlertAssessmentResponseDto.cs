@@ -54,6 +54,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             public DateTime? AcceptedAt { get; set; }
             public DateTime? RejectedAt { get; set; }
             public DateTime? ResetAt { get; set; }
+            public string SupervisorName { get; set; }
+            public string SupervisorPhoneNumber { get; set; }
         }
     }
 }
