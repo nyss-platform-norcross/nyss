@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
                     SupervisorName = r.DataCollector.Supervisor.Name,
-                    Status = !r.Report.IsActivityReport()
+                    Status = r.Report != null && !r.Report.IsActivityReport()
                         ? GetReportStatusString(strings, r.Report.Status)
                         : null,
                     MarkedAsError = r.Report.MarkedAsError,
