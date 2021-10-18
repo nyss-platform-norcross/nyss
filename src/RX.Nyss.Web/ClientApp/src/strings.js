@@ -879,7 +879,6 @@ export const stringKeys = {
       introduction: "alerts.assess.introduction",
       reports: "alerts.assess.reports",
       closeReason: "alerts.assess.closeReason",
-      supervisor: "alerts.assess.supervisor",
       statusDescription: {
         closed: "alerts.assess.statusDescription.closed",
         escalated: "alerts.assess.statusDescription.escalated",

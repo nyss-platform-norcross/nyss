@@ -102,7 +102,7 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
             />
             {showSupervisorDetails && (
               <ReportFormLabel
-                label={strings(stringKeys.alerts.assess.supervisor)}
+                label={strings(stringKeys.roles.Supervisor)}
                 value={`${report.supervisorName} / ${report.supervisorPhoneNumber}`}
               />
             )}
