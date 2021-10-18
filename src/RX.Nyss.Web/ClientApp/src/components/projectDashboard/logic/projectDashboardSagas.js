@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { stringsFormat, stringKeys } from "../../../strings";
 import { generatePdfDocument } from "../../../utils/pdf";
+import { trackTrace } from "../../../utils/tracking";
+
 dayjs.extend(utc);
 
 export const projectDashboardSagas = () => [
@@ -86,6 +88,13 @@ function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude 
 function* generatePdf({ containerElement }) {
   const reportFileName = "Report";
 
+  const projectId = yield select(state => state.appData.route.params.projectId);
+  const message = "Generate project dashboard pdf";
+  const properties = {
+    projectId,
+  };
+
+  yield call(trackTrace, { message, properties });
   yield put(actions.generatePdf.request());
   try {
     const siteMapParams = yield select(state => state.appData.siteMap.parameters);
