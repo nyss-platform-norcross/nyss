@@ -7,13 +7,14 @@ const INIT_TRACKING = action("INIT_TRACKING");
 const TRACK_PAGEVIEW = action("TRACK_PAGEVIEW");
 
 export const actions = {
-  initTracking: () => ({ type: INIT_TRACKING.INVOKE }),
   pageView: (alias) => ({ type: TRACK_PAGEVIEW.INVOKE, alias }),
 };
 
-function* initTracking() {
+export function* initTracking() {
+  const appData = yield select(state => state.appData);
+
   const appInsights = new ApplicationInsights({ config: {
-    connectionString: "",
+    connectionString: appData.applicationInsightsConnectionString,
   }});
   appInsights.loadAppInsights();
 

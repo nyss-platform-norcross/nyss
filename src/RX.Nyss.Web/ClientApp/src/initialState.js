@@ -18,7 +18,7 @@ export const initialState = {
     },
     message: null,
     moduleError: null,
-    showStringsKeys: false
+    showStringsKeys: false,
   },
   requests: {
     isFetching: false,

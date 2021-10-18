@@ -9,6 +9,7 @@ import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
 import { reloadPage } from "../../../utils/page";
 import * as localStorage from "../../../utils/localStorage";
+import { initTracking } from "../../../utils/tracking";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
@@ -24,6 +25,7 @@ function* initApplication() {
     const user = yield select(state => state.appData.user);
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
+    yield call(initTracking);
     yield put(actions.initApplication.success());
 
     window.userLanguage = user && user.languageCode;
@@ -94,7 +96,14 @@ function* getAppData() {
   yield put(actions.getAppData.request());
   try {
     const appData = yield call(http.get, "/api/appData/getAppData", true);
-    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment, appData.value.isDemo, appData.value.authCookieExpiration));
+    yield put(actions.getAppData.success(
+      appData.value.contentLanguages,
+      appData.value.countries,
+      appData.value.isDevelopment,
+      appData.value.isDemo,
+      appData.value.authCookieExpiration,
+      appData.value.applicationInsightsConnectionString,
+      ));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

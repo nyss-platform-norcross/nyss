@@ -45,8 +45,8 @@ export const getAppData = {
   request: () =>
     ({ type: actions.GET_APP_DATA.REQUEST }),
 
-  success: (contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration) =>
-    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration }),
+  success: (contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration, applicationInsightsConnectionString) =>
+    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration, applicationInsightsConnectionString }),
 
   failure: (message) =>
     ({ type: actions.GET_APP_DATA.FAILURE, message })
