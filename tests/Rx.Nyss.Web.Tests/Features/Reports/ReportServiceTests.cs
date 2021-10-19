@@ -58,8 +58,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly INyssContext _nyssContextInMemory;
 
         private readonly IStringsService _stringsService;
-
-        private readonly int _rowsPerPage = 10;
+        
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
 
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();

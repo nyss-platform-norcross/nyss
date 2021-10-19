@@ -60,7 +60,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         public async Task ParseReport_WhenEmptyReportSent_ShouldThrowException(string reportMessage)
         {
             // Assert
-            Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
+            await Should.ThrowAsync<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
         }
 
         [Fact]
