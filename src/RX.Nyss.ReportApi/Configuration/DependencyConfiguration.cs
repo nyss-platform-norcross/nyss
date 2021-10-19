@@ -22,6 +22,8 @@ namespace RX.Nyss.ReportApi.Configuration
     {
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            serviceCollection.AddDatabaseDeveloperPageExceptionFilter();
+
             var config = configuration.Get<ConfigSingleton>();
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);

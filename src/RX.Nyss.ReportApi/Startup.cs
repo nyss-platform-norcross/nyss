@@ -25,7 +25,6 @@ namespace RX.Nyss.ReportApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
 
             app.UseCustomExceptionHandler();

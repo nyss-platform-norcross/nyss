@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Users
                         ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
                         : null,
                     OrganizationName = uns.Organization.Name,
-                    OrganizationId = uns.Organization.Id,
+                    OrganizationId = uns.Organization != null ? uns.Organization.Id : 0,
                     IsHeadManager = uns.Organization.HeadManagerId.HasValue && uns.Organization.HeadManagerId == uns.User.Id,
                     IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id,
                     IsVerified = !uns.User.IsFirstLogin
