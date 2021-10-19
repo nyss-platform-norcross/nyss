@@ -29,28 +29,24 @@ namespace RX.Nyss.Web.Features.Alerts
     public interface IAlertService
     {
         Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, AlertListFilterRequestDto filterRequestDto);
-        Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset);
+
         Task<Result> Escalate(int alertId, bool sendNotification);
+
         Task<Result> Dismiss(int alertId);
+
         Task<Result> Close(int alertId);
+
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
+
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
+
         Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
+
         Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto);
     }
 
     public class AlertService : IAlertService
     {
-        private const string SexFemale = "Female";
-
-        private const string SexMale = "Male";
-
-        private const string AgeAtLeastFive = "AtLeastFive";
-
-        private const string AgeBelowFive = "BelowFive";
-
-        private const string Unspecified = "Unspecified";
-
         private readonly INyssContext _nyssContext;
 
         private readonly IEmailPublisherService _emailPublisherService;
@@ -189,103 +185,6 @@ namespace RX.Nyss.Web.Features.Alerts
                 .AsPaginatedList(pageNumber, totalCount, rowsPerPage);
 
             return Success(dtos);
-        }
-
-        public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset)
-        {
-            var currentUser = await _authorizationService.GetCurrentUser();
-
-            var userOrganizations = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.UserId == currentUser.Id)
-                .Select(uns => uns.Organization)
-                .ToListAsync();
-
-            var alert = await _nyssContext.Alerts
-                .IgnoreQueryFilters()
-                .Where(a => a.Id == alertId)
-                .Select(a => new
-                {
-                    Status = a.Status,
-                    CreatedAt = a.CreatedAt,
-                    EscalatedAt = a.EscalatedAt,
-                    Comments = a.Comments,
-                    EscalatedOutcome = a.EscalatedOutcome,
-                    HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
-                        .Select(lc => lc.Name)
-                        .Single(),
-                    HealthRiskCountThreshold = a.ProjectHealthRisk.AlertRule.CountThreshold,
-                    CaseDefinition = a.ProjectHealthRisk.CaseDefinition,
-                    Reports = a.AlertReports.Select(ar => new
-                    {
-                        Id = ar.Report.Id,
-                        DataCollector = ar.Report.DataCollector.DisplayName,
-                        OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
-                        OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
-                        IsAnonymized = (currentUser.Role == Role.Supervisor && ar.Report.DataCollector.Supervisor.Id != currentUser.Id)
-                            || (currentUser.Role == Role.HeadSupervisor && ar.Report.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id),
-                        SupervisorName = ar.Report.DataCollector.Supervisor.Name,
-                        ReceivedAt = ar.Report.ReceivedAt,
-                        PhoneNumber = ar.Report.PhoneNumber,
-                        Village = ar.Report.RawReport.Village.Name,
-                        District = ar.Report.RawReport.Village.District.Name,
-                        Region = ar.Report.RawReport.Village.District.Region.Name,
-                        ReportedCase = ar.Report.ReportedCase,
-                        Status = ar.Report.Status,
-                        AcceptedAt = ar.Report.AcceptedAt,
-                        RejectedAt = ar.Report.RejectedAt,
-                        ResetAt = ar.Report.ResetAt
-                    })
-                })
-                .AsNoTracking()
-                .SingleAsync();
-
-            var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
-            var pendingReports = alert.Reports.Count(r => r.Status == ReportStatus.Pending);
-            var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator);
-
-            var dto = new AlertAssessmentResponseDto
-            {
-                HealthRisk = alert.HealthRisk,
-                Comments = alert.Comments,
-                CreatedAt = alert.CreatedAt.AddHours(utcOffset),
-                EscalatedAt = alert.EscalatedAt?.AddHours(utcOffset),
-                CaseDefinition = alert.CaseDefinition,
-                AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
-                EscalatedOutcome = alert.EscalatedOutcome,
-                Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
-                    ? new AlertAssessmentResponseDto.ReportDto
-                    {
-                        Id = ar.Id,
-                        DataCollector = ar.IsAnonymized
-                            ? ar.SupervisorName
-                            : ar.DataCollector,
-                        ReceivedAt = ar.ReceivedAt.AddHours(utcOffset),
-                        PhoneNumber = ar.IsAnonymized
-                            ? "***"
-                            : ar.PhoneNumber,
-                        Status = ar.Status.ToString(),
-                        Village = ar.Village,
-                        District = ar.District,
-                        Region = ar.Region,
-                        Sex = GetSex(ar.ReportedCase),
-                        Age = GetAge(ar.ReportedCase),
-                        IsAnonymized = ar.IsAnonymized,
-                        AcceptedAt = ar.AcceptedAt?.AddHours(utcOffset),
-                        RejectedAt = ar.RejectedAt?.AddHours(utcOffset),
-                        ResetAt = ar.ResetAt?.AddHours(utcOffset)
-                    }
-                    : new AlertAssessmentResponseDto.ReportDto
-                    {
-                        Id = ar.Id,
-                        ReceivedAt = ar.ReceivedAt.AddHours(utcOffset),
-                        Status = ar.Status.ToString(),
-                        Organization = ar.OrganizationName,
-                        IsAnonymized = ar.IsAnonymized
-                    }).ToList()
-            };
-
-            return Success(dto);
         }
 
         public async Task<Result> Escalate(int alertId, bool sendNotification)
@@ -445,7 +344,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            return GetAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
+            return alertData.Status.GetAssessmentStatus(alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
         }
 
         public async Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto)
@@ -655,78 +554,6 @@ namespace RX.Nyss.Web.Features.Alerts
                     )).AnyAsync();
 
             return organizationHasReportsInAlert;
-        }
-
-        private static AlertAssessmentStatus GetAssessmentStatus(AlertStatus alertStatus, int acceptedReports, int pendingReports, int countThreshold) =>
-            alertStatus switch
-            {
-                AlertStatus.Escalated =>
-                    AlertAssessmentStatus.Escalated,
-
-                AlertStatus.Dismissed =>
-                    AlertAssessmentStatus.Dismissed,
-
-                AlertStatus.Closed =>
-                    AlertAssessmentStatus.Closed,
-
-                AlertStatus.Pending when acceptedReports >= countThreshold =>
-                    AlertAssessmentStatus.ToEscalate,
-
-                AlertStatus.Pending when acceptedReports + pendingReports >= countThreshold =>
-                    AlertAssessmentStatus.Open,
-
-                _ =>
-                    AlertAssessmentStatus.ToDismiss
-            };
-
-        private static string GetSex(ReportCase reportedCase)
-        {
-            if (reportedCase == null)
-            {
-                return null;
-            }
-
-            if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountFemalesBelowFive > 0)
-            {
-                return SexFemale;
-            }
-
-            if (reportedCase.CountMalesBelowFive > 0 || reportedCase.CountMalesAtLeastFive > 0)
-            {
-                return SexMale;
-            }
-
-            if (reportedCase.CountUnspecifiedSexAndAge > 0)
-            {
-                return Unspecified;
-            }
-
-            throw new ResultException(ResultKey.Alert.InconsistentReportData);
-        }
-
-        private static string GetAge(ReportCase reportedCase)
-        {
-            if (reportedCase == null)
-            {
-                return null;
-            }
-
-            if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountMalesAtLeastFive > 0)
-            {
-                return AgeAtLeastFive;
-            }
-
-            if (reportedCase.CountFemalesBelowFive > 0 || reportedCase.CountMalesBelowFive > 0)
-            {
-                return AgeBelowFive;
-            }
-
-            if (reportedCase.CountUnspecifiedSexAndAge > 0)
-            {
-                return Unspecified;
-            }
-
-            throw new ResultException(ResultKey.Alert.InconsistentReportData);
         }
 
         private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, string lastReportVillage)
