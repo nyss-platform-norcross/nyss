@@ -76,8 +76,7 @@ function* fetchRecipients({ alertId }) {
 function* openAlertsAssessment({ projectId, alertId }) {
   yield put(actions.openAssessment.request());
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/get?utcOffset=${getUtcOffset()}`);
-    const data = response.value;
+    const data = yield call(http.get, `/api/alert/${alertId}/get?utcOffset=${getUtcOffset()}`);
 
     const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
 

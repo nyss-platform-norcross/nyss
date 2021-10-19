@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Alerts.Queries;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -54,9 +55,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/get")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset) =>
-            _alertService.Get(alertId, utcOffset);
-
+        public async Task<AlertAssessmentResponseDto> Get(int alertId, int utcOffset) =>
+            await Sender.Send(new GetAlertAssessmentQuery(alertId) { UtcOffset = utcOffset });
 
         /// <summary>
         /// Gets information about the alert's notification recipients
