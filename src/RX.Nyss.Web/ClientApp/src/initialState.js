@@ -18,7 +18,7 @@ export const initialState = {
     },
     message: null,
     moduleError: null,
-    showStringsKeys: false
+    showStringsKeys: false,
   },
   requests: {
     isFetching: false,
@@ -316,5 +316,8 @@ export const initialState = {
     emailTranslations: [],
     smsLanguages: [],
     smsTranslations: []
+  },
+  tracking: {
+    appInsights: null,
   }
 };

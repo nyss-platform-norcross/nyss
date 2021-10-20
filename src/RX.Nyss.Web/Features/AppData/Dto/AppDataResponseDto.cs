@@ -14,6 +14,8 @@ namespace RX.Nyss.Web.Features.AppData.Dto
 
         public int AuthCookieExpiration { get; set; }
 
+        public string ApplicationInsightsConnectionString { get; set; }
+
         public class ContentLanguageDto
         {
             public int Id { get; set; }

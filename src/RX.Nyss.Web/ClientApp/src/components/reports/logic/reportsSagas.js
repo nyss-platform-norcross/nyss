@@ -9,6 +9,7 @@ import { stringKeys } from "../../../strings";
 import { ReportErrorFilterType, DataCollectorType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
 import { formatDate, getUtcOffset } from "../../../utils/date";
+import { trackTrace } from "../../../utils/tracking";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_CORRECT_REPORTS_LIST.INVOKE, openCorrectReportsList),
@@ -23,7 +24,8 @@ export const reportsSagas = () => [
   takeEvery(consts.OPEN_SEND_REPORT.INVOKE, openSendReport),
   takeEvery(consts.SEND_REPORT.INVOKE, sendReport),
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
-  takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport)
+  takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
+  takeEvery(consts.TRACK_REPORT_EXPORT.INVOKE, trackReportExport),
 ];
 
 function* openCorrectReportsList({ projectId }) {
@@ -285,4 +287,15 @@ function* dismissReport({ reportId }) {
     yield put(actions.dismissReport.failure());
     yield put(appActions.showMessage(error.message));
   }
+}
+
+function* trackReportExport({ page, fileType, projectId }) {
+  const message = "Report export";
+  const properties = {
+    page,
+    type: fileType,
+    projectId,
+  };
+
+  yield call(trackTrace, { message, properties })
 }

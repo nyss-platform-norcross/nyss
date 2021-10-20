@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Features.AppData
     public class AppDataService : IAppDataService
     {
         private readonly INyssContext _nyssContext;
+
         private readonly INyssWebConfig _config;
 
         public AppDataService(
@@ -50,7 +51,8 @@ namespace RX.Nyss.Web.Features.AppData
                 IsDemo = _config.IsDemo
                     ? true
                     : (bool?)null,
-                AuthCookieExpiration = _config.Authentication.CookieExpirationTime
+                AuthCookieExpiration = _config.Authentication.CookieExpirationTime,
+                ApplicationInsightsConnectionString = _config.ApplicationInsights.ConnectionString,
             });
     }
 }

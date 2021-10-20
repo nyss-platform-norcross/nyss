@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
+    "@microsoft/applicationinsights-web": "^2.7.0",
     "babel-eslint": "^10.1.0",
     "connected-react-router": "^6.8.0",
     "dayjs": "^1.10.4",

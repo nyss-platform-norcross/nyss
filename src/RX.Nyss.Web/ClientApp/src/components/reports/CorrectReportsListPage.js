@@ -17,6 +17,8 @@ import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";
 import { useState } from "react";
 
+const Page = "correct";
+
 const CorrectReportsListPageComponent = (props) => {
   const [open, setOpen] = useState(false);
 
@@ -53,6 +55,16 @@ const CorrectReportsListPageComponent = (props) => {
     setOpen(true);
   }
 
+  function exportToCsv() {
+    props.trackReportExport(Page, "Csv", props.projectId);
+    props.exportToCsv(props.projectId, props.filters, props.sorting);
+  }
+
+  function exportToExcel() {
+    props.trackReportExport(Page, "Excel", props.projectId);
+    props.exportToExcel(props.projectId, props.filters, props.sorting);
+  }
+
   return (
     <Fragment>
       <TableActions>
@@ -62,11 +74,11 @@ const CorrectReportsListPageComponent = (props) => {
           </TableActionsButton>
         </Hidden>
 
-        <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters, props.sorting)}>
+        <TableActionsButton onClick={exportToCsv}>
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
 
-        <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
+        <TableActionsButton onClick={exportToExcel}>
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
 
@@ -150,7 +162,8 @@ const mapDispatchToProps = {
   sendReport: reportsActions.sendReport.invoke,
   goToAlert: reportsActions.goToAlert,
   acceptReport: reportsActions.acceptReport.invoke,
-  dismissReport: reportsActions.dismissReport.invoke
+  dismissReport: reportsActions.dismissReport.invoke,
+  trackReportExport: reportsActions.trackReportExport,
 };
 
 export const CorrectReportsListPage = withLayout(

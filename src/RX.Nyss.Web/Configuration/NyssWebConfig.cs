@@ -5,15 +5,26 @@ namespace RX.Nyss.Web.Configuration
     public interface INyssWebConfig : IConfig
     {
         string BaseUrl { get; set; }
+
         string FuncAppBaseUrl { get; set; }
-        string Environment { get; set; }
+
         bool IsProduction { get; }
+
+        string Environment { get; set; }
+
         bool IsDemo { get; }
+
         string AuthorizedApiKeysBlobObjectName { get; set; }
+
         int PaginationRowsPerPage { get; set; }
+
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
+
         ConfigSingleton.ExportOptions Export { get; set; }
+
         ConfigSingleton.ViewOptions View { get; set; }
+
+        ApplicationInsightsOptions ApplicationInsights { get; set; }
     }
 
     public class ConfigSingleton : INyssWebConfig
@@ -63,6 +74,8 @@ namespace RX.Nyss.Web.Configuration
         public ExportOptions Export { get; set; }
 
         public ViewOptions View { get; set; }
+
+        public ApplicationInsightsOptions ApplicationInsights { get; set; }
 
         public class AuthenticationOptions
         {

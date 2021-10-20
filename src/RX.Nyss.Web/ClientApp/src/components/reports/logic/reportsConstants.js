@@ -13,6 +13,7 @@ export const OPEN_SEND_REPORT = action("OPEN_SEND_REPORT");
 export const SEND_REPORT = action("SEND_REPORT");
 export const ACCEPT_REPORT = action("ACCEPT_REPORT_IN_LIST");
 export const DISMISS_REPORT = action("DISMISS_REPORT_IN_LIST");
+export const TRACK_REPORT_EXPORT = action("TRACK_REPORT_EXPORT");
 
 export const DateColumnName = "date";
 
