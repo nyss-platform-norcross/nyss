@@ -154,7 +154,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
-
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
@@ -172,8 +171,8 @@ namespace RX.Nyss.Web.Features.Reports
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
                         .SingleOrDefault(),
-                    IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
-                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
+                    IsActivityReport = r.Report.ProjectHealthRisk != null && (r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
+                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98),
                     IsValid = r.Report != null,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
@@ -204,9 +203,11 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    Status = r.Report.Status,
+                    Status = r.Report.Status != null
+                        ? r.Report.Status
+                        : ReportStatus.New,
                     ReportErrorType = r.ErrorType,
-                    DataCollectorIsDeleted = r.DataCollector.Name == Anonymization.Text
+                    DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
