@@ -12,6 +12,24 @@ export const actions = {
   trackTrace: (message, properties) => ({ type: TRACK_TRACE.INVOKE, message, properties }),
 };
 
+export const trackingSagas = () => [
+  takeEvery(INIT_TRACKING.INVOKE, initTracking),
+  takeEvery(TRACK_PAGEVIEW.INVOKE, trackPage),
+  takeEvery(TRACK_TRACE.INVOKE, trackTrace),
+];
+
+export function trackingReducer(state = initialState.tracking, action) {
+  switch (action.type) {
+    case INIT_TRACKING.SUCCESS:
+    return {
+        ...state,
+        appInsights: action.appInsights,
+      };
+      default:
+        return state;  
+  }
+}
+
 export function* initTracking() {
   const appData = yield select(state => state.appData);
 
@@ -46,22 +64,4 @@ export function* trackTrace({ message, properties }) {
       userRole: user.roles[0],      
     },
   });
-}
-
-export const trackingSagas = () => [
-  takeEvery(INIT_TRACKING.INVOKE, initTracking),
-  takeEvery(TRACK_PAGEVIEW.INVOKE, trackPage),
-  takeEvery(TRACK_TRACE.INVOKE, trackTrace),
-];
-
-export function trackingReducer(state = initialState.tracking, action) {
-  switch (action.type) {
-    case INIT_TRACKING.SUCCESS:
-    return {
-        ...state,
-        appInsights: action.appInsights,
-      };
-      default:
-        return state;  
-  }
 }
