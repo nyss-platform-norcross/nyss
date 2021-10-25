@@ -253,24 +253,26 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
               </TextField>
             </Grid>
 
-            <Grid item>
-              <TextField
-                select
-                label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
-                onChange={handleOrganizationChange}
-                value={value.organizationId || 0}
-                className={styles.filterItem}
-                InputLabelProps={{ shrink: true }}
-              >
-                <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
+            {organizations.length > 1 && (
+              <Grid item>
+                <TextField
+                  select
+                  label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
+                  onChange={handleOrganizationChange}
+                  value={value.organizationId || 0}
+                  className={styles.filterItem}
+                  InputLabelProps={{ shrink: true }}
+                >
+                  <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
 
-                {organizations.map(organization => (
-                  <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
-                    {organization.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+                  {organizations.map(organization => (
+                    <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
+                      {organization.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            )}
 
             {!userRoles.some(r => r === DataConsumer) && (
               <Grid item>

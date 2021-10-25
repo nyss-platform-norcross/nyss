@@ -413,33 +413,35 @@ export const ProjectsDashboardFilters = ({
               </TextField>
             </Grid>          
 
-            <Grid item>
-              <TextField
-                select
-                label={strings(
-                  stringKeys.project.dashboard.filters.organization
-                )}
-                onChange={handleOrganizationChange}
-                value={value.organizationId || 0}
-                className={styles.filterItem}
-                InputLabelProps={{ shrink: true }}
-              >
-                <MenuItem value={0}>
-                  {strings(
-                    stringKeys.project.dashboard.filters.organizationsAll
+            {organizations.length > 1 && (
+              <Grid item>
+                <TextField
+                  select
+                  label={strings(
+                    stringKeys.project.dashboard.filters.organization
                   )}
-                </MenuItem>
-
-                {organizations.map((organization) => (
-                  <MenuItem
-                    key={`filter_organization_${organization.id}`}
-                    value={organization.id}
-                  >
-                    {organization.name}
+                  onChange={handleOrganizationChange}
+                  value={value.organizationId || 0}
+                  className={styles.filterItem}
+                  InputLabelProps={{ shrink: true }}
+                >
+                  <MenuItem value={0}>
+                    {strings(
+                      stringKeys.project.dashboard.filters.organizationsAll
+                    )}
                   </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+
+                  {organizations.map((organization) => (
+                    <MenuItem
+                      key={`filter_organization_${organization.id}`}
+                      value={organization.id}
+                    >
+                      {organization.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            )}
 
             <Grid item>
               <FormControl>
