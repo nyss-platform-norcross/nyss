@@ -48,7 +48,7 @@ export const create = {
 };
 
 export const addExisting = {
-  invoke: (nationalSocietyId, data) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.INVOKE, nationalSocietyId, data }),
+  invoke: (data) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.INVOKE, data }),
   request: () => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.REQUEST }),
   success: () => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.SUCCESS }),
   failure: (error) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE, error, suppressPopup: true })

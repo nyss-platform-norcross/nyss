@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -18,24 +18,36 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       email: "",
-      modemId: ""
+      modemId: "",
+      organizationId: "",
     };
 
     const validation = {
       email: [validators.required, validators.email, validators.maxLength(100)],
-      modemId: [validators.requiredWhen(_ => canSelectModem)]
+      modemId: [validators.requiredWhen(_ => canSelectModem)],
+      organizationId: [validators.requiredWhen(_ => canChooseOrganization)],
     };
 
     return createForm(fields, validation);
   });
 
   const canSelectModem = props.modems != null && props.modems.length > 0;
+  const canChooseOrganization = true;
 
   useCustomErrors(form, props.error);
 
   useMount(() => {
     props.openAddExisting(props.nationalSocietyId);
-  })
+  });
+
+  const availableOrganizations = useMemo(() => {
+    console.log("availableOrganizations", props.data);
+    if (!props.data) {
+      return [];
+    }
+
+    return props.data.organizations;
+  }, [props.data]);  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,9 +57,11 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.addExisting(props.nationalSocietyId, {
+    props.addExisting({
+      nationalSocietyId: props.nationalSocietyId,
       email: values.email,
-      modemId: !!values.modemId ? parseInt(values.modemId) : null
+      modemId: !!values.modemId ? parseInt(values.modemId) : null,
+      organizationId: !!values.organizationId ? parseInt(values.organizationId) : null,
     });
   };
 
@@ -71,6 +85,21 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
               inputMode={"email"}
             />
           </Grid>
+
+          {canChooseOrganization && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId">
+                {availableOrganizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}          
 
           {canSelectModem && (
             <Grid item xs={12}>
@@ -106,7 +135,8 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.nationalSocietyUsers.formSaving,
   error: state.nationalSocietyUsers.formError,
-  modems: state.nationalSocietyUsers.formModems
+  modems: state.nationalSocietyUsers.formModems,
+  data: state.nationalSocietyUsers.formAdditionalData,
 });
 
 const mapDispatchToProps = {

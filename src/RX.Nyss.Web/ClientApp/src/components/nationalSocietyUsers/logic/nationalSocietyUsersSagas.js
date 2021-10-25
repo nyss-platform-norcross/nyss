@@ -84,12 +84,12 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
   }
 };
 
-function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
+function* addExistingNationalSocietyUser({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/user/addExisting?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `/api/user/addExisting`, data);
     yield put(actions.create.success(response.value));
-    yield put(actions.goToList(nationalSocietyId));
+    yield put(actions.goToList(data.nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.create.success));
   } catch (error) {
     yield put(actions.create.failure(error));

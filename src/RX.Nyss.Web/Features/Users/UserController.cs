@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Users.Commands;
 using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Utils;
 
@@ -62,12 +63,11 @@ namespace RX.Nyss.Web.Features.Users
         /// <summary>
         /// Adds an existing technical advisor or a data consumer user to a national society.
         /// </summary>
-        /// <param name="nationalSocietyId">The id of the national society</param>
-        /// <param name="existingUser">The data of the existing user to be added</param>
+        /// <param name="cmd">Adding existing user command</param>
         /// <returns></returns>
         [HttpPost("addExisting")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> AddExisting(int nationalSocietyId, AddExistingUserToNationalSocietyRequestDto existingUser) =>
-            await _userService.AddExisting(nationalSocietyId, existingUser);
+        public async Task<Result> AddExisting([FromBody] AddExistingUserCommand cmd) =>
+            await Sender.Send(cmd);
     }
 }
