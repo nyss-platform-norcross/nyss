@@ -9,7 +9,7 @@ export const ReportStatusFilter = ({ filter, onChange, correctReports, showDismi
     <Fragment>
       <FormControl className={styles.filterItem}>
         <FormLabel component='legend'>{strings(stringKeys.filters.report.status)}</FormLabel>
-        <FormGroup className={[styles.filterCheckboxGroup, doNotWrap && styles.noFlexWrap]}>
+        <FormGroup className={doNotWrap ? `${styles.filterCheckboxGroup} ${styles.noFlexWrap}` : styles.filterCheckboxGroup}>
           {correctReports && (
             <Fragment>
               <FormControlLabel
