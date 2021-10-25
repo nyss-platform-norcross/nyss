@@ -30,7 +30,7 @@ const ProjectDashboardPageComponent = ({
   ...props
 }) => {
   useMount(() => {
-    openDashboard(projectId);
+    openDashboard(props.match.params.projectId);
   });
 
   const dashboardElement = useRef(null);

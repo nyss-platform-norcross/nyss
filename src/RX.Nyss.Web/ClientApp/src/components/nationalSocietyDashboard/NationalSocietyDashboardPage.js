@@ -15,7 +15,7 @@ import { NationalSocietyDashboardReportVillageChart } from './components/Nationa
 
 const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
-    openDashboard(props.nationalSocietyId);
+    openDashboard(props.match.params.nationalSocietyId);
   });
 
   const dashboardElement = useRef(null);
