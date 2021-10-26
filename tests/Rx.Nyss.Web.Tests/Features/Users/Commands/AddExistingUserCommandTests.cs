@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
 
             //assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserNotFound);
+            result.Message.Key.ShouldBe("user.registration.userNotFound");
         }
 
         [Fact]
@@ -63,6 +63,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
         {
             // arrange
             const string email = "manager7@domain.com";
+            const int organizationId = 1;
 
             var users = new User[]
             {
@@ -72,7 +73,10 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
                     Role = Role.Manager,
                 }
             }.AsQueryable().BuildMockDbSet();
-            var organizations = Enumerable.Empty<Organization>().AsQueryable().BuildMockDbSet();
+            var organizations = new[]
+            {
+                new Organization { Id = organizationId },
+            }.AsQueryable().BuildMockDbSet();
 
             _mockNyssContext.Users.Returns(users);
             _mockNyssContext.Organizations.Returns(organizations);
@@ -82,6 +86,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
 
             var cmd = new AddExistingUserCommand
             {
+                OrganizationId = organizationId,
                 Email = email,
             };
 
@@ -90,7 +95,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
 
             //assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
+            result.Message.Key.ShouldBe("user.registration.noAssignableUserWithThisEmailFound");
         }
 
         [Fact]
@@ -233,7 +238,10 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
                 }
             }.AsQueryable().BuildMockDbSet();
 
-            var organizations = Enumerable.Empty<Organization>().AsQueryable().BuildMockDbSet();
+            var organizations = new[]
+            {
+                new Organization { Id = organizationId },
+            }.AsQueryable().BuildMockDbSet();
 
             var currentUser = new ManagerUser
             {
@@ -245,6 +253,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
                 {
                     UserId = currentUserId,
                     NationalSocietyId = nationalSocietyId,
+                    OrganizationId = organizationId,
                     Organization = new Organization { Id = organizationId },
                     User = currentUser,
                 },
@@ -270,6 +279,7 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
 
             var cmd = new AddExistingUserCommand
             {
+                OrganizationId = organizationId,
                 NationalSocietyId = nationalSocietyId,
                 Email = email,
             };
@@ -283,6 +293,70 @@ namespace RX.Nyss.Web.Tests.Features.Users.Commands
             _mockNyssContext.UserNationalSocieties
                 .Received(1)
                 .Add(Arg.Is<UserNationalSociety>(u => u.Organization.Id == organizationId));
+        }
+
+                [Fact]
+        public async Task WhenEmailExistsAndIsAssignableAndCurrentUserIsManagerWithInvalidOrganization_ShouldReturnError()
+        {
+            // arrange
+            const string email = "technicalAdvisor5@domain.com";
+            const int nationalSocietyId = 666;
+            const int organizationId = 123;
+            const int userId = 66;
+            const int currentUserId = 321;
+
+            var users = new User[]
+            {
+                new TechnicalAdvisorUser
+                {
+                    Id = userId,
+                    EmailAddress = email,
+                    Role = Role.TechnicalAdvisor,
+                }
+            }.AsQueryable().BuildMockDbSet();
+
+            var organizations = new[]
+            {
+                new Organization { Id = organizationId },
+            }.AsQueryable().BuildMockDbSet();
+
+            var currentUser = new ManagerUser
+            {
+                Id = currentUserId,
+            };
+            var userNationalSocieties = Enumerable.Empty<UserNationalSociety>().AsQueryable().BuildMockDbSet();
+
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                },
+            }.AsQueryable().BuildMockDbSet();
+
+            _mockNyssContext.Users.Returns(users);
+            _mockNyssContext.Organizations.Returns(organizations);
+            _mockNyssContext.UserNationalSocieties.Returns(userNationalSocieties);
+            _mockNyssContext.NationalSocieties.Returns(nationalSocieties);
+
+            _mockAuthorizationService.GetCurrentUser().Returns(currentUser);
+            _mockAuthorizationService.IsCurrentUserInRole(Role.Manager).Returns(true);
+            _mockAuthorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor)
+                .Returns(true);
+
+            var cmd = new AddExistingUserCommand
+            {
+                OrganizationId = organizationId,
+                NationalSocietyId = nationalSocietyId,
+                Email = email,
+            };
+
+            //act
+            var result = await _handler.Handle(cmd, CancellationToken.None);
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe("user.registration.invalidUserOrganization");
         }
     }
 }

@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Users.Dto;
+using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.Users.Queries
 {
@@ -22,13 +24,17 @@ namespace RX.Nyss.Web.Features.Users.Queries
         {
             private readonly INyssContext _nyssContext;
 
-            public Handler(INyssContext nyssContext)
+            private readonly IAuthorizationService _authorizationService;
+
+            public Handler(INyssContext nyssContext, IAuthorizationService authorizationService)
             {
                 _nyssContext = nyssContext;
+                _authorizationService = authorizationService;
             }
 
             public async Task<AddExistingUserFormDataDto> Handle(GetAddExistingUserFormDataQuery request, CancellationToken cancellationToken)
             {
+                var currentUser = await _authorizationService.GetCurrentUser();
                 var nationalSociety = await _nyssContext.NationalSocieties
                     .AsNoTracking()
                     .Include(ns => ns.Organizations)
@@ -43,15 +49,22 @@ namespace RX.Nyss.Web.Features.Users.Queries
                     })
                     .ToListAsync(cancellationToken);
 
+                var currentUserOrganizationId = _authorizationService.IsCurrentUserInRole(Role.Manager)
+                    ? (await _nyssContext.UserNationalSocieties.SingleOrDefaultAsync(
+                        uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == request.NationalSocietyId, cancellationToken))?.OrganizationId
+                    : null;
+
                 return new AddExistingUserFormDataDto
                 {
                     Modems = modems,
-                    Organizations = nationalSociety.Organizations.Select(o => new OrganizationsDto
-                    {
-                        Id = o.Id,
-                        Name = o.Name,
-                        IsDefaultOrganization = nationalSociety.DefaultOrganizationId == o.Id,
-                    }).ToList(),
+                    Organizations = nationalSociety.Organizations
+                        .Where(o => currentUserOrganizationId == null || o.Id == currentUserOrganizationId)
+                        .Select(o => new OrganizationsDto
+                        {
+                            Id = o.Id,
+                            Name = o.Name,
+                            IsDefaultOrganization = nationalSociety.DefaultOrganizationId == o.Id,
+                        }).ToList(),
                 };
             }
         }

@@ -45,16 +45,16 @@ namespace RX.Nyss.Web.Features.Users.Commands
                 var user = await _nyssContext.Users.FilterAvailable()
                     .Where(u => u.EmailAddress == request.Email)
                     .SingleOrDefaultAsync(cancellationToken);
-                var organization = _authorizationService.IsCurrentUserInRole(Role.Manager)
-                    ? await _nyssContext.UserNationalSocieties
-                        .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                        .Select(uns => uns.Organization)
-                        .SingleOrDefaultAsync(cancellationToken)
-                    : await _nyssContext.Organizations.SingleOrDefaultAsync(o => o.Id == request.OrganizationId, cancellationToken);
+                var organization = await _nyssContext.Organizations.SingleOrDefaultAsync(o => o.Id == request.OrganizationId, cancellationToken);
 
                 if (user == null)
                 {
                     return Error(ResultKey.User.Registration.UserNotFound);
+                }
+
+                if (organization == null)
+                {
+                    return Error(ResultKey.User.Registration.OrganizationDoesNotExists);
                 }
 
                 if (user.Role != Role.TechnicalAdvisor && user.Role != Role.DataConsumer)
@@ -65,11 +65,6 @@ namespace RX.Nyss.Web.Features.Users.Commands
                 if (user.Role == Role.TechnicalAdvisor && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor))
                 {
                     return Error(ResultKey.User.Registration.TechnicalAdvisorsCanBeAttachedOnlyByManagers);
-                }
-
-                if (organization == null)
-                {
-                    return Error(ResultKey.User.Registration.OrganizationDoesNotExists);
                 }
 
                 var userAlreadyIsInThisNationalSociety = await _nyssContext.UserNationalSocieties
@@ -87,6 +82,12 @@ namespace RX.Nyss.Web.Features.Users.Commands
                 if (nationalSocietyIsArchived)
                 {
                     return Error(ResultKey.User.Registration.CannotAddExistingUsersToArchivedNationalSociety);
+                }
+
+                if (_authorizationService.IsCurrentUserInRole(Role.Manager)
+                    && !await IsInOrganization(currentUser.Id, request.NationalSocietyId, organization.Id))
+                {
+                    return Error(ResultKey.User.Registration.InvalidUserOrganization);
                 }
 
                 var userNationalSociety = new UserNationalSociety
@@ -107,6 +108,10 @@ namespace RX.Nyss.Web.Features.Users.Commands
 
                 return Success();
             }
+
+            private async Task<bool> IsInOrganization(int userId, int nationalSocietyId, int organizationId) =>
+                await _nyssContext.UserNationalSocieties.AnyAsync(
+                    uns => uns.UserId == userId && uns.NationalSocietyId == nationalSocietyId && uns.OrganizationId == organizationId);
 
             private async Task AddModemToExistingTechnicalAdvisor(TechnicalAdvisorUser user, int modemId, int nationalSocietyId)
             {
