@@ -125,11 +125,9 @@ const DataCollectorsEditPageComponent = (props) => {
   return (
     <Fragment>
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
-
       <Form onSubmit={handleSubmit} fullWidth>
-
         <Grid item xs={12}>
-          <Typography variant="h6">{strings(stringKeys.dataCollector.form.dataCollectorType)}</Typography>
+          <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>
         </Grid>
 
         <Grid item xs={12}>
