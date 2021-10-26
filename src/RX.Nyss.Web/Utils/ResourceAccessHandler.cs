@@ -19,7 +19,7 @@ namespace RX.Nyss.Web.Utils
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, Requirement requirement)
         {
-            var entityId = _httpContextAccessor.GetResourceParameter(_routeParameterName);
+            var entityId = await _httpContextAccessor.GetResourceParameter(_routeParameterName);
 
             if (entityId.HasValue && await HasAccess(entityId.Value, requirement.ReadOnly))
             {

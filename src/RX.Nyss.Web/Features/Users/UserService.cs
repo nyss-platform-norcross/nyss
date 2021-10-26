@@ -23,8 +23,6 @@ namespace RX.Nyss.Web.Features.Users
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
 
         Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId);
-
-        Task<Result<List<GatewayModemResponseDto>>> GetAddExistingFormData(int nationalSocietyId);
     }
 
     public class UserService : IUserService
@@ -149,20 +147,6 @@ namespace RX.Nyss.Web.Features.Users
                 }).SingleOrDefaultAsync();
 
             return Success(user);
-        }
-
-        public async Task<Result<List<GatewayModemResponseDto>>> GetAddExistingFormData(int nationalSocietyId)
-        {
-             var modems = await _nyssContext.GatewayModems
-                .Where(gm => gm.GatewaySetting.NationalSocietyId == nationalSocietyId)
-                .Select(gm => new GatewayModemResponseDto
-                {
-                    Id = gm.Id,
-                    Name = gm.Name
-                })
-                .ToListAsync();
-
-             return Success(modems);
         }
 
         public async Task<string> GetUserApplicationLanguageCode(string userIdentityName) =>

@@ -36,7 +36,7 @@ export const openCreation = {
 export const openAddExisting = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.REQUEST }),
-  success: (modems) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS, modems }),
+  success: (formData) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS, formData }),
   failure: (error) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.FAILURE, error })
 };
 

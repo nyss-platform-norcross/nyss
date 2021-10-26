@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useEffect } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -25,14 +25,14 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
     const validation = {
       email: [validators.required, validators.email, validators.maxLength(100)],
       modemId: [validators.requiredWhen(_ => canSelectModem)],
-      organizationId: [validators.requiredWhen(_ => canChooseOrganization)],
+      organizationId: [validators.requiredWhen(_ => canSelectOrganization)],
     };
 
     return createForm(fields, validation);
   });
 
-  const canSelectModem = props.modems != null && props.modems.length > 0;
-  const canChooseOrganization = true;
+  const canSelectModem = props.formData?.modems && props.formData.modems.length > 0;
+  const canSelectOrganization = props.formData?.organizations && props.formData.organizations.length > 0;
 
   useCustomErrors(form, props.error);
 
@@ -41,13 +41,12 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   });
 
   const availableOrganizations = useMemo(() => {
-    console.log("availableOrganizations", props.data);
-    if (!props.data) {
+    if (!props.formData) {
       return [];
     }
 
-    return props.data.organizations;
-  }, [props.data]);  
+    return props.formData.organizations;
+  }, [props.formData]);  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -58,12 +57,21 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
     const values = form.getValues();
     props.addExisting({
-      nationalSocietyId: props.nationalSocietyId,
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       email: values.email,
       modemId: !!values.modemId ? parseInt(values.modemId) : null,
       organizationId: !!values.organizationId ? parseInt(values.organizationId) : null,
     });
   };
+
+  useEffect(() => {
+    if (!canSelectOrganization) return;
+    
+    const organizations = props.formData.organizations.filter(o => o.isDefaultOrganization);
+    const preSelected = organizations.length > 0 ? organizations[0] : props.formData.organizations[0];
+    
+    form.fields.organizationId.update(preSelected.id);
+  }, [props.formData, form, canSelectOrganization]);
 
   return (
     <Fragment>
@@ -86,20 +94,22 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
             />
           </Grid>
 
-          {canChooseOrganization && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.organization)}
-                field={form.fields.organizationId}
-                name="organizationId">
-                {availableOrganizations.map(organization => (
-                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
-                    {organization.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}          
+          {canSelectOrganization && <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.nationalSocietyUser.form.organization)}
+              field={form.fields.organizationId}
+              name="organizationId"
+              customProps={{
+                disabled: false,
+              }}                
+              >
+              {availableOrganizations.map(organization => (
+                <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                  {organization.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>}
 
           {canSelectModem && (
             <Grid item xs={12}>
@@ -108,7 +118,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
                 field={form.fields.modemId}
                 name="modemId"
               >
-                {props.modems.map(modem => (
+                {props.formData.modems.map(modem => (
                   <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
                     {modem.name}
                   </MenuItem>
@@ -128,15 +138,11 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   );
 }
 
-NationalSocietyUsersAddExistingPageComponent.propTypes = {
-};
-
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.nationalSocietyUsers.formSaving,
   error: state.nationalSocietyUsers.formError,
-  modems: state.nationalSocietyUsers.formModems,
-  data: state.nationalSocietyUsers.formAdditionalData,
+  formData: state.nationalSocietyUsers.addExistingFormData,
 });
 
 const mapDispatchToProps = {

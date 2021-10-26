@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Users.Commands
 
         public int? ModemId { get; set; }
 
-        public int? OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
 
         public class Handler : IRequestHandler<AddExistingUserCommand, Result>
         {
@@ -40,7 +40,6 @@ namespace RX.Nyss.Web.Features.Users.Commands
             public async Task<Result> Handle(AddExistingUserCommand request, CancellationToken cancellationToken)
             {
                 var nationalSocietyId = request.NationalSocietyId;
-                var organizationId = request.OrganizationId.GetValueOrDefault();
 
                 var currentUser = await _authorizationService.GetCurrentUser();
                 var user = await _nyssContext.Users.FilterAvailable()
@@ -51,7 +50,7 @@ namespace RX.Nyss.Web.Features.Users.Commands
                         .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                         .Select(uns => uns.Organization)
                         .SingleOrDefaultAsync(cancellationToken)
-                    : await _nyssContext.Organizations.SingleOrDefaultAsync(o => o.Id == organizationId, cancellationToken);
+                    : await _nyssContext.Organizations.SingleOrDefaultAsync(o => o.Id == request.OrganizationId, cancellationToken);
 
                 if (user == null)
                 {
@@ -137,6 +136,8 @@ namespace RX.Nyss.Web.Features.Users.Commands
         {
             public Validator()
             {
+                RuleFor(m => m.NationalSocietyId).GreaterThan(0);
+                RuleFor(m => m.OrganizationId).GreaterThan(0);
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();
                 RuleFor(m => m.ModemId).GreaterThan(0).When(m => m.ModemId.HasValue);
             }

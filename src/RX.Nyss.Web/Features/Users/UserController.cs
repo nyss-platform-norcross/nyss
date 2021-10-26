@@ -5,6 +5,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Users.Commands;
 using RX.Nyss.Web.Features.Users.Dto;
+using RX.Nyss.Web.Features.Users.Queries;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.Users
@@ -57,8 +58,8 @@ namespace RX.Nyss.Web.Features.Users
         /// <returns></returns>
         [HttpGet("addExistingFormData")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
-        public async Task<Result> AddExistingFormData(int nationalSocietyId) =>
-            await _userService.GetAddExistingFormData(nationalSocietyId);
+        public async Task<AddExistingUserFormDataDto> AddExistingFormData(int nationalSocietyId) =>
+            await Sender.Send(new GetAddExistingUserFormDataQuery(nationalSocietyId));
 
         /// <summary>
         /// Adds an existing technical advisor or a data consumer user to a national society.
