@@ -97,9 +97,6 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     Id = r.Id,
                     DataCollectorId = r.DataCollector.Id,
-                    DataCollectorType = r.Report.ReportType == ReportType.DataCollectionPoint
-                        ? DataCollectorType.CollectionPoint
-                        : DataCollectorType.Human,
                     ReportType = r.Report.ReportType,
                     ReportStatus = r.Report.Status,
                     LocationId = r.DataCollector.DataCollectorLocations
@@ -113,9 +110,9 @@ namespace RX.Nyss.Web.Features.Reports
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive.Value,
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive.Value,
                     CountUnspecifiedSexAndAge = r.Report.ReportedCase.CountUnspecifiedSexAndAge.Value,
-                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount.Value,
-                    DeathCount = r.Report.DataCollectionPointCase.DeathCount.Value,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount.Value,
+                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
+                    DeathCount = r.Report.DataCollectionPointCase.DeathCount,
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
                     IsActivityReport = r.Report.IsActivityReport(),
                 })
                 .FirstOrDefaultAsync(r => r.Id == reportId);

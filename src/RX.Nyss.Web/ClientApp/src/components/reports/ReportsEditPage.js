@@ -1,6 +1,6 @@
 import styles from './ReportsEditPage.module.scss';
 
-import React, { useEffect, useState, Fragment, useReducer } from 'react';
+import { useEffect, useState, Fragment, useReducer } from 'react';
 import { connect } from 'react-redux';
 import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -73,9 +73,9 @@ const ReportsEditPageComponent = (props) => {
       countFemalesBelowFive: props.data.countFemalesBelowFive.toString(),
       countFemalesAtLeastFive: props.data.countFemalesAtLeastFive.toString(),
       countUnspecifiedSexAndAge: props.data.countUnspecifiedSexAndAge.toString(),
-      referredCount: props.data.referredCount.toString(),
-      deathCount: props.data.deathCount.toString(),
-      fromOtherVillagesCount: props.data.fromOtherVillagesCount.toString()
+      referredCount: !!props.data.referredCount ? props.data.referredCount.toString() : '',
+      deathCount: !!props.data.deathCount ? props.data.deathCount.toString() : '',
+      fromOtherVillagesCount: !!props.data.fromOtherVillagesCount ? props.data.fromOtherVillagesCount.toString() : ''
     };
 
     const validation = {
