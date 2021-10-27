@@ -158,7 +158,8 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     CountMalesBelowFive = malesBelowFive,
                     CountMalesAtLeastFive = malesAtLeastFive,
                     CountFemalesBelowFive = femalesBelowFive,
-                    CountFemalesAtLeastFive = femalesAtLeastFive
+                    CountFemalesAtLeastFive = femalesAtLeastFive,
+                    CountUnspecifiedSexAndAge = 0
                 }
             };
 
@@ -212,7 +213,8 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     CountMalesBelowFive = malesBelowFive,
                     CountMalesAtLeastFive = malesAtLeastFive,
                     CountFemalesBelowFive = femalesBelowFive,
-                    CountFemalesAtLeastFive = femalesAtLeastFive
+                    CountFemalesAtLeastFive = femalesAtLeastFive,
+                    CountUnspecifiedSexAndAge = 0
                 },
                 DataCollectionPointCase =
                 {
