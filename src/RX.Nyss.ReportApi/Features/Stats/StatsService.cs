@@ -63,6 +63,7 @@ namespace RX.Nyss.ReportApi.Features.Stats
                 .AsNoTracking()
                 .Include(r => r.DataCollector)
                 .ThenInclude(dc => dc.Project)
+                .Where(r => r.DataCollector != null)
                 .Select(r => r.DataCollector.Project.Id)
                 .ToListAsync();
 

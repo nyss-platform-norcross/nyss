@@ -49,8 +49,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("listAll")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
-            _dataCollectorService.ListAll(projectId, dataCollectorsFiltersDto);
+        public async Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+            await _dataCollectorService.ListAll(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]

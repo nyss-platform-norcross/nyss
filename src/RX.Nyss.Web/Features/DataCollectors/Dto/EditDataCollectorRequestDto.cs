@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     .GreaterThan(0);
 
                 RuleFor(dc => dc.SupervisorId)
-                    .MustAsync(async (model, supervisorId, t) => await dataCollectorValidationService.IsAllowedToCreateForSupervisor(supervisorId))
+                    .MustAsync(async (_, supervisorId, _) => await dataCollectorValidationService.IsAllowedToCreateForSupervisor(supervisorId))
                     .WithMessageKey(ResultKey.DataCollector.NotAllowedToSelectSupervisor);
 
                 When(dc => dc.DataCollectorType == DataCollectorType.Human, () =>

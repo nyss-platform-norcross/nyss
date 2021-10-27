@@ -306,11 +306,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         .Select(dcl => new DataCollectorLocationResponseDto
                         {
                             Id = dcl.Id,
-                            Region = dcl.Village.District.Region.Name,
-                            District = dcl.Village.District.Name,
                             Village = dcl.Village.Name,
-                            VillageId = dcl.Village.Id,
-                            ZoneId = dcl.Zone.Id,
                             Zone = dcl.Zone.Name
                         })
                 })

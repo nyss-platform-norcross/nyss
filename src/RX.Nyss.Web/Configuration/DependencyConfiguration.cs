@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,7 @@ using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Coordinators.Access;
 using RX.Nyss.Web.Features.DataCollectors.Access;
+using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataConsumers.Access;
 using RX.Nyss.Web.Features.HeadSupervisors.Access;
 using RX.Nyss.Web.Features.Managers.Access;
@@ -50,10 +52,12 @@ namespace RX.Nyss.Web.Configuration
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             var config = configuration.Get<ConfigSingleton>();
+
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterAuth(serviceCollection, config.Authentication);
             RegisterWebFramework(serviceCollection);
+
             if (!config.IsProduction)
             {
                 RegisterSwagger(serviceCollection);
@@ -281,7 +285,7 @@ namespace RX.Nyss.Web.Configuration
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonStringDateTimeConverter());
                 })
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ValidatorsFilter))
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = actionContext =>
@@ -318,16 +322,17 @@ namespace RX.Nyss.Web.Configuration
         {
             serviceCollection.AddSingleton<IConfig>(config);
             serviceCollection.AddSingleton<INyssWebConfig>(config);
+
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 
         private static void RegisterTypes(IServiceCollection serviceCollection, string namePrefix) =>
-            GetAssemblies(namePrefix: namePrefix)
+            GetAssemblies(namePrefix)
                 .SelectMany(assembly => assembly.GetExportedTypes())
                 .Select(type => new
                 {
                     implementationType = type,
-                    interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}")
+                    interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}" && i.FullName.StartsWith(namePrefix))
                 })
                 .Where(x => x.interfaceType != null)
                 .ToList()
@@ -338,5 +343,8 @@ namespace RX.Nyss.Web.Configuration
                 .Where(name => name.Name.StartsWith(namePrefix))
                 .Select(Assembly.Load)
                 .ToArray();
+
+        private static bool ValidatorsFilter(AssemblyScanner.AssemblyScanResult result) =>
+            result.ValidatorType != typeof(DataCollectorLocationRequestDto.Validator);
     }
 }
