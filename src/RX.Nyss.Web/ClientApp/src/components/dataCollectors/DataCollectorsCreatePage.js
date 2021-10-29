@@ -146,6 +146,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
+            <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>            
             <CheckboxField
               name="deployed"
               label={strings(stringKeys.dataCollector.form.deployed)}

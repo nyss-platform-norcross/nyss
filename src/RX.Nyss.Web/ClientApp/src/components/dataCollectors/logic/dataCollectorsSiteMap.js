@@ -22,13 +22,13 @@ export const dataCollectorsSiteMap = [
     middleStepOnly: true
   },
   {
-    parentPath: "/projects/:projectId/datacollectors/list",
+    parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/add",
     title: () => strings(stringKeys.dataCollector.form.creationTitle),
     access: accessMap.dataCollectors.add
   },
   {
-    parentPath: "/projects/:projectId/datacollectors/list",
+    parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/:dataCollectorId/edit",
     title: () => strings(stringKeys.dataCollector.form.editionTitle),
     access: accessMap.dataCollectors.edit
