@@ -386,6 +386,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             message = message.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
             message = message.Replace("{{village}}", alertData.VillageOfLastReport);
             message = message.Replace("{{linkToAlert}}", linkToAlert.ToString());
+            message = message.Replace("{{alertId}}", alert.Id.ToString());
 
             return message;
         }
@@ -415,6 +416,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             message = message.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
             message = message.Replace("{{linkToAlert}}", linkToAlert.ToString());
+            message = message.Replace("{{alertId}}", alert.Id.ToString());
 
             return message;
         }
