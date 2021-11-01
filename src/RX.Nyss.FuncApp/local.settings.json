@@ -15,7 +15,9 @@
     "GeneralBlobContainerName": "nyss-blob-container"
   },
   "ReleaseName": "1.0.0.1",
-  "MaxContentLength": 500, 
+  "MaxContentLength": 500,
+  "EnableResendingFeedbackMessages": false,
+  "MaxMessagesToResubmit": 100,
   "MailConfig": {
     "FromAddress": "",
     "FromName": "Nyss Platform",
@@ -28,7 +30,11 @@
     }
   },
   "ConnectionStrings": {
-    "IotHubService": ""
+    "IotHubService": "",
+    "ServiceBus": ""
+  },
+  "ServiceBusQueues": {
+    "SendSmsQueue": "nrx-cbs-nyss-bus-send-sms-queue-dev"
   },
   "Host": {
     "LocalHttpPort": 7070
