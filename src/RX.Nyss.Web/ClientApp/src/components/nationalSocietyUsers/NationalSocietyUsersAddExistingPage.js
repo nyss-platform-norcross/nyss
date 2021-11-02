@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo, useEffect } from 'react';
+import { useState, Fragment, useMemo, useEffect } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -13,6 +13,7 @@ import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import SelectField from '../forms/SelectField';
 import { MenuItem, Typography, Button, Box, Grid } from '@material-ui/core';
+import { Administrator } from '../../authentication/roles';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {
@@ -32,7 +33,9 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   });
 
   const canSelectModem = props.formData?.modems && props.formData.modems.length > 0;
-  const canSelectOrganization = props.formData?.organizations && props.formData.organizations.length > 0;
+  const canSelectOrganization = props.formData?.organizations 
+    && props.formData.organizations.length > 0 
+    && props.user.roles.some(r => r === Administrator);
 
   useCustomErrors(form, props.error);
 
@@ -65,11 +68,11 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   };
 
   useEffect(() => {
-    if (!canSelectOrganization) return;
+    if (canSelectOrganization || !props.formData) return;
     
     const organizations = props.formData.organizations.filter(o => o.isDefaultOrganization);
     const preSelected = organizations.length > 0 ? organizations[0] : props.formData.organizations[0];
-    
+
     form.fields.organizationId.update(preSelected.id);
   }, [props.formData, form, canSelectOrganization]);
 
@@ -140,6 +143,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
+  user: state.appData.user,
   isSaving: state.nationalSocietyUsers.formSaving,
   error: state.nationalSocietyUsers.formError,
   formData: state.nationalSocietyUsers.addExistingFormData,
