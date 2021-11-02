@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import * as auth from "../../authentication/auth";
-import { Route, Redirect } from "react-router";
+import { Route, useHistory } from "react-router";
 import { BaseLayout } from "../layout/BaseLayout";
 import { useDispatch, useSelector } from 'react-redux';
 import { stringKeys } from "../../strings";
@@ -8,14 +8,14 @@ import { ROUTE_CHANGED } from './logic/appConstans';
 
 export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRedirection, ...rest }) => {
   const user = useSelector(state => state.appData.user);
-  const [redirectUrl, setRedirectUrl] = useState(null);
   const [authError, setAuthError] = useState(null);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     if (!user) {
       auth.setRedirectUrl(window.location.pathname);
-      setRedirectUrl(auth.loginUrl);
+      history.push(auth.loginUrl);
       return;
     }
   
@@ -23,7 +23,7 @@ export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRe
   
     if (redirectUrl && !ignoreRedirection) {
       auth.removeRedirectUrl();
-      setRedirectUrl(redirectUrl);
+      history.push(redirectUrl);
       return;
     }
   
@@ -33,12 +33,7 @@ export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRe
     }
   
     dispatch({ type: ROUTE_CHANGED, url: computedMatch.url, path: computedMatch.path, params: computedMatch.params });
-  }, [user, computedMatch, ignoreRedirection, roles, dispatch]);
-
-
-  if (!!redirectUrl) {
-    return <Redirect to={redirectUrl} />
-  }
+  }, [user, computedMatch, ignoreRedirection, roles, dispatch, history]);
 
   if (!!authError) {
     return <BaseLayout authError={authError}></BaseLayout>
