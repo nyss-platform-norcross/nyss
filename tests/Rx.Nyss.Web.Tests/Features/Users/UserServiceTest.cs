@@ -3,12 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
-using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Users;
-using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
@@ -321,89 +319,6 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             var userNationalSocietyDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
-        }
-
-        [Fact]
-        public async Task AddExisting_WhenEmailDoesntExist_ShouldReturnError()
-        {
-            //act
-            var result = await _userService.AddExisting(2, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "bla@ble.com"
-            });
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserNotFound);
-        }
-
-
-        [Fact]
-        public async Task AddExisting_WhenEmailExistsButIsNotAssignable_ShouldReturnError()
-        {
-            //act
-            var result = await _userService.AddExisting(2, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "manager7@domain.com"
-            });
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
-        }
-
-        [Fact]
-        public async Task AddExisting_WhenEmailExistsButUserAlreadyIsInThisNationalSociety_ShouldReturnError()
-        {
-            //act
-            var result = await _userService.AddExisting(1, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "technicalAdvisor5@domain.com"
-            });
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
-        }
-
-        [Fact]
-        public async Task AddExisting_WhenEmailExistsAndIsAssignable_ShouldReturnSuccess()
-        {
-            //act
-            var result = await _userService.AddExisting(2, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "technicalAdvisor5@domain.com"
-            });
-
-            //assert
-            result.IsSuccess.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task AddExisting_WhenEmailExistsAndIsAssignable_AddOnUserNationalSocietiesShouldBeCalledOnce()
-        {
-            //act
-            var result = await _userService.AddExisting(2, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "technicalAdvisor5@domain.com"
-            });
-
-            //assert
-            await _nyssContext.UserNationalSocieties.Received(1).AddAsync(Arg.Any<UserNationalSociety>());
-        }
-
-
-        [Fact]
-        public async Task AddExisting_WhenEmailExistsAndIsAssignable_SaveChangesShouldBeCalledOnce()
-        {
-            //act
-            var result = await _userService.AddExisting(2, new AddExistingUserToNationalSocietyRequestDto
-            {
-                Email = "technicalAdvisor5@domain.com"
-            });
-
-            //assert
-            await _nyssContext.Received(1).SaveChangesAsync();
         }
 
         [Fact]

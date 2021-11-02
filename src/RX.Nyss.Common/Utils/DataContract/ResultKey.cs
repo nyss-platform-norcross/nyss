@@ -48,6 +48,8 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string HeadManagerAlreadyExists = "user.registration.headManagerAlreadyExists";
                 public const string CoordinatorExists = "user.registration.coordinatorExists";
                 public const string CannotAssignUserToModemInDifferentNationalSociety = "user.registration.cannotAssignUserToModemInDifferentNationalSociety";
+                public const string OrganizationDoesNotExists = "user.registration.organizationDoesNotExist";
+                public const string InvalidUserOrganization = "user.registration.invalidUserOrganization";
             }
 
             public static class Supervisor

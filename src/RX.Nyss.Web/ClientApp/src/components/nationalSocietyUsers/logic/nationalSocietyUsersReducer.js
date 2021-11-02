@@ -37,7 +37,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: false };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS:
-      return { ...state, formModems: action.modems };
+      return { ...state, addExistingFormData: action.formData };
 
     case actions.CREATE_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };

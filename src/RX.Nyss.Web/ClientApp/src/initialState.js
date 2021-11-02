@@ -180,7 +180,8 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
-    formError: null
+    formError: null,
+    addExistingFormData: null,
   },
   dataCollectors: {
     listFetching: false,
