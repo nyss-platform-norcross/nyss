@@ -91,18 +91,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         }
 
         [Fact]
-        public async Task RemoveNationalSociety_WhenSuccessful_ShouldReturnSuccess()
-        {
-            // Act
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var result = await _nationalSocietyService.Delete(BasicNationalSocietyServiceTestData.NationalSocietyId);
-
-            // Assert
-            result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
-        }
-
-        [Fact]
         public async Task ArchiveNationalSociety_WhenHasNoProjectsAndNoUsersExceptHeadManager_ReturnsSuccess()
         {
             //arrange

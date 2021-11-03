@@ -59,16 +59,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
 
         /// <summary>
-        /// Deletes an existing National Society.
-        /// </summary>
-        /// <param name="nationalSocietyId"></param>
-        /// <returns></returns>
-        [HttpPost("{nationalSocietyId}/delete")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Delete(int nationalSocietyId) =>
-            await _nationalSocietyService.Delete(nationalSocietyId);
-
-        /// <summary>
         /// Archives an existing National Society.
         /// </summary>
         /// <param name="nationalSocietyId"></param>

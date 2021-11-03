@@ -13,7 +13,6 @@ export const nationalSocietiesSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_OVERVIEW.INVOKE, openNationalSocietyOverview),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
-  takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety),
   takeEvery(consts.ARCHIVE_NATIONAL_SOCIETY.INVOKE, archiveNationalSociety),
   takeEvery(consts.REOPEN_NATIONAL_SOCIETY.INVOKE, reopenNationalSociety)
 ];
@@ -92,19 +91,6 @@ function* editNationalSociety({ data }) {
     yield put(appActions.showMessage(stringKeys.nationalSociety.messages.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error));
-  }
-};
-
-function* removeNationalSociety({ id }) {
-  yield put(actions.remove.request(id));
-  try {
-    yield call(http.post, `/api/nationalSociety/${id}/delete`);
-    yield put(actions.remove.success(id));
-    yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
-    yield call(getNationalSocieties, true);
-    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.delete.success));
-  } catch (error) {
-    yield put(actions.remove.failure(id, error.message));
   }
 };
 

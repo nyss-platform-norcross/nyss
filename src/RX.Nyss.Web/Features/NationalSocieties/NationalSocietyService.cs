@@ -23,12 +23,17 @@ namespace RX.Nyss.Web.Features.NationalSocieties
     public interface INationalSocietyService
     {
         Task<Result<List<NationalSocietyListResponseDto>>> List();
+
         Task<Result<NationalSocietyResponseDto>> Get(int id);
+
         Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
+
         Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
-        Task<Result> Delete(int id);
+
         Task<Result> Archive(int nationalSocietyId);
+
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
+
         Task<Result> Reopen(int nationalSocietyId);
     }
 
@@ -177,14 +182,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _nyssContext.SaveChangesAsync();
 
             return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
-        }
-
-        public async Task<Result> Delete(int id)
-        {
-            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
-            _nyssContext.NationalSocieties.Remove(nationalSociety);
-            await _nyssContext.SaveChangesAsync();
-            return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>
