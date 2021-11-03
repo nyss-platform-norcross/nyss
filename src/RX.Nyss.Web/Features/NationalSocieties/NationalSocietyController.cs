@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.NationalSocieties.Commands;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Utils;
 
@@ -66,7 +67,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpPost("{nationalSocietyId}/archive")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Archive(int nationalSocietyId) =>
-            await _nationalSocietyService.Archive(nationalSocietyId);
+            await Sender.Send(new ArchiveCommand(nationalSocietyId));
 
         /// <summary>
         /// Reopens an archived National Society.
