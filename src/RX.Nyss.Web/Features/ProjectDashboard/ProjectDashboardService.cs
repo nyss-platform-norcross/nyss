@@ -88,11 +88,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return Success(dto);
         }
 
-        private async Task<List<ProjectDashboardFiltersResponseDto.ProjectOrganizationDto>> GetOrganizations(int projectId)
-        {
-            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
-            {
-                return await _nyssContext.Projects
+        private async Task<List<ProjectDashboardFiltersResponseDto.ProjectOrganizationDto>> GetOrganizations(int projectId) =>
+            await _nyssContext.Projects
                     .Where(p => p.Id == projectId)
                     .SelectMany(p => p.ProjectOrganizations)
                     .Select(o => new ProjectDashboardFiltersResponseDto.ProjectOrganizationDto
@@ -100,20 +97,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         Id = o.Organization.Id,
                         Name = o.Organization.Name
                     }).ToListAsync();
-            }
-
-            var currentUserName = _authorizationService.GetCurrentUserName();
-
-            return await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User.Role != Role.DataConsumer && uns.User.EmailAddress == currentUserName)
-                .Select(o => new ProjectDashboardFiltersResponseDto.ProjectOrganizationDto
-                {
-                    Id = o.Organization.Id,
-                    Name = o.Organization.Name
-                }).ToListAsync();
-        }
 
         public async Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, FiltersRequestDto filtersDto)
         {

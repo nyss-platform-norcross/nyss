@@ -67,11 +67,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             return Success(dto);
         }
 
-        private async Task<List<NationalSocietyDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int nationalSocietyId)
-        {
-            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
-            {
-                return await _nyssContext.NationalSocieties
+        private async Task<List<NationalSocietyDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int nationalSocietyId) =>
+            await _nyssContext.NationalSocieties
                     .Where(ns => ns.Id == nationalSocietyId)
                     .SelectMany(p => p.Organizations)
                     .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
@@ -79,20 +76,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                         Id = o.Id,
                         Name = o.Name
                     }).ToListAsync();
-            }
-
-            var currentUserName = _authorizationService.GetCurrentUserName();
-
-            return await _nyssContext.NationalSocieties
-                .Where(ns => ns.Id == nationalSocietyId)
-                .SelectMany(ns => ns.NationalSocietyUsers)
-                .Where(nsu => nsu.User.Role != Role.DataConsumer &&  nsu.User.EmailAddress == currentUserName)
-                .Select(nsu => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
-                {
-                    Id = nsu.Organization.Id,
-                    Name = nsu.Organization.Name
-                }).ToListAsync();
-        }
 
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
