@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo, useCallback } from 'react';
+import { useState, Fragment, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -13,10 +13,10 @@ import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
 import * as roles from '../../authentication/roles';
 import { stringKeys, strings, stringsFormat } from '../../strings';
-import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import { MenuItem, Button, Grid } from "@material-ui/core";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
@@ -175,7 +175,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 >
                   {birthDecades.map(decade => (
                     <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                      {decade}
+                      {parseBirthDecade(decade)}
                     </MenuItem>
                   ))}
                 </SelectField>
