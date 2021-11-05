@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public Sex? Sex { get; set; }
-        public int? BirthGroupDecade { get; set; }
+        public int? BirthDecade { get; set; }
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public double Latitude { get; set; }
