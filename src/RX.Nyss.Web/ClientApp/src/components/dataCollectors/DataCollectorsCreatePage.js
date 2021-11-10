@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 import styles from "./DataCollectorsCreateOrEditPage.module.scss";
-import React, { useState, Fragment, useMemo } from 'react';
+import { useState, Fragment, useMemo } from 'react';
 import { connect, useSelector } from "react-redux";
 import {
   Radio,
@@ -26,7 +26,7 @@ import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
 import { getBirthDecades, getSaveFormModel } from './logic/dataCollectorsService';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
-import { Supervisor } from "../../authentication/roles";
+import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 
@@ -65,7 +65,8 @@ const DataCollectorsCreatePageComponent = (props) => {
       birthGroupDecade: "",
       phoneNumber: "",
       additionalPhoneNumber: "",
-      deployed: true
+      deployed: true,
+      linkedToHeadSupervisor: false
     };
 
     const validation = {
@@ -81,8 +82,10 @@ const DataCollectorsCreatePageComponent = (props) => {
 
     const newForm = createForm(fields, validation);
     newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
+    newForm.fields.supervisorId.subscribe(({ newValue }) => 
+      newForm.fields.linkedToHeadSupervisor.update(props.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
     return newForm;
-  }, [props.defaultSupervisorId, props.defaultLocation]);
+  }, [props.defaultSupervisorId, props.defaultLocation, props.supervisors]);
 
   const addDataCollectorLocation = () => {
     const previousLocation = locations[locations.length - 1];
@@ -113,7 +116,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
     const values = form.getValues();
 
-    props.create(props.projectId, getSaveFormModel(values, values.dataCollectorType, locations));
+    props.create(getSaveFormModel(props.projectId, values, values.dataCollectorType, locations));
   };
 
   useCustomErrors(form, props.error);
@@ -146,7 +149,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>            
+            <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>
             <CheckboxField
               name="deployed"
               label={strings(stringKeys.dataCollector.form.deployed)}
@@ -223,19 +226,20 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>)}
 
-          {!currentUserRoles.some(r => r === Supervisor) && (<Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollector.form.supervisor)}
-              field={form.fields.supervisorId}
-              name="supervisorId"
-            >
-              {props.supervisors.map(supervisor => (
-                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                  {supervisor.name}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>)}
+          {!currentUserRoles.some(r => r === Supervisor) && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.dataCollector.form.supervisor)}
+                field={form.fields.supervisorId}
+                name="supervisorId"
+              >
+                {props.supervisors.map(supervisor => (
+                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>)}
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>

@@ -15,8 +15,9 @@ export const getIconFromStatus = (status) => {
   }
 }
 
-export const getSaveFormModel = (values, type, locations) =>
+export const getSaveFormModel = (projectId, values, type, locations) =>
   ({
+    projectId: projectId,
     id: values.id,
     dataCollectorType: type,
     name: values.name,
@@ -35,7 +36,8 @@ export const getSaveFormModel = (values, type, locations) =>
       districtId: parseInt(values[`locations_${location.number}_districtId`]),
       villageId: parseInt(values[`locations_${location.number}_villageId`]),
       zoneId: values[`locations_${location.number}_zoneId`] ? parseInt(values[`locations_${location.number}_zoneId`]) : null
-    }))
+    })),
+    linkedToHeadSupervisor: values.linkedToHeadSupervisor
   });
 
 export const getFormDistricts = (regionId, callback) =>

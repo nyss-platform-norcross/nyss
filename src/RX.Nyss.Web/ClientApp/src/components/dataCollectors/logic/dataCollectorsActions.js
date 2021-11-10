@@ -61,7 +61,7 @@ export const openCreation = {
 };
 
 export const create = {
-  invoke: (projectId, data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, projectId, data }),
+  invoke: (data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, data }),
   request: () => ({ type: CREATE_DATA_COLLECTOR.REQUEST }),
   success: () => ({ type: CREATE_DATA_COLLECTOR.SUCCESS }),
   failure: (error) => ({ type: CREATE_DATA_COLLECTOR.FAILURE, error, suppressPopup: true })
