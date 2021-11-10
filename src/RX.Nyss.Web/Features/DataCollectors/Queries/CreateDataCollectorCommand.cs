@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var headSupervisor = command.LinkedToHeadSupervisor
                     ? await _nyssContext.UserNationalSocieties
                         .FilterAvailableUsers()
-                        .Where(u => u.UserId == command.SupervisorId && u.User.Role == Role.HeadSupervisor && u.NationalSocietyId == nationalSocietyId)
+                        .Where(u => u.User.Id == command.SupervisorId && u.User.Role == Role.HeadSupervisor && u.NationalSocietyId == nationalSocietyId)
                         .Select(u => (HeadSupervisorUser)u.User)
                         .SingleAsync(cancellationToken)
                     : null;
