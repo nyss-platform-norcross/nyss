@@ -54,8 +54,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result> Create(int projectId, [FromBody] CreateDataCollectorRequestDto createDataCollectorDto) =>
-            _dataCollectorService.Create(projectId, createDataCollectorDto);
+        public async Task<Result> Create([FromBody] CreateDataCollectorCommand cmd) =>
+            await Sender.Send(cmd);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.DataCollectorAccess)]

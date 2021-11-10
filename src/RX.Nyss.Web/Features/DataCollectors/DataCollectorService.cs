@@ -7,7 +7,6 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
-using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -32,7 +31,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorService
     {
-        Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto);
         Task<Result> Edit(EditDataCollectorRequestDto editDto);
         Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
@@ -57,7 +55,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
         private readonly IGeolocationService _geolocationService;
-        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly ISmsPublisherService _smsPublisherService;
@@ -69,7 +66,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             INyssWebConfig config,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
-            IDateTimeProvider dateTimeProvider,
             IAuthorizationService authorizationService,
             IEmailToSMSService emailToSMSService,
             ISmsPublisherService smsPublisherService,
@@ -79,7 +75,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             _config = config;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
-            _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
             _emailToSMSService = emailToSMSService;
             _smsPublisherService = smsPublisherService;
@@ -157,6 +152,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 Regions = regions.Value,
                 Supervisors = await GetSupervisors(dataCollector.ProjectId, currentUser, organizationId)
+                    .ToListAsync()
             };
 
             return Success(dataCollector);
@@ -184,15 +180,21 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var locationFromCountry = await _geolocationService.GetLocationFromCountry(projectData.CountryName);
 
             var defaultSupervisorId = await _nyssContext.Users.FilterAvailable()
-                .Where(u => u.Id == currentUser.Id && u.Role == Role.Supervisor)
+                .Where(u => u.Id == currentUser.Id && (u.Role == Role.Supervisor || u.Role == Role.HeadSupervisor))
                 .Select(u => (int?)u.Id)
                 .FirstOrDefaultAsync();
+
+            var headSupervisorsInProject = GetHeadSupervisors(projectId, currentUser, projectData.OrganizationId);
+            var supervisorsInProject = GetSupervisors(projectId, currentUser, projectData.OrganizationId);
+            var supervisors = await headSupervisorsInProject
+                .Concat(supervisorsInProject)
+                .ToListAsync();
 
             return Success(new DataCollectorFormDataResponse
             {
                 NationalSocietyId = projectData.NationalSocietyId,
                 Regions = regions.Value,
-                Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId),
+                Supervisors = supervisors,
                 DefaultSupervisorId = defaultSupervisorId,
                 DefaultLocation = locationFromCountry.IsSuccess
                     ? new LocationDto
@@ -227,6 +229,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 NationalSocietyId = projectData.NationalSocietyId,
                 Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId)
+                    .ToListAsync()
             };
 
             return Success(filtersData);
@@ -256,7 +259,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     PhoneNumber = dc.PhoneNumber,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
-                    Supervisor = dc.Supervisor,
+                    Supervisor = dc.Supervisor != null
+                        ? new DataCollectorSupervisorResponseDto
+                        {
+                            Id = dc.Supervisor.Id,
+                            Name = dc.Supervisor.Name
+                        }
+                        : new DataCollectorSupervisorResponseDto
+                        {
+                            Id = dc.HeadSupervisor.Id,
+                            Name = dc.HeadSupervisor.Name
+                        },
                     IsDeployed = dc.Deployed,
                     Locations = dc.DataCollectorLocations
                         .Select(dcl => new DataCollectorLocationResponseDto
@@ -300,7 +313,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     PhoneNumber = dc.PhoneNumber,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
-                    Supervisor = dc.Supervisor,
+                    Supervisor = dc.Supervisor != null
+                        ? new DataCollectorSupervisorResponseDto
+                        {
+                            Id = dc.Supervisor.Id,
+                            Name = dc.Supervisor.Name
+                        }
+                        : new DataCollectorSupervisorResponseDto
+                        {
+                            Id = dc.HeadSupervisor.Id,
+                            Name = dc.HeadSupervisor.Name
+                        },
                     IsDeployed = dc.Deployed,
                     Locations = dc.DataCollectorLocations
                         .Select(dcl => new DataCollectorLocationResponseDto
@@ -315,55 +338,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ToListAsync();
 
             return Success(dataCollectors);
-        }
-
-        public async Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto)
-        {
-            var project = await _nyssContext.Projects
-                .Include(p => p.NationalSociety)
-                .SingleAsync(p => p.Id == projectId);
-
-            if (project.State != ProjectState.Open)
-            {
-                return Error(ResultKey.DataCollector.ProjectIsClosed);
-            }
-
-            var nationalSocietyId = project.NationalSociety.Id;
-
-            var supervisor = await _nyssContext.UserNationalSocieties
-                .FilterAvailableUsers()
-                .Where(u => u.User.Id == createDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
-                .Select(u => (SupervisorUser)u.User)
-                .SingleAsync();
-
-            var dataCollector = new DataCollector
-            {
-                Name = createDto.Name,
-                DisplayName = createDto.DisplayName,
-                PhoneNumber = createDto.PhoneNumber,
-                AdditionalPhoneNumber = createDto.AdditionalPhoneNumber,
-                BirthGroupDecade = createDto.BirthGroupDecade,
-                Sex = createDto.Sex,
-                DataCollectorType = createDto.DataCollectorType,
-                Supervisor = supervisor,
-                Project = project,
-                CreatedAt = _dateTimeProvider.UtcNow,
-                IsInTrainingMode = true,
-                Deployed = createDto.Deployed,
-                DataCollectorLocations = createDto.Locations.Select(l => new DataCollectorLocation
-                {
-                    Location = CreatePoint(l.Latitude, l.Longitude),
-                    Village = _nyssContext.Villages
-                        .Single(v => v.Id == l.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId),
-                    Zone = l.ZoneId != null
-                        ? _nyssContext.Zones.Single(z => z.Id == l.ZoneId.Value)
-                        : null
-                }).ToList()
-            };
-
-            await _nyssContext.AddAsync(dataCollector);
-            await _nyssContext.SaveChangesAsync();
-            return Success(ResultKey.DataCollector.CreateSuccess);
         }
 
         public async Task<Result> Edit(EditDataCollectorRequestDto editDto)
@@ -625,21 +599,26 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .SingleAsync();
 
-            var dataCollectorsQuery = _nyssContext.DataCollectors.FilterByProject(projectId);
+            var dataCollectorsQuery = _nyssContext.DataCollectors
+                .AsNoTracking()
+                .FilterByProject(projectId);
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
-                dataCollectorsQuery = dataCollectorsQuery.Where(dc => dc.Supervisor.EmailAddress == currentUserEmail);
+                dataCollectorsQuery = dataCollectorsQuery
+                    .Where(dc => dc.Supervisor.EmailAddress == currentUserEmail);
             }
 
             if (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor))
             {
-                dataCollectorsQuery = dataCollectorsQuery.Where(dc => dc.Supervisor.HeadSupervisor.EmailAddress == currentUserEmail);
+                dataCollectorsQuery = dataCollectorsQuery
+                    .Where(dc => dc.HeadSupervisor.EmailAddress == currentUserEmail || dc.Supervisor.HeadSupervisor.EmailAddress == currentUserEmail);
             }
 
             if (projectData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))
             {
-                dataCollectorsQuery = dataCollectorsQuery.FilterByOrganization(projectData.CurrentUserOrganization);
+                dataCollectorsQuery = dataCollectorsQuery
+                    .FilterByOrganization(projectData.CurrentUserOrganization);
             }
 
             return dataCollectorsQuery;
@@ -667,17 +646,31 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .BatchUpdateAsync(x => new Report { PhoneNumber = Anonymization.Text });
         }
 
-        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId, User currentUser, int? organizationId) =>
-            await _nyssContext.SupervisorUserProjects
+        private IQueryable<DataCollectorSupervisorResponseDto> GetSupervisors(int projectId, User currentUser, int? organizationId) =>
+            _nyssContext.SupervisorUserProjects
+                .AsNoTracking()
                 .FilterAvailableUsers()
                 .FilterByProject(projectId)
                 .FilterByCurrentUserRole(currentUser, organizationId)
                 .Select(sup => new DataCollectorSupervisorResponseDto
                 {
                     Id = sup.SupervisorUserId,
-                    Name = sup.SupervisorUser.Name
-                })
-                .ToListAsync();
+                    Name = sup.SupervisorUser.Name,
+                    Role = Role.Supervisor
+                });
+
+        private IQueryable<DataCollectorSupervisorResponseDto> GetHeadSupervisors(int projectId, User currentUser, int? organizationId) =>
+            _nyssContext.HeadSupervisorUserProjects
+                .AsNoTracking()
+                .FilterAvailableUsers()
+                .FilterByProject(projectId)
+                .FilterByCurrentUserRole(currentUser, organizationId)
+                .Select(sup => new DataCollectorSupervisorResponseDto
+                {
+                    Id = sup.HeadSupervisorUserId,
+                    Name = sup.HeadSupervisorUser.Name,
+                    Role = Role.HeadSupervisor
+                });
 
         private static Point CreatePoint(double latitude, double longitude)
         {
@@ -702,7 +695,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var recipients = replaceSupervisorDatas.Select(r => new SendSmsRecipient
             {
                 PhoneNumber = r.DataCollector.PhoneNumber,
-                Modem = r.LastReport != null ? r.LastReport.ModemNumber : r.Supervisor.ModemId
+                Modem = r.LastReport != null
+                    ? r.LastReport.ModemNumber
+                    : r.Supervisor.ModemId
             }).ToList();
             var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
 
@@ -719,7 +714,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
             }
         }
 
-        private async Task<List<DataCollectorLocation>> EditDataCollectorLocations(ICollection<DataCollectorLocation> dataCollectorLocations, IEnumerable<DataCollectorLocationRequestDto> dataCollectorLocationRequestDtos, int nationalSocietyId)
+        private async Task<List<DataCollectorLocation>> EditDataCollectorLocations(ICollection<DataCollectorLocation> dataCollectorLocations,
+            IEnumerable<DataCollectorLocationRequestDto> dataCollectorLocationRequestDtos, int nationalSocietyId)
         {
             var newDataCollectorLocations = new List<DataCollectorLocation>();
             foreach (var dto in dataCollectorLocationRequestDtos)

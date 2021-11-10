@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.CodeAnalysis;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Features.DataCollectors.Validation;
 using RX.Nyss.Web.Utils.Extensions;
