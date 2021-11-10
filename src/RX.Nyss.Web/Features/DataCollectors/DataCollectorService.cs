@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite;
-using NetTopologySuite.Geometries;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -22,7 +20,6 @@ using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
-using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -31,7 +28,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorService
     {
-        Task<Result> Edit(EditDataCollectorRequestDto editDto);
         Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
         Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
@@ -86,9 +82,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var currentUser = await _authorizationService.GetCurrentUser();
 
             var dataCollector = await _nyssContext.DataCollectors
+                .AsNoTracking()
                 .Include(dc => dc.Project)
                 .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.Supervisor)
+                .Include(dc => dc.HeadSupervisor)
                 .Include(dc => dc.DataCollectorLocations)
                 .Select(dc => new GetDataCollectorResponseDto
                 {
@@ -134,7 +132,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
                                 })
                         }
                     }),
-                    SupervisorId = dc.Supervisor.Id,
+                    SupervisorId = dc.Supervisor != null
+                        ? dc.Supervisor.Id
+                        : dc.HeadSupervisor.Id,
                     NationalSocietyId = dc.Project.NationalSociety.Id,
                     ProjectId = dc.Project.Id,
                     Deployed = dc.Deployed
@@ -148,10 +148,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.NationalSocietyId);
 
+            var headSupervisorsInProject = GetHeadSupervisors(dataCollector.ProjectId, currentUser, organizationId);
+            var supervisorsInProject = GetSupervisors(dataCollector.ProjectId, currentUser, organizationId);
+
             dataCollector.FormData = new GetDataCollectorResponseDto.FormDataDto
             {
                 Regions = regions.Value,
-                Supervisors = await GetSupervisors(dataCollector.ProjectId, currentUser, organizationId)
+                Supervisors = await headSupervisorsInProject
+                    .Concat(supervisorsInProject)
                     .ToListAsync()
             };
 
@@ -282,7 +286,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
                 .Page(dataCollectorsFilters.PageNumber, rowsPerPage)
-                .AsNoTracking()
                 .ToListAsync();
 
             var paginatedDataCollectors = dataCollectors
@@ -338,43 +341,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ToListAsync();
 
             return Success(dataCollectors);
-        }
-
-        public async Task<Result> Edit(EditDataCollectorRequestDto editDto)
-        {
-            var dataCollector = await _nyssContext.DataCollectors
-                .Include(dc => dc.Project)
-                .ThenInclude(x => x.NationalSociety)
-                .Include(dc => dc.Supervisor)
-                .Include(dc => dc.DataCollectorLocations)
-                .SingleAsync(dc => dc.Id == editDto.Id);
-
-            if (dataCollector.Project.State != ProjectState.Open)
-            {
-                return Error(ResultKey.DataCollector.ProjectIsClosed);
-            }
-
-            var nationalSocietyId = dataCollector.Project.NationalSociety.Id;
-
-            var supervisor = await _nyssContext.UserNationalSocieties
-                .FilterAvailableUsers()
-                .Where(u => u.User.Id == editDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
-                .Select(u => (SupervisorUser)u.User)
-                .SingleAsync();
-
-            dataCollector.Name = editDto.Name;
-            dataCollector.DisplayName = editDto.DisplayName;
-            dataCollector.PhoneNumber = editDto.PhoneNumber;
-            dataCollector.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
-            dataCollector.BirthGroupDecade = editDto.BirthGroupDecade;
-            dataCollector.Sex = editDto.Sex;
-            dataCollector.Supervisor = supervisor;
-            dataCollector.Deployed = editDto.Deployed;
-
-            dataCollector.DataCollectorLocations = await EditDataCollectorLocations(dataCollector.DataCollectorLocations, editDto.Locations, nationalSocietyId);
-
-            await _nyssContext.SaveChangesAsync();
-            return SuccessMessage(ResultKey.DataCollector.EditSuccess);
         }
 
         public async Task<Result> Delete(int dataCollectorId)
@@ -672,12 +638,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Role = Role.HeadSupervisor
                 });
 
-        private static Point CreatePoint(double latitude, double longitude)
-        {
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
-            return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
-        }
-
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
         {
             var countryName = _nyssContext.Projects.Where(p => p.Id == projectId)
@@ -712,26 +672,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any());
             }
-        }
-
-        private async Task<List<DataCollectorLocation>> EditDataCollectorLocations(ICollection<DataCollectorLocation> dataCollectorLocations,
-            IEnumerable<DataCollectorLocationRequestDto> dataCollectorLocationRequestDtos, int nationalSocietyId)
-        {
-            var newDataCollectorLocations = new List<DataCollectorLocation>();
-            foreach (var dto in dataCollectorLocationRequestDtos)
-            {
-                var dcl = dto.Id.HasValue
-                    ? dataCollectorLocations.First(l => l.Id == dto.Id)
-                    : new DataCollectorLocation();
-
-                dcl.Location = CreatePoint(dto.Latitude, dto.Longitude);
-                dcl.Village = await _nyssContext.Villages.SingleAsync(v => v.Id == dto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
-                dcl.Zone = await _nyssContext.Zones.SingleOrDefaultAsync(z => z.Id == dto.ZoneId);
-
-                newDataCollectorLocations.Add(dcl);
-            }
-
-            return newDataCollectorLocations;
         }
     }
 }

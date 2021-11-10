@@ -42,7 +42,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
             return !_authorizationService.IsCurrentUserInAnyRole(Role.Supervisor, Role.HeadSupervisor)
                 || (_authorizationService.IsCurrentUserInRole(Role.Supervisor) && currentUser.Id == supervisorId)
                 || (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor)
-                    && await _nyssContext.Users.Where(u => u.Id == supervisorId).Select(u => (SupervisorUser)u).Select(u => u.HeadSupervisor.Id).FirstOrDefaultAsync() == currentUser.Id);
+                    && (currentUser.Id == supervisorId
+                        || await _nyssContext.Users.Where(u => u.Id == supervisorId).Select(u => (SupervisorUser)u).Select(u => u.HeadSupervisor.Id).FirstOrDefaultAsync() == currentUser.Id));
         }
 
         public async Task<bool> LocationHasDuplicateVillage(int dataCollectorId, DataCollectorLocationRequestDto dataCollectorLocation) =>
