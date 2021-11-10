@@ -123,12 +123,12 @@ function* createDataCollector({ data }) {
   }
 };
 
-function* editDataCollector({ projectId, data }) {
+function* editDataCollector({ data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/dataCollector/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
-    yield put(actions.goToList(projectId));
+    yield put(actions.goToList(data.projectId));
     yield put(appActions.showMessage(stringKeys.dataCollector.messages.editionSuccessful));
   } catch (error) {
     yield put(actions.edit.failure(error));
