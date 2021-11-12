@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
@@ -13,6 +14,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Features.Common.Contracts;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Tests.Features.Alert.TestData;
 using Shouldly;
@@ -23,6 +25,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
     public class AlertServiceTests
     {
         private readonly INyssContext _nyssContextMock;
+        private readonly INyssContext _nyssContextInMemoryMock;
         private readonly IAlertService _alertService;
         private readonly ILoggerAdapter _loggerAdapterMock;
 
@@ -32,6 +35,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly INyssReportApiConfig _nyssReportApiConfigMock;
         private readonly IDateTimeProvider _dateTimeProviderMock;
         private readonly IReportLabelingService _reportLabelingServiceMock;
+        private readonly IAlertNotificationService _alertNotificationServiceMock;
 
         public AlertServiceTests()
         {
@@ -42,15 +46,17 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _stringsResourcesServiceMock = Substitute.For<IStringsResourcesService>();
             _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
+            _alertNotificationServiceMock = Substitute.For<IAlertNotificationService>();
             _alertService = new AlertService(
                 _nyssContextMock,
                 _reportLabelingServiceMock,
                 _loggerAdapterMock,
-                _queuePublisherServiceMock,
-                _nyssReportApiConfigMock,
-                _stringsResourcesServiceMock,
-                _dateTimeProviderMock
+                _alertNotificationServiceMock
             );
+
+            var builder = new DbContextOptionsBuilder<NyssContext>();
+            builder.UseInMemoryDatabase("InMemoryDatabase");
+            _nyssContextInMemoryMock = new NyssContext(builder.Options);
 
             _testData = new AlertServiceTestData(_nyssContextMock);
         }
@@ -264,11 +270,18 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldReturnAlertAndFlagToNotifyNewSupervisors()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
-            var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var testData = new AlertServiceTestData(_nyssContextInMemoryMock);
+            testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext(useInMemoryDb: true);
+            var reportBeingAdded = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var alertService = new AlertService(
+                _nyssContextInMemoryMock,
+                _reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _alertNotificationServiceMock
+            );
 
             //act
-            var result = await _alertService.ReportAdded(reportBeingAdded);
+            var result = await alertService.ReportAdded(reportBeingAdded);
 
             //assert
             result.Alert.ShouldBeOfType<Data.Models.Alert>();
@@ -279,11 +292,18 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ReportStatusShouldBeChangedToPending()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
-            var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var testData = new AlertServiceTestData(_nyssContextInMemoryMock);
+            testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext(useInMemoryDb: true);
+            var reportBeingAdded = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var alertService = new AlertService(
+                _nyssContextInMemoryMock,
+                _reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _alertNotificationServiceMock
+            );
 
             //act
-            var result = await _alertService.ReportAdded(reportBeingAdded);
+            var result = await alertService.ReportAdded(reportBeingAdded);
 
             //assert
             reportBeingAdded.Status.ShouldBe(ReportStatus.Pending);
@@ -294,36 +314,51 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_NoNewAlertShouldCreated()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
-            var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var testData = new AlertServiceTestData(_nyssContextInMemoryMock);
+            testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext(useInMemoryDb: true);
+            var reportBeingAdded = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var numberOfExistingAlerts = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Alerts.Count;
+
+            var alertService = new AlertService(
+                _nyssContextInMemoryMock,
+                _reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _alertNotificationServiceMock
+            );
 
             //act
-            var result = await _alertService.ReportAdded(reportBeingAdded);
+            var result = await alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            await _nyssContextMock.Alerts.Received(0).AddAsync(Arg.Any<Data.Models.Alert>());
+            var numberOfAlerts = await _nyssContextInMemoryMock.Alerts.CountAsync();
+            numberOfAlerts.ShouldBeEquivalentTo(numberOfExistingAlerts);
         }
 
         [Fact]
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ReportShouldBeAddedToAlert()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
-            var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
-            var existingAlert = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Alerts.Single();
+            var testData = new AlertServiceTestData(_nyssContextInMemoryMock);
+            testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext(useInMemoryDb: true);
+            var reportBeingAdded = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
+            var existingAlert = testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Alerts.Single();
+            var alertService = new AlertService(
+                _nyssContextInMemoryMock,
+                _reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _alertNotificationServiceMock
+            );
 
             //act
-            var result = await _alertService.ReportAdded(reportBeingAdded);
+            var result = await alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            await _nyssContextMock.AlertReports.Received(1).AddRangeAsync(Arg.Is<IEnumerable<AlertReport>>(list =>
-                list.Count() == 1
-                && list.Any(ar => ar.Alert == existingAlert && ar.Report == reportBeingAdded)
-            ));
+            var reportAddedToExistingAlert = await _nyssContextInMemoryMock.AlertReports.AnyAsync(ar => ar.Alert == existingAlert && ar.Report == reportBeingAdded);
+            reportAddedToExistingAlert.ShouldBeTrue();
         }
 
 
-        [Fact]
+        [Fact(Skip = "InMemory database does not support asserting number of calls to SaveChangesAsync()")]
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldSaveChanges2Times()
         {
             //arrange
@@ -383,18 +418,32 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenNewSupervisorIsLinkedToAlert_ShouldReturnAlertWithListOfNewSupervisors()
         {
             // arrange
-            _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.GenerateData().AddToDbContext();
-            var reportBeingAdded = _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports.First(r => r.DataCollector.Id == 2);
-            var supervisorAddedToAlert = _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports
-                .Where(r => r.DataCollector.Id == 2).Select(r => r.DataCollector.Supervisor).First();
+            var testData = new AlertServiceTestData(_nyssContextInMemoryMock);
+            testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.GenerateData().AddToDbContext(useInMemoryDb: true);
+            var reportBeingAdded = testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports.First(r => r.DataCollector.Id == 2);
+            var supervisorAddedToAlert = testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports
+                .Where(r => r.DataCollector.Id == 2)
+                .Select(r => new SupervisorSmsRecipient
+                {
+                    Name = r.DataCollector.Supervisor.Name,
+                    UserId = r.DataCollector.Supervisor.Id,
+                    PhoneNumber = r.DataCollector.Supervisor.PhoneNumber
+                }).First();
+
+            var alertService = new AlertService(
+                _nyssContextInMemoryMock,
+                _reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _alertNotificationServiceMock
+            );
 
             // act
-            var result = await _alertService.ReportAdded(reportBeingAdded);
+            var result = await alertService.ReportAdded(reportBeingAdded);
 
             //assert
             result.Alert.ShouldBeOfType<Data.Models.Alert>();
             result.IsExistingAlert.ShouldBeTrue();
-            result.SupervisorsAddedToExistingAlert.ShouldContain(supervisorAddedToAlert);
+            result.SupervisorsAddedToExistingAlert.First().ShouldBeEquivalentTo(supervisorAddedToAlert);
         }
 
         [Fact]
@@ -425,98 +474,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             // Assert
             result.Alert.ShouldNotBe(null);
             result.IsExistingAlert.ShouldBeFalse();
-        }
-
-        [Fact]
-        public async Task CheckAlert_WhenAlertIsStillPending_ShouldSendAlert()
-        {
-            // arrange
-            _testData.SimpleCasesData.GenerateData().AddToDbContext();
-
-            // act
-            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(1);
-
-            // assert
-            await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
-        }
-
-        [Fact]
-        public async Task CheckAlert_WhenAlertNotFound_ShouldDoNothing()
-        {
-            // arrange
-            _testData.SimpleCasesData.GenerateData().AddToDbContext();
-
-            // act
-            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(1);
-
-            // assert
-            await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
-        }
-
-        [Fact]
-        public async Task SendNotificationsForNewAlert_ShouldSendSmsToAllSupervisorsAndQueueCheckBack()
-        {
-            // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
-            var stringResourceResult = new Dictionary<string, string> { { SmsContentKey.Alerts.AlertTriggered, "Alert triggered!" } };
-            _stringsResourcesServiceMock.GetSmsContentResources(Arg.Any<string>())
-                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
-            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
-
-            // act
-            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting { ApiKey = "123", Modems = new List<GatewayModem>()});
-
-            // assert
-            await _queuePublisherServiceMock.Received(1).QueueAlertCheck(alert.Id);
-        }
-
-        [Fact]
-        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyAlertNotHandledRecipients()
-        {
-            // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
-            var stringResourceResult = new Dictionary<string, string>
-            {
-                { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
-                { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
-            };
-            _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
-                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
-            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
-
-            // act
-            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(alert.Id);
-
-            // assert
-            await _queuePublisherServiceMock.Received(2).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
-        }
-
-        [Theory]
-        [InlineData(AlertStatus.Closed)]
-        [InlineData(AlertStatus.Dismissed)]
-        [InlineData(AlertStatus.Escalated)]
-        public async Task CheckAlert_WhenAlertIsNoLongerPending_ShouldNotNotifyAlertNotHandledRecipient(AlertStatus alertStatus)
-        {
-            // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
-            alert.Status = alertStatus;
-            var stringResourceResult = new Dictionary<string, string>
-            {
-                { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
-                { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
-            };
-            _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
-                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
-            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
-
-            // act
-            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(alert.Id);
-
-            // assert
-            await _queuePublisherServiceMock.DidNotReceive().SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
     }
 }

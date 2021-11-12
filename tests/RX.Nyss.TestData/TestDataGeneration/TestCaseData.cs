@@ -54,8 +54,17 @@ namespace RX.Nyss.TestData.TestDataGeneration
             _nyssContextMock = nyssContextMock;
         }
 
-        public void AddToDbContext() =>
-            ConfiugureNyssContext(EntityData);
+        public void AddToDbContext(bool useInMemoryDb = false)
+        {
+            if (useInMemoryDb)
+            {
+                ConfigureNyssContextInMemory(EntityData);
+            }
+            else
+            {
+                ConfiugureNyssContext(EntityData);
+            }
+        }
 
         protected void ConfiugureNyssContext(EntityData data)
         {
@@ -88,6 +97,43 @@ namespace RX.Nyss.TestData.TestDataGeneration
             AddToNyssContext(data.Zones);
             AddToNyssContext(data.Organizations);
             data.NyssContextMockedMethods?.Invoke(_nyssContextMock);
+        }
+
+        protected void ConfigureNyssContextInMemory(EntityData data)
+        {
+            _nyssContextMock.Database.EnsureDeleted();
+
+            _nyssContextMock.Alerts.AddRange(data.Alerts);
+            _nyssContextMock.AlertNotificationRecipients.AddRange(data.AlertRecipients);
+            _nyssContextMock.AlertReports.AddRange(data.AlertReports);
+            _nyssContextMock.AlertRules.AddRange(data.AlertRules);
+            _nyssContextMock.ApplicationLanguages.AddRange(data.ApplicationLanguages);
+            _nyssContextMock.ContentLanguages.AddRange(data.ContentLanguages);
+            _nyssContextMock.Countries.AddRange(data.Countries);
+            _nyssContextMock.DataCollectors.AddRange(data.DataCollectors);
+            _nyssContextMock.Districts.AddRange(data.Districts);
+            _nyssContextMock.GatewaySettings.AddRange(data.GatewaySettings);
+            _nyssContextMock.NationalSocietyConsents.AddRange(data.NationalSocietyConsents);
+            _nyssContextMock.HealthRisks.AddRange(data.HealthRisks);
+            _nyssContextMock.HealthRiskLanguageContents.AddRange(data.HealthRiskLanguageContents);
+            _nyssContextMock.Localizations.AddRange(data.Localizations);
+            _nyssContextMock.LocalizedTemplates.AddRange(data.LocalizedTemplates);
+            _nyssContextMock.NationalSocieties.AddRange(data.NationalSocieties);
+            _nyssContextMock.Notifications.AddRange(data.Notifications);
+            _nyssContextMock.Projects.AddRange(data.Projects);
+            _nyssContextMock.SupervisorUserProjects.AddRange(data.SupervisorUserProjects);
+            _nyssContextMock.ProjectHealthRisks.AddRange(data.ProjectHealthRisks);
+            _nyssContextMock.RawReports.AddRange(data.RawReports);
+            _nyssContextMock.Regions.AddRange(data.Regions);
+            _nyssContextMock.Reports.AddRange(data.Reports);
+            _nyssContextMock.Users.AddRange(data.Users);
+            _nyssContextMock.UserNationalSocieties.AddRange(data.UserNationalSocieties);
+            _nyssContextMock.Villages.AddRange(data.Villages);
+            _nyssContextMock.Zones.AddRange(data.Zones);
+            _nyssContextMock.Organizations.AddRange(data.Organizations);
+
+            _nyssContextMock.SaveChanges();
+            _nyssContextMock.Database.EnsureCreated();
         }
 
         private void AddToNyssContext<T>(List<T> entities) where T : class
