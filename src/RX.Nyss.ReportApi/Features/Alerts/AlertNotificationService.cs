@@ -54,7 +54,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         public async Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting)
         {
             var phoneNumbersOfSupervisorsInAlert = _nyssContext.AlertReports
-                .Where(ar => ar.Alert.Id == alert.Id)
+                .Where(ar => ar.Alert.Id == alert.Id && ar.Report.DataCollector.Supervisor != null)
                 .Select(ar => ar.Report.DataCollector.Supervisor)
                 .Distinct()
                 .Select(s => new SendSmsRecipient
@@ -66,7 +66,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 });
 
             var phoneNumbersOfHeadSupervisorsInAlert = _nyssContext.AlertReports
-                .Where(ar => ar.Alert.Id == alert.Id)
+                .Where(ar => ar.Alert.Id == alert.Id && ar.Report.DataCollector.HeadSupervisor != null)
                 .Select(ar => ar.Report.DataCollector.HeadSupervisor)
                 .Distinct()
                 .Select(s => new SendSmsRecipient
@@ -137,13 +137,24 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         a.Status,
                         a.CreatedAt,
                         ProjectId = a.ProjectHealthRisk.Project.Id,
-                        Supervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties
-                            .Where(uns => uns.NationalSociety == ar.Alert.ProjectHealthRisk.Project.NationalSociety)
-                            .Select(uns => new
-                            {
-                                User = uns.User,
-                                Organization = uns.Organization
-                            }).First()),
+                        Supervisors = a.AlertReports
+                            .Where(ar => ar.Report.DataCollector.Supervisor != null)
+                            .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties
+                                .Where(uns => uns.NationalSociety == ar.Alert.ProjectHealthRisk.Project.NationalSociety)
+                                .Select(uns => new
+                                {
+                                    User = uns.User,
+                                    Organization = uns.Organization
+                                }).First()),
+                        HeadSupervisors = a.AlertReports
+                            .Where(ar => ar.Report.DataCollector.HeadSupervisor != null)
+                            .Select(ar => ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties
+                                .Where(uns => uns.NationalSociety == ar.Alert.ProjectHealthRisk.Project.NationalSociety)
+                                .Select(uns => new
+                                {
+                                    User = uns.User,
+                                    Organization = uns.Organization
+                                }).First()),
                         HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
                         VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
                             .Select(ar => ar.Report.RawReport.Village.Name)
@@ -177,7 +188,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var linkToAlert = new Uri(baseUrl, relativeUrl);
 
                 var alertNotHandledRecipients = alert.AlertNotHandledRecipients
-                    .Where(anhr => alert.Supervisors.Any(sup => sup.Organization.Id == anhr.Organization.Id));
+                    .Where(anhr => alert.Supervisors.Any(sup => sup.Organization.Id == anhr.Organization.Id)
+                        || alert.HeadSupervisors.Any(hsup => hsup.Organization.Id == anhr.Organization.Id));
 
                 foreach (var recipient in alertNotHandledRecipients)
                 {
@@ -185,6 +197,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         .Select(sup => sup.Organization.Id == recipient.Organization.Id
                             ? sup.User.Name
                             : sup.Organization.Name)
+                        .Union(alert.HeadSupervisors.Select(hsup => hsup.Organization.Id == recipient.Organization.Id
+                            ? hsup.User.Name
+                            : hsup.Organization.Name))
                         .Distinct();
 
                     var alertNotHandledEmailBody = emailBody
