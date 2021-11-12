@@ -164,6 +164,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
                 .ThenInclude(s => s.HeadSupervisor)
+                .Include(dc => dc.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .Include(dc => dc.DataCollectorLocations)
                 .ThenInclude(dcl => dcl.Village)

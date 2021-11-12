@@ -260,6 +260,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
                 .ThenInclude(s => s.HeadSupervisor)
+                .Include(dc => dc.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.DataCollectorLocations)
@@ -286,7 +287,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .FirstOrDefaultAsync();
 
             var feedbackMessage = await GetFeedbackMessageContent(SmsContentKey.Reports.ReportSentFromNyss, languageCode);
-            var senderName = sentByHeadSupervisor ? dataCollector.Supervisor.HeadSupervisor.Name : dataCollector.Supervisor.Name;
+            var senderName = GetSenderName(dataCollector, sentByHeadSupervisor);
 
             var languageContents = await _nyssContext.HealthRiskLanguageContents
                 .SingleAsync(hlc => hlc.HealthRisk == report.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
@@ -300,6 +301,18 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
 
             return feedbackMessage;
+        }
+
+        private string GetSenderName(DataCollector dataCollector, bool sentByHeadSupervisor)
+        {
+            if (dataCollector.Supervisor != null)
+            {
+                return sentByHeadSupervisor
+                    ? dataCollector.Supervisor.HeadSupervisor.Name
+                    : dataCollector.Supervisor.Name;
+            }
+
+            return dataCollector.HeadSupervisor.Name;
         }
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
