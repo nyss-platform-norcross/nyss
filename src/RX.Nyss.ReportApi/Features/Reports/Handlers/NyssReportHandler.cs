@@ -45,6 +45,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private readonly IAlertService _alertService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IQueuePublisherService _queuePublisherService;
+        private readonly IAlertNotificationService _alertNotificationService;
 
         public NyssReportHandler(
             INyssContext nyssContext,
@@ -54,7 +55,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             IReportValidationService reportValidationService,
             IAlertService alertService,
             IStringsResourcesService stringsResourcesService,
-            IQueuePublisherService queuePublisherService)
+            IQueuePublisherService queuePublisherService,
+            IAlertNotificationService alertNotificationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
@@ -64,6 +66,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             _alertService = alertService;
             _stringsResourcesService = stringsResourcesService;
             _queuePublisherService = queuePublisherService;
+            _alertNotificationService = alertNotificationService;
         }
 
         public async Task Handle(string queryString)
@@ -243,11 +246,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 if (alertData.IsExistingAlert)
                 {
-                    await _alertService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
+                    await _alertNotificationService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
                 }
                 else
                 {
-                    await _alertService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
+                    await _alertNotificationService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
                 }
             }
         }
