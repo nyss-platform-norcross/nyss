@@ -102,6 +102,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     Email = "test@test.com",
                     PhoneNumber = "+1234578",
                     SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
+                    HeadSupervisorUserAlertRecipients = new List<HeadSupervisorUserAlertRecipient>(),
                     ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
                 }
             };
@@ -287,6 +288,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 Email = emailAddress,
                 PhoneNumber = phonenumber,
                 SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
+                HeadSupervisorUserAlertRecipients = new List<HeadSupervisorUserAlertRecipient>(),
                 ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
             });
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
