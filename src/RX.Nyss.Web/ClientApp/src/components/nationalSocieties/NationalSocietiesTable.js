@@ -2,7 +2,6 @@ import styles from '../common/table/Table.module.scss';
 import React, { useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import dayjs from "dayjs"
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
@@ -15,7 +14,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 
-export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list, archive, reopen, isArchiving, isReopening }) => {
+export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashboard, list, archive, reopen, isArchiving, isReopening }) => {
 
   const [archiveConfirmationDialog, setArchiveConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
   const [reopenConfirmationDialog, setReopenConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
@@ -77,7 +76,6 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
                   <TableRowActions>
                     <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
                     <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                    <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>

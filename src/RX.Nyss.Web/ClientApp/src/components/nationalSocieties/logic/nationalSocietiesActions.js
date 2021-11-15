@@ -1,5 +1,5 @@
 import { push } from "connected-react-router";
-import { GET_NATIONAL_SOCIETIES, CREATE_NATIONAL_SOCIETY, REMOVE_NATIONAL_SOCIETY, OPEN_NATIONAL_SOCIETY_OVERVIEW } from "./nationalSocietiesConstants";
+import { GET_NATIONAL_SOCIETIES, CREATE_NATIONAL_SOCIETY, OPEN_NATIONAL_SOCIETY_OVERVIEW } from "./nationalSocietiesConstants";
 import { OPEN_EDITION_NATIONAL_SOCIETY, EDIT_NATIONAL_SOCIETY, ARCHIVE_NATIONAL_SOCIETY, REOPEN_NATIONAL_SOCIETY } from "./nationalSocietiesConstants";
 
 export const goToCreation = () => push("/nationalsocieties/add");
@@ -40,13 +40,6 @@ export const openOverview = {
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_OVERVIEW.REQUEST }),
   success: (data) => ({ type: OPEN_NATIONAL_SOCIETY_OVERVIEW.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_OVERVIEW.FAILURE, message })
-};
-
-export const remove = {
-  invoke: (id) => ({ type: REMOVE_NATIONAL_SOCIETY.INVOKE, id }),
-  request: (id) => ({ type: REMOVE_NATIONAL_SOCIETY.REQUEST, id }),
-  success: (id) => ({ type: REMOVE_NATIONAL_SOCIETY.SUCCESS, id }),
-  failure: (id, message) => ({ type: REMOVE_NATIONAL_SOCIETY.FAILURE, id, message })
 };
 
 export const archive = {

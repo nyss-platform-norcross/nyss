@@ -43,10 +43,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 _nyssContextMock,
                 Substitute.For<INationalSocietyAccessService>(),
                 loggerAdapterMock,
-                _authorizationServiceMock,
-                _managerServiceMock,
-                _technicalAdvisorServiceMock,
-                _smsGatewayServiceMock);
+                _authorizationServiceMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
         }
@@ -89,127 +86,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Edit.Success);
         }
-
-        [Fact]
-        public async Task RemoveNationalSociety_WhenSuccessful_ShouldReturnSuccess()
-        {
-            // Act
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var result = await _nationalSocietyService.Delete(BasicNationalSocietyServiceTestData.NationalSocietyId);
-
-            // Assert
-            result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasNoProjectsAndNoUsersExceptHeadManager_ReturnsSuccess()
-        {
-            //arrange
-            _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchived = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
-            var nationalSocietyBeingArchivedId = nationalSocietyBeingArchived.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            result.IsSuccess.ShouldBeTrue();
-            nationalSocietyBeingArchived.IsArchived.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasNoProjectsAndNoUsersExceptHeadManager_CallsSaveChanges()
-        {
-            //arrange
-            _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchived = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
-            var nationalSocietyBeingArchivedId = nationalSocietyBeingArchived.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            await _nyssContextMock.Received(1).SaveChangesAsync();
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager_DeletesHeadManager()
-        {
-            //arrange
-            _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchivedId = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived.Id;
-            var headManagerId = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.HeadManager.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            await _managerServiceMock.Received(1).DeleteIncludingHeadManagerFlag(headManagerId);
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor_DeletesHeadManager()
-        {
-            //arrange
-            var testCase = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor;
-            testCase.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchivedId = testCase.AdditionalData.NationalSocietyBeingArchived.Id;
-            var headManagerId = testCase.AdditionalData.HeadManager.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            await _technicalAdvisorServiceMock.Received(1).DeleteIncludingHeadManagerFlag(nationalSocietyBeingArchivedId, headManagerId);
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenSuccessfullyArchiving_ShouldRemoveSmsGateways()
-        {
-            //arrange
-            _testData.WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchivedId = _testData.WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways.AdditionalData.NationalSocietyBeingArchived.Id;
-            var smsGatewaysInNationalSocietyIds = _testData.WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways.AdditionalData.SmsGatewaysIds;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            await _smsGatewayServiceMock.Received(1).Delete(smsGatewaysInNationalSocietyIds[0]);
-            await _smsGatewayServiceMock.Received(1).Delete(smsGatewaysInNationalSocietyIds[1]);
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasNoProjectsAndHasSomeUsersExceptHeadManager_ReturnsError()
-        {
-            //arrange
-            _testData.WhenHasNoProjectsAndSomeUsersExceptHeadManager.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchivedId = _testData.WhenHasNoProjectsAndSomeUsersExceptHeadManager.AdditionalData.NationalSocietyBeingArchived.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Archive.ErrorHasRegisteredUsers);
-        }
-
-        [Fact]
-        public async Task ArchiveNationalSociety_WhenHasProjects_ReturnsError()
-        {
-            //arrange
-            _testData.ArchiveWhenHasProjects.GenerateData().AddToDbContext();
-            var nationalSocietyBeingArchivedId = _testData.ArchiveWhenHasProjects.AdditionalData.NationalSocietyBeingArchived.Id;
-
-            //act
-            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Archive.ErrorHasOpenedProjects);
-        }
-
 
         [Fact]
         public async Task ReopenNationalSociety_WhenSucess_ArchivedFlagIsFalse()
