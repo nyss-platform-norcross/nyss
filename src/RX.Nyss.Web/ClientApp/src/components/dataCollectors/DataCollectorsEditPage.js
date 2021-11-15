@@ -15,12 +15,13 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
 import SelectField from '../forms/SelectField';
-import { getBirthDecades, getSaveFormModel } from './logic/dataCollectorsService';
+import { getSaveFormModel } from './logic/dataCollectorsService';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { MenuItem, Button, Grid, Typography } from "@material-ui/core";
 import { Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
+import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 
 const DataCollectorsEditPageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
@@ -183,7 +184,7 @@ const DataCollectorsEditPageComponent = (props) => {
             >
               {birthDecades.map(decade => (
                 <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                  {decade}
+                  {parseBirthDecade(decade)}
                 </MenuItem>
               ))}
             </SelectField>

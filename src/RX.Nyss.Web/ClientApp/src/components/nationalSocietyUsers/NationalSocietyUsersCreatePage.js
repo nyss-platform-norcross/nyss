@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
+import { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -14,10 +14,10 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, sexValues } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
-import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
+import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
 
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
@@ -292,7 +292,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 >
                   {birthDecades.map(decade => (
                     <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                      {decade}
+                      {parseBirthDecade(decade)}
                     </MenuItem>
                   ))}
                 </SelectField>

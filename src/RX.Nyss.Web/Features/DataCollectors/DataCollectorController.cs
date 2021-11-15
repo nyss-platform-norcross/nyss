@@ -18,17 +18,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
     {
         private readonly IDataCollectorService _dataCollectorService;
 
-        private readonly IDataCollectorExportService _dataCollectorExportService;
-
         private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
 
         public DataCollectorController(
             IDataCollectorService dataCollectorService,
-            IDataCollectorExportService dataCollectorExportService,
             IDataCollectorPerformanceService dataCollectorPerformanceService)
         {
             _dataCollectorService = dataCollectorService;
-            _dataCollectorExportService = dataCollectorExportService;
             _dataCollectorPerformanceService = dataCollectorPerformanceService;
         }
 
@@ -95,12 +91,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
-            File(await _dataCollectorExportService.ExportAsXls(projectId, dataCollectorsFiltersDto), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            await Sender.Send(new ExportDataCollectorsToExcelQuery(projectId, dataCollectorsFiltersDto)).AsFileResult();
 
         [HttpPost, Route("exportToCsv")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
-            File(await _dataCollectorExportService.ExportAsCsv(projectId, dataCollectorsFiltersDto), "text/csv");
+            await Sender.Send(new ExportDataCollectorsToCsvQuery(projectId, dataCollectorsFiltersDto)).AsFileResult();
 
         [HttpPost, Route("replaceSupervisor")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]

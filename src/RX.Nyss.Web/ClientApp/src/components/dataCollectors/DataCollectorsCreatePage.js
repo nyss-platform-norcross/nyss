@@ -23,12 +23,13 @@ import RadioGroupField from '../forms/RadioGroupField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
-import { getBirthDecades, getSaveFormModel } from './logic/dataCollectorsService';
+import { getSaveFormModel } from './logic/dataCollectorsService';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
+import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
@@ -199,7 +200,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             >
               {birthDecades.map(decade => (
                 <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                  {decade}
+                  {parseBirthDecade(decade)}
                 </MenuItem>
               ))}
             </SelectField>
