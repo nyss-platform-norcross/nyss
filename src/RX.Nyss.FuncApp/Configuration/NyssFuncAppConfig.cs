@@ -4,22 +4,18 @@
     {
         NyssFuncAppConfig.MailConfigOptions MailConfig { get; set; }
         NyssFuncAppConfig.ConnectionStringsOptions ConnectionStrings { get; set; }
-        NyssFuncAppConfig.ServiceBusQueueOptions ServiceBusQueues { get; set; }
         string ReleaseName { get; set; }
         int MaxContentLength { get; set; }
         bool EnableResendingFeedbackMessages { get; set; }
-        int MaxMessagesToResubmit { get; set; }
     }
 
     public class NyssFuncAppConfig : IConfig
     {
         public MailConfigOptions MailConfig { get; set; }
         public ConnectionStringsOptions ConnectionStrings { get; set; }
-        public ServiceBusQueueOptions ServiceBusQueues { get; set; }
         public string ReleaseName { get; set; }
         public int MaxContentLength { get; set; }
         public bool EnableResendingFeedbackMessages { get; set; }
-        public int MaxMessagesToResubmit { get; set; }
 
         public class MailConfigOptions
         {
@@ -40,12 +36,6 @@
         public class ConnectionStringsOptions
         {
             public string IotHubService { get; set; }
-            public string ServiceBus { get; set; }
-        }
-
-        public class ServiceBusQueueOptions
-        {
-            public string SendSmsQueue { get; set; }
         }
     }
 }
