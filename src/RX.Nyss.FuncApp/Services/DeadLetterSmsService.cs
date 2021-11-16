@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.FuncApp.Configuration;
+using RX.Nyss.FuncApp.Extensions;
 
 namespace RX.Nyss.FuncApp.Services
 {
@@ -45,8 +45,7 @@ namespace RX.Nyss.FuncApp.Services
             });
             var sender = _serviceBusClient.CreateSender(_sendSmsQueue);
 
-            var message = await receiver.ReceiveMessageAsync(maxTimeToWaitForMessage);
-            while (message != null)
+            await foreach(var message in receiver.GetMessages(maxTimeToWaitForMessage))
             {
                 try
                 {
@@ -67,8 +66,6 @@ namespace RX.Nyss.FuncApp.Services
 
                     _logger.LogError(ex, $"Failed to resend sms message (Id={message.MessageId})");
                 }
-
-                message = await receiver.ReceiveMessageAsync(maxTimeToWaitForMessage);
             }
 
             return true;
