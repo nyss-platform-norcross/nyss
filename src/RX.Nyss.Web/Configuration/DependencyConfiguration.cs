@@ -64,8 +64,13 @@ namespace RX.Nyss.Web.Configuration
             }
 
             RegisterServiceCollection(serviceCollection, config);
+            RegisterMediatR(serviceCollection);
+        }
 
+        private static void RegisterMediatR(IServiceCollection serviceCollection)
+        {
             serviceCollection.AddMediatR(typeof(Startup));
+            serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,

@@ -48,6 +48,12 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.HasOne(x => x.Supervisor)
                 .WithMany()
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.HeadSupervisor)
+                .WithMany()
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.Reports)

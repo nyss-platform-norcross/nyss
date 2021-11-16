@@ -8,16 +8,20 @@ namespace RX.Nyss.ReportApi.Features.Alerts
     public class AlertController : ControllerBase
     {
         private readonly IAlertService _alertService;
+        private readonly IAlertNotificationService _alertNotificationService;
 
-        public AlertController(IAlertService alertService)
+        public AlertController(
+            IAlertService alertService,
+            IAlertNotificationService alertNotificationService)
         {
             _alertService = alertService;
+            _alertNotificationService = alertNotificationService;
         }
 
         [HttpPost("check")]
         public async Task<IActionResult> CheckAlert(int alertId)
         {
-            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(alertId);
+            await _alertNotificationService.EmailAlertNotHandledRecipientsIfAlertIsPending(alertId);
 
             return Ok();
         }

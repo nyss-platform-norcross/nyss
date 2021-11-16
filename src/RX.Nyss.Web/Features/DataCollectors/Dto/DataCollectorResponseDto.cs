@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public bool IsInTrainingMode { get; set; }
         public bool IsDeployed { get; set; }
-        public SupervisorUser Supervisor { get; set; }
+        public DataCollectorSupervisorResponseDto Supervisor { get; set; }
         public IEnumerable<DataCollectorLocationResponseDto> Locations { get; set; }
     }
 
@@ -31,8 +31,5 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string District { get; set; }
         public string Village { get; set; }
         public string Zone { get; set; }
-        public int VillageId { get; set; }
-        public int ZoneId { get; set; }
-
     }
 }

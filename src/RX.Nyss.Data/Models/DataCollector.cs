@@ -27,6 +27,8 @@ namespace RX.Nyss.Data.Models
 
         public virtual SupervisorUser Supervisor { get; set; }
 
+        public virtual HeadSupervisorUser HeadSupervisor { get; set; }
+
         public virtual Project Project { get; set; }
 
         public DateTime CreatedAt { get; set; }

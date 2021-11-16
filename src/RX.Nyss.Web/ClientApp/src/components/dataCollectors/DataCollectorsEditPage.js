@@ -18,7 +18,7 @@ import SelectField from '../forms/SelectField';
 import { getSaveFormModel } from './logic/dataCollectorsService';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { MenuItem, Button, Grid, Typography } from "@material-ui/core";
-import { Supervisor } from "../../authentication/roles";
+import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
@@ -52,7 +52,8 @@ const DataCollectorsEditPageComponent = (props) => {
       birthGroupDecade: props.data.dataCollectorType === dataCollectorType.human ? props.data.birthGroupDecade.toString() : null,
       phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
-      deployed: props.data.deployed
+      deployed: props.data.deployed,
+      linkedToHeadSupervisor: props.data.formData.supervisors.filter(s => s.id === props.data.supervisorId)[0].role === HeadSupervisor
     };
 
     const validation = {
@@ -66,6 +67,9 @@ const DataCollectorsEditPageComponent = (props) => {
     };
 
     const newForm = createForm(fields, validation);
+    newForm.fields.supervisorId.subscribe(({ newValue }) => 
+      newForm.fields.linkedToHeadSupervisor.update(props.data.formData.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
+
     setForm(newForm);
   }, [props.data, props.match]);
 
@@ -110,7 +114,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
     const values = form.getValues();
 
-    props.edit(props.projectId, getSaveFormModel(values, props.data.dataCollectorType, locations));
+    props.edit(getSaveFormModel(props.projectId, values, props.data.dataCollectorType, locations));
   };
 
   useCustomErrors(form, props.error);

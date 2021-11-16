@@ -61,7 +61,7 @@ export const openCreation = {
 };
 
 export const create = {
-  invoke: (projectId, data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, projectId, data }),
+  invoke: (data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, data }),
   request: () => ({ type: CREATE_DATA_COLLECTOR.REQUEST }),
   success: () => ({ type: CREATE_DATA_COLLECTOR.SUCCESS }),
   failure: (error) => ({ type: CREATE_DATA_COLLECTOR.FAILURE, error, suppressPopup: true })
@@ -75,7 +75,7 @@ export const openEdition = {
 };
 
 export const edit = {
-  invoke: (projectId, data) => ({ type: EDIT_DATA_COLLECTOR.INVOKE, projectId, data }),
+  invoke: (data) => ({ type: EDIT_DATA_COLLECTOR.INVOKE, data }),
   request: () => ({ type: EDIT_DATA_COLLECTOR.REQUEST }),
   success: () => ({ type: EDIT_DATA_COLLECTOR.SUCCESS }),
   failure: (error) => ({ type: EDIT_DATA_COLLECTOR.FAILURE, error, suppressPopup: true })

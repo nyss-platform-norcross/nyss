@@ -37,9 +37,10 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
             var queuePublisherServiceMock = Substitute.For<IQueuePublisherService>();
             var alertServiceMock = Substitute.For<IAlertService>();
             var reportValidationServiceMock = Substitute.For<IReportValidationService>();
+            var alertNotificationServiceMock = Substitute.For<IAlertNotificationService>();
 
             _smsEagleHandler = new SmsEagleHandler(reportMessageServiceMock, _nyssContextMock, _loggerAdapterMock, _dateTimeProviderMock,
-                stringsResourcesServiceMock, queuePublisherServiceMock, alertServiceMock, reportValidationServiceMock);
+                stringsResourcesServiceMock, queuePublisherServiceMock, alertServiceMock, reportValidationServiceMock, alertNotificationServiceMock);
         }
 
         [Fact]

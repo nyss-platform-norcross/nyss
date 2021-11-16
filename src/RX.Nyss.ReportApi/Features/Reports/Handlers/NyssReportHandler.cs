@@ -45,6 +45,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private readonly IAlertService _alertService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IQueuePublisherService _queuePublisherService;
+        private readonly IAlertNotificationService _alertNotificationService;
 
         public NyssReportHandler(
             INyssContext nyssContext,
@@ -54,7 +55,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             IReportValidationService reportValidationService,
             IAlertService alertService,
             IStringsResourcesService stringsResourcesService,
-            IQueuePublisherService queuePublisherService)
+            IQueuePublisherService queuePublisherService,
+            IAlertNotificationService alertNotificationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
@@ -64,6 +66,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             _alertService = alertService;
             _stringsResourcesService = stringsResourcesService;
             _queuePublisherService = queuePublisherService;
+            _alertNotificationService = alertNotificationService;
         }
 
         public async Task Handle(string queryString)
@@ -243,11 +246,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 if (alertData.IsExistingAlert)
                 {
-                    await _alertService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
+                    await _alertNotificationService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
                 }
                 else
                 {
-                    await _alertService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
+                    await _alertNotificationService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
                 }
             }
         }
@@ -257,6 +260,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
                 .ThenInclude(s => s.HeadSupervisor)
+                .Include(dc => dc.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.DataCollectorLocations)
@@ -283,7 +287,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .FirstOrDefaultAsync();
 
             var feedbackMessage = await GetFeedbackMessageContent(SmsContentKey.Reports.ReportSentFromNyss, languageCode);
-            var senderName = sentByHeadSupervisor ? dataCollector.Supervisor.HeadSupervisor.Name : dataCollector.Supervisor.Name;
+            var senderName = GetSenderName(dataCollector, sentByHeadSupervisor);
 
             var languageContents = await _nyssContext.HealthRiskLanguageContents
                 .SingleAsync(hlc => hlc.HealthRisk == report.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
@@ -297,6 +301,18 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
 
             return feedbackMessage;
+        }
+
+        private string GetSenderName(DataCollector dataCollector, bool sentByHeadSupervisor)
+        {
+            if (dataCollector.Supervisor != null)
+            {
+                return sentByHeadSupervisor
+                    ? dataCollector.Supervisor.HeadSupervisor.Name
+                    : dataCollector.Supervisor.Name;
+            }
+
+            return dataCollector.HeadSupervisor.Name;
         }
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)

@@ -46,6 +46,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private readonly IAlertService _alertService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IReportValidationService _reportValidationService;
+        private readonly IAlertNotificationService _alertNotificationService;
 
         public SmsEagleHandler(
             IReportMessageService reportMessageService,
@@ -55,7 +56,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             IStringsResourcesService stringsResourcesService,
             IQueuePublisherService queuePublisherService,
             IAlertService alertService,
-            IReportValidationService reportValidationService)
+            IReportValidationService reportValidationService,
+            IAlertNotificationService alertNotificationService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
@@ -65,6 +67,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             _alertService = alertService;
             _stringsResourcesService = stringsResourcesService;
             _reportValidationService = reportValidationService;
+            _alertNotificationService = alertNotificationService;
         }
 
         public async Task Handle(string queryString)
@@ -78,7 +81,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
 
-            ErrorReportData reportErrorData = null;
+            ErrorReportData errorReportData = null;
             AlertData alertData = null;
             ProjectHealthRisk projectHealthRisk = null;
             GatewaySetting gatewaySetting = null;
@@ -139,47 +142,16 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
                 else
                 {
-                    reportErrorData = reportValidationResult.ErrorReportData;
+                    errorReportData = reportValidationResult.ErrorReportData;
                     gatewaySetting = reportValidationResult.GatewaySetting;
-                    rawReport.ErrorType = reportErrorData.ReportErrorType;
+                    rawReport.ErrorType = errorReportData.ReportErrorType;
                 }
 
                 await _nyssContext.SaveChangesAsync();
                 transactionScope.Complete();
             }
 
-            if (reportErrorData == null)
-            {
-                if (projectHealthRisk != null)
-                {
-                    var recipients = new List<SendSmsRecipient>
-                    {
-                        new SendSmsRecipient
-                        {
-                            PhoneNumber = sender,
-                            Modem = modemNumber
-                        }
-                    };
-
-                    await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
-                }
-
-                if (alertData != null && alertData.Alert != null)
-                {
-                    if (alertData.IsExistingAlert)
-                    {
-                        await _alertService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
-                    }
-                    else
-                    {
-                        await _alertService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
-                    }
-                }
-            }
-            else
-            {
-                await SendFeedbackOnError(reportErrorData, gatewaySetting);
-            }
+            await SendNotifications(sender, modemNumber, alertData, errorReportData, projectHealthRisk, gatewaySetting);
         }
 
         public async Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId)
@@ -192,6 +164,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
                 .ThenInclude(s => s.HeadSupervisor)
+                .Include(dc => dc.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .Include(dc => dc.DataCollectorLocations)
                 .ThenInclude(dcl => dcl.Village)
@@ -230,8 +203,12 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector?.IsInTrainingMode ?? false;
-                rawReport.Village = dataCollector?.DataCollectorLocations.Count == 1 ? dataCollector.DataCollectorLocations.First().Village : null;
-                rawReport.Zone = dataCollector?.DataCollectorLocations.Count == 1 ? dataCollector.DataCollectorLocations.First().Zone : null;
+                rawReport.Village = dataCollector?.DataCollectorLocations.Count == 1
+                    ? dataCollector.DataCollectorLocations.First().Village
+                    : null;
+                rawReport.Zone = dataCollector?.DataCollectorLocations.Count == 1
+                    ? dataCollector.DataCollectorLocations.First().Zone
+                    : null;
 
                 var parsedReport = await _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await _reportValidationService.ValidateReport(parsedReport, dataCollector, gatewaySetting.NationalSocietyId);
@@ -280,6 +257,45 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 _loggerAdapter.Warn(e.Message);
                 return new ReportValidationResult { IsSuccess = false };
+            }
+        }
+
+        private async Task SendNotifications(
+            string senderPhoneNumber,
+            int? senderModemNumber,
+            AlertData alertData,
+            ErrorReportData errorReportData,
+            ProjectHealthRisk projectHealthRisk,
+            GatewaySetting gatewaySetting)
+        {
+            if (errorReportData == null)
+            {
+                var recipients = new List<SendSmsRecipient>
+                {
+                    new SendSmsRecipient
+                    {
+                        PhoneNumber = senderPhoneNumber,
+                        Modem = senderModemNumber
+                    }
+                };
+
+                await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
+
+                if (alertData != null && alertData.Alert != null)
+                {
+                    if (alertData.IsExistingAlert)
+                    {
+                        await _alertNotificationService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
+                    }
+                    else
+                    {
+                        await _alertNotificationService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
+                    }
+                }
+            }
+            else
+            {
+                await SendFeedbackOnError(errorReportData, gatewaySetting);
             }
         }
 

@@ -47,17 +47,22 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
                 .Where(dc => dataCollectorIds.Contains(dc.Id))
                 .Select(dc => new
                 {
-                    DataCollectorOrganizationId = dc.Supervisor.UserNationalSocieties
-                        .Where(uns => uns.NationalSociety == dc.Project.NationalSociety)
-                        .Select(uns => uns.OrganizationId)
-                        .Single(),
+                    DataCollectorOrganizationId = dc.Supervisor != null
+                        ? dc.Supervisor.UserNationalSocieties
+                            .Where(uns => uns.NationalSociety == dc.Project.NationalSociety)
+                            .Select(uns => uns.OrganizationId)
+                            .Single()
+                        : dc.HeadSupervisor.UserNationalSocieties
+                            .Where(uns => uns.NationalSociety == dc.Project.NationalSociety)
+                            .Select(uns => uns.OrganizationId)
+                            .Single(),
                     CurrentUserOrganizationId = dc.Project.NationalSociety.NationalSocietyUsers
                         .Where(uns => uns.User == currentUser)
                         .Select(uns => uns.OrganizationId)
                         .Single(),
                     ProjectId = dc.Project.Id,
                     SupervisorEmailAddress = dc.Supervisor.EmailAddress,
-                    HeadSupervisorEmailAddress = dc.Supervisor.HeadSupervisor.EmailAddress
+                    HeadSupervisorEmailAddress = dc.HeadSupervisor.EmailAddress ?? dc.Supervisor.HeadSupervisor.EmailAddress
                 });
 
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))

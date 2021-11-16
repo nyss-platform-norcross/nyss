@@ -50,13 +50,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result> Create(int projectId, [FromBody] CreateDataCollectorRequestDto createDataCollectorDto) =>
-            _dataCollectorService.Create(projectId, createDataCollectorDto);
+        public async Task<Result> Create([FromBody] CreateDataCollectorCommand cmd) =>
+            await Sender.Send(cmd);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public Task<Result> Edit([FromBody] EditDataCollectorRequestDto editDataCollectorDto) =>
-            _dataCollectorService.Edit(editDataCollectorDto);
+        public async Task<Result> Edit([FromBody] EditDataCollectorCommand cmd) =>
+            await Sender.Send(cmd);
 
         [HttpPost, Route("setTrainingState")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]

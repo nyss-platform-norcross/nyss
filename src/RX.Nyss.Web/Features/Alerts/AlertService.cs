@@ -503,9 +503,22 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     ProjectId = a.ProjectHealthRisk.Project.Id,
                     ProjectHealthRiskId = a.ProjectHealthRisk.Id,
-                    InvolvedSupervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.Id).Distinct().ToList(),
+                    InvolvedSupervisorIds = a.AlertReports
+                        .Where(ar => ar.Report.DataCollector.Supervisor != null)
+                        .Select(ar => ar.Report.DataCollector.Supervisor.Id)
+                        .ToList(),
+                    InvolvedHeadSupervisorIds = a.AlertReports
+                        .Where(ar => ar.Report.DataCollector.HeadSupervisor != null)
+                        .Select(ar => ar.Report.DataCollector.HeadSupervisor.Id)
+                        .ToList(),
                     InvolvedOrganizations = a.AlertReports
-                        .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId).Distinct().ToList()
+                        .Select(ar => new
+                        {
+                            OrganizationId = ar.Report.DataCollector.Supervisor != null
+                            ? ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId
+                            : ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties.Single().OrganizationId
+                        })
+                        .Select(x => x.OrganizationId).ToList()
                 })
                 .SingleOrDefaultAsync();
 
@@ -514,7 +527,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar =>
                     ar.ProjectId == alert.ProjectId &&
                     alert.InvolvedOrganizations.Contains(ar.OrganizationId) &&
-                    (ar.SupervisorAlertRecipients.Count == 0 || ar.SupervisorAlertRecipients.Any(sar => alert.InvolvedSupervisors.Contains(sar.SupervisorId))) &&
+                    (ar.SupervisorAlertRecipients.Count == 0 || ar.SupervisorAlertRecipients.Any(sar => alert.InvolvedSupervisorIds.Contains(sar.SupervisorId))) &&
+                    (ar.HeadSupervisorUserAlertRecipients.Count == 0 || ar.HeadSupervisorUserAlertRecipients.Any(sar => alert.InvolvedHeadSupervisorIds.Contains(sar.HeadSupervisorId))) &&
                     (ar.ProjectHealthRiskAlertRecipients.Count == 0 || ar.ProjectHealthRiskAlertRecipients.Any(phr => phr.ProjectHealthRiskId == alert.ProjectHealthRiskId)))
                 .ToListAsync();
 
