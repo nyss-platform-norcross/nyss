@@ -6,6 +6,7 @@
     <UserSecretsId>a53b196f-5472-4183-8faa-92af93f592f4</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.4.0" />
     <PackageReference Include="Microsoft.Azure.Devices" Version="1.35.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.11" />

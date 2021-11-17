@@ -45,6 +45,7 @@ namespace RX.Nyss.FuncApp
             builder.Services.AddScoped<ISmsService, SmsService>();
             builder.Services.AddSingleton<IHttpPostClient, HttpPostClient>();
             builder.Services.AddScoped<IEmailAttachmentService, EmailAttachmentService>();
+            builder.Services.AddScoped<IDeadLetterSmsService, DeadLetterSmsService>();
 
             //https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azure_functions_environment
             builder.Services.AddScoped(typeof(IEmailClient), newConfiguration["AZURE_FUNCTIONS_ENVIRONMENT"] == "Development"

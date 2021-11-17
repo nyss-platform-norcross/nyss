@@ -6,6 +6,7 @@
         NyssFuncAppConfig.ConnectionStringsOptions ConnectionStrings { get; set; }
         string ReleaseName { get; set; }
         int MaxContentLength { get; set; }
+        bool EnableResendingFeedbackMessages { get; set; }
     }
 
     public class NyssFuncAppConfig : IConfig
@@ -14,6 +15,7 @@
         public ConnectionStringsOptions ConnectionStrings { get; set; }
         public string ReleaseName { get; set; }
         public int MaxContentLength { get; set; }
+        public bool EnableResendingFeedbackMessages { get; set; }
 
         public class MailConfigOptions
         {
