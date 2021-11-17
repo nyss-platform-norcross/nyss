@@ -8,14 +8,17 @@ namespace RX.Nyss.FuncApp.Extensions
     {
         public static async IAsyncEnumerable<ServiceBusReceivedMessage> GetMessages(this ServiceBusReceiver receiver, TimeSpan maxWaitTime)
         {
-            var message = await receiver.ReceiveMessageAsync(maxWaitTime);
-
-            if (message == null)
+            while (true)
             {
-                yield break;
-            }
+                var message = await receiver.ReceiveMessageAsync(maxWaitTime);
 
-            yield return message;
+                if (message == null)
+                {
+                    yield break;
+                }
+
+                yield return message;
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ namespace RX.Nyss.FuncApp.Services
                 SubQueue = SubQueue.DeadLetter
             });
             var sender = _serviceBusClient.CreateSender(_sendSmsQueue);
+            var count = 0;
 
             await foreach(var message in receiver.GetMessages(maxTimeToWaitForMessage))
             {
@@ -58,6 +59,8 @@ namespace RX.Nyss.FuncApp.Services
                     await sender.SendMessageAsync(newMessage);
 
                     await receiver.CompleteMessageAsync(message);
+
+                    count++;
                 }
                 catch (Exception ex)
                 {
@@ -67,6 +70,8 @@ namespace RX.Nyss.FuncApp.Services
                     _logger.LogError(ex, $"Failed to resend sms message (Id={message.MessageId})");
                 }
             }
+
+            _logger.LogInformation($"Resubmitted {count} dead lettered feedback sms messages");
 
             return true;
         }
