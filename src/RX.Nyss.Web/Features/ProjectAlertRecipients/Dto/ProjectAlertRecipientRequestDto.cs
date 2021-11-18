@@ -19,11 +19,9 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public int? OrganizationId { get; set; }
         public int? ModemId { get; set; }
 
-        public List<int> Supervisors { get; set; }
+        public List<SupervisorAlertRecipientRequestDto> Supervisors { get; set; }
 
         public List<int> HealthRisks { get; set; }
-
-        public List<int> HeadSupervisors { get; set; }
 
         public class Validator : AbstractValidator<ProjectAlertRecipientRequestDto>
         {
