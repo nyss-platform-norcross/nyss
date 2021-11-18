@@ -132,9 +132,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Email = "head@rcrc.org",
                 PhoneNumber = "+35235243",
                 OrganizationId = 1,
-                Supervisors = new List<int>(),
-                HealthRisks = new List<int>(),
-                HeadSupervisors = new List<int>()
+                Supervisors = new List<SupervisorAlertRecipientRequestDto>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -155,9 +154,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Email = "test@example.com",
                 PhoneNumber = "+123456",
                 OrganizationId = 1,
-                Supervisors = new List<int>(),
-                HealthRisks = new List<int>(),
-                HeadSupervisors = new List<int>()
+                Supervisors = new List<SupervisorAlertRecipientRequestDto>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -180,7 +178,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Email = "head@rcrc.org",
                 PhoneNumber = "+35235243",
                 OrganizationId = 3,
-                Supervisors = new List<int>(),
+                Supervisors = new List<SupervisorAlertRecipientRequestDto>(),
                 HealthRisks = new List<int>()
             };
 
@@ -205,7 +203,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Email = "head@rcrc.org",
                 PhoneNumber = "+35235243",
                 OrganizationId = 1,
-                Supervisors = new List<int>(),
+                Supervisors = new List<SupervisorAlertRecipientRequestDto>(),
                 HealthRisks = new List<int>()
             };
 
@@ -230,9 +228,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Email = "head@rcrc.org",
                 PhoneNumber = "+35235243",
                 OrganizationId = 1,
-                Supervisors = new List<int>(),
-                HealthRisks = new List<int>(),
-                HeadSupervisors = new List<int>()
+                Supervisors = new List<SupervisorAlertRecipientRequestDto>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
