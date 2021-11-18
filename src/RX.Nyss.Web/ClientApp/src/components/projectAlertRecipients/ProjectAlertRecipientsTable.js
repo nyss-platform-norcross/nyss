@@ -53,7 +53,7 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{renderHealthRisks(row.healthRisks)}</TableCell>
-              <TableCell>{renderSupervisors(row.supervisors)}</TableCell>
+              <TableCell>{renderSupervisors([...row.supervisors, ...row.headSupervisors])}</TableCell>
               <TableCell>
                 {!isClosed &&
                   <TableRowActions>

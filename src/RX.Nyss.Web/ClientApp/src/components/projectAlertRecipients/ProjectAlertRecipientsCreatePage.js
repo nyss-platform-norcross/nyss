@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -230,7 +230,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                     <Grid item xs={12}>
                       <MultiSelect
                         label={strings(stringKeys.projectAlertRecipient.form.supervisors)}
-                        options={supervisorsDataSource.map((s) => { return { label: s.name, value: s.id } })}
+                        options={supervisorsDataSource.map((s) => { return { label: s.name, value: s } })}
                         value={selectedSupervisors}
                         onChange={onSupervisorChange}
                       />
