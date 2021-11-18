@@ -503,9 +503,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     ProjectId = a.ProjectHealthRisk.Project.Id,
                     ProjectHealthRiskId = a.ProjectHealthRisk.Id,
-                    InvolvedSupervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.Id).Distinct().ToList(),
+                    InvolvedSupervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.Id).ToList(),
                     InvolvedOrganizations = a.AlertReports
-                        .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId).Distinct().ToList()
+                        .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId).ToList()
                 })
                 .SingleOrDefaultAsync();
 
