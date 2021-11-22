@@ -17,8 +17,20 @@ import {
   TableRow,
   TableSortLabel,
 } from '@material-ui/core';
+import CorrectedButton from "./CorrectedButton";
 
-export const IncorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort }) => {
+export const IncorrectReportsTable = ({
+  isListFetching,
+  list,
+  page,
+  onChangePage,
+  rowsPerPage,
+  totalRows,
+  filters,
+  sorting,
+  onSort,
+  onCorrect,
+}) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -85,6 +97,7 @@ export const IncorrectReportsTable = ({ isListFetching, list, page, onChangePage
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
               <TableCell style={{ width: '23%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: '13%' }}>{strings(stringKeys.reports.list.corrected)}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -101,6 +114,9 @@ export const IncorrectReportsTable = ({ isListFetching, list, page, onChangePage
                   {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
+                <TableCell>
+                  <CorrectedButton onClick={() => onCorrect(row)} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

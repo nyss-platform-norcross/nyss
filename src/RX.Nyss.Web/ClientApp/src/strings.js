@@ -756,7 +756,9 @@ export const stringKeys = {
       dismissReport: "reports.list.dismissReport",
       acceptReportSuccess: "reports.list.acceptReportSuccess",
       dismissReportSuccess: "reports.list.dismissReportSuccess",
-      errorType: "reports.list.errorType"
+      errorType: "reports.list.errorType",
+      corrected: "reports.list.corrected",
+      markAsCorrected: "reports.list.markAsCorrected"
     },
     form: {
       title: "reports.form.editionTitle",

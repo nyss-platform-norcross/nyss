@@ -61,6 +61,10 @@ const IncorrectReportsListPageComponent = (props) => {
     props.exportToExcel(props.projectId, props.filters, props.sorting);
   } 
 
+  function onCorrect(row) {
+    console.log("onCorrect", row.id);
+  }
+
   return (
     <Fragment>
       <TableActions>
@@ -113,6 +117,7 @@ const IncorrectReportsListPageComponent = (props) => {
         sorting={props.sorting}
         onSort={handleSortChange}
         user={props.user}
+        onCorrect={onCorrect}
       />
     </Fragment>
   );
