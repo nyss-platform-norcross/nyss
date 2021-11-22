@@ -1,28 +1,43 @@
-import React from "react";
 import PropTypes from "prop-types";
-import { createFieldComponent } from "./FieldBase";
-import { MultiSelect } from "./MultiSelect";
+import { FormControl, InputLabel, Select } from "@material-ui/core";
 
-const MultiSelectFieldComponent = ({ error, name, label, value, controlProps, multiline, rows }) => {
+const MultiSelectField = ({ name, label, value, controlProps, onChange, children, className, renderValues }) => {
+  
+  const renderSelectedValues = (selected) => 
+    !!renderValues ? renderValues(selected) : selected.join(',');
+
   return (
-    <MultiSelect
-      name={name}
-      error={!!error}
-      helperText={error}
-      label={label}
-      value={value}
-      InputLabelProps={{ shrink: true }}
-      InputProps={{ ...controlProps }}
-    />
+    <FormControl>
+      <InputLabel id={name} shrink>{label}</InputLabel>
+      <Select
+        multiple
+        displayEmpty
+        name={name}
+        id={name}
+        labelId={name}
+        value={value}
+        onChange={onChange}
+        renderValue={renderSelectedValues}
+        className={className}
+        MenuProps={{
+          anchorOrigin: {
+            horizontal: 'left',
+            vertical: 'bottom'
+          },
+          getContentAnchorEl: null
+        }}>
+        {children}
+      </Select>
+    </FormControl>
   );
 };
 
-MultiSelectFieldComponent.propTypes = {
+MultiSelectField.propTypes = {
   label: PropTypes.string,
   controlProps: PropTypes.object,
   name: PropTypes.string,
-  error: PropTypes.string
+  error: PropTypes.string,
+  renderValues: PropTypes.func
 };
 
-export const MultiSelectField = createFieldComponent(MultiSelectFieldComponent);
 export default MultiSelectField;

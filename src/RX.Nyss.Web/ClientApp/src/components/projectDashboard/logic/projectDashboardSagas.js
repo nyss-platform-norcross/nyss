@@ -32,7 +32,7 @@ function* openProjectDashboard({ projectId }) {
     endDate = endDate.set('second', 0);
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
-        healthRiskId: null,
+        healthRisks: [],
         area: null,
         startDate: endDate.add(-7, 'day'),
         endDate: endDate,

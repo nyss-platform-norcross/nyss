@@ -19,6 +19,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Checkbox,
 } from "@material-ui/core";
 import DateRange from "@material-ui/icons/DateRange";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -27,6 +28,7 @@ import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { DataConsumer } from "../../../authentication/roles";
+import MultiSelectField from "../../forms/MultiSelectField";
 
 export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, userRoles }) => {
   const [value, setValue] = useState(filters);
@@ -55,7 +57,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
   }
   const handleHealthRiskChange = event =>
-    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
+    onChange(updateValue({ healthRisks: typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value }))
 
   const handleOrganizationChange = event =>
     onChange(updateValue({ organizationId: event.target.value === 0 ? null : event.target.value }))
@@ -74,6 +76,11 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
 
   const handleReportStatusChange = event =>
     onChange(updateValue({ reportStatus: { ...value.reportStatus, [event.target.name]: event.target.checked } }));
+
+  const renderHealthRiskValues = (selectedIds) => 
+    selectedIds.length < 1 || selectedIds.length === healthRisks.length
+      ? strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)
+      : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
 
   if (!value) {
     return null;
@@ -214,22 +221,21 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
             </Grid>
 
             <Grid item>
-              <TextField
-                select
+              <MultiSelectField
+                name="healthRisks"
                 label={strings(stringKeys.nationalSociety.dashboard.filters.healthRisk)}
                 onChange={handleHealthRiskChange}
-                value={value.healthRiskId || 0}
+                value={value.healthRisks}
+                renderValues={renderHealthRiskValues}
                 className={styles.filterItem}
-                InputLabelProps={{ shrink: true }}
               >
-                <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)}</MenuItem>
-
                 {healthRisks.map(healthRisk => (
                   <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
-                    {healthRisk.name}
+                    <Checkbox checked={value.healthRisks.indexOf(healthRisk.id) > -1} />
+                    <span>{healthRisk.name}</span>
                   </MenuItem>
                 ))}
-              </TextField>
+              </MultiSelectField>
             </Grid>
 
             <Grid item>
