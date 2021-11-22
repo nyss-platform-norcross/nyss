@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             reports.Where(r => !healthRiskId.HasValue || (r.Report != null && r.Report.ProjectHealthRisk.HealthRiskId == healthRiskId.Value));
 
         public static IQueryable<RawReport> FilterByHealthRisks(this IQueryable<RawReport> reports, IList<int> healthRiskIds) =>
-            healthRiskIds.Any()
+            healthRiskIds != null && healthRiskIds.Any()
                 ? reports.Where(r => healthRiskIds.Contains(r.Report.ProjectHealthRisk.HealthRiskId))
                 : reports;
 
