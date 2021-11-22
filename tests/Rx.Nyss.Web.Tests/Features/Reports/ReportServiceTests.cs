@@ -152,7 +152,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 SortAscending = true,
                 UtcOffset = 0,
                 DataCollectorType = ReportListDataCollectorType.Human,
-                HealthRiskId = null
+                HealthRisks = null
             });
 
             //assert
@@ -307,7 +307,10 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Dismissed = true,
                     NotCrossChecked = true,
                 },
-                HealthRiskId = 2,
+                HealthRisks = new List<int>
+                {
+                    2
+                },
             });
 
 
@@ -332,7 +335,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 FormatCorrect = false,
                 ReportStatus = null,
                 DataCollectorType = ReportListDataCollectorType.Human,
-                HealthRiskId = null
+                HealthRisks = null
             };
 
             // Act
