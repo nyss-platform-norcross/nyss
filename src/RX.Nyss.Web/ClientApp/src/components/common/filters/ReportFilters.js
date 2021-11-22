@@ -14,6 +14,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Checkbox,
 } from "@material-ui/core";
 import { AreaFilter } from "./AreaFilter";
 import { strings, stringKeys } from "../../../strings";
@@ -23,6 +24,7 @@ import {
 } from "./logic/reportFilterConstsants";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "./ReportStatusFilter";
+import MultiSelectField from "../../forms/MultiSelectField";
 
 export const ReportFilters = ({
   filters,
@@ -58,7 +60,7 @@ export const ReportFilters = ({
   const handleHealthRiskChange = (event) =>
     onChange(
       updateValue({
-        healthRiskId: event.target.value === 0 ? null : event.target.value,
+        healthRisks: typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
       })
     );
 
@@ -85,6 +87,11 @@ export const ReportFilters = ({
         trainingStatus: event.target.value,
       })
     );
+
+  const renderHealthRiskValues = (selectedIds) => 
+    selectedIds.length < 1 || selectedIds.length === healthRisks.length
+      ? strings(stringKeys.filters.report.healthRiskAll)
+      : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
 
   if (!value) {
     return null;
@@ -131,27 +138,23 @@ export const ReportFilters = ({
           {showCorrectReportFilters && (
             <Fragment>
               <Grid item>
-                <TextField
-                  select
+                <MultiSelectField
+                  name="healthRisks"
                   label={strings(stringKeys.filters.report.healthRisk)}
                   onChange={handleHealthRiskChange}
-                  value={value.healthRiskId || 0}
+                  value={value.healthRisks}
                   className={styles.filterItem}
-                  InputLabelProps={{ shrink: true }}
+                  renderValues={renderHealthRiskValues}
                 >
-                  <MenuItem value={0}>
-                    {strings(stringKeys.filters.report.healthRiskAll)}
-                  </MenuItem>
-
                   {healthRisks.map((healthRisk) => (
                     <MenuItem
                       key={`filter_healthRisk_${healthRisk.id}`}
-                      value={healthRisk.id}
-                    >
-                      {healthRisk.name}
+                      value={healthRisk.id}>
+                      <Checkbox checked={value.healthRisks.indexOf(healthRisk.id) > -1} />
+                      <span>{healthRisk.name}</span>
                     </MenuItem>
                   ))}
-                </TextField>
+                </MultiSelectField>
               </Grid>
             </Fragment>
           )}

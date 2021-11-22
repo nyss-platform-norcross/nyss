@@ -70,7 +70,7 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
     dataCollectorType: DataCollectorType.human,
     errorType: null,
     area: null,
-    healthRiskId: null,
+    healthRisks: [],
     formatCorrect: true,
     isTraining: false,
     reportStatus: {
@@ -106,7 +106,6 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
     dataCollectorType: DataCollectorType.human,
     errorType: ReportErrorFilterType.all,
     area: null,
-    healthRiskId: null,
     formatCorrect: false,
     isTraining: false,
     reportStatus: null,
