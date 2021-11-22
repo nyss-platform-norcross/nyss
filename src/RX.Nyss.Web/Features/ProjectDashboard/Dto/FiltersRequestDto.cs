@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Services.ReportsDashboard;
 
@@ -13,7 +14,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
             DataCollectionPoint
         }
 
-        public int? HealthRiskId { get; set; }
+        public IEnumerable<int> HealthRisks { get; set; }
 
         public DateTimeOffset StartDate { get; set; }
 

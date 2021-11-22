@@ -147,7 +147,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             {
                 StartDate = filtersDto.StartDate,
                 EndDate = filtersDto.EndDate.AddDays(1),
-                HealthRiskId = filtersDto.HealthRiskId,
+                HealthRisks = filtersDto.HealthRisks.ToList(),
                 OrganizationId = filtersDto.OrganizationId,
                 Area = filtersDto.Area == null
                     ? null

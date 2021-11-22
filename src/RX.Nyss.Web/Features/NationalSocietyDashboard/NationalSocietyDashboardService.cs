@@ -110,7 +110,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             {
                 StartDate = filtersDto.StartDate,
                 EndDate = filtersDto.EndDate.AddDays(1),
-                HealthRiskId = filtersDto.HealthRiskId,
+                HealthRisks = filtersDto.HealthRisks.ToList(),
                 NationalSocietyId = nationalSocietyId,
                 OrganizationId = filtersDto.OrganizationId,
                 Area = filtersDto.Area == null

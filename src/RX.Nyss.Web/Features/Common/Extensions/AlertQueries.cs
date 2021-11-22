@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Devices;
 using RX.Nyss.Data.Concepts;
@@ -31,6 +32,11 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
         public static IQueryable<Alert> FilterByHealthRisk(this IQueryable<Alert> alerts, int? healthRiskId) =>
             alerts.Where(a => !healthRiskId.HasValue || a.ProjectHealthRisk.HealthRiskId == healthRiskId.Value);
+
+        public static IQueryable<Alert> FilterByHealthRisks(this IQueryable<Alert> alerts, List<int> healthRisks) =>
+            healthRisks.Any()
+                ? alerts.Where(a => healthRisks.Contains(a.ProjectHealthRisk.HealthRiskId))
+                : alerts;
 
         public static IQueryable<Alert> FilterByArea(this IQueryable<Alert> alerts, Area area) =>
             area?.AreaType switch

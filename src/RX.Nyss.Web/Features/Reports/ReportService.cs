@@ -336,7 +336,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
                 .FilterByDate(filters.StartDate, filters.EndDate)
-                .FilterByHealthRisk(filters.HealthRiskId)
+                .FilterByHealthRisks(filters.HealthRisks)
                 .FilterByTrainingMode(filters.TrainingStatus);
 
 

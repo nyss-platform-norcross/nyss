@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -7,7 +8,7 @@ namespace RX.Nyss.Web.Features.Reports
 {
     public class ReportsFilter
     {
-        public int? HealthRiskId { get; set; }
+        public List<int> HealthRisks { get; set; }
 
         public int? NationalSocietyId { get; set; }
 
