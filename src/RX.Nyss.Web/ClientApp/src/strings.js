@@ -1040,13 +1040,19 @@ export const stringKeys = {
       dismissed: "filters.report.dismissedReports",
       notCrossChecked: "filters.report.notCrossCheckedReports",
       selectErrorType: "filters.report.selectErrorType",
+      isCorrected: "filters.report.isCorrected",
       errorTypes: {
         "All": "filters.report.errorTypeAll",
         "HealthRiskNotFound": "filters.report.errorTypeHealthRiskNotFound",
         "WrongFormat": "filters.report.errorTypeWrongFormat",
         "GatewayError": "filters.report.errorTypeGatewayError",
         "Other": "filters.report.errorTypeOther"
-      }
+      },
+      correctedStates: {
+        "All": "filters.report.correctedStateAll",
+        "Corrected": "filters.report.correctedStateCorrected",
+        "NotCorrected": "filters.report.correctedStateNotCorrected",
+      },
     }
   },
   table: {

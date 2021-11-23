@@ -110,6 +110,7 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
     formatCorrect: false,
     isTraining: false,
     reportStatus: null,
+    correctedState: "All",
     reportType: {
       real: true,
       corrected: false
