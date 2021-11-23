@@ -16,6 +16,7 @@ export const appSagas = () => [
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
   takeEvery(consts.ENTITY_UPDATED, entityUpdated),
   takeEvery(consts.SWITCH_STRINGS, switchStrings),
+  takeEvery(consts.SEND_FEEDBACK.INVOKE, sendFeedback),
   takeLatest("*", checkLogin)
 ];
 
@@ -122,4 +123,14 @@ function* getStrings(languageCode) {
 
 function entityUpdated({ entities }) {
   cache.cleanCacheForDependencies(entities);
+};
+
+function* sendFeedback({ message }) {
+  yield put(actions.sendFeedback.request());
+  try {
+    yield call(http.post, `/api/feedback`, message);
+    yield put(actions.sendFeedback.success());
+  } catch (error) {
+    yield put(actions.sendFeedback.failure(error.message));
+  }
 };
