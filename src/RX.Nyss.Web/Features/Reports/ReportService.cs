@@ -208,7 +208,8 @@ namespace RX.Nyss.Web.Features.Reports
                         ? r.Report.Status
                         : ReportStatus.New,
                     ReportErrorType = r.ErrorType,
-                    DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text
+                    DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text,
+                    IsCorrected = r.MarkedAsCorrectedAtUtc != null,
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);

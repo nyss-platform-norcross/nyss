@@ -141,6 +141,7 @@ namespace RX.Nyss.Web.Features.Reports
             await _reportService.DismissReport(reportId);
 
         [HttpPost("{reportId:int}/correct")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> Correct(int reportId) =>
             await Sender.Send(new CorrectReportCommand(reportId));
     }

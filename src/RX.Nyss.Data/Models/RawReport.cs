@@ -27,6 +27,10 @@ namespace RX.Nyss.Data.Models
 
         public bool? IsTraining { get; set; }
 
+        public DateTime? MarkedAsCorrectedAtUtc { get; set; }
+
+        public string MarkedAsCorrectedBy { get; set; }
+
         public ReportErrorType? ErrorType { get; set; }
 
         public virtual Village Village { get; set; }
