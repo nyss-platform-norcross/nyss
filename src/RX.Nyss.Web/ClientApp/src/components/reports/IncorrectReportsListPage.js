@@ -62,7 +62,7 @@ const IncorrectReportsListPageComponent = (props) => {
   } 
 
   function onCorrect(row) {
-    console.log("onCorrect", row.id);
+    props.markAsCorrected(row.id);
   }
 
   return (
@@ -148,6 +148,7 @@ const mapDispatchToProps = {
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke,
   trackReportExport: reportsActions.trackReportExport,
+  markAsCorrected: reportsActions.markAsCorrected.invoke,
 };
 
 export const IncorrectReportsListPage = withLayout(

@@ -115,7 +115,7 @@ export const IncorrectReportsTable = ({
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>
-                  <CorrectedButton onClick={() => onCorrect(row)} />
+                  <CorrectedButton isCorrected={row.isCorrected} onClick={() => onCorrect(row)} />
                 </TableCell>
               </TableRow>
             ))}

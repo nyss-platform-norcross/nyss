@@ -14,6 +14,7 @@ import {
   GET_INCORRECT_REPORTS,
   GET_CORRECT_REPORTS,
   TRACK_REPORT_EXPORT,
+  MARK_AS_CORRECTED,
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
@@ -187,6 +188,13 @@ export const dismissReport = {
   request: () => ({ type: DISMISS_REPORT.REQUEST }),
   success: () => ({ type: DISMISS_REPORT.SUCCESS }),
   failure: (message) => ({ type: DISMISS_REPORT.FAILURE, message }),
+};
+
+export const markAsCorrected = {
+  invoke: (reportId) => ({ type: MARK_AS_CORRECTED.INVOKE, reportId }),
+  request: () => ({ type: MARK_AS_CORRECTED.REQUEST }),
+  success: (reportId) => ({ type: MARK_AS_CORRECTED.SUCCESS, reportId }),
+  failure: (message) => ({ type: MARK_AS_CORRECTED.FAILURE, message }),
 };
 
 export const trackReportExport = (page, fileType, projectId) => ({ type: TRACK_REPORT_EXPORT.INVOKE, page, fileType, projectId });

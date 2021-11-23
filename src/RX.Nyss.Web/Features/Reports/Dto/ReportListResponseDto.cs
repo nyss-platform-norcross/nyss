@@ -49,6 +49,8 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public ReportListAlert Alert { get; set; }
         public ReportErrorType? ReportErrorType { get; set; }
         public bool DataCollectorIsDeleted { get; set; }
+
+        public bool IsCorrected { get; set; }
     }
 
     public class ReportListAlert

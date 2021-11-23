@@ -107,6 +107,26 @@ export function reportsReducer(state = initialState.reports, action) {
     case actions.DISMISS_REPORT.FAILURE:
       return { ...state, listFetching: false };
 
+    case actions.MARK_AS_CORRECTED.REQUEST:
+      return { ...state, listFetching: true };
+
+    case actions.MARK_AS_CORRECTED.FAILURE:
+      return { ...state, listFetching: false };      
+
+    case actions.MARK_AS_CORRECTED.SUCCESS:
+        const data = state.incorrectReportsPaginatedListData.data;
+        const dataItem = data.find(i => i.id === parseInt(action.reportId));
+        dataItem.isCorrected = true;
+        
+        return {
+          ...state,
+          listFetching: false,
+          incorrectReportsPaginatedListData: {
+          ...state.incorrectReportsPaginatedListData,
+          data,
+        },
+      };      
+
     default:
       return state;
   }
