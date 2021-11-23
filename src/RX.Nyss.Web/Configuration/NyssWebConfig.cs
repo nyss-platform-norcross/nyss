@@ -18,6 +18,8 @@ namespace RX.Nyss.Web.Configuration
 
         int PaginationRowsPerPage { get; set; }
 
+        string FeedbackReceiverEmail { get; set; }
+
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
 
         ConfigSingleton.ExportOptions Export { get; set; }
@@ -62,6 +64,8 @@ namespace RX.Nyss.Web.Configuration
         public int PaginationRowsPerPage { get; set; }
 
         public string SmsContentResourcesBlobObjectName { get; set; }
+
+        public string FeedbackReceiverEmail { get; set; }
 
         public LoggingOptions Logging { get; set; }
 
