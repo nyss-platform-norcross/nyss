@@ -27,7 +27,7 @@ function* openNationalSocietyCorrectReportsList({ nationalSocietyId }) {
     {
       dataCollectorType: DataCollectorType.human,
       area: null,
-      healthRiskId: null,
+      healthRisks: [],
       formatCorrect: true,
       reportStatus: {
         kept: true,

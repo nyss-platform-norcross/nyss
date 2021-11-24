@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using FluentValidation;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 
@@ -14,7 +15,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 
         public AreaDto Area { get; set; }
 
-        public int? HealthRiskId { get; set; }
+        public IList<int> HealthRisks { get; set; }
 
         public bool FormatCorrect { get; set; }
 
@@ -33,7 +34,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
             public Validator()
             {
                 RuleFor(f => f.DataCollectorType).IsInEnum();
-                RuleFor(f => f.HealthRiskId).GreaterThan(0).When(f => f.HealthRiskId.HasValue);
+                RuleForEach(f => f.HealthRisks).Must(x => x > 0);
                 RuleFor(f => f.OrderBy).Equal(DateColumnName);
                 RuleFor(f => f.Area).SetValidator(new AreaDto.Validator());
                 RuleFor(f => f.ErrorType).IsInEnum().When(f => f.ErrorType.HasValue);

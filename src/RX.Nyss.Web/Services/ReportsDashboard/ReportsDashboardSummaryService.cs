@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .FilterByProject(filters.ProjectId)
                 .FilterByNationalSociety(filters.NationalSocietyId)
                 .FilterByOrganization(filters.OrganizationId)
-                .FilterByHealthRisk(filters.HealthRiskId)
+                .FilterByHealthRisks(filters.HealthRisks)
                 .FilterByArea(filters.Area);
     }
 }

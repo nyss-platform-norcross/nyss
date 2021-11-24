@@ -336,7 +336,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
                 .FilterByDate(filters.StartDate, filters.EndDate)
-                .FilterByHealthRisk(filters.HealthRiskId)
+                .FilterByHealthRisks(filters.HealthRisks)
                 .FilterByTrainingMode(filters.TrainingStatus);
 
 
@@ -464,7 +464,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .ThenInclude(r => r.HealthRisk)
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByDataCollectorType(filter.DataCollectorType)
-                    .FilterByHealthRisk(filter.HealthRiskId)
+                    .FilterByHealthRisks(filter.HealthRisks)
                     .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(MapToArea(filter.Area))
@@ -478,7 +478,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .ThenInclude(r => r.ProjectHealthRisk)
                 .ThenInclude(r => r.HealthRisk)
                 .FilterByProject(projectId)
-                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByArea(MapToArea(filter.Area))
                 .FilterByFormatCorrectness(filter.FormatCorrect)

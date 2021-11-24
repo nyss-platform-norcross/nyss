@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             INationalSocietyService nationalSocietyService,
             INyssWebConfig config,
             IAuthorizationService authorizationService
-            )
+        )
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .FilterByDataCollectorType(filter.DataCollectorType)
-                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByArea(MapToArea(filter.Area))
                 .FilterByTrainingMode(TrainingStatusDto.Trained)
@@ -77,7 +77,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
+                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
+                        .Select(lc => lc.Name)
+                        .SingleOrDefault(),
                     IsValid = r.Report != null,
                     IsMarkedAsError = r.Report.MarkedAsError,
                     IsAnonymized = currentUser.Role != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
@@ -105,7 +108,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    Status = r.Report.Status,
+                    Status = r.Report.Status != null
+                        ? r.Report.Status
+                        : ReportStatus.New,
                     ErrorType = r.ErrorType
                 })
                 //ToDo: order base on filter.OrderBy property
