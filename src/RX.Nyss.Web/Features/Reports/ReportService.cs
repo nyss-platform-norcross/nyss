@@ -467,7 +467,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByHealthRisks(filter.HealthRisks)
                     .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
-                    .FilterByArea(MapToArea(filter.Area))
+                    .FilterByArea(filter.Area)
                     .FilterByReportStatus(filter.ReportStatus)
                     .FilterByTrainingMode(filter.TrainingStatus);
             }
@@ -480,7 +480,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(projectId)
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByDataCollectorType(filter.DataCollectorType)
-                .FilterByArea(MapToArea(filter.Area))
+                .FilterByArea(filter.Area)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
@@ -600,14 +600,5 @@ namespace RX.Nyss.Web.Features.Reports
                     x.Zone = "";
                     x.Village = "";
                 });
-
-        internal static Area MapToArea(AreaDto area) =>
-            area == null
-                ? null
-                : new Area
-                {
-                    AreaType = area.Type,
-                    AreaId = area.Id
-                };
     }
 }

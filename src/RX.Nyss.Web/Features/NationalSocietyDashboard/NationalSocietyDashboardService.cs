@@ -113,13 +113,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 HealthRisks = filtersDto.HealthRisks.ToList(),
                 NationalSocietyId = nationalSocietyId,
                 OrganizationId = filtersDto.OrganizationId,
-                Area = filtersDto.Area == null
-                    ? null
-                    : new Area
-                    {
-                        AreaType = filtersDto.Area.Type,
-                        AreaId = filtersDto.Area.Id
-                    },
+                Area = filtersDto.Locations,
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,
                 TrainingStatus = TrainingStatusDto.Trained,

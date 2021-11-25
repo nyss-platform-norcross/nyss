@@ -1,19 +1,26 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using FluentValidation;
 
 namespace RX.Nyss.Web.Features.Common.Dto
 {
     public class AreaDto
     {
-        public int? Id { get; set; }
+        public IEnumerable<int> RegionIds { get; set; }
 
-        public AreaType Type { get; set; }
+        public IEnumerable<int> DistrictIds { get; set; }
+
+        public IEnumerable<int> VillageIds { get; set; }
+
+        public IEnumerable<int> ZoneIds { get; set; }
 
         public class Validator : AbstractValidator<AreaDto>
         {
             public Validator()
             {
-                RuleFor(a => a.Id).GreaterThan(0).When(a => a.Id.HasValue);
-                RuleFor(a => a.Type).IsInEnum();
+                RuleForEach(a => a.RegionIds).Must(id => id > 0);
+                RuleForEach(a => a.DistrictIds).Must(id => id > 0);
+                RuleForEach(a => a.VillageIds).Must(id => id > 0);
+                RuleForEach(a => a.ZoneIds).Must(id => id > 0);
             }
         }
     }

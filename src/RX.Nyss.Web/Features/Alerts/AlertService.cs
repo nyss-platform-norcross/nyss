@@ -120,7 +120,7 @@ namespace RX.Nyss.Web.Features.Alerts
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
-                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByArea(filterRequestDto.Area)
                 .FilterByStatus(filterRequestDto.Status)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
@@ -367,7 +367,7 @@ namespace RX.Nyss.Web.Features.Alerts
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
-                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByArea(filterRequestDto.Area)
                 .FilterByStatus(filterRequestDto.Status)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
@@ -629,14 +629,5 @@ namespace RX.Nyss.Web.Features.Alerts
                 throw new ResultException(ResultKey.Alert.EscalateAlert.SmsNotificationFailed);
             }
         }
-
-        private static Area MapToArea(AreaDto area) =>
-            area == null
-                ? null
-                : new Area
-                {
-                    AreaType = area.Type,
-                    AreaId = area.Id
-                };
     }
 }

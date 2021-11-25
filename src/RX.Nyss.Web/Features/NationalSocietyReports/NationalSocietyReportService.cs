@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
-                .FilterByArea(MapToArea(filter.Area))
+                .FilterByArea(filter.Area)
                 .FilterByTrainingMode(TrainingStatusDto.Trained)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByErrorType(filter.ErrorType);
@@ -150,15 +150,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
             return Success(dto);
         }
-
-        private static Area MapToArea(AreaDto area) =>
-            area == null
-                ? null
-                : new Area
-                {
-                    AreaType = area.Type,
-                    AreaId = area.Id
-                };
 
         private static string AnonymizePhoneNumber(string phoneNumber) =>
             string.IsNullOrEmpty(phoneNumber)

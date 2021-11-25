@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public DateTimeOffset EndDate { get; set; }
 
-        public Area Area { get; set; }
+        public AreaDto Area { get; set; }
 
         public int? OrganizationId { get; set; }
 

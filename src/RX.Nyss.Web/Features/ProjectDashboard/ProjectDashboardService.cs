@@ -149,13 +149,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 EndDate = filtersDto.EndDate.AddDays(1),
                 HealthRisks = filtersDto.HealthRisks.ToList(),
                 OrganizationId = filtersDto.OrganizationId,
-                Area = filtersDto.Area == null
-                    ? null
-                    : new Area
-                    {
-                        AreaType = filtersDto.Area.Type,
-                        AreaId = filtersDto.Area.Id
-                    },
+                Area = filtersDto.Area,
                 ProjectId = projectId,
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,
