@@ -1,7 +1,6 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
 import React, { useState } from 'react';
 import { DatePicker } from "../../forms/DatePicker";
-import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import {
   useMediaQuery,
@@ -29,10 +28,11 @@ import { Fragment } from "react";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { DataConsumer } from "../../../authentication/roles";
 import MultiSelectField from "../../forms/MultiSelectField";
+import LocationFilter from "../../common/filters/LocationFilter";
+import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
-export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, userRoles }) => {
+export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organizations, locations, onChange, isFetching, userRoles }) => {
   const [value, setValue] = useState(filters);
-  const [selectedArea, setSelectedArea] = useState(filters && filters.area);
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
@@ -52,9 +52,8 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     "dataCollectionPoint": strings(stringKeys.project.dashboard.filters.dataCollectionPointReportsType)
   }
 
-  const handleAreaChange = (item) => {
-    setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
+  const handleAreaChange = (locations) => {
+    onChange(updateValue({ locations: locations }));
   }
   const handleHealthRiskChange = event =>
     onChange(updateValue({ healthRisks: typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value }))
@@ -81,6 +80,12 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     selectedIds.length < 1 || selectedIds.length === healthRisks.length
       ? strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)
       : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
+  const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
+
+  const renderLocationLabel = () => 
+    !locations
+      ? strings(stringKeys.filters.area.all) 
+      : renderFilterLabel(value.locations, locations.regions, false);
 
   if (!value) {
     return null;
@@ -109,10 +114,9 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
                 </Grid>
               </Fragment>
             )}
-            {!isFilterExpanded && selectedArea && (
+            {!isFilterExpanded && !allLocationsSelected() && (
               <Grid item>
-                <Chip label={selectedArea.name}
-                      onDelete={() => handleAreaChange(null)}
+                <Chip label={renderLocationLabel()}
                       onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
               </Grid>
             )}
@@ -213,11 +217,12 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
             </Grid>
 
             <Grid item>
-              <AreaFilter
-                nationalSocietyId={nationalSocietyId}
-                selectedItem={selectedArea}
+              <LocationFilter 
+                value={value.locations}
+                filterLabel={renderLocationLabel()}
+                locations={locations}
                 onChange={handleAreaChange}
-              />
+                showUnknown />
             </Grid>
 
             <Grid item>

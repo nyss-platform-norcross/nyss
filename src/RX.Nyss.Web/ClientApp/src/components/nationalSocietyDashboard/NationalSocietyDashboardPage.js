@@ -33,7 +33,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
         <NationalSocietyDashboardFilters
           healthRisks={props.healthRisks}
           organizations={props.organizations}
-          nationalSocietyId={props.nationalSocietyId}
+          locations={props.locations}
           onChange={handleFiltersChange}
           filters={props.filters}
           isFetching={isFetching}
@@ -76,7 +76,7 @@ const mapStateToProps = state => ({
   nationalSocietyId: state.appData.route.params.nationalSocietyId,
   healthRisks: state.nationalSocietyDashboard.filtersData.healthRisks,
   organizations: state.nationalSocietyDashboard.filtersData.organizations,
-  filtersData: state.nationalSocietyDashboard.filtersData,
+  locations: state.nationalSocietyDashboard.filtersData.locations,
   summary: state.nationalSocietyDashboard.summary,
   filters: state.nationalSocietyDashboard.filters,
   reportsGroupedByLocation: state.nationalSocietyDashboard.reportsGroupedByLocation,

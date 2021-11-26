@@ -29,7 +29,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
     {
       healthRisks: [],
       organizationId: null,
-      area: null,
+      locations: null,
       startDate: endDate.add(-7, "day"),
       endDate: endDate,
       groupingType: "Day",
