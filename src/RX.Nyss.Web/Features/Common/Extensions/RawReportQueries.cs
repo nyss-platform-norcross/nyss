@@ -67,7 +67,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 ? reports.Where(r => area.RegionIds.Contains(r.Village.District.Region.Id)
                     || area.DistrictIds.Contains(r.Village.District.Id)
                     || area.VillageIds.Contains(r.Village.Id)
-                    || area.ZoneIds.Contains(r.Zone.Id))
+                    || area.ZoneIds.Contains(r.Zone.Id)
+                    || (area.IncludeUnknownLocation && r.Village == null))
                 : reports;
 
         public static IQueryable<RawReport> FilterByTrainingMode(this IQueryable<RawReport> rawReports, bool isTraining) =>

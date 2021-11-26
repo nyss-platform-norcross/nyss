@@ -13,6 +13,8 @@ namespace RX.Nyss.Web.Features.Common.Dto
 
         public IEnumerable<int> ZoneIds { get; set; }
 
+        public bool IncludeUnknownLocation { get; set; }
+
         public class Validator : AbstractValidator<AreaDto>
         {
             public Validator()

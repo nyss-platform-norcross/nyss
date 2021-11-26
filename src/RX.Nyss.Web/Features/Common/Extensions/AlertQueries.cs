@@ -44,7 +44,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 ? alerts.Where(a => a.AlertReports.Any(ar => area.RegionIds.Contains(ar.Report.RawReport.Village.District.Region.Id)
                     || area.DistrictIds.Contains(ar.Report.RawReport.Village.District.Id)
                     || area.VillageIds.Contains(ar.Report.RawReport.Village.Id)
-                    || area.ZoneIds.Contains(ar.Report.RawReport.Zone.Id)))
+                    || area.ZoneIds.Contains(ar.Report.RawReport.Zone.Id)
+                    || (area.IncludeUnknownLocation && ar.Report.RawReport.Village == null)))
                 : alerts;
 
         public static IQueryable<Alert> FilterByStatus(this IQueryable<Alert> alerts, AlertStatusFilter status) =>
