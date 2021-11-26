@@ -87,7 +87,6 @@ export const theme = createMuiTheme({
         boxShadow: "none",
         background: '#FAFAFA',
         borderRadius: 0,
-
       }
     },
     MuiInput: {
@@ -296,6 +295,11 @@ export const theme = createMuiTheme({
       root: {
         marginBottom: "-3px",
         height: "3px"
+      }
+    },
+    MuiPopover: {
+      paper: {
+        maxWidth: '400px'
       }
     }
   },
