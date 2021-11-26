@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -34,21 +33,18 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly INyssContext _nyssContext;
-        private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
-            IAuthorizationService authorizationService,
             INyssContext nyssContext)
         {
             _nationalSocietyService = nationalSocietyService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
-            _authorizationService = authorizationService;
             _nyssContext = nyssContext;
         }
 
@@ -58,24 +54,17 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var organizations = await GetOrganizations(nationalSocietyId);
 
+            var locationStructure = await GetLocations(nationalSocietyId);
+
             var dto = new NationalSocietyDashboardFiltersResponseDto
             {
                 HealthRisks = healthRiskNames,
-                Organizations = organizations
+                Organizations = organizations,
+                Locations = locationStructure
             };
 
             return Success(dto);
         }
-
-        private async Task<List<NationalSocietyDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int nationalSocietyId) =>
-            await _nyssContext.NationalSocieties
-                    .Where(ns => ns.Id == nationalSocietyId)
-                    .SelectMany(p => p.Organizations)
-                    .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
-                    {
-                        Id = o.Id,
-                        Name = o.Name
-                    }).ToListAsync();
 
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
@@ -105,6 +94,16 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             return Success(data);
         }
 
+        private async Task<List<NationalSocietyDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int nationalSocietyId) =>
+            await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .SelectMany(p => p.Organizations)
+                .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
+                {
+                    Id = o.Id,
+                    Name = o.Name
+                }).ToListAsync();
+
         private ReportsFilter MapToReportFilters(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto) =>
             new ReportsFilter
             {
@@ -127,5 +126,40 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
             };
+
+        private async Task<StructureResponseDto> GetLocations(int nationalSocietyId)
+        {
+            var structure = new StructureResponseDto
+            {
+                Regions = await _nyssContext.Regions
+                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
+                    .Select(region => new StructureResponseDto.StructureRegionDto
+                    {
+                        Id = region.Id,
+                        Name = region.Name,
+                        Districts = region.Districts.Select(district => new StructureResponseDto.StructureDistrictDto
+                        {
+                            Id = district.Id,
+                            RegionId = region.Id,
+                            Name = district.Name,
+                            Villages = district.Villages.Select(village => new StructureResponseDto.StructureVillageDto
+                            {
+                                Id = village.Id,
+                                DistrictId = district.Id,
+                                Name = village.Name,
+                                Zones = village.Zones.Select(zone => new StructureResponseDto.StructureZoneDto
+                                {
+                                    Id = zone.Id,
+                                    VillageId = village.Id,
+                                    Name = zone.Name
+                                })
+                            })
+                        })
+                    })
+                    .ToListAsync()
+            };
+
+            return structure;
+        }
     }
 }

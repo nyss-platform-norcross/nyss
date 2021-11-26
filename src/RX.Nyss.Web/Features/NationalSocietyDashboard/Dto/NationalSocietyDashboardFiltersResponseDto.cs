@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
@@ -8,6 +9,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public IEnumerable<HealthRiskDto> HealthRisks { get; set; }
 
         public IEnumerable<OrganizationDto> Organizations { get; set; }
+
+        public StructureResponseDto Locations { get; set; }
 
         public class OrganizationDto
         {
