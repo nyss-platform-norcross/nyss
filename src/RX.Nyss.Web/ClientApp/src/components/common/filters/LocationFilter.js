@@ -10,35 +10,26 @@ import {
   mapToSelectedLocations,
   toggleSelectedStatus
 } from './logic/locationFilterService';
-import { get } from '../../../utils/http';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { stringKeys, strings } from '../../../strings';
 import LocationItem from './LocationItem';
 
-const LocationFilter = ({ nationalSocietyId, onChange, showUnknown = false }) => {
+const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLocation }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [regions, setRegions] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [includeUnknownLocation, setIncludeUnknownLocation] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
 
   useEffect(() => {
-    get(`/api/nationalSocietyStructure/get?nationalSocietyId=${nationalSocietyId}`)
-      .then(response => {
-        setRegions(response.value.regions)
-      })
-      .catch(() => {
-        // log error
-      })
-  }, [nationalSocietyId]);
-
-  useEffect(() => setSelectedLocations(mapToSelectedLocations(regions)), [regions]);
+    if (!locations) return;
+    setSelectedLocations(mapToSelectedLocations(value, locations.regions));
+  }, [locations, value, showUnknownLocation]);
 
   useEffect(() => {
     const anyUnselected = selectedLocations.some(r => !r.selected || r.districts.some(d => !d.selected || d.villages.some(v => !v.selected || v.zones.some(z => !z.selected))));
-    setSelectAll(!anyUnselected && includeUnknownLocation);
-  }, [selectedLocations, includeUnknownLocation]);
+    setSelectAll(!anyUnselected && (!showUnknownLocation || includeUnknownLocation));
+  }, [selectedLocations, includeUnknownLocation, showUnknownLocation]);
 
   const setSelectedStatusOfRegion = (id) => {
     const index = selectedLocations.findIndex(r => r.id === id);
@@ -128,7 +119,7 @@ const LocationFilter = ({ nationalSocietyId, onChange, showUnknown = false }) =>
             <ArrowDropDown className={styles.arrow} />
           )
         }}
-        value={strings(stringKeys.filters.area.all)}
+        value={filterLabel}
         inputProps={{
           className: styles.clickable
         }}
@@ -147,7 +138,7 @@ const LocationFilter = ({ nationalSocietyId, onChange, showUnknown = false }) =>
           className: styles.filterContainer
         }}>
 
-        {showUnknown && (
+        {showUnknownLocation && (
           <LocationItem type='unknown' data={{ name: strings(stringKeys.filters.area.unknown), selected: includeUnknownLocation }} isVisible onChange={handleChange} />
         )}
         {selectedLocations.map(r => (
