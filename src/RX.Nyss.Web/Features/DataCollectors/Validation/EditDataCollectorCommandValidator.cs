@@ -2,8 +2,8 @@ using System.Linq;
 using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.DataCollectors.Commands;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
-using RX.Nyss.Web.Features.DataCollectors.Queries;
 using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Validation

@@ -13,11 +13,9 @@ using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
-using RX.Nyss.Web.Features.DataCollectors.DataContracts;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils.DataContract;
@@ -29,17 +27,27 @@ namespace RX.Nyss.Web.Features.DataCollectors
     public interface IDataCollectorService
     {
         Task<Result> Delete(int dataCollectorId);
+
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
+
         Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
+
         Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
+
         Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
+
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
+
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
+
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
+
         Task AnonymizeDataCollectorsWithReports(int projectId);
+
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
-        Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto);
+
         Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId);
+
         Task<Result> SetDeployedState(SetDeployedStateRequestDto dto);
     }
 
@@ -49,12 +57,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private const double DefaultLongitude = 10.744628906250002;
 
         private readonly INyssContext _nyssContext;
+
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
+
         private readonly IGeolocationService _geolocationService;
+
         private readonly IAuthorizationService _authorizationService;
-        private readonly IEmailToSMSService _emailToSMSService;
-        private readonly ISmsPublisherService _smsPublisherService;
-        private readonly ISmsTextGeneratorService _smsTextGeneratorService;
+
         private readonly INyssWebConfig _config;
 
         public DataCollectorService(
@@ -62,19 +71,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
             INyssWebConfig config,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
-            IAuthorizationService authorizationService,
-            IEmailToSMSService emailToSMSService,
-            ISmsPublisherService smsPublisherService,
-            ISmsTextGeneratorService smsTextGeneratorService)
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _config = config;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
             _authorizationService = authorizationService;
-            _emailToSMSService = emailToSMSService;
-            _smsPublisherService = smsPublisherService;
-            _smsTextGeneratorService = smsTextGeneratorService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId)
@@ -496,44 +499,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
-        {
-            var replaceSupervisorDatas = await _nyssContext.DataCollectors
-                .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
-                .Select(dc => new ReplaceSupervisorData
-                {
-                    DataCollector = dc,
-                    Supervisor = dc.Supervisor,
-                    LastReport = dc.RawReports.FirstOrDefault(r => r.ModemNumber.HasValue)
-                })
-                .ToListAsync();
-
-            var supervisorData = await _nyssContext.Users
-                .Select(u => new
-                {
-                    Supervisor = (SupervisorUser)u,
-                    NationalSociety = u.UserNationalSocieties.Select(uns => uns.NationalSociety).Single()
-                })
-                .FirstOrDefaultAsync(u => u.Supervisor.Id == replaceSupervisorRequestDto.SupervisorId);
-
-            var gatewaySetting = await _nyssContext.GatewaySettings
-                .Include(gs => gs.Modems)
-                .Include(gs => gs.NationalSociety)
-                .ThenInclude(ns => ns.ContentLanguage)
-                .FirstOrDefaultAsync(gs => gs.NationalSociety == supervisorData.NationalSociety);
-
-            foreach (var dc in replaceSupervisorDatas)
-            {
-                dc.DataCollector.Supervisor = supervisorData.Supervisor;
-            }
-
-            await _nyssContext.SaveChangesAsync();
-
-            await SendReplaceSupervisorSms(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
-
-            return Success();
-        }
-
         public async Task<Result> SetDeployedState(SetDeployedStateRequestDto dto)
         {
             var dataCollectors = await _nyssContext.DataCollectors
@@ -648,30 +613,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return result.IsSuccess
                 ? result.Value
                 : null;
-        }
-
-        private async Task SendReplaceSupervisorSms(GatewaySetting gatewaySetting, List<ReplaceSupervisorData> replaceSupervisorDatas, SupervisorUser newSupervisor)
-        {
-            var recipients = replaceSupervisorDatas.Select(r => new SendSmsRecipient
-            {
-                PhoneNumber = r.DataCollector.PhoneNumber,
-                Modem = r.LastReport != null
-                    ? r.LastReport.ModemNumber
-                    : r.Supervisor.ModemId
-            }).ToList();
-            var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
-
-            message = message.Replace("{{supervisorName}}", newSupervisor.Name);
-            message = message.Replace("{{phoneNumber}}", newSupervisor.PhoneNumber);
-
-            if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
-            {
-                await _emailToSMSService.SendMessage(gatewaySetting, recipients.Select(r => r.PhoneNumber).ToList(), message);
-            }
-            else
-            {
-                await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any());
-            }
         }
     }
 }

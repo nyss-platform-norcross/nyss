@@ -8,8 +8,8 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.DataCollectors.Commands;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
-using RX.Nyss.Web.Features.DataCollectors.Queries;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
     public class CreateDataCollectorCommandTests
     {
         private readonly INyssContext _nyssContextMock;
+
         private readonly CreateDataCollectorCommand.Handler _handler;
 
         private const int SupervisorId = 1;
