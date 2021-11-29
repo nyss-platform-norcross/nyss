@@ -18,6 +18,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Features.Reports.Dto;
@@ -56,6 +57,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IQueueService _queueService;
 
         private readonly INyssContext _nyssContextInMemory;
+
+        private readonly INationalSocietyStructureService _nationalSocietyStructureServiceMock;
 
         private readonly IStringsService _stringsService;
 
@@ -101,6 +104,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _alertService = Substitute.For<IAlertService>();
             _queueService = Substitute.For<IQueueService>();
             _stringsService = Substitute.For<IStringsService>();
+            _nationalSocietyStructureServiceMock = Substitute.For<INationalSocietyStructureService>();
 
             _alertReportService = new AlertReportService(
                 _config,
@@ -117,7 +121,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 _authorizationService,
                 _dateTimeProvider,
                 _alertReportService,
-                _stringsService);
+                _stringsService,
+                _nationalSocietyStructureServiceMock);
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
@@ -139,7 +144,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             //act
             var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
             {
-                Area = null,
+                Locations = null,
                 ErrorType = null,
                 FormatCorrect = true,
                 OrderBy = "",
@@ -260,10 +265,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Dismissed = true,
                     NotCrossChecked = true,
                 },
-                Area = new AreaDto
+                Locations = new AreaDto
                 {
-                    Id = 2,
-                    Type = AreaType.Zone
+                    RegionIds = new List<int>(),
+                    DistrictIds = new List<int>(),
+                    VillageIds = new List<int>(),
+                    ZoneIds = new [] { 2 }
                 }
             });
 
@@ -330,7 +337,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             var requestDto = new ReportListFilterRequestDto
             {
-                Area = null,
+                Locations = null,
                 ErrorType = errorType,
                 FormatCorrect = false,
                 ReportStatus = null,
@@ -1171,7 +1178,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 _authorizationService,
                 _dateTimeProvider,
                 _alertReportService,
-                _stringsService);
+                _stringsService,
+                _nationalSocietyStructureServiceMock);
         }
     }
 }
