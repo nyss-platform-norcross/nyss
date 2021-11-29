@@ -44,7 +44,7 @@ export const ProjectsDashboardFilters = ({
   userRoles,
 }) => {
   const [value, setValue] = useState(filters);
-  const [locationsFilterLabel, setLocationsFilterLabel] = useState(!value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, false));
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   const updateValue = (change) => {

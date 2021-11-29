@@ -8,7 +8,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
-using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
@@ -33,19 +33,22 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly INyssContext _nyssContext;
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
-            INyssContext nyssContext)
+            INyssContext nyssContext,
+            INationalSocietyStructureService nationalSocietyStructureService)
         {
             _nationalSocietyService = nationalSocietyService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
             _nyssContext = nyssContext;
+            _nationalSocietyStructureService = nationalSocietyStructureService;
         }
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId)
@@ -54,7 +57,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var organizations = await GetOrganizations(nationalSocietyId);
 
-            var locationStructure = await GetLocations(nationalSocietyId);
+            var locationStructure = await _nationalSocietyStructureService.Get(nationalSocietyId);
 
             var dto = new NationalSocietyDashboardFiltersResponseDto
             {
@@ -126,40 +129,5 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
             };
-
-        private async Task<StructureResponseDto> GetLocations(int nationalSocietyId)
-        {
-            var structure = new StructureResponseDto
-            {
-                Regions = await _nyssContext.Regions
-                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
-                    .Select(region => new StructureResponseDto.StructureRegionDto
-                    {
-                        Id = region.Id,
-                        Name = region.Name,
-                        Districts = region.Districts.Select(district => new StructureResponseDto.StructureDistrictDto
-                        {
-                            Id = district.Id,
-                            RegionId = region.Id,
-                            Name = district.Name,
-                            Villages = district.Villages.Select(village => new StructureResponseDto.StructureVillageDto
-                            {
-                                Id = village.Id,
-                                DistrictId = district.Id,
-                                Name = village.Name,
-                                Zones = village.Zones.Select(zone => new StructureResponseDto.StructureZoneDto
-                                {
-                                    Id = zone.Id,
-                                    VillageId = village.Id,
-                                    Name = zone.Name
-                                })
-                            })
-                        })
-                    })
-                    .ToListAsync()
-            };
-
-            return structure;
-        }
     }
 }

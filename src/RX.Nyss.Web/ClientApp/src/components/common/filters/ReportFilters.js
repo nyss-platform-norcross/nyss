@@ -37,10 +37,7 @@ export const ReportFilters = ({
 }) => {
   const [value, setValue] = useState(filters);
 
-  const getLocationFilterLabel = (filterValue) =>
-    !filterValue ? strings(stringKeys.filters.area.all) : renderFilterLabel(filterValue.locations, locations.regions, true);
-
-  const [locationsFilterLabel, setLocationsFilterLabel] = useState(getLocationFilterLabel(value));
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
 
   useEffect(() => {
     const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, true);
