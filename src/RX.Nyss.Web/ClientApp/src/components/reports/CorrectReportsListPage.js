@@ -99,6 +99,7 @@ const CorrectReportsListPageComponent = (props) => {
       <div className={styles.filtersGrid}>
         <ReportFilters
           healthRisks={props.healthRisks}
+          locations={props.locations}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
@@ -146,6 +147,7 @@ const mapStateToProps = (state, ownProps) => ({
   filters: state.reports.correctReportsFilters,
   sorting: state.reports.correctReportsSorting,
   healthRisks: state.reports.filtersData.healthRisks,
+  locations: state.reports.filtersData.locations,
   user: state.appData.user,
   isMarkingAsError: state.reports.markingAsError,
   projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,

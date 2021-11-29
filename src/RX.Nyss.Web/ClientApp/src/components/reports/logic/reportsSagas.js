@@ -69,8 +69,8 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
   {
     dataCollectorType: DataCollectorType.human,
     errorType: null,
-    area: null,
     healthRisks: [],
+    locations: null,
     formatCorrect: true,
     isTraining: false,
     reportStatus: {

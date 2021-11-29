@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 
         public ReportErrorFilterType? ErrorType { get; set; }
 
-        public AreaDto Area { get; set; }
+        public AreaDto Locations { get; set; }
 
         public IList<int> HealthRisks { get; set; }
 
@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
                 RuleFor(f => f.DataCollectorType).IsInEnum();
                 RuleForEach(f => f.HealthRisks).Must(x => x > 0);
                 RuleFor(f => f.OrderBy).Equal(DateColumnName);
-                RuleFor(f => f.Area).SetValidator(new AreaDto.Validator());
+                RuleFor(f => f.Locations).SetValidator(new AreaDto.Validator());
                 RuleFor(f => f.ErrorType).IsInEnum().When(f => f.ErrorType.HasValue);
             }
         }
