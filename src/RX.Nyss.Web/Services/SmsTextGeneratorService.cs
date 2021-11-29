@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.StringsResources;
-using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Services
 {
     public interface ISmsTextGeneratorService
     {
         Task<string> GenerateEscalatedAlertSms(string languageCode);
+
         Task<string> GenerateReplaceSupervisorSms(string languageCode);
+
+        Task<string> GenerateReplaceSupervisorSmsForSupervisors(string languageCode);
     }
 
     public class SmsTextGeneratorService : ISmsTextGeneratorService
@@ -33,6 +35,13 @@ namespace RX.Nyss.Web.Services
             var translatedSmsText = await _stringsResourcesService.GetSmsContentResources(languageCode);
 
             return GetTranslation("sms.replaceSupervisor", languageCode, translatedSmsText.Value);
+        }
+
+        public async Task<string> GenerateReplaceSupervisorSmsForSupervisors(string languageCode)
+        {
+            var translatedSmsText = await _stringsResourcesService.GetSmsContentResources(languageCode);
+
+            return GetTranslation("sms.replaceSupervisorForDcWithoutPhoneNumber", languageCode, translatedSmsText.Value);
         }
 
         private static string GetTranslation(string key, string languageCode, IDictionary<string, string> translations)

@@ -83,26 +83,54 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                 List<ReplaceSupervisorData> replaceSupervisorDatas,
                 SupervisorUser newSupervisor)
             {
-                var recipients = replaceSupervisorDatas.Select(r => new SendSmsRecipient
-                {
-                    PhoneNumber = r.DataCollector.PhoneNumber,
-                    Modem = r.LastReport != null
-                        ? r.LastReport.ModemNumber
-                        : r.Supervisor.ModemId
-                }).ToList();
-                var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
+                var recipientsDataCollectors = replaceSupervisorDatas
+                    .Where(r => r.DataCollector.PhoneNumber != null)
+                    .Select(r => new SendSmsRecipient
+                    {
+                        PhoneNumber = r.DataCollector.PhoneNumber,
+                        Modem = r.LastReport != null
+                            ? r.LastReport.ModemNumber
+                            : r.Supervisor.ModemId,
+                    }).ToList();
 
-                message = message.Replace("{{supervisorName}}", newSupervisor.Name);
-                message = message.Replace("{{phoneNumber}}", newSupervisor.PhoneNumber);
+                var recipientsSupervisors = replaceSupervisorDatas
+                    .Where(r => r.DataCollector.PhoneNumber == null)
+                    .Select(r => new SendSmsRecipient
+                    {
+                        PhoneNumber = r.Supervisor.PhoneNumber,
+                        Modem = r.LastReport != null
+                            ? r.LastReport.ModemNumber
+                            : r.Supervisor.ModemId,
+                    }).ToList();
 
-                if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
+                var messagesToSent = new List<(string Message, List<SendSmsRecipient> Recipients)>();
+
+                if (recipientsDataCollectors.Any())
                 {
-                    await _emailToSMSService.SendMessage(gatewaySetting, recipients.Select(r => r.PhoneNumber).ToList(), message);
+                    var message = (await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode))
+                        .Replace("{{supervisorName}}", newSupervisor.Name)
+                        .Replace("{{phoneNumber}}", newSupervisor.PhoneNumber);
+
+                    messagesToSent.Add((message, recipientsDataCollectors));
                 }
-                else
+
+                if (recipientsSupervisors.Any())
                 {
-                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any());
+                    var messageToSupervisors = await _smsTextGeneratorService.GenerateReplaceSupervisorSmsForSupervisors(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
+
+                    messagesToSent.Add((messageToSupervisors, recipientsSupervisors));
                 }
+
+                var tasks = messagesToSent.Select(m =>
+                {
+                    var (message, recipients) = m;
+
+                    return !string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName)
+                        ? _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any())
+                        : _emailToSMSService.SendMessage(gatewaySetting, recipients.Select(r => r.PhoneNumber).ToList(), message);
+                });
+
+                await Task.WhenAll(tasks);
             }
         }
     }
