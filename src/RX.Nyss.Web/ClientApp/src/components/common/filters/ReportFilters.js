@@ -3,7 +3,6 @@ import styles from "./ReportFilters.module.scss";
 import { useEffect, useState } from "react";
 import {
   Grid,
-  TextField,
   MenuItem,
   Card,
   CardContent,

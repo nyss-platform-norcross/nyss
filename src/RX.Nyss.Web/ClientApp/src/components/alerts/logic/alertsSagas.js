@@ -36,7 +36,7 @@ function* openAlertsList({ projectId }) {
 
     const filters = (yield select(state => state.alerts.filters)) ||
       {
-        area: null,
+        locations: null,
         healthRiskId: null,
         status: consts.alertStatusFilters.all,
         orderBy: consts.statusColumn,

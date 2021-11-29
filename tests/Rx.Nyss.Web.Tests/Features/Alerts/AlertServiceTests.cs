@@ -641,7 +641,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             var res = await _alertService.List(1, 1, new AlertListFilterRequestDto
             {
-                Area = null,
+                Locations = null,
                 HealthRiskId = null,
                 OrderBy = "Status",
                 SortAscending = true,
@@ -686,7 +686,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             // Act
             await _alertService.Export(1, new AlertListFilterRequestDto
             {
-                Area = null,
+                Locations = null,
                 Status = AlertStatusFilter.All,
                 OrderBy = "Status",
                 SortAscending = true
