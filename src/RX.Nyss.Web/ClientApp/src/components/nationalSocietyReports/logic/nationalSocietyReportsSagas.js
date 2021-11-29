@@ -26,8 +26,8 @@ function* openNationalSocietyCorrectReportsList({ nationalSocietyId }) {
     const filters = (yield select(state => state.nationalSocietyReports.correctReportsFilters)) ||
     {
       dataCollectorType: DataCollectorType.human,
-      area: null,
       healthRisks: [],
+      locations: null,
       formatCorrect: true,
       reportStatus: {
         kept: true,

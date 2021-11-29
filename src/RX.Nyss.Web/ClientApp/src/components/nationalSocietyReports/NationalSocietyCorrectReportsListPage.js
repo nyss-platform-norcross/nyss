@@ -33,6 +33,7 @@ const NationalSocietyCorrectReportsListPageComponent = (props) => {
       <div className={styles.filtersGrid}>
         <ReportFilters
           healthRisks={props.healthRisks}
+          locations={props.locations}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
@@ -71,6 +72,7 @@ const mapStateToProps = (state, ownProps) => ({
   filters: state.nationalSocietyReports.correctReportsFilters,
   sorting: state.nationalSocietyReports.correctReportsSorting,
   healthRisks: state.nationalSocietyReports.filtersData.healthRisks,
+  locations: state.nationalSocietyReports.filtersData.locations,
   nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 

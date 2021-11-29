@@ -1,6 +1,6 @@
 import styles from "./ReportFilters.module.scss";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Grid,
   TextField,
@@ -16,7 +16,6 @@ import {
   Radio,
   Checkbox,
 } from "@material-ui/core";
-import { AreaFilter } from "./AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import {
   reportErrorFilterTypes,
@@ -25,18 +24,28 @@ import {
 import { Fragment } from "react";
 import { ReportStatusFilter } from "./ReportStatusFilter";
 import MultiSelectField from "../../forms/MultiSelectField";
+import LocationFilter from "./LocationFilter";
+import { renderFilterLabel } from "./logic/locationFilterService";
 
 export const ReportFilters = ({
   filters,
-  nationalSocietyId,
   healthRisks,
+  locations,
   onChange,
   showCorrectReportFilters,
   hideTrainingStatusFilter,
 }) => {
   const [value, setValue] = useState(filters);
 
-  const [selectedArea, setSelectedArea] = useState(filters && filters.area);
+  const getLocationFilterLabel = (filterValue) =>
+    !filterValue ? strings(stringKeys.filters.area.all) : renderFilterLabel(filterValue.locations, locations.regions, true);
+
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(getLocationFilterLabel(value));
+
+  useEffect(() => {
+    const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, true);
+    setLocationsFilterLabel(label);
+  }, [value, locations]);
 
   const updateValue = (change) => {
     const newValue = {
@@ -48,11 +57,10 @@ export const ReportFilters = ({
     return newValue;
   };
 
-  const handleAreaChange = (item) => {
-    setSelectedArea(item);
+  const handleLocationChange = (newValue) => {
     onChange(
       updateValue({
-        area: item ? { type: item.type, id: item.id, name: item.name } : null,
+        locations: newValue,
       })
     );
   };
@@ -103,11 +111,12 @@ export const ReportFilters = ({
       <CardContent>
         <Grid container spacing={2}>
           <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={selectedArea}
-              onChange={handleAreaChange}
-              showUnknown={true}
+            <LocationFilter
+              value={value.locations}
+              locations={locations}
+              onChange={handleLocationChange}
+              showUnknownLocation
+              filterLabel={locationsFilterLabel}
             />
           </Grid>
 

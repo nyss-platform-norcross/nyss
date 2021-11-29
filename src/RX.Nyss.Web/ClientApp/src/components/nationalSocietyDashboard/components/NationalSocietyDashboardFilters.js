@@ -52,7 +52,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
     "dataCollectionPoint": strings(stringKeys.project.dashboard.filters.dataCollectionPointReportsType)
   }
 
-  const handleAreaChange = (locations) => {
+  const handleLocationChange = (locations) => {
     onChange(updateValue({ locations: locations }));
   }
   const handleHealthRiskChange = event =>
@@ -221,8 +221,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                 value={value.locations}
                 filterLabel={renderLocationLabel()}
                 locations={locations}
-                onChange={handleAreaChange}
-                showUnknown />
+                onChange={handleLocationChange} />
             </Grid>
 
             <Grid item>

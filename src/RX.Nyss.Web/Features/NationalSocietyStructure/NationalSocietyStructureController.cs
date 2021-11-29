@@ -6,6 +6,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Utils;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.NationalSocietyStructure
 {
@@ -25,7 +26,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         [Route("get"), HttpGet]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<StructureResponseDto>> Get(int nationalSocietyId) =>
-            await _nationalSocietyStructureService.Get(nationalSocietyId);
+            Success(await _nationalSocietyStructureService.Get(nationalSocietyId));
 
         /// <summary>
         /// Create a region to National Society's structure
