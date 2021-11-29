@@ -1,6 +1,5 @@
 import styles from "./DataCollectorsFilters.module.scss";
-import React, { useState, useEffect, useReducer } from 'react';
-import { AreaFilter } from "../common/filters/AreaFilter";
+import { useState, useEffect, useReducer } from 'react';
 import { strings, stringKeys } from "../../strings";
 import { sexValues, trainingStatus, deployedMode } from './logic/dataCollectorsConstants';
 import {
@@ -17,9 +16,13 @@ import {
 import * as roles from '../../authentication/roles';
 import useDebounce from "../../utils/debounce";
 import { shallowEqual } from "react-redux";
+import LocationFilter from "../common/filters/LocationFilter";
+import { renderFilterLabel } from "../common/filters/logic/locationFilterService";
 
-export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange, callingUserRoles, filters }) => {
+export const DataCollectorsFilters = ({ supervisors, locations, onChange, callingUserRoles, filters }) => {
   
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
+
   const [filter, setFilter] = useReducer((state, action) => {
     const newState = { ...state.value, ...action };
     if (!shallowEqual(newState, state.value)) {
@@ -29,7 +32,6 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
     }
   }, { value: filters, changed: false });
 
-  const [selectedArea, setSelectedArea] = useState(null);
   const [name, setName] = useReducer((state, action) => {
     if (state.value !== action) {
       return { changed: true, value: action };
@@ -43,13 +45,17 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
     filter.changed && onChange(filter.value);
   }, [filter, onChange]);
 
+  useEffect(() => {
+    const label = !filter.value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(filter.value.locations, locations.regions, false);
+    setLocationsFilterLabel(label);
+  }, [filter, locations]);
+
   const updateValue = (change) => {
     setFilter(change);
   };
 
-  const handleAreaChange = (item) => {
-    setSelectedArea(item);
-    updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null });
+  const handleLocationChange = (newValue) => {
+    updateValue({ locations: newValue });
   }
 
   const handleSupervisorChange = event =>
@@ -84,10 +90,11 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
             </TextField>
           </Grid>
           <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={selectedArea}
-              onChange={handleAreaChange}
+            <LocationFilter
+              value={filter.value.locations}
+              locations={locations}
+              filterLabel={locationsFilterLabel}
+              onChange={handleLocationChange}
             />
           </Grid>
 

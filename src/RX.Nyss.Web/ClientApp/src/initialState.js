@@ -228,7 +228,7 @@ export const initialState = {
     },
     filters: {
       supervisorId: null,
-      area: null,
+      locations: null,
       sex: null,
       trainingStatus: 'All',
       deployedMode: 'Deployed',

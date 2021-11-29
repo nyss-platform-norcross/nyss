@@ -231,9 +231,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var filtersData = new DataCollectorFiltersReponseDto
             {
-                NationalSocietyId = projectData.NationalSocietyId,
                 Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId)
-                    .ToListAsync()
+                    .ToListAsync(),
+                Locations = await _nationalSocietyStructureService.Get(projectData.NationalSocietyId)
             };
 
             return Success(filtersData);
@@ -243,7 +243,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             var dataCollectorsQuery = (await GetDataCollectorsForCurrentUserInProject(projectId))
                 .FilterOnlyNotDeleted()
-                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByArea(dataCollectorsFilters.Locations)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             var dataCollectorsQuery = (await GetDataCollectorsForCurrentUserInProject(projectId))
                 .FilterOnlyNotDeleted()
-                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByArea(dataCollectorsFilters.Locations)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)

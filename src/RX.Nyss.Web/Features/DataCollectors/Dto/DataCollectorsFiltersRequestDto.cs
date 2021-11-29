@@ -5,7 +5,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
     public class DataCollectorsFiltersRequestDto
     {
-        public AreaDto Area { get; set; }
+        public AreaDto Locations { get; set; }
 
         public SexDto? Sex { get; set; }
 
