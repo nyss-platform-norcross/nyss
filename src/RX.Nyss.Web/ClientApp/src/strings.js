@@ -98,9 +98,6 @@ export const stringKeys = {
       title: "nationalSociety.dashboard.title",
       numbers: {
         reportCountTitle: "nationalsociety.dashboard.numbers.reportCountTitle",
-        keptReportCount: "nationalsociety.dashboard.numbers.keptReportCount",
-        dismissedReportCount: "nationalsociety.dashboard.numbers.dismissedReportCount",
-        notCrossCheckedReportCount: "nationalsociety.dashboard.numbers.notCrossCheckedReportCount",
         totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
         alertsSummaryTitle: "nationalsociety.dashboard.numbers.alertsSummaryTitle",
         dismissedAlerts: "nationalsociety.dashboard.numbers.dismissedAlerts",
