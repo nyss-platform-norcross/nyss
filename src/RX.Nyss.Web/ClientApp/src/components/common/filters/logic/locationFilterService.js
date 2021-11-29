@@ -4,7 +4,7 @@ import { stringKeys, strings } from "../../../../strings";
   extracts location ids used in dto
   if multiple locations on different levels in the same hierarchy are selected, only the highest is returned
 */
-export const extractSelectedValues = (regions) => {
+export const extractSelectedValues = (regions, includeUnknownLocation) => {
   const selectedRegions = regions
     .filter(r => r.selected)
     .map(r => r.id);
@@ -34,7 +34,8 @@ export const extractSelectedValues = (regions) => {
     regionIds: selectedRegions,
     districtIds: selectedDistricts,
     villageIds: selectedVillages,
-    zoneIds: selectedZones
+    zoneIds: selectedZones,
+    includeUnknownLocation: includeUnknownLocation
   };
 }
 
@@ -162,9 +163,9 @@ export const cascadeSelectZone = (region, districtId, villageId, zoneId, zoneSel
 /*
   renders a concatenated label to display when the filter is closed
 */
-export const renderFilterLabel = (filterValue, regions, showUnknownLocation, includeUnknownLocation) => {
+export const renderFilterLabel = (filterValue, regions, showUnknownLocation) => {
   if (!filterValue
-    || (showUnknownLocation && filterValue.regionIds.length === regions.length && includeUnknownLocation)
+    || (showUnknownLocation && filterValue.regionIds.length === regions.length && filterValue.includeUnknownLocation)
     || (!showUnknownLocation && filterValue.regionIds.length === regions.length)) {
     return strings(stringKeys.filters.area.all);
   }
@@ -193,7 +194,7 @@ export const renderFilterLabel = (filterValue, regions, showUnknownLocation, inc
     return zoneNames.length > 1 ? `${zoneNames[0]} (+ ${zoneNames.length - 1})` : zoneNames[0];
   }
 
-  if (includeUnknownLocation) {
+  if (filterValue.includeUnknownLocation) {
     return strings(stringKeys.filters.area.unknown);
   }
 

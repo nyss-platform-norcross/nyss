@@ -24,6 +24,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
   useEffect(() => {
     if (!locations) return;
     setSelectedLocations(mapToSelectedLocations(value, locations.regions));
+    setIncludeUnknownLocation(!! value ? value.includeUnknownLocation : showUnknownLocation);
   }, [locations, value, showUnknownLocation]);
 
   useEffect(() => {
@@ -92,7 +93,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
 
   const showResults = () => {
     setDialogOpen(false);
-    const filterValue = extractSelectedValues(selectedLocations);
+    const filterValue = extractSelectedValues(selectedLocations, includeUnknownLocation);
     onChange(filterValue);
   }
 
@@ -103,7 +104,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
   }
 
   const toggleSelectAll = () => {
-    setIncludeUnknownLocation(selectAll ? false : true);
+    setIncludeUnknownLocation(!selectAll);
     setSelectAll(!selectAll);
     setSelectedLocations(toggleSelectedStatus(selectedLocations, !selectAll));
   }
