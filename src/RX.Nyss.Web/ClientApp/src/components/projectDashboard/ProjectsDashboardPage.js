@@ -58,7 +58,7 @@ const ProjectDashboardPageComponent = ({
         <ProjectsDashboardFilters
           healthRisks={props.healthRisks}
           organizations={props.organizations}
-          nationalSocietyId={props.nationalSocietyId}
+          locations={props.locations}
           onChange={handleFiltersChange}
           filters={props.filters}
           isFetching={isFetching}
@@ -137,6 +137,7 @@ const mapStateToProps = (state) => ({
   nationalSocietyId: state.appData.route.params.nationalSocietyId,
   healthRisks: state.projectDashboard.filtersData.healthRisks,
   organizations: state.projectDashboard.filtersData.organizations,
+  locations: state.projectDashboard.filtersData.locations,
   projectSummary: state.projectDashboard.projectSummary,
   filters: state.projectDashboard.filters,
   reportsGroupedByHealthRiskAndDate:

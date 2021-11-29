@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
@@ -43,7 +44,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private readonly INyssContext _nyssContext;
 
-        private readonly IAuthorizationService _authorizationService;
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
         public ProjectDashboardService(
             IProjectService projectService,
@@ -54,7 +55,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             IReportsDashboardByDataCollectionPointService reportsDashboardByDataCollectionPointService,
             IProjectDashboardSummaryService projectDashboardSummaryService,
             INyssContext nyssContext,
-            IAuthorizationService authorizationService)
+            INationalSocietyStructureService nationalSocietyStructureService)
         {
             _projectService = projectService;
             _reportsDashboardMapService = reportsDashboardMapService;
@@ -64,7 +65,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _reportsDashboardByDataCollectionPointService = reportsDashboardByDataCollectionPointService;
             _projectDashboardSummaryService = projectDashboardSummaryService;
             _nyssContext = nyssContext;
-            _authorizationService = authorizationService;
+            _nationalSocietyStructureService = nationalSocietyStructureService;
         }
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId)
@@ -78,11 +79,17 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             var organizations = await GetOrganizations(projectId);
             var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
+            var nationalSocietyId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSocietyId)
+                .SingleAsync();
+            var locations = await _nationalSocietyStructureService.Get(nationalSocietyId);
 
             var dto = new ProjectDashboardFiltersResponseDto
             {
                 HealthRisks = projectHealthRisks,
-                Organizations = organizations
+                Organizations = organizations,
+                Locations = locations
             };
 
             return Success(dto);
@@ -149,7 +156,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 EndDate = filtersDto.EndDate.AddDays(1),
                 HealthRisks = filtersDto.HealthRisks.ToList(),
                 OrganizationId = filtersDto.OrganizationId,
-                Area = filtersDto.Area,
+                Area = filtersDto.Locations,
                 ProjectId = projectId,
                 DataCollectorType = MapToDataCollectorType(filtersDto.DataCollectorType),
                 ReportStatus = filtersDto.ReportStatus,

@@ -1,7 +1,6 @@
 import styles from "./ProjectsDashboardFilters.module.scss";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker } from "../../forms/DatePicker";
-import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 import { convertToLocalDate, convertToUtc } from "../../../utils/date";
@@ -23,18 +22,19 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
-  Checkbox,
-  ListItemText,
+  Checkbox
 } from "@material-ui/core";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { Fragment } from "react";
 import { DataConsumer } from "../../../authentication/roles";
 import MultiSelectField from "../../forms/MultiSelectField";
+import LocationFilter from "../../common/filters/LocationFilter";
+import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
 export const ProjectsDashboardFilters = ({
   filters,
-  nationalSocietyId,
   healthRisks,
+  locations,
   organizations,
   onChange,
   isFetching,
@@ -44,7 +44,7 @@ export const ProjectsDashboardFilters = ({
   userRoles,
 }) => {
   const [value, setValue] = useState(filters);
-  const [selectedArea, setSelectedArea] = useState(filters && filters.area);
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(!value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, false));
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   const updateValue = (change) => {
@@ -57,11 +57,15 @@ export const ProjectsDashboardFilters = ({
     return newValue;
   };
 
-  const handleAreaChange = (item) => {
-    setSelectedArea(item);
+  useEffect(() => {
+    const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, false);
+    setLocationsFilterLabel(label);
+  }, [value, locations]);
+
+  const handleLocationChange = (newValue) => {
     onChange(
       updateValue({
-        area: item ? { type: item.type, id: item.id, name: item.name } : null,
+        locations: newValue,
       })
     );
   };
@@ -119,6 +123,7 @@ export const ProjectsDashboardFilters = ({
     selectedIds.length < 1 || selectedIds.length === healthRisks.length
       ? strings(stringKeys.project.dashboard.filters.healthRiskAll)
       : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
+  const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
 
   if (!value) {
     return null;
@@ -167,11 +172,10 @@ export const ProjectsDashboardFilters = ({
                 </Grid>
               </Fragment>
             )}
-            {!isFilterExpanded && selectedArea && (
+            {!isFilterExpanded && !allLocationsSelected() && (
               <Grid item>
                 <Chip
-                  label={selectedArea.name}
-                  onDelete={() => handleAreaChange(null)}
+                  label={locationsFilterLabel}
                   onClick={() => setIsFilterExpanded(!isFilterExpanded)}
                 />
               </Grid>
@@ -369,10 +373,11 @@ export const ProjectsDashboardFilters = ({
             </Grid>
 
             <Grid item>
-              <AreaFilter
-                nationalSocietyId={nationalSocietyId}
-                selectedItem={selectedArea}
-                onChange={handleAreaChange}
+              <LocationFilter
+                locations={locations}
+                value={value.locations}
+                filterLabel={locationsFilterLabel}
+                onChange={handleLocationChange}
               />
             </Grid>
 
