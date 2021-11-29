@@ -15,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
@@ -74,6 +75,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             _projectService = Substitute.For<IProjectService>();
             _excelExportService = Substitute.For<IExcelExportService>();
+            var nationalSocietyStructureServiceMock = Substitute.For<INationalSocietyStructureService>();
 
             _alertService = new AlertService(_nyssContext,
                 _emailPublisherService,
@@ -86,7 +88,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 _smsPublisherService,
                 _projectService,
                 _excelExportService,
-                _stringsService);
+                _stringsService,
+                nationalSocietyStructureServiceMock);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();

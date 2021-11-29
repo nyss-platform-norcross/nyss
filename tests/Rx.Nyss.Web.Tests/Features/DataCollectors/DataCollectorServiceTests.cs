@@ -384,7 +384,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var filters = new DataCollectorsFiltersRequestDto
             {
-                Area = null,
+                Locations = null,
                 Sex = null,
                 SupervisorId = null,
                 TrainingStatus = null,
@@ -417,7 +417,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var filters = new DataCollectorsFiltersRequestDto
             {
-                Area = null,
+                Locations = null,
                 Sex = SexDto.Male,
                 SupervisorId = null,
                 TrainingStatus = null,
@@ -447,7 +447,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var filters = new DataCollectorsFiltersRequestDto
             {
-                Area = null,
+                Locations = null,
                 Sex = null,
                 SupervisorId = null,
                 TrainingStatus = null,
