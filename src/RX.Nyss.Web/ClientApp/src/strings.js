@@ -410,9 +410,6 @@ export const stringKeys = {
       printTitle: "project.dashboard.printTitle",
       numbers: {
         reportCountTitle: "project.dashboard.numbers.reportCountTitle",
-        keptReportCount: "project.dashboard.numbers.keptReportCount",
-        dismissedReportCount: "project.dashboard.numbers.dismissedReportCount",
-        notCrossCheckedReportCount: "project.dashboard.numbers.notCrossCheckedReportCount",
         totalReportCount: "project.dashboard.numbers.totalReportCount",
         openAlerts: "project.dashboard.numbers.openAlerts",
         dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",

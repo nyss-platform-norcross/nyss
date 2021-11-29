@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard;
@@ -53,9 +51,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .Select(data => new ProjectSummaryResponseDto
                 {
-                    KeptReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
-                    DismissedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
-                    NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending || r.Status == ReportStatus.Closed).Sum(r => r.ReportedCaseCount),
                     TotalReportCount = dashboardReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.ActiveDataCollectorCount,
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(dashboardReports),
