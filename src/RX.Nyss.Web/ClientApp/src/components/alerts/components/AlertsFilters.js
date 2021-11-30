@@ -1,25 +1,30 @@
 import styles from "./AlertsFilters.module.scss";
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, TextField, MenuItem, Card, CardContent } from '@material-ui/core';
-import { AreaFilter } from "../../common/filters/AreaFilter";
+import LocationFilter from "../../common/filters/LocationFilter";
 import { strings, stringKeys } from "../../../strings";
 import { alertStatusFilters } from "../logic/alertsConstants";
-import { useSelector } from "react-redux";
+import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
 export const AlertsFilters = ({ filters, filtersData, onChange }) => {
-  const nationalSocietyId = useSelector(state => state.appData.siteMap.parameters.nationalSocietyId);
   const [value, setValue] = useState(null);
-  const [selectedArea, setSelectedArea] = useState(null);
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
   const [healthRisks, setHealthRisks] = useState(null);
+  const [locations, setLocations] = useState([]);
 
   useEffect(() => {
     filters && setValue(filters);
-    filters && setSelectedArea(filters.area);
   }, [filters]);
 
   useEffect(() => {
     filtersData && setHealthRisks(filtersData.healthRisks);
+    filtersData && setLocations(filtersData.locations);
   }, [filtersData]);
+
+  useEffect(() => {
+    const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, false);
+    setLocationsFilterLabel(label);
+  }, [value, locations]);
 
   const updateValue = (change) => {
     const newValue = {
@@ -31,9 +36,8 @@ export const AlertsFilters = ({ filters, filtersData, onChange }) => {
     return newValue;
   };
 
-  const handleAreaChange = (item) => {
-    setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }));
+  const handleLocationChange = (newValue) => {
+    onChange(updateValue({ locations: newValue }));
   }
 
   const handleHealthRiskChange = (event) => {
@@ -53,10 +57,11 @@ export const AlertsFilters = ({ filters, filtersData, onChange }) => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={selectedArea}
-              onChange={handleAreaChange}
+            <LocationFilter
+              value={value.locations}
+              locations={locations}
+              filterLabel={locationsFilterLabel}
+              onChange={handleLocationChange}
             />
           </Grid>
 

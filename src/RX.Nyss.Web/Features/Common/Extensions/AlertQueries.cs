@@ -5,6 +5,7 @@ using Microsoft.Azure.Devices;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
@@ -37,25 +38,15 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             healthRisks.Any()
                 ? alerts.Where(a => healthRisks.Contains(a.ProjectHealthRisk.HealthRiskId))
                 : alerts;
-
-        public static IQueryable<Alert> FilterByArea(this IQueryable<Alert> alerts, Area area) =>
-            area?.AreaType switch
-            {
-                AreaType.Region =>
-                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Region.Id == area.AreaId)),
-
-                AreaType.District =>
-                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Id == area.AreaId)),
-
-                AreaType.Village =>
-                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.Id == area.AreaId)),
-
-                AreaType.Zone =>
-                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Zone.Id == area.AreaId)),
-
-                _ =>
-                    alerts
-            };
+                
+        public static IQueryable<Alert> FilterByArea(this IQueryable<Alert> alerts, AreaDto area) =>
+            area != null
+                ? alerts.Where(a => a.AlertReports.Any(ar => area.RegionIds.Contains(ar.Report.RawReport.Village.District.Region.Id)
+                    || area.DistrictIds.Contains(ar.Report.RawReport.Village.District.Id)
+                    || area.VillageIds.Contains(ar.Report.RawReport.Village.Id)
+                    || area.ZoneIds.Contains(ar.Report.RawReport.Zone.Id)
+                    || (area.IncludeUnknownLocation && ar.Report.RawReport.Village == null)))
+                : alerts;
 
         public static IQueryable<Alert> FilterByStatus(this IQueryable<Alert> alerts, AlertStatusFilter status) =>
             status switch

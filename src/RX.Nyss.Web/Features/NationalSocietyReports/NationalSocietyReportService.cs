@@ -1,18 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -34,20 +32,23 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly IUserService _userService;
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
         public NationalSocietyReportService(
             INyssContext nyssContext,
             IUserService userService,
             INationalSocietyService nationalSocietyService,
             INyssWebConfig config,
-            IAuthorizationService authorizationService
-        )
+            IAuthorizationService authorizationService,
+            INationalSocietyStructureService nationalSocietyStructureService
+            )
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _nationalSocietyService = nationalSocietyService;
             _config = config;
             _authorizationService = authorizationService;
+            _nationalSocietyStructureService = nationalSocietyStructureService;
         }
 
         public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter)
@@ -68,7 +69,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
-                .FilterByArea(MapToArea(filter.Area))
+                .FilterByArea(filter.Locations)
                 .FilterByTrainingMode(TrainingStatusDto.Trained)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByErrorType(filter.ErrorType);
@@ -137,6 +138,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         public async Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId)
         {
             var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, false);
+            var locations = await _nationalSocietyStructureService.Get(nationalSocietyId);
 
             var dto = new NationalSocietyReportListFilterResponseDto
             {
@@ -145,20 +147,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     {
                         Id = p.Id,
                         Name = p.Name
-                    })
+                    }),
+                Locations = locations
             };
 
             return Success(dto);
         }
-
-        private static Area MapToArea(AreaDto area) =>
-            area == null
-                ? null
-                : new Area
-                {
-                    AreaType = area.Type,
-                    AreaId = area.Id
-                };
 
         private static string AnonymizePhoneNumber(string phoneNumber) =>
             string.IsNullOrEmpty(phoneNumber)

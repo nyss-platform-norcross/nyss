@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = (await _dataCollectorService.GetDataCollectorsForCurrentUserInProject(projectId))
                 .FilterOnlyNotDeleted()
                 .FilterOnlyDeployed()
-                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByArea(dataCollectorsFilters.Locations)
                 .FilterByName(dataCollectorsFilters.Name)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)

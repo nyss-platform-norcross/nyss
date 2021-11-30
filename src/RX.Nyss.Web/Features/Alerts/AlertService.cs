@@ -14,9 +14,8 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.Common;
-using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
@@ -71,6 +70,8 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private readonly IStringsService _stringsService;
 
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
+
         public AlertService(
             INyssContext nyssContext,
             IEmailPublisherService emailPublisherService,
@@ -83,7 +84,8 @@ namespace RX.Nyss.Web.Features.Alerts
             ISmsPublisherService smsPublisherService,
             IProjectService projectService,
             IExcelExportService excelExportService,
-            IStringsService stringsService)
+            IStringsService stringsService,
+            INationalSocietyStructureService nationalSocietyStructureService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -97,6 +99,7 @@ namespace RX.Nyss.Web.Features.Alerts
             _projectService = projectService;
             _excelExportService = excelExportService;
             _stringsService = stringsService;
+            _nationalSocietyStructureService = nationalSocietyStructureService;
         }
 
         public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId)
@@ -108,10 +111,16 @@ namespace RX.Nyss.Web.Features.Alerts
                 HealthRiskType.UnusualEvent
             };
             var healthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypes);
+            var nationalSocietyId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSocietyId)
+                .SingleAsync();
+            var locations = await _nationalSocietyStructureService.Get(nationalSocietyId);
 
             return Success(new AlertListFilterResponseDto
             {
-                HealthRisks = healthRisks
+                HealthRisks = healthRisks,
+                Locations = locations
             });
         }
 
@@ -120,7 +129,7 @@ namespace RX.Nyss.Web.Features.Alerts
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
-                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
@@ -367,7 +376,7 @@ namespace RX.Nyss.Web.Features.Alerts
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
-                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
@@ -629,14 +638,5 @@ namespace RX.Nyss.Web.Features.Alerts
                 throw new ResultException(ResultKey.Alert.EscalateAlert.SmsNotificationFailed);
             }
         }
-
-        private static Area MapToArea(AreaDto area) =>
-            area == null
-                ? null
-                : new Area
-                {
-                    AreaType = area.Type,
-                    AreaId = area.Id
-                };
     }
 }

@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public const string TimeOfLastReportColumnName = "TimeOfLastReport";
         public const string StatusColumnName = "Status";
 
-        public AreaDto Area { get; set; }
+        public AreaDto Locations { get; set; }
         public int? HealthRiskId { get; set; }
         public AlertStatusFilter Status { get; set; }
         public string OrderBy { get; set; }

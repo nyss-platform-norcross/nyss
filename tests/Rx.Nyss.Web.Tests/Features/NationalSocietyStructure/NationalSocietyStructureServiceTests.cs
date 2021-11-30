@@ -75,18 +75,16 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
         {
             var structure = await _nationalSocietyStructureService.Get(NationalSocietyId);
 
-            structure.IsSuccess.ShouldBeTrue();
+            structure.Regions.Count().ShouldBe(1);
+            structure.Regions.First().Name.ShouldBe("Region");
+            structure.Regions.First().Districts.Count().ShouldBe(1);
+            structure.Regions.First().Districts.First().Name.ShouldBe("District");
 
-            structure.Value.Regions.Count().ShouldBe(1);
-            structure.Value.Regions.First().Name.ShouldBe("Region");
-            structure.Value.Regions.First().Districts.Count().ShouldBe(1);
-            structure.Value.Regions.First().Districts.First().Name.ShouldBe("District");
+            structure.Regions.First().Districts.First().Villages.Count().ShouldBe(1);
+            structure.Regions.First().Districts.First().Villages.First().Name.ShouldBe("Village");
 
-            structure.Value.Regions.First().Districts.First().Villages.Count().ShouldBe(1);
-            structure.Value.Regions.First().Districts.First().Villages.First().Name.ShouldBe("Village");
-
-            structure.Value.Regions.First().Districts.First().Villages.First().Zones.Count().ShouldBe(1);
-            structure.Value.Regions.First().Districts.First().Villages.First().Zones.First().Name.ShouldBe("Zone");
+            structure.Regions.First().Districts.First().Villages.First().Zones.Count().ShouldBe(1);
+            structure.Regions.First().Districts.First().Villages.First().Zones.First().Name.ShouldBe("Zone");
         }
     }
 }

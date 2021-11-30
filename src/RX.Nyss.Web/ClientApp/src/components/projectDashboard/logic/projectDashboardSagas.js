@@ -33,7 +33,7 @@ function* openProjectDashboard({ projectId }) {
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
         healthRisks: [],
-        area: null,
+        locations: null,
         startDate: endDate.add(-7, 'day'),
         endDate: endDate,
         groupingType: 'Day',

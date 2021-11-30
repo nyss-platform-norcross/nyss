@@ -51,7 +51,7 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
 
   const filterReducer = (state, action) => {
     switch (action.type) {
-      case 'updateArea': return { value: { ...state.value, area: action.area, pageNumber: action.pageNumber }, changed: !shallowEqual(state.value.area, action.area) };
+      case 'updateLocations': return { value: { ...state.value, locations: action.locations, pageNumber: action.pageNumber }, changed: !shallowEqual(state.value.locations, action.locations) };
       case 'updateName': return { value: { ...state.value, name: action.name }, changed: state.value.name !== action.name };
       case 'updateSupervisor': return { value: { ...state.value, supervisorId: action.supervisorId }, changed: state.value.supervisorId !== action.supervisorId };
       case 'updateTrainingStatus': return { value: { ...state.value, trainingStatus: action.trainingStatus }, changed: state.value.trainingStatus !== action.trainingStatus };

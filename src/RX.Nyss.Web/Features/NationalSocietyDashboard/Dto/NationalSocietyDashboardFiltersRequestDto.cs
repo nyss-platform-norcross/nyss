@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public DateTimeOffset EndDate { get; set; }
 
-        public AreaDto Area { get; set; }
+        public AreaDto Locations { get; set; }
 
         public int? OrganizationId { get; set; }
 

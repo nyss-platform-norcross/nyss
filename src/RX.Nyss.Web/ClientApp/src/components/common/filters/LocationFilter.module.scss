@@ -1,0 +1,85 @@
+.filterContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 5px;
+}
+
+.filterActionsContainer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.locationFilterItem {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  &[type=district] {
+    padding-left: 15px;
+  }
+
+  &[type=village] {
+    padding-left: 30px;
+  }
+
+  &[type=zone] {
+    padding-left: 45px;
+  }
+}
+
+.regionItem {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.districtItem {
+  width: 100%;
+  padding-left: 15px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.villageItem {
+  width: 100%;
+  padding-left: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.iconContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &[nodata=true] {
+    padding-left: 21px;
+  }
+}
+
+.arrow {
+  color: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
+}
+
+.clickable {
+  cursor: pointer !important;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #333;
+}

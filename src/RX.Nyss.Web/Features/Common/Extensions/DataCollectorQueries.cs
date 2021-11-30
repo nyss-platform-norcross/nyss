@@ -15,57 +15,29 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             dataCollectorType switch
             {
                 DataCollectorType.Human =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
+                    dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
 
                 DataCollectorType.CollectionPoint =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
+                    dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
 
                 _ =>
-                dataCollectors
+                    dataCollectors
             };
 
         public static IQueryable<DataCollector> FilterByArea(this IQueryable<DataCollector> dataCollectors, AreaDto area) =>
-            area?.Type switch
-            {
-                AreaType.Region =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Region.Id == area.Id)),
+            area != null
+                ? dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>
+                        area.VillageIds.Contains(dcl.Village.Id)
+                        || area.ZoneIds.Contains(dcl.Zone.Id)
+                        || area.DistrictIds.Contains(dcl.Village.District.Id)
+                        || area.RegionIds.Contains(dcl.Village.District.Region.Id))
+                    || (area.IncludeUnknownLocation && !dc.DataCollectorLocations.Any()))
+                : dataCollectors;
 
-                AreaType.District =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Id == area.Id)),
-
-                AreaType.Village =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.Id == area.Id)),
-
-                AreaType.Zone =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Zone.Id == area.Id)),
-
-                _ =>
-                dataCollectors
-            };
-
-        public static IQueryable<DataCollector> FilterByArea(this IQueryable<DataCollector> dataCollectors, Area area) =>
-            area?.AreaType switch
-            {
-                AreaType.Region =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Region.Id == area.AreaId)),
-
-                AreaType.District =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Id == area.AreaId)),
-
-                AreaType.Village =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.Id == area.AreaId)),
-
-                AreaType.Zone =>
-                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Zone.Id == area.AreaId)),
-
-                _ =>
-                dataCollectors
-            };
-
-        public static IQueryable<DataCollector> FilterOnlyDeployed (this IQueryable<DataCollector> dataCollectors) =>
+        public static IQueryable<DataCollector> FilterOnlyDeployed(this IQueryable<DataCollector> dataCollectors) =>
             dataCollectors.Where(dc => dc.Deployed);
 
-        public static IQueryable<DataCollector> FilterByDeployedMode (this IQueryable<DataCollector> dataCollectors, DeployedModeDto? deployedMode) =>
+        public static IQueryable<DataCollector> FilterByDeployedMode(this IQueryable<DataCollector> dataCollectors, DeployedModeDto? deployedMode) =>
             deployedMode switch
             {
                 DeployedModeDto.Deployed => dataCollectors.Where(dc => dc.Deployed),
@@ -103,9 +75,13 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             };
 
         public static IQueryable<DataCollector> FilterByOrganization(this IQueryable<DataCollector> dataCollectors, Organization organization) =>
-            organization == null ? dataCollectors : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
+            organization == null
+                ? dataCollectors
+                : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
 
         public static IQueryable<DataCollector> FilterByName(this IQueryable<DataCollector> dataCollectors, string name) =>
-            string.IsNullOrEmpty(name) ? dataCollectors : dataCollectors.Where(dc => dc.Name.ToLower().Contains(name.ToLower()) || dc.DisplayName.ToLower().Contains(name.ToLower()));
+            string.IsNullOrEmpty(name)
+                ? dataCollectors
+                : dataCollectors.Where(dc => dc.Name.ToLower().Contains(name.ToLower()) || dc.DisplayName.ToLower().Contains(name.ToLower()));
     }
 }

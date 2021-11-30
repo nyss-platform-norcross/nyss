@@ -169,7 +169,7 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByHealthRisks(filter.HealthRisks)
                     .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
-                    .FilterByArea(ReportService.MapToArea(filter.Area))
+                    .FilterByArea(filter.Locations)
                     .FilterByReportStatus(filter.ReportStatus)
                     .FilterByTrainingMode(filter.TrainingStatus);
             }
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(projectId)
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByDataCollectorType(filter.DataCollectorType)
-                .FilterByArea(ReportService.MapToArea(filter.Area))
+                .FilterByArea(filter.Locations)
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)

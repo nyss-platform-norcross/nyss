@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public DateTimeOffset EndDate { get; set; }
 
-        public AreaDto Area { get; set; }
+        public AreaDto Locations { get; set; }
 
         public DatesGroupingType GroupingType { get; set; }
 

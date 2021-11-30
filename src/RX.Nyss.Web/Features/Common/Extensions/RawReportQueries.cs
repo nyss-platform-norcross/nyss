@@ -13,13 +13,13 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             dataCollectorType switch
             {
                 DataCollectorType.Human =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+                    reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
 
                 DataCollectorType.CollectionPoint =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+                    reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
 
                 _ =>
-                reports
+                    reports
             };
 
         public static IQueryable<RawReport> FilterByDataCollectorType(this IQueryable<RawReport> reports, ReportListDataCollectorType reportDataCollectorType) =>
@@ -62,34 +62,22 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> FromKnownDataCollector(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.DataCollector != null);
 
-        public static IQueryable<RawReport> FilterByArea(this IQueryable<RawReport> reports, Area area) =>
-            area?.AreaType switch
-            {
-                AreaType.Region =>
-                    reports.Where(r => r.Village.District.Region.Id == area.AreaId),
-
-                AreaType.District =>
-                    reports.Where(r => r.Village.District.Id == area.AreaId),
-
-                AreaType.Village =>
-                    reports.Where(r => r.Village.Id == area.AreaId),
-
-                AreaType.Zone =>
-                    reports.Where(r => r.Zone.Id == area.AreaId),
-
-                AreaType.Unknown =>
-                    reports.Where(r => r.Village == null),
-
-                _ => reports
-            };
+        public static IQueryable<RawReport> FilterByArea(this IQueryable<RawReport> reports, AreaDto area) =>
+            area != null
+                ? reports.Where(r => area.RegionIds.Contains(r.Village.District.Region.Id)
+                    || area.DistrictIds.Contains(r.Village.District.Id)
+                    || area.VillageIds.Contains(r.Village.Id)
+                    || area.ZoneIds.Contains(r.Zone.Id)
+                    || (area.IncludeUnknownLocation && r.Village == null))
+                : reports;
 
         public static IQueryable<RawReport> FilterByTrainingMode(this IQueryable<RawReport> rawReports, bool isTraining) =>
             rawReports.Where(r => r.IsTraining.HasValue && r.IsTraining == isTraining);
 
         public static IQueryable<RawReport> FilterByFormatCorrectness(this IQueryable<RawReport> rawReports, bool formatCorrect) =>
-        formatCorrect
-            ? rawReports.Where(r => r.Report != null && !r.Report.MarkedAsError)
-            : rawReports.Where(r => r.Report == null || r.Report.MarkedAsError);
+            formatCorrect
+                ? rawReports.Where(r => r.Report != null && !r.Report.MarkedAsError)
+                : rawReports.Where(r => r.Report == null || r.Report.MarkedAsError);
 
         public static IQueryable<RawReport> FilterByErrorType(this IQueryable<RawReport> rawReports, ReportErrorFilterType? reportErrorFilterType) =>
             reportErrorFilterType switch

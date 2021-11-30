@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             return await _nyssContext.DataCollectors
                 .FilterByProject(projectId)
-                .FilterByArea(filters.Area)
+                .FilterByArea(filters.Locations)
                 .FilterBySupervisor(filters.SupervisorId)
                 .FilterBySex(filters.Sex)
                 .FilterByTrainingMode(filters.TrainingStatus)

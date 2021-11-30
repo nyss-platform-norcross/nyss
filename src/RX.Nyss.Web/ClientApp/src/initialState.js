@@ -215,7 +215,7 @@ export const initialState = {
     completeness: null,
     performanceListFetching: false,
     performanceListFilters: {
-      area: null,
+      locations: null,
       name: '',
       supervisorId: null,
       trainingStatus: 'Trained',
@@ -228,7 +228,7 @@ export const initialState = {
     },
     filters: {
       supervisorId: null,
-      area: null,
+      locations: null,
       sex: null,
       trainingStatus: 'All',
       deployedMode: 'Deployed',

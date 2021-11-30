@@ -12,7 +12,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 {
     public interface INationalSocietyStructureService
     {
-        Task<Result<StructureResponseDto>> Get(int nationalSocietyId);
+        Task<StructureResponseDto> Get(int nationalSocietyId);
         Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, string name);
         Task<Result> EditRegion(int regionId, string name);
         Task<Result> DeleteRegion(int regionId);
@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             _nyssContext = context;
         }
 
-        public async Task<Result<StructureResponseDto>> Get(int nationalSocietyId)
+        public async Task<StructureResponseDto> Get(int nationalSocietyId)
         {
             var structure = new StructureResponseDto
             {
@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
                     .ToListAsync()
             };
 
-            return Success(structure);
+            return structure;
         }
 
         public async Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, string name)
