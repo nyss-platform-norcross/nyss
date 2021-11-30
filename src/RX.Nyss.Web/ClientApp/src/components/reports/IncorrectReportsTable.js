@@ -29,7 +29,7 @@ export const IncorrectReportsTable = ({
   filters,
   sorting,
   onSort,
-  onCorrect,
+  onCorrectToggle,
 }) => {
 
   const [value, setValue] = useState(sorting);
@@ -115,7 +115,7 @@ export const IncorrectReportsTable = ({
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>
-                  <CorrectedButton isCorrected={row.isCorrected} onClick={() => onCorrect(row)} />
+                  <CorrectedButton isCorrected={row.isCorrected} onClick={() => onCorrectToggle(row)} />
                 </TableCell>
               </TableRow>
             ))}

@@ -15,6 +15,7 @@ import {
   GET_CORRECT_REPORTS,
   TRACK_REPORT_EXPORT,
   MARK_AS_CORRECTED,
+  MARK_AS_NOT_CORRECTED,
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
@@ -195,6 +196,13 @@ export const markAsCorrected = {
   request: () => ({ type: MARK_AS_CORRECTED.REQUEST }),
   success: (reportId) => ({ type: MARK_AS_CORRECTED.SUCCESS, reportId }),
   failure: (message) => ({ type: MARK_AS_CORRECTED.FAILURE, message }),
+};
+
+export const markAsNotCorrected = {
+  invoke: (reportId) => ({ type: MARK_AS_NOT_CORRECTED.INVOKE, reportId }),
+  request: () => ({ type: MARK_AS_NOT_CORRECTED.REQUEST }),
+  success: (reportId) => ({ type: MARK_AS_NOT_CORRECTED.SUCCESS, reportId }),
+  failure: (message) => ({ type: MARK_AS_NOT_CORRECTED.FAILURE, message }),
 };
 
 export const trackReportExport = (page, fileType, projectId) => ({ type: TRACK_REPORT_EXPORT.INVOKE, page, fileType, projectId });

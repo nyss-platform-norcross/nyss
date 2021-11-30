@@ -27,6 +27,7 @@ export const reportsSagas = () => [
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
   takeEvery(consts.TRACK_REPORT_EXPORT.INVOKE, trackReportExport),
   takeEvery(consts.MARK_AS_CORRECTED.INVOKE, markAsCorrected),
+  takeEvery(consts.MARK_AS_NOT_CORRECTED.INVOKE, markAsNotCorrected),
 ];
 
 function* openCorrectReportsList({ projectId }) {
@@ -298,6 +299,18 @@ function* markAsCorrected({ reportId }) {
     yield put(actions.markAsCorrected.success(reportId));
   } catch (error) {
     yield put(actions.markAsCorrected.failure());
+    yield put(appActions.showMessage(error.message));
+  }  
+}
+
+function* markAsNotCorrected({ reportId }) {
+  yield put(actions.markAsNotCorrected.request());
+  
+  try {
+    yield call(http.deleteHttp, `/api/report/${reportId}/correct`);
+    yield put(actions.markAsNotCorrected.success(reportId));
+  } catch (error) {
+    yield put(actions.markAsNotCorrected.failure());
     yield put(appActions.showMessage(error.message));
   }  
 }

@@ -11,7 +11,7 @@ const CorrectedButton = ({ isCorrected, onClick }) => {
     : strings(stringKeys.reports.list.markAsCorrected);
   
   return (
-    <IconButton color="primary" disabled={isCorrected} onClick={onClick} title={title}>
+    <IconButton color="primary" onClick={onClick} title={title}>
       {isCorrected && <CheckBox color="primary" />}
       {!isCorrected && <CheckBoxOutlineBlank />}
     </IconButton>
