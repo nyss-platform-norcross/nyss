@@ -215,7 +215,7 @@ export const initialState = {
     completeness: null,
     performanceListFetching: false,
     performanceListFilters: {
-      area: null,
+      locations: null,
       name: '',
       supervisorId: null,
       trainingStatus: 'Trained',

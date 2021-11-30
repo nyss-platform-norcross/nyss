@@ -1,6 +1,5 @@
 import styles from './DataCollectorsPerformanceFilters.module.scss';
-import React, { useEffect, useReducer } from 'react';
-import { AreaFilter } from "../common/filters/AreaFilter";
+import { useEffect, useReducer, useState } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -18,11 +17,15 @@ import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';
 import * as roles from '../../authentication/roles';
 import {trainingStatus, trainingStatusAll, trainingStatusTrained} from "./logic/dataCollectorsConstants";
+import LocationFilter from '../common/filters/LocationFilter';
+import { renderFilterLabel } from '../common/filters/logic/locationFilterService';
 
 export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
-  const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
+  const locations = useSelector(state => state.dataCollectors.filtersData.locations);
   const supervisors = useSelector(state => state.dataCollectors.filtersData.supervisors);
   const callingUserRoles = useSelector(state => state.appData.user.roles);
+
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
 
   const [name, setName] = useReducer((state, action) => {
     if (state.value !== action) {
@@ -34,8 +37,8 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
 
   const debouncedName = useDebounce(name, 500);
 
-  const handleAreaChange = (item) =>
-    onChange({ type: 'updateArea', area: item ? { type: item.type, id: item.id, name: item.name } : null, pageNumber: 1 });
+  const handleAreaChange = (newValue) =>
+    onChange({ type: 'updateLocations', locations: newValue, pageNumber: 1 });
 
   const handleNameChange = event =>
     setName(event.target.value);
@@ -49,9 +52,13 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   useEffect(() => {
     debouncedName.changed && onChange({ type: 'updateName', name: debouncedName.value });
   }, [debouncedName, onChange]);
+
+  useEffect(() => 
+    setLocationsFilterLabel(!filters || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(filters.locations, locations.regions, false))
+  , [filters, locations]);
   
   const filterIsSet = filters && (
-    filters.area !== null ||
+    filters.locations !== null ||
     (filters.name !== null && filters.name !== '') ||
     filters.trainingStatus !== trainingStatusTrained ||
     Object.values(filters).slice(4).some(f => 
@@ -64,7 +71,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
     onChange({ type: 'reset' });
   }
 
-  if (!filters || !nationalSocietyId) {
+  if (!filters) {
     return null;
   }
 
@@ -82,9 +89,10 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
             />
           </Grid>
           <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={filters.area}
+            <LocationFilter
+              locations={locations}
+              value={filters.locations}
+              filterLabel={locationsFilterLabel}
               onChange={handleAreaChange}
             />
           </Grid>
