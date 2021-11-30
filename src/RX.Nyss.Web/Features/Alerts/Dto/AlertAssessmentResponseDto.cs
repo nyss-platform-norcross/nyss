@@ -10,11 +10,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 
         public string CaseDefinition { get; set; }
 
-        public IEnumerable<ReportDto> Reports { get; set; }
+        public string Comments { get; set; }
 
-        public IEnumerable<string> NotificationEmails { get; set; }
-
-        public IEnumerable<string> NotificationPhoneNumbers { get; set; }
+        public bool RecipientsNotified { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -24,7 +22,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 
         public EscalatedAlertOutcomes? EscalatedOutcome { get; set; }
 
-        public string Comments { get; set; }
+        public IEnumerable<ReportDto> Reports { get; set; }
+
+        public IEnumerable<AlertAssessmentNotifiedUser> EscalatedTo { get; set; }
 
         public class ReportDto
         {

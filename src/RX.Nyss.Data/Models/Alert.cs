@@ -8,25 +8,27 @@ namespace RX.Nyss.Data.Models
     {
         public int Id { get; set; }
 
+        public string Comments { get; set; }
+
         public AlertStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime? EscalatedAt { get; set; }
 
-        public virtual User EscalatedBy { get; set; }
-
         public DateTime? DismissedAt { get; set; }
-
-        public virtual User DismissedBy { get; set; }
 
         public DateTime? ClosedAt { get; set; }
 
-        public virtual User ClosedBy { get; set; }
+        public DateTime? RecipientsNotifiedAt { get; set; }
 
         public EscalatedAlertOutcomes? EscalatedOutcome { get; set; }
 
-        public string Comments { get; set; }
+        public virtual User ClosedBy { get; set; }
+
+        public virtual User DismissedBy { get; set; }
+
+        public virtual User EscalatedBy { get; set; }
 
         public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }
 
