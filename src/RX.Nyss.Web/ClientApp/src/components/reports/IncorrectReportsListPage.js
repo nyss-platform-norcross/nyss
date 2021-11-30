@@ -94,7 +94,7 @@ const IncorrectReportsListPageComponent = (props) => {
 
       <div className={styles.filtersGrid}>
         <ReportFilters
-          nationalSocietyId={props.nationalSocietyId}
+          locations={props.locations}
           onChange={handleFiltersChange}
           filters={props.filters}
           showCorrectReportFilters={false}
@@ -126,13 +126,13 @@ IncorrectReportsListPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
-  nationalSocietyId: state.appData.siteMap.parameters.nationalSocietyId,
   data: state.reports.incorrectReportsPaginatedListData,
   isListFetching: state.reports.listFetching,
   isRemoving: state.reports.listRemoving,
   filters: state.reports.incorrectReportsFilters,
   sorting: state.reports.incorrectReportsSorting,
-  user: state.appData.user
+  user: state.appData.user,
+  locations: state.reports.filtersData.locations
 });
 
 const mapDispatchToProps = {

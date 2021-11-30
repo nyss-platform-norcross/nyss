@@ -32,8 +32,7 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
     <Fragment>
       <div className={styles.filtersGrid}>
         <ReportFilters
-          healthRisks={props.healthRisks}
-          nationalSocietyId={props.nationalSocietyId}
+          locations={props.locations}
           onChange={handleFiltersChange}
           filters={props.filters}
           hideTrainingStatusFilter
@@ -69,7 +68,8 @@ const mapStateToProps = (state, ownProps) => ({
   isRemoving: state.nationalSocietyReports.listRemoving,
   filters: state.nationalSocietyReports.incorrectReportsFilters,
   sorting: state.nationalSocietyReports.incorrectReportsSorting,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  locations: state.nationalSocietyReports.filtersData.locations
 });
 
 const mapDispatchToProps = {
