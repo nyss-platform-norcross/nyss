@@ -109,11 +109,11 @@ export const cascadeSelectRegion = (region, selected) => {
 */
 export const cascadeSelectDistrict = (region, districtId, districtSelected) => {
   const districts = region.districts.map(d => setDistrict(d, districtId, districtSelected));
-  const hasUnselectedDistricts = districts.some(d => !d.selected);
+  const hasSelectedDistricts = districts.some(d => d.selected);
 
   return {
     ...region,
-    selected: !hasUnselectedDistricts,
+    selected: hasSelectedDistricts,
     districts: districts
   };
 }
@@ -124,13 +124,13 @@ export const cascadeSelectDistrict = (region, districtId, districtSelected) => {
 */
 export const cascadeSelectVillage = (region, districtId, villageId, villageSelected) => {
   const villages = region.districts.filter(d => d.id === districtId).map(d => d.villages.map(v => setVillage(v, villageId, villageSelected))).flat();
-  const anyUnslectedVillages = villages.some(v => !v.selected);
-  const districts = region.districts.map(d => ({ ...d, selected: d.id === districtId ? !anyUnslectedVillages : d.selected, villages: d.id === districtId ? villages : d.villages }));
-  const anyUnselectedDistricts = districts.some(d => !d.selected);
+  const anySelectedVillages = villages.some(v => v.selected);
+  const districts = region.districts.map(d => ({ ...d, selected: d.id === districtId ? anySelectedVillages : d.selected, villages: d.id === districtId ? villages : d.villages }));
+  const anySelectedDistricts = districts.some(d => d.selected);
 
   return {
     ...region,
-    selected: !anyUnselectedDistricts,
+    selected: anySelectedDistricts,
     districts: districts
   };
 }
@@ -143,17 +143,17 @@ export const cascadeSelectZone = (region, districtId, villageId, zoneId, zoneSel
   const zones = region.districts.filter(d => d.id === districtId)
     .map(d => d.villages.filter(v => v.id === villageId).map(v => v.zones.map(z => setZone(z, zoneId, zoneSelected)))).flat(2);
 
-  const anyUnselectedZones = zones.some(z => !z.selected);
+  const anySelectedZones = zones.some(z => z.selected);
   const villages = region.districts.filter(d => d.id === districtId)
-    .map(d => d.villages.map(v => ({ ...v, selected: v.id === villageId ? !anyUnselectedZones : v.selected, zones: v.id === villageId ? zones : v.zones })))
+    .map(d => d.villages.map(v => ({ ...v, selected: v.id === villageId ? anySelectedZones : v.selected, zones: v.id === villageId ? zones : v.zones })))
     .flat();
-  const anyUnselectedVillages = villages.some(v => !v.selected);
-  const districts = region.districts.map(d => ({ ...d, selected: d.id === districtId ? !anyUnselectedVillages : d.selected, villages: d.id === districtId ? villages : d.villages }));
-  const anyUnselectedDistricts = districts.some(d => !d.selected);
+  const anySelectedVillages = villages.some(v => v.selected);
+  const districts = region.districts.map(d => ({ ...d, selected: d.id === districtId ? anySelectedVillages : d.selected, villages: d.id === districtId ? villages : d.villages }));
+  const anySelectedDistricts = districts.some(d => d.selected);
 
   return {
     ...region,
-    selected: !anyUnselectedDistricts,
+    selected: anySelectedDistricts,
     districts: [
       ...districts
     ]
