@@ -1,9 +1,8 @@
-import React from "react";
 import {
   IconButton,
-  Icon,
 } from "@material-ui/core";
-import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn";
+import CheckBox from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlank from "@material-ui/icons/CheckBoxOutlineBlank";
 import { strings, stringKeys } from '../../strings';
 
 const CorrectedButton = ({ isCorrected, onClick }) => {
@@ -13,8 +12,8 @@ const CorrectedButton = ({ isCorrected, onClick }) => {
   
   return (
     <IconButton color="primary" disabled={isCorrected} onClick={onClick} title={title}>
-      {isCorrected && <Icon style={{color: "#15ab15"}}>check</Icon>}
-      {!isCorrected && <AssignmentTurnedIn />}
+      {isCorrected && <CheckBox color="primary" />}
+      {!isCorrected && <CheckBoxOutlineBlank />}
     </IconButton>
   );
 }
