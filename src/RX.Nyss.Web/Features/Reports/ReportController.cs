@@ -140,9 +140,24 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<Result> DismissReport(int reportId) =>
             await _reportService.DismissReport(reportId);
 
+        /// <summary>
+        /// Marks the report as corrected
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be corrected</param>
+        /// <returns></returns>
         [HttpPost("{reportId:int}/correct")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> Correct(int reportId) =>
             await Sender.Send(new CorrectReportCommand(reportId));
+
+        /// <summary>
+        /// Marks the report as not corrected
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be not corrected</param>
+        /// <returns></returns>
+        [HttpDelete("{reportId:int}/correct")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<Result> UndoCorrect(int reportId) =>
+            await Sender.Send(new UndoCorrectReportCommand(reportId));
     }
 }
