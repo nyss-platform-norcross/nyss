@@ -37,6 +37,14 @@ const LocationItem = ({ type, data, isVisible, onChange }) => {
       );
     }
 
+    if (!!childData && childData.data.length < 1) {
+      return (
+        <span className={styles.iconContainer} nodata='true'>
+          <Checkbox className={styles.clickable} checked={data.selected} color='primary' onClick={() => handleChange(data.id)} />
+        </span>
+      );
+    }
+
     return (
       <span className={styles.iconContainer}>
         {isExpanded ? <ExpandLessIcon className={styles.clickable} onClick={() => setIsExpanded(false)} /> : <ExpandMoreIcon className={styles.clickable} onClick={() => setIsExpanded(true)} />}
