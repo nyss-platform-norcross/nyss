@@ -6,26 +6,26 @@ import { stringKeys, strings } from "../../../../strings";
 */
 export const extractSelectedValues = (regions, includeUnknownLocation) => {
   const selectedRegions = regions
-    .filter(r => r.selected)
+    .filter(r => r.selected && !r.districts.some(d => !d.selected))
     .map(r => r.id);
 
   const selectedDistricts = regions
-    .filter(r => !r.selected)
-    .map(r => r.districts.filter(d => d.selected)
+    .filter(r => r.selected)
+    .map(r => r.districts.filter(d => d.selected && !d.villages.some(v => !v.selected))
       .map(d => d.id))
     .flat();
 
   const selectedVillages = regions
-    .filter(r => !r.selected)
-    .map(r => r.districts.filter(d => !d.selected)
-      .map(d => d.villages.filter(v => v.selected)
+    .filter(r => r.selected)
+    .map(r => r.districts.filter(d => d.selected)
+      .map(d => d.villages.filter(v => v.selected && !v.zones.some(z => !z.selected))
         .map(v => v.id)))
     .flat(2);
 
   const selectedZones = regions
-    .filter(r => !r.selected)
-    .map(r => r.districts.filter(d => !d.selected)
-      .map(d => d.villages.filter(v => !v.selected)
+    .filter(r => r.selected)
+    .map(r => r.districts.filter(d => d.selected)
+      .map(d => d.villages.filter(v => v.selected)
         .map(v => v.zones.filter(z => z.selected)
           .map(z => z.id))))
     .flat(3);
