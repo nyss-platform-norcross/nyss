@@ -922,6 +922,13 @@ export const stringKeys = {
         age: "alerts.assess.report.age",
         id: "alerts.assess.report.id",
         linkedToSupervisor: "alerts.assess.report.linkedToSupervisor"
+      },
+      escalatedTo: {
+        title: "alerts.assess.escalatedTo.title",
+        role: "alerts.assess.escalatedTo.role",
+        organization: "alerts.assess.escalatedTo.organization",
+        phoneNumber: "alerts.assess.escalatedTo.phoneNumber",
+        email: "alerts.assess.escalatedTo.email"
       }
     },
     eventLog: {

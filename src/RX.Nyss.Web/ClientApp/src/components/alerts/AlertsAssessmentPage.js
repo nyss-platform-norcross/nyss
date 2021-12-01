@@ -83,7 +83,7 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
 
         {data.recipientsNotified && data.escalatedTo.length > 0 && <>
           <DisplayField
-            label={"Alert was escalated to:"}
+            label={`${strings(stringKeys.alerts.assess.escalatedTo.title)}:`}
             value=""
           />
           <AlertNotificationRecipients recipients={data.escalatedTo} />

@@ -6,6 +6,7 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
+import { stringKeys, strings } from "../../../strings";
 import styles from "./AlertNotificationRecipients.module.scss";
 
 const AlertNotificationRecipients = ({ recipients }) => {
@@ -13,10 +14,10 @@ const AlertNotificationRecipients = ({ recipients }) => {
     <Table className={styles.table}>
       <TableHead>
         <TableRow>
-          <TableCell>Role</TableCell>
-          <TableCell>Organization</TableCell>
-          <TableCell>Phone number</TableCell>
-          <TableCell>Email</TableCell>
+          <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.role)}</TableCell>
+          <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.organization)}</TableCell>
+          <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.phoneNumber)}</TableCell>
+          <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.email)}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
