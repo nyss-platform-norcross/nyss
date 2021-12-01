@@ -38,6 +38,8 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
             {
                 var currentUser = await _authorizationService.GetCurrentUser();
                 var escalatedTo = new List<AlertAssessmentNotifiedUser>();
+                var isInProperRole = _authorizationService.IsCurrentUserInAnyRole(
+                    Role.Administrator, Role.Manager, Role.TechnicalAdvisor);
 
                 var userOrganizations = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id)
@@ -108,7 +110,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                 var pendingReports = alert.Reports.Count(r => r.Status == ReportStatus.Pending);
                 var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator);
 
-                if (alert.RecipientsNotifiedAt.HasValue)
+                if (alert.RecipientsNotifiedAt.HasValue && isInProperRole)
                 {
                     var recipients = await _nyssContext.AlertNotificationRecipients
                         .Include(ar => ar.GatewayModem)

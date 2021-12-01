@@ -1,5 +1,5 @@
 import styles from "./AlertsAssessment.module.scss";
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, useMemo, Fragment } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import * as alertsActions from './logic/alertsActions';
@@ -12,7 +12,7 @@ import DisplayField from "../forms/DisplayField";
 import { AlertsAssessmentReport } from "./components/AlertsAssessmentReport";
 import { assessmentStatus } from "./logic/alertsConstants";
 import { AlertsAssessmentActions } from "./components/AlertsAssessmentActions";
-import { useMemo } from "react";
+import AlertNotificationRecipients from "./components/AlertNotificationRecipients";
 
 const getAssessmentStatusInformation = (status) => {
   switch (status) {
@@ -80,6 +80,14 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
         />
 
         <Divider />
+
+        {data.recipientsNotified && data.escalatedTo.length > 0 && <>
+          <DisplayField
+            label={"Alert was escalated to:"}
+            value=""
+          />
+          <AlertNotificationRecipients recipients={data.escalatedTo} />
+        </>}
 
         <div className={styles.reportsTitle}>{strings(stringKeys.alerts.assess.reports)}</div>
 
