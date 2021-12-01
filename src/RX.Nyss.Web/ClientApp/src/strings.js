@@ -1135,7 +1135,15 @@ export const stringKeys = {
       key: "translations.list.key"
     },
     needsImprovement: "translations.needsImprovement"
-  }
+  },
+  feedback: {
+    send: "feedback.send",
+    submit: "feedback.submit",
+    dialogTitle: "feedback.dialogTitle",
+    dialogDescription: "feedback.dialogDescription",
+    privacyMessage: "feedback.privacyMessage",
+    thankYou: "feedback.thankYou"
+  },  
 };
 
 export const isStringKey = (key) =>

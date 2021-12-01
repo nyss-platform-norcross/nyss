@@ -19,6 +19,10 @@ export const initialState = {
     message: null,
     moduleError: null,
     showStringsKeys: false,
+    feedback: {
+      isSending: false,
+      result: "",
+    },    
   },
   requests: {
     isFetching: false,
