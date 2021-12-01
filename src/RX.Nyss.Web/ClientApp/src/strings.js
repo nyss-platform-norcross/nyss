@@ -950,8 +950,8 @@ export const stringKeys = {
     },
     constants: {
       alertStatus: {
+        "All": "alerts.alertStatus.all",
         "Pending": "alerts.alertStatus.pending",
-        "Rejected": "alerts.alertStatus.rejected",
         "Dismissed": "alerts.alertStatus.dismissed",
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"
@@ -1023,7 +1023,9 @@ export const stringKeys = {
     area: {
       title: "filters.area.title",
       all: "filters.area.all",
-      unknown: "filters.area.unknown"
+      unknown: "filters.area.unknown",
+      selectAll: "filters.area.selectAll",
+      showResults: "filters.area.showResults"
     },
     report: {
       healthRisk: "filters.report.healthRisk",
@@ -1053,6 +1055,9 @@ export const stringKeys = {
         "Corrected": "filters.report.correctedStateCorrected",
         "NotCorrected": "filters.report.correctedStateNotCorrected",
       },
+    },
+    autocomplete: {
+      noOptions: "filters.autocomplete.noOptions"
     }
   },
   table: {

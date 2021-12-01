@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { stringKeys, strings } from "../../strings";
 
 const filter = (options, params, allowAddingValue) => {
   if (params.inputValue !== '') {
@@ -44,6 +45,7 @@ const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, a
       getOptionSelected={(option, value) => option.title === value}
       renderOption={option => option.title}
       {...controlProps}
+      noOptionsText={strings(stringKeys.filters.autocomplete.noOptions)}
       renderInput={(params) => (
         <TextField
           {...params}
