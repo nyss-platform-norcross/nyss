@@ -208,7 +208,8 @@ namespace RX.Nyss.Web.Features.Reports
                         ? r.Report.Status
                         : ReportStatus.New,
                     ReportErrorType = r.ErrorType,
-                    DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text
+                    DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text,
+                    IsCorrected = r.MarkedAsCorrectedAtUtc != null,
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -482,7 +483,8 @@ namespace RX.Nyss.Web.Features.Reports
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(filter.Locations)
                     .FilterByReportStatus(filter.ReportStatus)
-                    .FilterByTrainingMode(filter.TrainingStatus);
+                    .FilterByTrainingMode(filter.TrainingStatus)
+                    .FilterByCorrectedState(filter.CorrectedState);
             }
 
             return _nyssContext.RawReports
@@ -497,7 +499,8 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
-                .FilterByTrainingMode(filter.TrainingStatus);
+                .FilterByTrainingMode(filter.TrainingStatus)
+                .FilterByCorrectedState(filter.CorrectedState);
         }
 
         private async Task SetProjectHealthRisk(Report report, int projectHealthRiskId, int dataCollectorId)

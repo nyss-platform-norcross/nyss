@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.Reports.Commands;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Reports.Queries;
 using RX.Nyss.Web.Utils;
@@ -137,5 +139,25 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> DismissReport(int reportId) =>
             await _reportService.DismissReport(reportId);
+
+        /// <summary>
+        /// Marks the report as corrected
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be corrected</param>
+        /// <returns></returns>
+        [HttpPost("{reportId:int}/markAsCorrected")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<Result> Correct(int reportId) =>
+            await Sender.Send(new CorrectReportCommand(reportId));
+
+        /// <summary>
+        /// Marks the report as not corrected
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be not corrected</param>
+        /// <returns></returns>
+        [HttpDelete("{reportId:int}/markAsCorrected")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<Result> UndoCorrect(int reportId) =>
+            await Sender.Send(new UndoCorrectReportCommand(reportId));
     }
 }

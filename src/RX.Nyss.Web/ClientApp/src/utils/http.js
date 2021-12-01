@@ -23,6 +23,10 @@ export const getCached = ({ path, dependencies }) =>
     dependencies: dependencies
   });
 
+export const deleteHttp = (path, anonymous) => {
+  return callApi(path, "DELETE", undefined, {}, !anonymous);
+}
+
 export const handleValidationError = (response) => {
   const message = stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful);
   const data = response.message && response.message.data;

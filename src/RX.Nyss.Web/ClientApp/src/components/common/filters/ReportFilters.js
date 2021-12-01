@@ -19,6 +19,7 @@ import { strings, stringKeys } from "../../../strings";
 import {
   reportErrorFilterTypes,
   DataCollectorType,
+  correctedStateTypes,
 } from "./logic/reportFilterConstsants";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "./ReportStatusFilter";
@@ -73,6 +74,9 @@ export const ReportFilters = ({
 
   const handleErrorTypeChange = (event) =>
     onChange(updateValue({ errorType: event.target.value }));
+
+  const handleCorrectedStateChange = (event) =>
+    onChange(updateValue({ correctedState: event.target.value }));
 
   const handleReportStatusChange = (event) =>
     onChange(
@@ -190,6 +194,33 @@ export const ReportFilters = ({
               </Grid>
             </Fragment>
           )}
+
+          {!showCorrectReportFilters && (
+            <Fragment>
+              <Grid item>
+                <FormControl className={styles.filterItem}>
+                  <InputLabel>
+                    {strings(stringKeys.filters.report.isCorrected)}
+                  </InputLabel>
+                  <Select
+                    onChange={handleCorrectedStateChange}
+                    value={filters.correctedState}
+                  >
+                    {correctedStateTypes.map(state => (
+                      <MenuItem
+                        value={state}
+                        key={`correctedState_${state}`}
+                      >
+                        {strings(
+                          stringKeys.filters.report.correctedStates[state]
+                        )}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Fragment>
+          )}          
 
           {!hideTrainingStatusFilter && (
             <Fragment>

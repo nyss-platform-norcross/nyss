@@ -26,6 +26,8 @@ export const reportsSagas = () => [
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
   takeEvery(consts.TRACK_REPORT_EXPORT.INVOKE, trackReportExport),
+  takeEvery(consts.MARK_AS_CORRECTED.INVOKE, markAsCorrected),
+  takeEvery(consts.MARK_AS_NOT_CORRECTED.INVOKE, markAsNotCorrected),
 ];
 
 function* openCorrectReportsList({ projectId }) {
@@ -109,6 +111,7 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
     formatCorrect: false,
     isTraining: false,
     reportStatus: null,
+    correctedState: "All",
     reportType: {
       real: true,
       corrected: false
@@ -286,6 +289,30 @@ function* dismissReport({ reportId }) {
     yield put(actions.dismissReport.failure());
     yield put(appActions.showMessage(error.message));
   }
+}
+
+function* markAsCorrected({ reportId }) {
+  yield put(actions.markAsCorrected.request());
+  
+  try {
+    yield call(http.post, `/api/report/${reportId}/markAsCorrected`);
+    yield put(actions.markAsCorrected.success(reportId));
+  } catch (error) {
+    yield put(actions.markAsCorrected.failure());
+    yield put(appActions.showMessage(error.message));
+  }  
+}
+
+function* markAsNotCorrected({ reportId }) {
+  yield put(actions.markAsNotCorrected.request());
+  
+  try {
+    yield call(http.deleteHttp, `/api/report/${reportId}/markAsCorrected`);
+    yield put(actions.markAsNotCorrected.success(reportId));
+  } catch (error) {
+    yield put(actions.markAsNotCorrected.failure());
+    yield put(appActions.showMessage(error.message));
+  }  
 }
 
 function* trackReportExport({ page, fileType, projectId }) {

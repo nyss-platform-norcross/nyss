@@ -61,6 +61,14 @@ const IncorrectReportsListPageComponent = (props) => {
     props.exportToExcel(props.projectId, props.filters, props.sorting);
   } 
 
+  function onCorrectToggle(row) {
+    if (row.isCorrected) {
+      props.markAsNotCorrected(row.id);
+    } else {
+      props.markAsCorrected(row.id);
+    }
+  }
+
   return (
     <Fragment>
       <TableActions>
@@ -113,6 +121,7 @@ const IncorrectReportsListPageComponent = (props) => {
         sorting={props.sorting}
         onSort={handleSortChange}
         user={props.user}
+        onCorrectToggle={onCorrectToggle}
       />
     </Fragment>
   );
@@ -143,6 +152,8 @@ const mapDispatchToProps = {
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke,
   trackReportExport: reportsActions.trackReportExport,
+  markAsCorrected: reportsActions.markAsCorrected.invoke,
+  markAsNotCorrected: reportsActions.markAsNotCorrected.invoke,
 };
 
 export const IncorrectReportsListPage = withLayout(

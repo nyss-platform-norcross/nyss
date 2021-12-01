@@ -14,6 +14,8 @@ export const SEND_REPORT = action("SEND_REPORT");
 export const ACCEPT_REPORT = action("ACCEPT_REPORT_IN_LIST");
 export const DISMISS_REPORT = action("DISMISS_REPORT_IN_LIST");
 export const TRACK_REPORT_EXPORT = action("TRACK_REPORT_EXPORT");
+export const MARK_AS_CORRECTED = action("MARK_AS_CORRECTED");
+export const MARK_AS_NOT_CORRECTED = action("MARK_AS_NOT_CORRECTED");
 
 export const DateColumnName = "date";
 
