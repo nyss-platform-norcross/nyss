@@ -295,7 +295,7 @@ function* markAsCorrected({ reportId }) {
   yield put(actions.markAsCorrected.request());
   
   try {
-    yield call(http.post, `/api/report/${reportId}/correct`);
+    yield call(http.post, `/api/report/${reportId}/markAsCorrected`);
     yield put(actions.markAsCorrected.success(reportId));
   } catch (error) {
     yield put(actions.markAsCorrected.failure());
@@ -307,7 +307,7 @@ function* markAsNotCorrected({ reportId }) {
   yield put(actions.markAsNotCorrected.request());
   
   try {
-    yield call(http.deleteHttp, `/api/report/${reportId}/correct`);
+    yield call(http.deleteHttp, `/api/report/${reportId}/markAsCorrected`);
     yield put(actions.markAsNotCorrected.success(reportId));
   } catch (error) {
     yield put(actions.markAsNotCorrected.failure());

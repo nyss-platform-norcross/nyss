@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.Reports.Commands
 
                 if (report == null)
                 {
-                    return Result.Error("NotFound");
+                    return Result.Error(ResultKey.Report.ReportNotFound);
                 }
 
                 report.MarkedAsCorrectedAtUtc = _dateTimeProvider.UtcNow;
