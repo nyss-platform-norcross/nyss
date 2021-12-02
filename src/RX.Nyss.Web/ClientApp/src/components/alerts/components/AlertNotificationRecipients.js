@@ -21,7 +21,8 @@ const AlertNotificationRecipients = ({ recipients }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {recipients.map(recipient => <TableRow>
+        {recipients.map((recipient, i) => 
+        <TableRow key={`recipient_${i}`}>
           <TableCell>{recipient.role}</TableCell>
           <TableCell>{recipient.organization}</TableCell>
           <TableCell>{recipient.phoneNumber}</TableCell>
