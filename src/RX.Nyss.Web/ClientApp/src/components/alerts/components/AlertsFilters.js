@@ -95,7 +95,7 @@ export const AlertsFilters = ({ filters, filtersData, onChange }) => {
             >
               {Object.values(alertStatusFilters).map(status => (
                 <MenuItem key={`filter_status_${status}`} value={status}>
-                  {status}
+                  {strings(stringKeys.alerts.constants.alertStatus[status])}
                 </MenuItem>
               ))}
             </TextField>
