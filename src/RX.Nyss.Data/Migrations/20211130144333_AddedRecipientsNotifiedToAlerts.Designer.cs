@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -10,9 +11,10 @@ using RX.Nyss.Data;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20211130144333_AddedRecipientsNotifiedToAlerts")]
+    partial class AddedRecipientsNotifiedToAlerts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2614,12 +2616,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<bool?>("IsTraining")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("MarkedAsCorrectedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MarkedAsCorrectedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ModemNumber")
                         .HasColumnType("int");

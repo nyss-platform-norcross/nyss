@@ -236,38 +236,57 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.Status = AlertStatus.Escalated;
             alertData.Alert.EscalatedAt = _dateTimeProvider.UtcNow;
             alertData.Alert.EscalatedBy = await _authorizationService.GetCurrentUser();
+
             await _nyssContext.SaveChangesAsync();
 
-            if (sendNotification)
+            if (!sendNotification)
             {
-                var notificationRecipients = await GetAlertRecipients(alertId);
-                try
-                {
-                    var notificationEmails = notificationRecipients
-                        .Where(nr => !string.IsNullOrEmpty(nr.Email))
-                        .Select(nr => nr.Email).Distinct().ToList();
-                    var notificationPhoneNumbers = notificationRecipients
-                        .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
-                        .Select(nr => new SendSmsRecipient
-                        {
-                            PhoneNumber = nr.PhoneNumber,
-                            Modem = nr.GatewayModem?.ModemId
-                        })
-                        .GroupBy(nr => nr.PhoneNumber)
-                        .Select(g => g.First())
-                        .ToList();
-
-                    await SendNotificationEmails(alertData.LanguageCode, notificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-                    await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, notificationPhoneNumbers, alertData.Project,
-                        alertData.HealthRisk, alertData.LastReportVillage);
-                }
-                catch (ResultException exception)
-                {
-                    return Success(exception.Result.Message.Key);
-                }
+                return Success(ResultKey.Alert.EscalateAlert.Success);
             }
 
-            return Success(ResultKey.Alert.EscalateAlert.Success);
+            var notificationRecipients = await GetAlertRecipients(alertId);
+
+            try
+            {
+                var notificationEmails = notificationRecipients
+                    .Where(nr => !string.IsNullOrEmpty(nr.Email))
+                    .Select(nr => nr.Email).Distinct().ToList();
+                var notificationPhoneNumbers = notificationRecipients
+                    .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
+                    .Select(nr => new SendSmsRecipient
+                    {
+                        PhoneNumber = nr.PhoneNumber,
+                        Modem = nr.GatewayModem?.ModemId
+                    })
+                    .GroupBy(nr => nr.PhoneNumber)
+                    .Select(g => g.First())
+                    .ToList();
+
+                await SendNotificationEmails(
+                    alertData.LanguageCode,
+                    notificationEmails,
+                    alertData.Project,
+                    alertData.HealthRisk,
+                    alertData.LastReportVillage);
+
+                await SendNotificationSmses(
+                    alertData.NationalSocietyId,
+                    alertData.LanguageCode,
+                    notificationPhoneNumbers,
+                    alertData.Project,
+                    alertData.HealthRisk,
+                    alertData.LastReportVillage);
+
+                alertData.Alert.RecipientsNotifiedAt = _dateTimeProvider.UtcNow;
+
+                await _nyssContext.SaveChangesAsync();
+
+                return Success(ResultKey.Alert.EscalateAlert.Success);
+            }
+            catch (ResultException exception)
+            {
+                return Success(exception.Result.Message.Key);
+            }
         }
 
         public async Task<Result> Dismiss(int alertId)
