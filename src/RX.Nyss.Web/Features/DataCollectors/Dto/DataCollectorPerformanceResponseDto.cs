@@ -42,8 +42,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
     {
         public int EpiWeek { get; set; }
         public int EpiYear { get; set; }
-        public int ActiveDataCollectors { get; set; }
-        public int TotalDataCollectors { get; set; }
+        public double ActiveDataCollectors { get; set; }
+        public double TotalDataCollectors { get; set; }
         public int Percentage { get; set; }
     }
 }
