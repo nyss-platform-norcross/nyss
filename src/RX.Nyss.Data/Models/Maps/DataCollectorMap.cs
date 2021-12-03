@@ -65,6 +65,11 @@ namespace RX.Nyss.Data.Models.Maps
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(x => x.DatesNotDeployed)
+                .WithOne()
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasIndex(x => x.PhoneNumber);
             builder.HasIndex(x => x.AdditionalPhoneNumber);
             builder.HasIndex(x => x.CreatedAt);
