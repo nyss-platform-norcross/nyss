@@ -106,8 +106,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("setDeployedState")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
-        public Task<Result> SetDeployedState([FromBody] SetDeployedStateRequestDto dto) =>
-            _dataCollectorService.SetDeployedState(dto);
+        public async Task<Result> SetDeployedState([FromBody] SetDeployedStateCommand cmd) =>
+            await Sender.Send(cmd);
 
         [HttpPost, Route("exportPerformance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]

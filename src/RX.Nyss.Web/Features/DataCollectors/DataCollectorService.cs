@@ -47,8 +47,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
 
         Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId);
-
-        Task<Result> SetDeployedState(SetDeployedStateRequestDto dto);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -499,19 +497,42 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result> SetDeployedState(SetDeployedStateRequestDto dto)
+        public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
         {
-            var dataCollectors = await _nyssContext.DataCollectors
-                .Where(dc => dto.DataCollectorIds.Contains(dc.Id))
+            var replaceSupervisorDatas = await _nyssContext.DataCollectors
+                .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
+                .Select(dc => new ReplaceSupervisorData
+                {
+                    DataCollector = dc,
+                    Supervisor = dc.Supervisor,
+                    LastReport = dc.RawReports.FirstOrDefault(r => r.ModemNumber.HasValue)
+                })
                 .ToListAsync();
 
-            dataCollectors.ForEach(dc => dc.Deployed = dto.Deployed);
+            var supervisorData = await _nyssContext.Users
+                .Select(u => new
+                {
+                    Supervisor = (SupervisorUser)u,
+                    NationalSociety = u.UserNationalSocieties.Select(uns => uns.NationalSociety).Single()
+                })
+                .FirstOrDefaultAsync(u => u.Supervisor.Id == replaceSupervisorRequestDto.SupervisorId);
+
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.Modems)
+                .Include(gs => gs.NationalSociety)
+                .ThenInclude(ns => ns.ContentLanguage)
+                .FirstOrDefaultAsync(gs => gs.NationalSociety == supervisorData.NationalSociety);
+
+            foreach (var dc in replaceSupervisorDatas)
+            {
+                dc.DataCollector.Supervisor = supervisorData.Supervisor;
+            }
 
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(dto.Deployed
-                ? ResultKey.DataCollector.SetToDeployedSuccess
-                : ResultKey.DataCollector.SetToNotDeployedSuccess);
+            await SendReplaceSupervisorSms(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
+
+            return Success();
         }
 
         public async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
