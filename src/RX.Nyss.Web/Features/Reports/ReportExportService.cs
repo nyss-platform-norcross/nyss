@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -32,16 +33,20 @@ namespace RX.Nyss.Web.Features.Reports
 
         private readonly IStringsService _stringsService;
 
+        private readonly IDateTimeProvider _dateTimeProvider;
+
         public ReportExportService(
             INyssContext nyssContext,
             IAuthorizationService authorizationService,
             IUserService userService,
-            IStringsService stringsService)
+            IStringsService stringsService,
+            IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _authorizationService = authorizationService;
             _userService = userService;
             _stringsService = stringsService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<IReadOnlyCollection<IReportListResponseDto>> FetchData(int projectId, ReportListFilterRequestDto filter)
@@ -63,7 +68,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
                 {
-                    Id = r.Report.Id,
+                    Id = r.Id,
                     DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
@@ -83,7 +88,7 @@ namespace RX.Nyss.Web.Features.Reports
                     Status = r.Report != null && !r.Report.IsActivityReport()
                         ? GetReportStatusString(strings, r.Report.Status)
                         : null,
-                    MarkedAsError = r.Report.MarkedAsError,
+                    MarkedAsError = r.Report != null && r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
@@ -103,8 +108,8 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    EpiWeek = r.Report.EpiWeek,
-                    EpiYear = r.Report.EpiYear,
+                    EpiWeek = r.Report != null ? r.Report.EpiWeek : _dateTimeProvider.GetEpiWeek(r.ReceivedAt),
+                    EpiYear = r.Report != null ? r.Report.EpiYear : _dateTimeProvider.GetEpiDate(r.ReceivedAt).EpiYear,
                     ReportAlertId = r.Report.ReportAlerts
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
