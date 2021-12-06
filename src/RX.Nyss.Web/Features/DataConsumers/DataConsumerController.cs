@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.DataConsumers.Commands;
 using RX.Nyss.Web.Features.DataConsumers.Dto;
 using RX.Nyss.Web.Utils;
 
@@ -62,6 +63,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
         [HttpPost("{dataConsumerId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId) =>
-            await _dataConsumerService.Delete(nationalSocietyId, dataConsumerId);
+            await Sender.Send(new DeleteDataConsumerCommand(dataConsumerId, nationalSocietyId));
     }
 }

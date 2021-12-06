@@ -21,12 +21,16 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
     public class DataConsumerServiceTests
     {
         private readonly DataConsumerService _dataConsumerService;
+
         private readonly ILoggerAdapter _loggerAdapter;
+
         private readonly INyssContext _nyssContext;
+
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
+
         private readonly INationalSocietyUserService _nationalSocietyUserService;
+
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private readonly IDeleteUserService _deleteUserService;
 
         public DataConsumerServiceTests()
         {
@@ -35,10 +39,13 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
-            _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
-                _deleteUserService);
+            _dataConsumerService = new DataConsumerService(
+                _identityUserRegistrationServiceMock,
+                _nationalSocietyUserService,
+                _nyssContext,
+                _loggerAdapter,
+                _verificationEmailServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
@@ -65,56 +72,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             return dataConsumer;
         }
 
-        private User ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety()
-        {
-            var dataConsumer = ArrangeUsersDbSetWithOneDataConsumer();
-
-            var userNationalSocieties = new List<UserNationalSociety>
-            {
-                new UserNationalSociety
-                {
-                    User = dataConsumer,
-                    UserId = dataConsumer.Id,
-                    NationalSocietyId = 1,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
-                }
-            };
-
-            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
-            dataConsumer.UserNationalSocieties = userNationalSocieties;
-
-            return dataConsumer;
-        }
-
-
-        private User ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties()
-        {
-            var dataConsumer = ArrangeUsersDbSetWithOneDataConsumer();
-
-            var userNationalSocieties = new List<UserNationalSociety>
-            {
-                new UserNationalSociety
-                {
-                    User = dataConsumer,
-                    UserId = dataConsumer.Id,
-                    NationalSocietyId = 1,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
-                },
-                new UserNationalSociety
-                {
-                    User = dataConsumer,
-                    UserId = dataConsumer.Id,
-                    NationalSocietyId = 2,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(2)
-                }
-            };
-
-            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
-            dataConsumer.UserNationalSocieties = userNationalSocieties;
-
-            return dataConsumer;
-        }
-
         private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
@@ -133,12 +90,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
 
             _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(Arg.Any<int>())
                 .Returns(ci => _nationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>((int)ci[0]));
-        }
-
-        private void ArrangeUserNationalSocietiesFrom(IEnumerable<UserNationalSociety> userNationalSocieties)
-        {
-            var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
-            _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
         }
 
         private void ArrangeUsersWithOneAdministratorUser() =>
@@ -362,113 +313,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             editedUser.PhoneNumber.ShouldBe(editRequest.PhoneNumber);
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
             editedUser.AdditionalPhoneNumber.ShouldBe(editRequest.AdditionalPhoneNumber);
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenSuccess_SaveChangesIsCalledOnce()
-        {
-            //arrange
-            ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            await _nyssContext.Received(1).SaveChangesAsync();
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingFromNationalSocietyTheUserIsNotIn_ShouldReturnError()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
-
-            //act
-            var result = await _dataConsumerService.Delete(2, 123);
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingAUserThatDoesNotExist_ShouldReturnError()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
-
-            //act
-            var result = await _dataConsumerService.Delete(2, 321);
-
-            //assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserNotFound);
-        }
-
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingFromLastNationalSociety_RemoveOnNyssUserIsCalledOnce()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingFromLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingFromNotLastNationalSociety_RemoveOnNyssUserIsNotCalled()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
-        }
-
-        [Fact]
-        public async Task DeleteDataConsumer_WhenDeletingFromNotLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
-        {
-            //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
-        }
-
-        [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDeleteUserIsCalled()
-        {
-            //arrange
-            ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
-
-            //act
-            await _dataConsumerService.Delete(1, 123);
-
-            //assert
-            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.DataConsumer);
         }
     }
 }

@@ -19,29 +19,31 @@ namespace RX.Nyss.Web.Features.DataConsumers
     public interface IDataConsumerService
     {
         Task<Result> Create(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
+
         Task<Result<GetDataConsumerResponseDto>> Get(int dataConsumerId);
+
         Task<Result> Edit(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> Delete(int nationalSocietyId, int dataConsumerId);
     }
 
     public class DataConsumerService : IDataConsumerService
     {
         private readonly ILoggerAdapter _loggerAdapter;
+
         private readonly INyssContext _dataContext;
+
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
+
         private readonly INationalSocietyUserService _nationalSocietyUserService;
+
         private readonly IVerificationEmailService _verificationEmailService;
 
-        private readonly IDeleteUserService _deleteService;
-
         public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-            _deleteService = deleteService;
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
@@ -112,44 +114,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
                 user.AdditionalPhoneNumber = editDataConsumerRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
-                return Success();
-            }
-            catch (ResultException e)
-            {
-                _loggerAdapter.Debug(e);
-                return e.Result;
-            }
-        }
-
-        public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId)
-        {
-            try
-            {
-                await _deleteService.EnsureCanDeleteUser(dataConsumerId, Role.DataConsumer);
-
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-                var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
-                var userNationalSocieties = dataConsumerUser.UserNationalSocieties;
-
-                var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
-
-                if (nationalSocietyReferenceToRemove == null)
-                {
-                    return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
-                }
-
-                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
-                _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
-
-                if (isUsersLastNationalSociety)
-                {
-                    _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
-                    await _identityUserRegistrationService.DeleteIdentityUser(dataConsumerUser.IdentityUserId);
-                }
-
-                await _dataContext.SaveChangesAsync();
-                transactionScope.Complete();
                 return Success();
             }
             catch (ResultException e)

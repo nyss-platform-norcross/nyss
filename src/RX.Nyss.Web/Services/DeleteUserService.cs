@@ -13,6 +13,7 @@ namespace RX.Nyss.Web.Services
     public interface IDeleteUserService
     {
         Task EnsureCanDeleteUser(int deletedUserId, Role deletedUserRole);
+
         bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole);
     }
 
