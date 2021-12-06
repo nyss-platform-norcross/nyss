@@ -24,12 +24,16 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// Register a data consumer.
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be registered in</param>
-        /// <param name="createDataConsumerRequestDto">The data consumer to be created</param>
+        /// <param name="cmd">The data consumer to be created</param>
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
-            await _dataConsumerService.Create(nationalSocietyId, createDataConsumerRequestDto);
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateDataConsumerCommand cmd)
+        {
+            cmd.NationalSocietyId = nationalSocietyId;
+
+            return await Sender.Send(cmd);
+        }
 
         /// <summary>
         /// Get a data consumer
