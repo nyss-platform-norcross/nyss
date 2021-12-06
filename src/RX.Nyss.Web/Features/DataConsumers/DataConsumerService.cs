@@ -20,8 +20,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
     {
         Task<Result> Create(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
 
-        Task<Result<GetDataConsumerResponseDto>> Get(int dataConsumerId);
-
         Task<Result> Edit(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
     }
 
@@ -74,32 +72,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
                 _loggerAdapter.Debug(e);
                 return e.Result;
             }
-        }
-
-        public async Task<Result<GetDataConsumerResponseDto>> Get(int nationalSocietyUserId)
-        {
-            var dataConsumer = await _dataContext.Users.FilterAvailable()
-                .OfType<DataConsumerUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new GetDataConsumerResponseDto
-                {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Role = u.Role,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization
-                })
-                .SingleOrDefaultAsync();
-
-            if (dataConsumer == null)
-            {
-                _loggerAdapter.Debug($"Data consumer with id {nationalSocietyUserId} was not found");
-                return Error<GetDataConsumerResponseDto>(ResultKey.User.Common.UserNotFound);
-            }
-
-            return new Result<GetDataConsumerResponseDto>(dataConsumer, true);
         }
 
         public async Task<Result> Edit(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto)

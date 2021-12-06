@@ -5,6 +5,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataConsumers.Commands;
 using RX.Nyss.Web.Features.DataConsumers.Dto;
+using RX.Nyss.Web.Features.DataConsumers.Queries;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.DataConsumers
@@ -38,7 +39,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
         [HttpGet("{dataConsumerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
         public async Task<Result> Get(int dataConsumerId) =>
-            await _dataConsumerService.Get(dataConsumerId);
+            await Sender.Send(new GetDataConsumerQuery(dataConsumerId));
 
         /// <summary>
         /// Update a data consumer.
