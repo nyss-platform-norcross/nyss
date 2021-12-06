@@ -13,18 +13,14 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 {
     public class EditDataConsumerCommandTests : DataConsumerTestsBase
     {
-        private readonly ILoggerAdapter _mockLoggerAdapter;
-
         private readonly EditDataConsumerCommand.Handler _handler;
 
         public EditDataConsumerCommandTests()
         {
-            _mockLoggerAdapter = Substitute.For<ILoggerAdapter>();
-
             _handler = new EditDataConsumerCommand.Handler(
                 _mockNyssContext,
                 _mockNationalSocietyUserService,
-                _mockLoggerAdapter);
+                Substitute.For<ILoggerAdapter>());
         }
 
         [Fact]
@@ -32,9 +28,10 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             ArrangeUsersFrom(new List<User>());
+            var cmd = new EditDataConsumerCommand(0, new EditDataConsumerCommand.RequestBody());
 
             // Act
-            var result = await _handler.Handle(new EditDataConsumerCommand(), CancellationToken.None);
+            var result = await _handler.Handle(cmd, CancellationToken.None);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -45,10 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             ArrangeUsersWithOneAdministratorUser();
-            var cmd = new EditDataConsumerCommand
-            {
-                Id = 123,
-            };
+            var cmd = new EditDataConsumerCommand(123, new EditDataConsumerCommand.RequestBody());
 
             // Act
             var result = await _handler.Handle(cmd, CancellationToken.None);
@@ -62,13 +56,10 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             ArrangeUsersWithOneAdministratorUser();
-            var cmd = new EditDataConsumerCommand
-            {
-                Id = 123,
-            };
+            var cmd = new EditDataConsumerCommand(123, new EditDataConsumerCommand.RequestBody());
 
             // Act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             // Assert
             await _mockNyssContext.DidNotReceive().SaveChangesAsync(CancellationToken.None);
@@ -80,10 +71,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             // Arrange
             ArrangeUsersDbSetWithOneDataConsumer();
 
-            var cmd = new EditDataConsumerCommand
-            {
-                Id = 123,
-            };
+            var cmd = new EditDataConsumerCommand(123, new EditDataConsumerCommand.RequestBody());
 
             // Act
             var result = await _handler.Handle(cmd, CancellationToken.None);
@@ -98,13 +86,10 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             // Arrange
             ArrangeUsersDbSetWithOneDataConsumer();
 
-            var cmd = new EditDataConsumerCommand
-            {
-                Id = 123,
-            };
+            var cmd = new EditDataConsumerCommand(123, new EditDataConsumerCommand.RequestBody());
 
             // Act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             // Assert
             await _mockNyssContext.Received().SaveChangesAsync(CancellationToken.None);
@@ -118,14 +103,13 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 
             var existingUserEmail = _mockNyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
 
-            var cmd = new EditDataConsumerCommand
+            var cmd = new EditDataConsumerCommand(123, new EditDataConsumerCommand.RequestBody
             {
-                Id = 123,
                 Name = "New name",
                 Organization = "New organization",
                 PhoneNumber = "456",
                 AdditionalPhoneNumber = "654"
-            };
+            });
 
             // Act
             await _handler.Handle(cmd, CancellationToken.None);
@@ -133,11 +117,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             var editedUser = _mockNyssContext.Users.Single(u => u.Id == 123) as DataConsumerUser;
 
             editedUser.ShouldNotBeNull();
-            editedUser.Name.ShouldBe(cmd.Name);
-            editedUser.Organization.ShouldBe(cmd.Organization);
-            editedUser.PhoneNumber.ShouldBe(cmd.PhoneNumber);
+            editedUser.Name.ShouldBe(cmd.Body.Name);
+            editedUser.Organization.ShouldBe(cmd.Body.Organization);
+            editedUser.PhoneNumber.ShouldBe(cmd.Body.PhoneNumber);
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
-            editedUser.AdditionalPhoneNumber.ShouldBe(cmd.AdditionalPhoneNumber);
+            editedUser.AdditionalPhoneNumber.ShouldBe(cmd.Body.AdditionalPhoneNumber);
         }
     }
 }

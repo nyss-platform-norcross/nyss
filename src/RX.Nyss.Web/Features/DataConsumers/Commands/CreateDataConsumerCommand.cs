@@ -18,17 +18,28 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
 {
     public class CreateDataConsumerCommand : IRequest<Result>
     {
-        public int NationalSocietyId { get; set; }
+        public CreateDataConsumerCommand(int nationalSocietyId, RequestBody body)
+        {
+            NationalSocietyId = nationalSocietyId;
+            Body = body;
+        }
 
-        public string Email { get; set; }
+        public int NationalSocietyId { get; }
 
-        public string Name { get; set; }
+        public RequestBody Body { get; }
 
-        public string PhoneNumber { get; set; }
+        public class RequestBody
+        {
+            public string Email { get; set; }
 
-        public string AdditionalPhoneNumber { get; set; }
+            public string Name { get; set; }
 
-        public string Organization { get; set; }
+            public string PhoneNumber { get; set; }
+
+            public string AdditionalPhoneNumber { get; set; }
+
+            public string Organization { get; set; }
+        }
 
         public class Handler : IRequestHandler<CreateDataConsumerCommand, Result>
         {
@@ -62,10 +73,10 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
 
                     using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                     {
-                        var identityUser = await _identityUserRegistrationService.CreateIdentityUser(request.Email, Role.DataConsumer);
+                        var identityUser = await _identityUserRegistrationService.CreateIdentityUser(request.Body.Email, Role.DataConsumer);
                         securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                        (user, organizations) = await CreateDataConsumerUser(identityUser, request.NationalSocietyId, request);
+                        (user, organizations) = await CreateDataConsumerUser(identityUser, request.NationalSocietyId, request.Body);
 
                         transactionScope.Complete();
                     }
@@ -84,7 +95,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
         private async Task<(DataConsumerUser user, ICollection<Organization> Organizations)> CreateDataConsumerUser(
             IdentityUser identityUser,
             int nationalSocietyId,
-            CreateDataConsumerCommand request)
+            CreateDataConsumerCommand.RequestBody body)
         {
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
@@ -108,10 +119,10 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
             {
                 IdentityUserId = identityUser.Id,
                 EmailAddress = identityUser.Email,
-                Name = request.Name,
-                PhoneNumber = request.PhoneNumber,
-                AdditionalPhoneNumber = request.AdditionalPhoneNumber,
-                Organization = request.Organization,
+                Name = body.Name,
+                PhoneNumber = body.PhoneNumber,
+                AdditionalPhoneNumber = body.AdditionalPhoneNumber,
+                Organization = body.Organization,
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
@@ -131,7 +142,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
             };
         }
 
-        public class Validator : AbstractValidator<CreateDataConsumerCommand>
+        public class Validator : AbstractValidator<RequestBody>
         {
             public Validator()
             {

@@ -16,16 +16,12 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// Register a data consumer.
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be registered in</param>
-        /// <param name="cmd">The data consumer to be created</param>
+        /// <param name="body">The data consumer to be created</param>
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateDataConsumerCommand cmd)
-        {
-            cmd.NationalSocietyId = nationalSocietyId;
-
-            return await Sender.Send(cmd);
-        }
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateDataConsumerCommand.RequestBody body) =>
+            await Sender.Send(new CreateDataConsumerCommand(nationalSocietyId, body));
 
         /// <summary>
         /// Get a data consumer
@@ -41,16 +37,12 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// Update a data consumer.
         /// </summary>
         /// <param name="dataConsumerId">The id of the data consumer to be edited</param>
-        /// <param name="cmd">The data used to update the specified data consumer</param>
+        /// <param name="body">The data used to update the specified data consumer</param>
         /// <returns></returns>
         [HttpPost("{dataConsumerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Edit(int dataConsumerId, [FromBody] EditDataConsumerCommand cmd)
-        {
-            cmd.Id = dataConsumerId;
-
-            return await Sender.Send(cmd);
-        }
+        public async Task<Result> Edit(int dataConsumerId, [FromBody] EditDataConsumerCommand.RequestBody body) =>
+            await Sender.Send(new EditDataConsumerCommand(dataConsumerId, body));
 
         /// <summary>
         /// Delete a data consumer in a national society.

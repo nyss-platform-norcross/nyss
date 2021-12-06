@@ -6,7 +6,6 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
-using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataConsumers.Commands;
@@ -18,26 +17,18 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 {
     public class DeleteDataConsumerCommandTests : DataConsumerTestsBase
     {
-        private readonly INyssContext _mockNyssContext;
-
-        private readonly IIdentityUserRegistrationService _mockIdentityUserRegistrationService;
-
         private readonly IDeleteUserService _mockDeleteUserService;
-
-        private readonly ILoggerAdapter _mockLoggerAdapter;
 
         private readonly DeleteDataConsumerCommand.Handler _handler;
 
         public DeleteDataConsumerCommandTests()
         {
-            _mockIdentityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
             _mockDeleteUserService = Substitute.For<IDeleteUserService>();
-            _mockLoggerAdapter = Substitute.For<ILoggerAdapter>();
 
             _handler = new DeleteDataConsumerCommand.Handler(
                 _mockNyssContext,
-                _mockLoggerAdapter,
-                _mockIdentityUserRegistrationService,
+                Substitute.For<ILoggerAdapter>(),
+                Substitute.For<IIdentityUserRegistrationService>(),
                 _mockNationalSocietyUserService,
                 _mockDeleteUserService);
         }
@@ -61,7 +52,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         public async Task WhenDeletingFromNationalSocietyTheUserIsNotIn_ShouldReturnError()
         {
             //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
+            ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
             var cmd = new DeleteDataConsumerCommand(123, 2);
 
             //act
@@ -76,7 +67,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         public async Task WhenDeletingAUserThatDoesNotExist_ShouldReturnError()
         {
             //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
+            ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
             var cmd = new DeleteDataConsumerCommand(321, 2);
 
             //act
@@ -95,7 +86,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             var cmd = new DeleteDataConsumerCommand(123, 1);
 
             //act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             //assert
             _mockNationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -105,11 +96,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         public async Task WhenDeletingFromLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
         {
             //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
+            ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
             var cmd = new DeleteDataConsumerCommand(123, 1);
 
             //act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             //assert
             _mockNyssContext.UserNationalSocieties
@@ -125,7 +116,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             var cmd = new DeleteDataConsumerCommand(123, 1);
 
             //act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             //assert
             _mockNationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -135,11 +126,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         public async Task WhenDeletingFromNotLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
         {
             //arrange
-            var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
+            ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
             var cmd = new DeleteDataConsumerCommand(123, 1);
 
             //act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             //assert
             _mockNyssContext.UserNationalSocieties
@@ -155,7 +146,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             var cmd = new DeleteDataConsumerCommand(123, 1);
 
             //act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             //assert
             await _mockDeleteUserService.Received().EnsureCanDeleteUser(123, Role.DataConsumer);
@@ -179,22 +170,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
             dataConsumer.UserNationalSocieties = userNationalSocieties;
 
-            return dataConsumer;
-        }
-
-        private User ArrangeUsersDbSetWithOneDataConsumer()
-        {
-            var dataConsumer = new DataConsumerUser
-            {
-                Id = 123,
-                Role = Role.DataConsumer,
-                EmailAddress = "emailTest1@domain.com",
-                Name = "emailTest1@domain.com",
-                Organization = "org org",
-                PhoneNumber = "123",
-                AdditionalPhoneNumber = "321"
-            };
-            ArrangeUsersFrom(new List<User> { dataConsumer });
             return dataConsumer;
         }
 

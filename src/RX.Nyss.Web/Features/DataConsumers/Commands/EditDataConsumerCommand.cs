@@ -12,15 +12,26 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
 {
     public class EditDataConsumerCommand : IRequest<Result>
     {
-        public int Id { get; set; }
+        public EditDataConsumerCommand(int id, RequestBody body)
+        {
+            Id = id;
+            Body = body;
+        }
 
-        public string Name { get; set; }
+        public int Id { get; }
 
-        public string PhoneNumber { get; set; }
+        public RequestBody Body { get; }
 
-        public string AdditionalPhoneNumber { get; set; }
+        public class RequestBody
+        {
+            public string Name { get; set; }
 
-        public string Organization { get; set; }
+            public string PhoneNumber { get; set; }
+
+            public string AdditionalPhoneNumber { get; set; }
+
+            public string Organization { get; set; }
+        }
 
         public class Handler : IRequestHandler<EditDataConsumerCommand, Result>
         {
@@ -46,10 +57,10 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
                 {
                     var user = await _nationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>(request.Id);
 
-                    user.Name = request.Name;
-                    user.PhoneNumber = request.PhoneNumber;
-                    user.Organization = request.Organization;
-                    user.AdditionalPhoneNumber = request.AdditionalPhoneNumber;
+                    user.Name = request.Body.Name;
+                    user.PhoneNumber = request.Body.PhoneNumber;
+                    user.Organization = request.Body.Organization;
+                    user.AdditionalPhoneNumber = request.Body.AdditionalPhoneNumber;
 
                     await _dataContext.SaveChangesAsync(cancellationToken);
 
@@ -63,7 +74,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
             }
         }
 
-        public class Validator : AbstractValidator<EditDataConsumerCommand>
+        public class Validator : AbstractValidator<RequestBody>
         {
             public Validator()
             {

@@ -26,8 +26,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 
         private readonly IVerificationEmailService _mockVerificationEmailService;
 
-        private readonly ILoggerAdapter _mockLoggerAdapter;
-
         private readonly CreateDataConsumerCommand.Handler _handler;
 
         public CreateDataConsumerCommandTests()
@@ -35,13 +33,12 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             _mockDataContext = Substitute.For<INyssContext>();
             _mockIdentityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
             _mockVerificationEmailService = Substitute.For<IVerificationEmailService>();
-            _mockLoggerAdapter = Substitute.For<ILoggerAdapter>();
 
             _handler = new CreateDataConsumerCommand.Handler(
                 _mockDataContext,
                 _mockIdentityUserRegistrationService,
                 _mockVerificationEmailService,
-                _mockLoggerAdapter);
+                Substitute.For<ILoggerAdapter>());
 
             SetupTestNationalSocieties();
         }
@@ -52,12 +49,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             // Arrange
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
-            var cmd = new CreateDataConsumerCommand
+            var cmd = new CreateDataConsumerCommand(1, new CreateDataConsumerCommand.RequestBody
             {
-                NationalSocietyId = 1,
                 Name = userName,
                 Email = userEmail
-            };
+            });
 
             _mockIdentityUserRegistrationService.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
@@ -79,15 +75,14 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             var userEmail = "emailTest1@domain.com";
-            var cmd = new CreateDataConsumerCommand
+            var cmd = new CreateDataConsumerCommand(1, new CreateDataConsumerCommand.RequestBody
             {
-                NationalSocietyId = 1,
                 Name = userEmail,
                 Email = userEmail
-            };
+            });
 
             // Act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             // Assert
             await _mockDataContext.Received().AddAsync(Arg.Any<UserNationalSociety>());
@@ -98,15 +93,14 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             var userEmail = "emailTest1@domain.com";
-            var cmd = new CreateDataConsumerCommand
+            var cmd = new CreateDataConsumerCommand(1, new CreateDataConsumerCommand.RequestBody
             {
-                NationalSocietyId = 1,
                 Name = userEmail,
                 Email = userEmail
-            };
+            });
 
             // Act
-            var result = await _handler.Handle(cmd, CancellationToken.None);
+            await _handler.Handle(cmd, CancellationToken.None);
 
             // Assert
             await _mockDataContext.Received().SaveChangesAsync();
@@ -118,12 +112,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             // Arrange
             var exception = new ResultException(ResultKey.User.Registration.UserAlreadyExists);
             var userEmail = "emailTest1@domain.com";
-            var cmd = new CreateDataConsumerCommand
+            var cmd = new CreateDataConsumerCommand(1, new CreateDataConsumerCommand.RequestBody
             {
-                NationalSocietyId = 1,
                 Name = userEmail,
                 Email = userEmail
-            };
+            });
 
             _mockIdentityUserRegistrationService.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw exception);
@@ -141,11 +134,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
         {
             // Arrange
             var userEmail = "emailTest1@domain.com";
-            var cmd = new CreateDataConsumerCommand
+            var cmd = new CreateDataConsumerCommand(0, new CreateDataConsumerCommand.RequestBody
             {
                 Name = userEmail,
                 Email = userEmail
-            };
+            });
 
             _mockIdentityUserRegistrationService.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw new Exception());
