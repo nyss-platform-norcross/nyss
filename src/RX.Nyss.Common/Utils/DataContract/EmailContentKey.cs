@@ -32,5 +32,12 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string Subject = "email.consent.subject";
             public const string Body = "email.consent.body";
         }
+
+        public static class ReplacedSupervisor
+        {
+            public const string Subject = "email.replacedSupervisor.subject";
+
+            public const string Body = "email.replacedSupervisor.body";
+        }
     }
 }

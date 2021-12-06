@@ -35,19 +35,22 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
 
         private readonly INyssContext _mockNyssContext;
 
-        private readonly IEmailToSMSService _mockEmailToSmsService;
-
         private readonly ISmsPublisherService _mockSmsPublisherService;
 
         private readonly ISmsTextGeneratorService _mockSmsTextGeneratorService;
+
+        private readonly IEmailPublisherService _mockEmailPublisherService;
+
+        private readonly IEmailTextGeneratorService _mockEmailTextGeneratorService;
 
         private readonly ReplaceSupervisorCommand.Handler _handler;
 
         public ReplaceSupervisorCommandTests()
         {
             _mockNyssContext = Substitute.For<INyssContext>();
-            _mockEmailToSmsService = Substitute.For<IEmailToSMSService>();
             _mockSmsPublisherService = Substitute.For<ISmsPublisherService>();
+            _mockEmailPublisherService = Substitute.For<IEmailPublisherService>();
+            _mockEmailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
 
             _mockSmsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
             _mockSmsTextGeneratorService.GenerateReplaceSupervisorSms("en").Returns("Test");
@@ -56,9 +59,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
 
             _handler = new ReplaceSupervisorCommand.Handler(
                 _mockNyssContext,
-                _mockEmailToSmsService,
                 _mockSmsPublisherService,
-                _mockSmsTextGeneratorService);
+                _mockSmsTextGeneratorService,
+                _mockEmailPublisherService,
+                _mockEmailTextGeneratorService);
         }
 
         [Fact]
@@ -78,24 +82,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
             res.IsSuccess.ShouldBe(true);
 
             await _mockSmsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
-        }
-
-        [Fact]
-        public async Task ReplaceSupervisor_WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
-        {
-            // Arrange
-            var cmd = new ReplaceSupervisorCommand
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = 2
-            };
-
-            // Act
-            var res = await _handler.Handle(cmd, CancellationToken.None);
-
-            // Assert
-            res.IsSuccess.ShouldBe(true);
-            await _mockEmailToSmsService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
         }
 
         private static void SetupContext(INyssContext context)

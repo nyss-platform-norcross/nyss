@@ -22,22 +22,26 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
         {
             private readonly INyssContext _nyssContext;
 
-            private readonly IEmailToSMSService _emailToSMSService;
-
             private readonly ISmsPublisherService _smsPublisherService;
 
             private readonly ISmsTextGeneratorService _smsTextGeneratorService;
 
+            private readonly IEmailPublisherService _emailPublisherService;
+
+            private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+
             public Handler(
                 INyssContext nyssContext,
-                IEmailToSMSService emailToSmsService,
                 ISmsPublisherService smsPublisherService,
-                ISmsTextGeneratorService smsTextGeneratorService)
+                ISmsTextGeneratorService smsTextGeneratorService,
+                IEmailPublisherService emailPublisherService,
+                IEmailTextGeneratorService emailTextGeneratorService)
             {
                 _nyssContext = nyssContext;
-                _emailToSMSService = emailToSmsService;
                 _smsPublisherService = smsPublisherService;
                 _smsTextGeneratorService = smsTextGeneratorService;
+                _emailPublisherService = emailPublisherService;
+                _emailTextGeneratorService = emailTextGeneratorService;
             }
 
             public async Task<Result> Handle(ReplaceSupervisorCommand request, CancellationToken cancellationToken)
@@ -73,12 +77,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
 
                 await _nyssContext.SaveChangesAsync(cancellationToken);
 
-                await SendReplaceSupervisorSms(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
+                await SendReplaceSupervisorNotification(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
 
                 return Result.Success();
             }
 
-            private async Task SendReplaceSupervisorSms(
+            private async Task SendReplaceSupervisorNotification(
                 GatewaySetting gatewaySetting,
                 List<ReplaceSupervisorData> replaceSupervisorDatas,
                 SupervisorUser newSupervisor)
@@ -93,44 +97,37 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                             : r.Supervisor.ModemId,
                     }).ToList();
 
-                var recipientsSupervisors = replaceSupervisorDatas
-                    .Where(r => r.DataCollector.PhoneNumber == null)
-                    .Select(r => new SendSmsRecipient
-                    {
-                        PhoneNumber = r.Supervisor.PhoneNumber,
-                        Modem = r.LastReport != null
-                            ? r.LastReport.ModemNumber
-                            : r.Supervisor.ModemId,
-                    }).ToList();
-
-                var messagesToSent = new List<(string Message, List<SendSmsRecipient> Recipients)>();
-
+                // Send SMS to data collectors with phone number
                 if (recipientsDataCollectors.Any())
                 {
                     var message = (await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode))
                         .Replace("{{supervisorName}}", newSupervisor.Name)
                         .Replace("{{phoneNumber}}", newSupervisor.PhoneNumber);
 
-                    messagesToSent.Add((message, recipientsDataCollectors));
+                    await _smsPublisherService.SendSms(
+                        gatewaySetting.IotHubDeviceName,
+                        recipientsDataCollectors,
+                        message,
+                        gatewaySetting.Modems.Any());
                 }
 
-                if (recipientsSupervisors.Any())
-                {
-                    var messageToSupervisors = await _smsTextGeneratorService.GenerateReplaceSupervisorSmsForSupervisors(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
+                var dataCollectors = replaceSupervisorDatas.Select(d => d.DataCollector.DisplayName);
+                var dataCollectorsWithoutPhoneNumber = replaceSupervisorDatas
+                    .Where(d => string.IsNullOrWhiteSpace(d.DataCollector.PhoneNumber))
+                    .Select(d => d.DataCollector.DisplayName);
 
-                    messagesToSent.Add((messageToSupervisors, recipientsSupervisors));
-                }
+                // Send email to supervisor
+                var (subject, body) = await _emailTextGeneratorService.GenerateReplacedSupervisorEmail(
+                    gatewaySetting.NationalSociety.ContentLanguage.LanguageCode,
+                    newSupervisor.Name,
+                    dataCollectors,
+                    dataCollectorsWithoutPhoneNumber);
 
-                var tasks = messagesToSent.Select(m =>
-                {
-                    var (message, recipients) = m;
-
-                    return !string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName)
-                        ? _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any())
-                        : _emailToSMSService.SendMessage(gatewaySetting, recipients.Select(r => r.PhoneNumber).ToList(), message);
-                });
-
-                await Task.WhenAll(tasks);
+                // Send email notification to supervisor
+                await _emailPublisherService.SendEmail(
+                    (newSupervisor.EmailAddress, newSupervisor.Name),
+                    subject,
+                    body);
             }
         }
     }
