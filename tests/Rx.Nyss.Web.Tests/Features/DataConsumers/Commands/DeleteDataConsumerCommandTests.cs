@@ -16,13 +16,11 @@ using Xunit;
 
 namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 {
-    public class DeleteDataConsumerCommandTests
+    public class DeleteDataConsumerCommandTests : DataConsumerTestsBase
     {
         private readonly INyssContext _mockNyssContext;
 
         private readonly IIdentityUserRegistrationService _mockIdentityUserRegistrationService;
-
-        private readonly INationalSocietyUserService _mockNationalSocietyUserService;
 
         private readonly IDeleteUserService _mockDeleteUserService;
 
@@ -32,9 +30,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
 
         public DeleteDataConsumerCommandTests()
         {
-            _mockNyssContext = Substitute.For<INyssContext>();
             _mockIdentityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
-            _mockNationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _mockDeleteUserService = Substitute.For<IDeleteUserService>();
             _mockLoggerAdapter = Substitute.For<ILoggerAdapter>();
 
@@ -200,26 +196,6 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers.Commands
             };
             ArrangeUsersFrom(new List<User> { dataConsumer });
             return dataConsumer;
-        }
-
-        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
-        {
-            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
-            _mockNyssContext.Users.Returns(usersDbSet);
-
-            _mockNationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>(Arg.Any<int>()).Returns(ci =>
-            {
-                var user = existingUsers.OfType<DataConsumerUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
-                if (user == null)
-                {
-                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
-                }
-
-                return user;
-            });
-
-            _mockNationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(Arg.Any<int>())
-                .Returns(ci => _mockNationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>((int)ci[0]));
         }
 
         private void ArrangeUserNationalSocietiesFrom(IEnumerable<UserNationalSociety> userNationalSocieties)

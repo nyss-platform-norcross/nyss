@@ -4,7 +4,6 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataConsumers.Commands;
-using RX.Nyss.Web.Features.DataConsumers.Dto;
 using RX.Nyss.Web.Features.DataConsumers.Queries;
 using RX.Nyss.Web.Utils;
 
@@ -13,13 +12,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
     [Route("api/dataConsumer")]
     public class DataConsumerController : BaseController
     {
-        private readonly IDataConsumerService _dataConsumerService;
-
-        public DataConsumerController(IDataConsumerService dataConsumerService)
-        {
-            _dataConsumerService = dataConsumerService;
-        }
-
         /// <summary>
         /// Register a data consumer.
         /// </summary>
@@ -49,12 +41,16 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// Update a data consumer.
         /// </summary>
         /// <param name="dataConsumerId">The id of the data consumer to be edited</param>
-        /// <param name="editDataConsumerRequestDto">The data used to update the specified data consumer</param>
+        /// <param name="cmd">The data used to update the specified data consumer</param>
         /// <returns></returns>
         [HttpPost("{dataConsumerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Edit(int dataConsumerId, [FromBody] EditDataConsumerRequestDto editDataConsumerRequestDto) =>
-            await _dataConsumerService.Edit(dataConsumerId, editDataConsumerRequestDto);
+        public async Task<Result> Edit(int dataConsumerId, [FromBody] EditDataConsumerCommand cmd)
+        {
+            cmd.Id = dataConsumerId;
+
+            return await Sender.Send(cmd);
+        }
 
         /// <summary>
         /// Delete a data consumer in a national society.
