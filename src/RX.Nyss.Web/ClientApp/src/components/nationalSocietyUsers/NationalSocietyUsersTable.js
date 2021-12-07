@@ -38,7 +38,11 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
     }
   ];
 
-  const canBeEdited = (row) => row.role !== Roles.DataConsumer || row.isVerified || user.roles.some(r => r === Roles.Administrator);
+  const canBeEdited = (row) => {
+    const allowedRoles = [Roles.Administrator, Roles.Manager];
+    
+    return user.roles.some(r => allowedRoles.indexOf(r) !== -1);
+  }
 
   return (
     <TableContainer sticky>
