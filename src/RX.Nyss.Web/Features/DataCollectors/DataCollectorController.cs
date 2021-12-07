@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.DataCollectors.Commands;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Queries;
 using RX.Nyss.Web.Utils;
@@ -100,8 +101,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("replaceSupervisor")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
-        public async Task<Result> ReplaceSupervisor([FromBody] ReplaceSupervisorRequestDto replaceSupervisorRequestDto) =>
-            await _dataCollectorService.ReplaceSupervisor(replaceSupervisorRequestDto);
+        public async Task<Result> ReplaceSupervisor([FromBody] ReplaceSupervisorCommand cmd) =>
+            await Sender.Send(cmd);
 
         [HttpPost, Route("setDeployedState")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]

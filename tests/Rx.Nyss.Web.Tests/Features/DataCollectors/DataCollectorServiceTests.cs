@@ -17,7 +17,6 @@ using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using Shouldly;
@@ -32,7 +31,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int DataCollectorWithReportsId = 2;
         private const string DataCollectorPhoneNumber1 = "+4712345678";
         private const string DataCollectorPhoneNumber2 = "+4712345679";
-        private const string DataCollectorPhoneNumber3 = "+4712345680";
         private const string DataCollectorName1 = "simon";
         private const string DataCollectorName2 = "garfunkel";
         private const int ProjectId = 1;
@@ -47,8 +45,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
         private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
-        private readonly IEmailToSMSService _emailToSMSService;
-        private readonly ISmsPublisherService _smsPublisherService;
         private List<NationalSociety> _nationalSocieties;
         private static DateTime DateForPerformance = new DateTime(2021, 8, 1);
 
@@ -62,10 +58,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
             httpContextAccessorMock.HttpContext.User.Identity.Name.Returns(SupervisorEmail);
             var authorizationService = Substitute.For<IAuthorizationService>();
-            _emailToSMSService = Substitute.For<IEmailToSMSService>();
-            _smsPublisherService = Substitute.For<ISmsPublisherService>();
-            var smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
-            smsTextGeneratorService.GenerateReplaceSupervisorSms("en").Returns("Test");
             config.PaginationRowsPerPage.Returns(5);
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
@@ -78,10 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 config,
                 nationalSocietyStructureService,
                 geolocationService,
-                authorizationService,
-                _emailToSMSService,
-                _smsPublisherService,
-                smsTextGeneratorService);
+                authorizationService);
 
             _dataCollectorPerformanceService = new DataCollectorPerformanceService(config, dateTimeProvider, _dataCollectorService);
 
@@ -567,42 +556,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         }
 
         [Fact]
-        public async Task ReplaceSupervisor_WhenUsingIotHub_ShouldSendSmsToDataCollectorsThroughIotHub()
-        {
-            // Arrange
-            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = SupervisorId
-            };
-
-            // Act
-            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
-
-            // Assert
-            res.IsSuccess.ShouldBe(true);
-            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
-        }
-
-        [Fact]
-        public async Task ReplaceSupervisor_WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
-        {
-            // Arrange
-            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = 2
-            };
-
-            // Act
-            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
-
-            // Assert
-            res.IsSuccess.ShouldBe(true);
-            await _emailToSMSService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
-        }
-
-        [Fact]
         public async Task SetDeployedState_WhenSetToNotDeployed_ShouldReturnCorrectMessage()
         {
             // Arrange
@@ -637,18 +590,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             res.IsSuccess.ShouldBeTrue();
             res.Message.Key.ShouldBe(ResultKey.DataCollector.SetToDeployedSuccess);
         }
-
-        public ReportingStatus DataCollectorStatusFromReports(IEnumerable<RawReport> reports)
-        {
-            return reports.Any()
-                ? reports.All(r => r.Report != null) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
-                : ReportingStatus.NotReporting;
-        }
-
-        public int CompletenessPercentageFromReports(IEnumerable<RawReport> reports) =>
-            reports.Any()
-                ? 100
-                : 0;
 
         public static IEnumerable<object[]> GetPerformanceTestData()
         {

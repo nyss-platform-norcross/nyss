@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.StringsResources;
-using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Services
 {
     public interface ISmsTextGeneratorService
     {
         Task<string> GenerateEscalatedAlertSms(string languageCode);
+
         Task<string> GenerateReplaceSupervisorSms(string languageCode);
     }
 

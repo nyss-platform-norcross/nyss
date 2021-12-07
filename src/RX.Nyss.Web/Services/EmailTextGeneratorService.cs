@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
@@ -16,9 +17,20 @@ namespace RX.Nyss.Web.Services
 
         Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode);
 
-        Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode);
+        Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(
+            Role role,
+            string callbackUrl,
+            string organizations,
+            string name,
+            string languageCode);
 
         Task<(string subject, string body)> GenerateAgreementDocumentEmail(string languageCode);
+
+        Task<(string subject, string body)> GenerateReplacedSupervisorEmail(
+            string languageCode,
+            string supervisorName,
+            IEnumerable<string> dataCollectors,
+            IEnumerable<string> dataCollectorsWithoutPhoneNumber);
     }
 
     public class EmailTextGeneratorService : IEmailTextGeneratorService
@@ -96,6 +108,26 @@ namespace RX.Nyss.Web.Services
             return (subject, body);
         }
 
+        public async Task<(string subject, string body)> GenerateReplacedSupervisorEmail(
+            string languageCode,
+            string supervisorName,
+            IEnumerable<string> dataCollectors,
+            IEnumerable<string> dataCollectorsWithoutPhoneNumber)
+        {
+            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
+
+            var dataCollectorsHtml = string.Join("\n", dataCollectors.Select(DataCollectorToHtml));
+            var dataCollectorsWithoutPhoneNumberHtml = string.Join("\n", dataCollectorsWithoutPhoneNumber.Select(DataCollectorToHtml));
+
+            var subject = GetTranslation(EmailContentKey.ReplacedSupervisor.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.ReplacedSupervisor.Body, emailContents.Value)
+                .Replace("{{supervisorName}}", supervisorName)
+                .Replace("{{dataCollectors}}", dataCollectorsHtml)
+                .Replace("{{dataCollectorsWithoutPhoneNumber}}", dataCollectorsWithoutPhoneNumberHtml);
+
+            return (subject, body);
+        }
+
         private static string GetTranslation(string key, IDictionary<string, string> translations)
         {
             if (!translations.TryGetValue(key, out var value))
@@ -105,5 +137,7 @@ namespace RX.Nyss.Web.Services
 
             return value;
         }
+
+        private static string DataCollectorToHtml(string dataCollector) => $"<li>{dataCollector}</li>";
     }
 }

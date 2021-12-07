@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FluentValidation.TestHelper;
 using NSubstitute;
+using RX.Nyss.Web.Features.DataCollectors.Commands;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Queries;
 using RX.Nyss.Web.Features.DataCollectors.Validation;

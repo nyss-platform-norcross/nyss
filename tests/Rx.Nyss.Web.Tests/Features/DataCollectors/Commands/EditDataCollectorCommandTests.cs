@@ -9,8 +9,8 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.DataCollectors.Commands;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
-using RX.Nyss.Web.Features.DataCollectors.Queries;
 using Shouldly;
 using Xunit;
 
