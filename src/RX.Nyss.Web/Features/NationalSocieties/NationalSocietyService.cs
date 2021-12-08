@@ -22,8 +22,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
 
-        Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
-
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
 
         Task<Result> Reopen(int nationalSocietyId);
@@ -107,45 +105,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             _loggerAdapter.Info($"A national society {nationalSociety} was created");
             return Success(nationalSociety.Id);
-        }
-
-        public async Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto dto)
-        {
-            var currentUser = await _authorizationService.GetCurrentUser();
-
-            var nationalSocietyData = await _nyssContext.NationalSocieties
-                .Where(n => n.Id == nationalSocietyId)
-                .Select(ns => new
-                {
-                    NationalSociety = ns,
-                    CurrentUserOrganizationId = ns.NationalSocietyUsers
-                        .Where(uns => uns.User == currentUser)
-                        .Select(uns => uns.OrganizationId)
-                        .SingleOrDefault(),
-                    HasCoordinator = ns.NationalSocietyUsers
-                        .Any(uns => uns.User.Role == Role.Coordinator)
-                })
-                .SingleAsync();
-
-            var nationalSociety = nationalSocietyData.NationalSociety;
-
-            if (nationalSociety.IsArchived)
-            {
-                return Error(ResultKey.NationalSociety.Edit.CannotEditArchivedNationalSociety);
-            }
-
-            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
-            {
-                return Error(ResultKey.UnexpectedError);
-            }
-
-            nationalSociety.Name = dto.Name;
-            nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
-            nationalSociety.Country = await GetCountryById(dto.CountryId);
-
-            await _nyssContext.SaveChangesAsync();
-
-            return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>

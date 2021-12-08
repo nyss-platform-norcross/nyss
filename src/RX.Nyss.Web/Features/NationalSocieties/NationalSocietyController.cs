@@ -54,12 +54,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// Edits an existing National Society.
         /// </summary>
         /// <param name="nationalSocietyId"></param>
-        /// <param name="nationalSociety"></param>
+        /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/edit")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Edit(int nationalSocietyId, [FromBody] EditNationalSocietyRequestDto nationalSociety) =>
-            await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
+        public async Task<Result> Edit(int nationalSocietyId, [FromBody] EditNationalSocietyCommand.RequestBody body) =>
+            await Sender.Send(new EditNationalSocietyCommand(nationalSocietyId, body));
 
         /// <summary>
         /// Archives an existing National Society.
