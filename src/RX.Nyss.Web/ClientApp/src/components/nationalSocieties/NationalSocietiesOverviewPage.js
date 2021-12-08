@@ -59,7 +59,8 @@ const NationalSocietiesOverviewPageComponent = (props) => {
               {strings(stringKeys.nationalSociety.form.epiWeekStandard.title)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              {strings(`nationalSociety.form.epiWeekStandard.${props.data.epiWeekStartDay}`)}
+              {strings(`nationalSociety.form.epiWeekStandard.${props.data.epiWeekStartDay}`)}<br/>
+              <span style={{ fontSize: 12 }}>({strings(`nationalSociety.form.epiWeekStandard.${props.data.epiWeekStartDay}.description`)})</span>
             </Typography>
           </Grid>          
         </Grid>
