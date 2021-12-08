@@ -20,8 +20,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
     {
         Task<Result<List<NationalSocietyListResponseDto>>> List();
 
-        Task<Result<NationalSocietyResponseDto>> Get(int id);
-
         Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
 
         Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
@@ -83,30 +81,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .ToListAsync();
 
             return Success(list);
-        }
-
-        public async Task<Result<NationalSocietyResponseDto>> Get(int id)
-        {
-            var currentUserName = _authorizationService.GetCurrentUserName();
-
-            var nationalSociety = await _nyssContext.NationalSocieties
-                .Select(n => new NationalSocietyResponseDto
-                {
-                    Id = n.Id,
-                    ContentLanguageId = n.ContentLanguage.Id,
-                    ContentLanguageName = n.ContentLanguage.DisplayName,
-                    Name = n.Name,
-                    CountryId = n.Country.Id,
-                    CountryName = n.Country.Name,
-                    IsCurrentUserHeadManager = n.Organizations.Any(o => o.HeadManager.EmailAddress == currentUserName),
-                    IsArchived = n.IsArchived,
-                    HasCoordinator = n.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
-                })
-                .FirstOrDefaultAsync(n => n.Id == id);
-
-            return nationalSociety != null
-                ? Success(nationalSociety)
-                : Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
         }
 
         public async Task<Result> Create(CreateNationalSocietyRequestDto dto)

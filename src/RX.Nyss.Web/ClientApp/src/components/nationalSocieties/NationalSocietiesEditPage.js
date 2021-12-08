@@ -16,6 +16,8 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 
+const EpiWeekStandards = ['Monday', 'Sunday'];
+
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
@@ -32,7 +34,8 @@ const NationalSocietiesEditPageComponent = (props) => {
       id: props.data.id,
       name: props.data.name,
       contentLanguageId: props.data.contentLanguageId.toString(),
-      countryId: props.data.countryId.toString()
+      countryId: props.data.countryId.toString(),
+      epiWeekStartDay: props.data.epiWeekStartDay,
     };
 
     const validation = {
@@ -53,11 +56,13 @@ const NationalSocietiesEditPageComponent = (props) => {
     };
 
     const values = form.getValues();
+
     props.edit({
       id: props.data.id,
       name: values.name,
       contentLanguageId: parseInt(values.contentLanguageId),
-      countryId: parseInt(values.countryId)
+      countryId: parseInt(values.countryId),
+      epiWeekStartDay: values.epiWeekStartDay,
     });
   };
 
@@ -105,6 +110,18 @@ const NationalSocietiesEditPageComponent = (props) => {
               ))}
             </SelectField>
           </Grid>
+
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.nationalSociety.form.epiWeekStandard.title)}
+              name="epiWeekStartDay"
+              field={form.fields.epiWeekStartDay}
+            >
+              {EpiWeekStandards.map(itm => (
+                <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(`nationalSociety.form.epiWeekStandard.${itm}`)}</MenuItem>
+              ))}
+            </SelectField>
+          </Grid>          
         </Grid>
 
         <FormActions>

@@ -6,6 +6,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocieties.Commands;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
+using RX.Nyss.Web.Features.NationalSocieties.Queries;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.NationalSocieties
@@ -25,9 +26,10 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// </summary>
         /// <returns></returns>
         [HttpGet("{nationalSocietyId}/get")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor),
+         NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
-            await _nationalSocietyService.Get(nationalSocietyId);
+            await Sender.Send(new GetNationalSocietyQuery(nationalSocietyId));
 
         /// <summary>
         /// Gets all countries with country codes.

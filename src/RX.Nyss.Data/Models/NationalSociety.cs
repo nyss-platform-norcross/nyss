@@ -9,8 +9,6 @@ namespace RX.Nyss.Data.Models
 
         public string Name { get; set; }
 
-        public DateTime StartDate { get; set; }
-
         public bool IsArchived { get; set; }
 
         public string RegionCustomName { get; set; }
@@ -21,18 +19,22 @@ namespace RX.Nyss.Data.Models
 
         public string ZoneCustomName { get; set; }
 
+        public int? DefaultOrganizationId { get; set; }
+
+        public DateTime StartDate { get; set; }
+
+        public DayOfWeek EpiWeekStartDay { get; set; }
+
         public virtual ContentLanguage ContentLanguage { get; set; }
 
         public virtual Country Country { get; set; }
-        
+
+        public virtual Organization DefaultOrganization { get; set; }
+
         public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
 
         public virtual ICollection<RawReport> RawReports { get; set; }
 
         public virtual ICollection<Organization> Organizations { get; set; }
-
-        public int? DefaultOrganizationId { get; set; }
-
-        public virtual Organization DefaultOrganization { get; set; }
     }
 }

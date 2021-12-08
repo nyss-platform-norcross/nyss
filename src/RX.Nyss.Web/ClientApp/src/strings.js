@@ -61,7 +61,10 @@ export const stringKeys = {
       country: "nationalSociety.form.country",
       contentLanguage: "nationalSociety.form.contentLanguage",
       create: "nationalSociety.form.create",
-      update: "nationalSociety.form.update"
+      update: "nationalSociety.form.update",
+      epiWeekStandard: {
+        title: "nationalSociety.form.epiWeekStandard.title"
+      }
     },
     messages: {
       create: {

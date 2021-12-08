@@ -1,3 +1,5 @@
+using System;
+
 namespace RX.Nyss.Web.Features.NationalSocieties.Dto
 {
     public class NationalSocietyResponseDto
@@ -19,5 +21,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public bool IsArchived { get; set; }
 
         public bool HasCoordinator { get; set; }
+
+        public DayOfWeek EpiWeekStartDay { get; set; }
     }
 }
