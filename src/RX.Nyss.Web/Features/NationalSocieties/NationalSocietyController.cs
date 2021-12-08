@@ -47,8 +47,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<Result> Create([FromBody] CreateNationalSocietyRequestDto nationalSociety) =>
-            await _nationalSocietyService.Create(nationalSociety);
+        public async Task<Result> Create([FromBody] CreateNationalSocietyCommand nationalSociety) =>
+            await Sender.Send(nationalSociety);
 
         /// <summary>
         /// Edits an existing National Society.

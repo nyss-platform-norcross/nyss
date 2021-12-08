@@ -1,23 +1,24 @@
 using FluentValidation.TestHelper;
 using NSubstitute;
+using RX.Nyss.Web.Features.NationalSocieties.Commands;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Features.NationalSocieties.Validation;
 using Xunit;
 
 namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 {
-    public class CreateNationalSocietyValidatorTester
+    public class CreateNationalSocietyCommandValidatorTests
     {
-        private CreateNationalSocietyRequestDto.Validator CreateValidator { get; set; }
+        private CreateNationalSocietyCommand.Validator CreateValidator { get; set; }
 
-        public CreateNationalSocietyValidatorTester()
+        public CreateNationalSocietyCommandValidatorTests()
         {
             var validationService = Substitute.For<INationalSocietyValidationService>();
             validationService.CountryExists(1).Returns(false);
             validationService.LanguageExists(1).Returns(false);
             validationService.NameExists("Test").Returns(true);
             validationService.NameExistsToOther("Test", 1).Returns(true);
-            CreateValidator = new CreateNationalSocietyRequestDto.Validator(validationService);
+            CreateValidator = new CreateNationalSocietyCommand.Validator(validationService);
         }
 
         [Fact]

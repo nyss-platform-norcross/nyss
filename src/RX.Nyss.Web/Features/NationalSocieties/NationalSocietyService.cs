@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -20,8 +18,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
     {
         Task<Result<List<NationalSocietyListResponseDto>>> List();
 
-        Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
-
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
 
         Task<Result> Reopen(int nationalSocietyId);
@@ -33,19 +29,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;
 
-        private readonly ILoggerAdapter _loggerAdapter;
-
         private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
-            ILoggerAdapter loggerAdapter,
             IAuthorizationService authorizationService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
-            _loggerAdapter = loggerAdapter;
             _authorizationService = authorizationService;
         }
 
@@ -79,32 +71,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .ToListAsync();
 
             return Success(list);
-        }
-
-        public async Task<Result> Create(CreateNationalSocietyRequestDto dto)
-        {
-            var nationalSociety = new NationalSociety
-            {
-                Name = dto.Name,
-                ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
-                Country = await GetCountryById(dto.CountryId),
-                IsArchived = false,
-                StartDate = DateTime.UtcNow
-            };
-
-            await _nyssContext.AddAsync(nationalSociety);
-            await _nyssContext.SaveChangesAsync();
-
-            nationalSociety.DefaultOrganization = new Organization
-            {
-                Name = dto.InitialOrganizationName,
-                NationalSociety = nationalSociety
-            };
-
-            await _nyssContext.SaveChangesAsync();
-
-            _loggerAdapter.Info($"A national society {nationalSociety} was created");
-            return Success(nationalSociety.Id);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>

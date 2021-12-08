@@ -16,7 +16,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 
-const EpiWeekStandards = ['Monday', 'Sunday'];
+export const EpiWeekStandards = ['Monday', 'Sunday'];
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
