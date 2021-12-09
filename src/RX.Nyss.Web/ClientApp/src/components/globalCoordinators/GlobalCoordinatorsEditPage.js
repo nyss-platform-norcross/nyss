@@ -8,6 +8,8 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
+import MuiPhoneNumber from 'material-ui-phone-number'
+import CountryCode from '../forms/CountryCode';
 import { Button, Grid } from "@material-ui/core";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
@@ -43,6 +45,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
     setForm(createForm(fields, validation));
   }, [props.data, props.match]);
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -71,19 +74,20 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <CountryCode 
               label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-            />
+              defaultCountry={'ch'}
+          />
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <CountryCode 
               label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-            />
+          />
           </Grid>
 
           <Grid item xs={12}>

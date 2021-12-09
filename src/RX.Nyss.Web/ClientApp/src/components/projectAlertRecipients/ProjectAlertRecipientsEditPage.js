@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CountryCode from '../forms/CountryCode';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -114,7 +115,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
   if (!props.formData || !form) {
     return null;
   }
-
+console.log(props.formData)
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -160,12 +161,12 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <TextInputField
+                  <CountryCode 
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      inputMode={"tel"}
-                    />
+                      defaultCountry={"no"}
+                  />
                   </Grid>
 
                   {canSelectModem && (
@@ -259,7 +260,8 @@ const mapStateToProps = (state, ownProps) => ({
   alertRecipient: state.projectAlertRecipients.recipient,
   formData: state.projectAlertRecipients.formData,
   isSaving: state.projectAlertRecipients.formSaving,
-  error: state.projectAlertRecipients.formError
+  error: state.projectAlertRecipients.formError,
+  countryCode: state.projectAlertRecipients.countryCode
 });
 
 const mapDispatchToProps = {

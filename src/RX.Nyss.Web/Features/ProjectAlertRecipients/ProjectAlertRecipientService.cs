@@ -364,7 +364,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 Supervisors = supervisorFormData,
                 ProjectOrganizations = organizations,
                 HealthRisks = healthRisks,
-                Modems = gatewayModems
+                Modems = gatewayModems,
+                CountryCode = countryCode
             });
         }
 

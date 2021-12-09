@@ -111,7 +111,8 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
-    recipient: null
+    recipient: null,
+    countryCode: null
   },
   projectAlertNotHandledRecipients: {
     projectId: null,

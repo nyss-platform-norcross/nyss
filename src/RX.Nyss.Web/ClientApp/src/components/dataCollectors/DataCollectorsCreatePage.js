@@ -28,6 +28,7 @@ import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
+import CountryCode from "../forms/CountryCode";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 
@@ -45,6 +46,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     zoneId: '',
     number: 0
   }]);
+
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -129,7 +131,7 @@ const DataCollectorsCreatePageComponent = (props) => {
   if (!form) {
     return null;
   }
-
+  
   return (
     <Fragment>
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
@@ -210,20 +212,19 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>)}
 
           <Grid item xs={12}>
-            <TextInputField
+            <CountryCode
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              inputMode={"tel"}
+              defaultCountry={'no'}
             />
           </Grid>
-
           {type === dataCollectorType.human && (<Grid item xs={12}>
-            <TextInputField
+            <CountryCode
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              inputMode={"tel"}
+              defaultCountry="no"
             />
           </Grid>)}
 

@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CountryCode from '../forms/CountryCode';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -121,7 +122,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   if (!props.formData) {
     return null;
   }
-
+console.log(props)
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -167,12 +168,12 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <TextInputField
+                  <CountryCode 
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      inputMode={"tel"}
-                    />
+                      defaultCountry={"no"}
+                  />
                   </Grid>
 
                   {canSelectModem && (

@@ -8,6 +8,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
+import CountryCode from '../forms/CountryCode'
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
@@ -105,7 +106,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
   if (!props.data || !form || props.isFetching) {
     return <Loading />;
   }
-
+console.log(props.countryCode)
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error.message} />}
@@ -122,21 +123,21 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <CountryCode 
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              inputMode={"tel"}
-            />
+              defaultCountry={props.countryCode}
+          />
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <CountryCode 
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              inputMode={"tel"}
-            />
+              defaultCountry={props.countryCode}
+          />
           </Grid>
 
           {canChangeOrganization && (
@@ -270,7 +271,8 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.nationalSocietyUsers.formData,
   callingUserRoles: state.appData.user.roles,
   error: state.nationalSocietyUsers.formError,
-  modems: state.nationalSocietyUsers.formModems
+  modems: state.nationalSocietyUsers.formModems,
+  countryCode: state.nationalSocietyUsers.countryCode
 });
 
 const mapDispatchToProps = {
