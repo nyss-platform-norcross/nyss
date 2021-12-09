@@ -219,6 +219,7 @@ export const initialState = {
     completeness: null,
     performanceListFetching: false,
     performanceListFilters: {
+      projectId: null,
       locations: null,
       name: '',
       supervisorId: null,

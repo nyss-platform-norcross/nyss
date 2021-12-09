@@ -59,6 +59,17 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
 
     return text;
   }
+  
+  const toFixed = (num, fixed) => {
+      var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+      return num.toString().match(re)[0];
+  }
+
+  const renderPercentage = (active, total) => {
+    var percentage = active * 100 / total;
+    return toFixed(percentage, 2);
+  }
+
 
   return !!filters && !!epiWeeks && (
     <TableContainer sticky isFetching={isListFetching}>
@@ -96,7 +107,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
               {completeness.map(week => (
                 <TableCell className={styles.completenessAlignmentAndBorder} key={`completeness_${week.epiWeek}`}>
                   <Tooltip title={renderTooltipText(week)} onClick={handleTooltipClick} arrow>
-                    <span>{`${week.percentage} %`}</span>
+                    <span>{`${renderPercentage(week.activeDataCollectors, week.totalDataCollectors)} %`}</span>
                   </Tooltip>
                 </TableCell>
               ))}
