@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [HttpPost, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<DataCollectorPerformanceResponseDto>> Performance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
-            await _dataCollectorPerformanceService.Performance(projectId, dataCollectorsFiltersDto);
+            await Sender.Send(new DataCollectorPerformanceQuery(projectId, dataCollectorsFiltersDto));
 
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]

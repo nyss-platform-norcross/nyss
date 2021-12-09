@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
     public class DataCollectorPerformanceResponseDto
     {
-        public List<Completeness> Completeness { get; set; }
+        public IList<Completeness> Completeness { get; set; }
         public PaginatedList<DataCollectorPerformance> Performance { get; set; }
     }
 

@@ -38,6 +38,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
         {
             private readonly IDataCollectorService _dataCollectorService;
 
+            private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
+
             private readonly IDateTimeProvider _dateTimeProvider;
 
             private readonly IStringsService _stringsService;
@@ -46,11 +48,13 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
 
             public Handler(
                 IDataCollectorService dataCollectorService,
+                IDataCollectorPerformanceService dataCollectorPerformanceService,
                 IDateTimeProvider dateTimeProvider,
                 IStringsService stringsService,
                 NyssContext nyssContext)
             {
                 _dataCollectorService = dataCollectorService;
+                _dataCollectorPerformanceService = dataCollectorPerformanceService;
                 _dateTimeProvider = dateTimeProvider;
                 _stringsService = stringsService;
                 _nyssContext = nyssContext;
@@ -80,11 +84,11 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var currentDate = _dateTimeProvider.UtcNow;
                 var epiDateRange = _dateTimeProvider.GetEpiDateRange(projectStartDate, currentDate).ToList();
 
-                var dataCollectorsWithReportsData = await GetDataCollectorsWithReportData(dataCollectors);
+                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, cancellationToken);
 
-                var dataCollectorPerformance = GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange);
+                var dataCollectorPerformance = _dataCollectorPerformanceService.GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange);
 
-                var completenessPerWeek = GetDataCollectorCompleteness(request.Filter, dataCollectorsWithReportsData, epiDateRange);
+                var completenessPerWeek = _dataCollectorPerformanceService.GetDataCollectorCompleteness(request.Filter, dataCollectorsWithReportsData, epiDateRange);
 
                 var excelSheet = GetExcelData(strings, dataCollectorPerformance, completenessPerWeek, epiDateRange);
 
@@ -93,90 +97,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     MimeTypes.Excel);
             }
 
-            private async Task<List<DataCollectorWithRawReportDataForExport>> GetDataCollectorsWithReportData(
-                IQueryable<DataCollector> dataCollectors) =>
-                await dataCollectors
-                    .Select(dc => new DataCollectorWithRawReportDataForExport
-                    {
-                        Name = dc.Name,
-                        PhoneNumber = dc.PhoneNumber,
-                        VillageName = dc.DataCollectorLocations.First().Village.Name,
-                        CreatedAt = dc.CreatedAt,
-                        ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
-                            .Select(r => new RawReportDataForExport
-                            {
-                                IsValid = r.ReportId.HasValue,
-                                ReceivedAt = r.ReceivedAt,
-                                EpiDate = _dateTimeProvider.GetEpiDate(r.ReceivedAt)
-                            }),
-                        DatesNotDeployed = dc.DatesNotDeployed
-                    }).ToListAsync();
-
-            private List<DataCollectorPerformance> GetDataCollectorPerformance(IEnumerable<DataCollectorWithRawReportDataForExport> dataCollectorsWithReportsData, DateTime currentDate, IEnumerable<EpiDate> epiWeekRange) =>
-                dataCollectorsWithReportsData
-                    .Select(dc =>
-                    {
-                        var reportsGroupedByWeek = dc.ReportsInTimeRange
-                            .GroupBy(report => report.EpiDate)
-                            .ToList();
-
-                        return new DataCollectorPerformance
-                        {
-                            Name = dc.Name,
-                            PhoneNumber = dc.PhoneNumber,
-                            VillageName = dc.VillageName,
-                            DaysSinceLastReport = reportsGroupedByWeek.Any()
-                                ? (int)(currentDate - reportsGroupedByWeek
-                                    .SelectMany(g => g)
-                                    .OrderByDescending(r => r.ReceivedAt)
-                                    .First().ReceivedAt).TotalDays
-                                : null,
-                            PerformanceInEpiWeeks = epiWeekRange
-                                .Select(epiDate => new PerformanceInEpiWeek
-                                {
-                                    EpiWeek = epiDate.EpiWeek,
-                                    EpiYear = epiDate.EpiYear,
-                                    ReportingStatus = DataCollectorExistedInWeek(epiDate, dc.CreatedAt) && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList())
-                                        ? GetDataCollectorStatus(reportsGroupedByWeek.FirstOrDefault(r => r.Key.EpiWeek == epiDate.EpiWeek && r.Key.EpiYear == epiDate.EpiYear))
-                                        : null
-                                }).Reverse().ToList()
-                        };
-                    }).ToList();
-
-            private List<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IList<DataCollectorWithRawReportDataForExport> dataCollectors, List<EpiDate> epiDateRange)
-            {
-                if (IsWeekFiltersActive(filters) || !dataCollectors.Any())
-                {
-                    return null;
-                }
-
-                var dataCollectorCompleteness = dataCollectors
-                    .Select(dc => dc.ReportsInTimeRange
-                        .GroupBy(report => report.EpiDate)
-                        .Select(g => new
-                        {
-                            EpiDate = g.Key,
-                            HasReported = g.Any()
-                        })).SelectMany(x => x)
-                    .GroupBy(x => x.EpiDate)
-                    .Select(g => new
-                    {
-                        EpiDate = g.Key,
-                        Active = g.Sum(x => x.HasReported
-                            ? 1
-                            : 0)
-                    }).ToList();
-
-                return epiDateRange.Select(epiDate => new Completeness
-                {
-                    EpiWeek = epiDate.EpiWeek,
-                    TotalDataCollectors = TotalDataCollectorsDeployedInWeek(epiDate, dataCollectors),
-                    ActiveDataCollectors = dataCollectorCompleteness
-                        .FirstOrDefault(dc => dc.EpiDate.EpiWeek == epiDate.EpiWeek && dc.EpiDate.EpiYear == epiDate.EpiYear)?.Active ?? 0
-                }).ToList();
-            }
-
-            private ExcelPackage GetExcelData(StringsResourcesVault strings, List<DataCollectorPerformance> dataCollectorPerformances, List<Completeness> completenessPerWeek, List<EpiDate> epiDateRange)
+            private ExcelPackage GetExcelData(StringsResourcesVault strings, IList<DataCollectorPerformance> dataCollectorPerformances, IList<Completeness> completenessPerWeek, List<EpiDate> epiDateRange)
             {
                 var columnLabels = GetColumnLabels(strings, epiDateRange);
                 var title = strings["dataCollectors.performanceExport.title"];
@@ -243,11 +164,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 return package;
             }
 
-            private ReportingStatus GetDataCollectorStatus(IGrouping<EpiDate, RawReportDataForExport> grouping) =>
-                grouping != null && grouping.Any()
-                    ? grouping.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
-                    : ReportingStatus.NotReporting;
-
             private List<string> GetColumnLabels(StringsResourcesVault strings, IEnumerable<EpiDate> epiDateRange)
             {
                 var epiWeeks = epiDateRange.Select(epiDate => $"{epiDate.EpiYear}/{strings["dataCollectors.performanceExport.epiWeekIdentifier"]} {epiDate.EpiWeek}");
@@ -262,40 +178,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
 
                 return columnbLabels;
             }
-
-            private int TotalDataCollectorsDeployedInWeek(EpiDate epiDate, IEnumerable<DataCollectorWithRawReportDataForExport> dataCollectors) =>
-                dataCollectors.Count(dc => DataCollectorExistedInWeek(epiDate, dc.CreatedAt)
-                    && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList()));
-
-            private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated)
-            {
-                var epiDataDataCollectorCreated = _dateTimeProvider.GetEpiDate(dataCollectorCreated);
-                return epiDataDataCollectorCreated.EpiYear <= date.EpiYear && epiDataDataCollectorCreated.EpiWeek <= date.EpiWeek;
-            }
-
-            private bool DataCollectorWasDeployedInWeek(EpiDate date, List<DataCollectorNotDeployed> datesNotDeployed)
-            {
-                if (!datesNotDeployed.Any())
-                {
-                    return true;
-                }
-
-                var firstDayOfEpiWeek = _dateTimeProvider.GetFirstDateOfEpiWeek(date.EpiYear, date.EpiWeek);
-                var lastDayOfEpiWeek = firstDayOfEpiWeek.AddDays(7);
-
-                var dataCollectorNotDeployedInWeek = datesNotDeployed.Any(d => d.StartDate < firstDayOfEpiWeek
-                    && (!d.EndDate.HasValue || d.EndDate > lastDayOfEpiWeek));
-
-                return !dataCollectorNotDeployedInWeek;
-            }
-
-            private bool IsWeekFiltersActive(DataCollectorPerformanceFiltersRequestDto filters) =>
-                filters.EpiWeekFilters.Any(IsReportingStatusFilterActiveForWeek);
-
-            private bool IsReportingStatusFilterActiveForWeek(PerformanceStatusFilterDto weekFilter) =>
-                !weekFilter.NotReporting
-                || !weekFilter.ReportingCorrectly
-                || !weekFilter.ReportingWithErrors;
         }
     }
 }
