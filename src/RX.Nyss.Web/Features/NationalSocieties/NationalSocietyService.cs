@@ -22,6 +22,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
 
         Task<Result> Reopen(int nationalSocietyId);
+        Task<Result<string>> GetCountryCode(int nationalSocietyId);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -101,6 +102,16 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             nationalSociety.IsArchived = false;
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
+        }
+
+        public async Task<Result<string>> GetCountryCode(int nationalSocietyId) 
+        {
+            var countryCode = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => ns.Country.CountryCode)
+                .SingleOrDefaultAsync();
+
+            return Success(countryCode);
         }
 
         public async Task<ContentLanguage> GetLanguageById(int id) =>

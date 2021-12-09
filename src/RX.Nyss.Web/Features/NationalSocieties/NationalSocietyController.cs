@@ -80,5 +80,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Reopen(int nationalSocietyId) =>
             await _nationalSocietyService.Reopen(nationalSocietyId);
+
+        /// <summary>
+        /// Gets the country code of a National Society.
+        /// </summary>
+        /// <param name="nationalSocietyId"></param>
+        /// <returns></returns>
+        [HttpGet("{nationalSocietyId}/getCountry")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result<string>> GetCountry(int nationalSocietyId) =>
+            await _nationalSocietyService.GetCountryCode(nationalSocietyId);
     }
 }

@@ -18,11 +18,13 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public bool HasCoordinator { get; set; }
 
         public bool IsHeadManager { get; set; }
+        public string CountryCode { get; set; }
     }
 
     public class NationalSocietyUsersEditFormDataResponseDto
     {
         public string Email { get; set; }
+        public string CountryCode { get; set; }
 
         public Role Role { get; set; }
 
