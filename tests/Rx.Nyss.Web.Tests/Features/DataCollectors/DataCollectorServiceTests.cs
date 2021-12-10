@@ -44,8 +44,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
-        private readonly IEmailToSMSService _emailToSMSService;
-        private readonly ISmsPublisherService _smsPublisherService;
         private List<NationalSociety> _nationalSocieties;
         private static DateTime DateForPerformance = new DateTime(2021, 8, 1);
 
@@ -489,48 +487,5 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             result.IsSuccess.ShouldBeTrue();
             await _nyssContextMock.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
         }
-
-        [Fact]
-        public async Task ReplaceSupervisor_WhenUsingIotHub_ShouldSendSmsToDataCollectorsThroughIotHub()
-        {
-            // Arrange
-            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = SupervisorId
-            };
-
-            // Act
-            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
-
-            // Assert
-            res.IsSuccess.ShouldBe(true);
-            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
-        }
-
-        [Fact]
-        public async Task ReplaceSupervisor_WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
-        {
-            // Arrange
-            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = 2
-            };
-
-            // Act
-            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
-
-            // Assert
-            res.IsSuccess.ShouldBe(true);
-            await _emailToSMSService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
-        }
-    }
-
-    public class ReportingStatusForEpiWeek
-    {
-        public int EpiWeek { get; set; }
-        public ReportingStatus ReportingStatus { get; set; }
-        public int Completeness { get; set; }
     }
 }
