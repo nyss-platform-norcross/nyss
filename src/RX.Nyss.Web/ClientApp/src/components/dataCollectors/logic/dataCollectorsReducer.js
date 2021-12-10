@@ -131,7 +131,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, performanceListFetching: true, performanceListData: { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS:
-      return { ...state, performanceListFetching: false, performanceListData: action.list, completeness: action.completeness };
+      return { ...state, performanceListFetching: false, performanceListData: action.list, completeness: action.completeness, epiDateRange: action.epiDateRange };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
       return { ...state, performanceListFetching: false, performanceListData: [] };

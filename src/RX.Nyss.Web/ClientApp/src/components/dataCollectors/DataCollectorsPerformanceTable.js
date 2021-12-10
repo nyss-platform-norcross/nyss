@@ -1,50 +1,17 @@
 import styles from './DataCollectorsPerformanceTable.module.scss';
-
-import React, { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
-import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
 import TablePager from '../common/tablePagination/TablePager';
-import { Tooltip, Table, TableBody, TableCell, TableHead, TableRow, Icon } from '@material-ui/core';
+import { Tooltip, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
+import { Loading } from '../common/loading/Loading';
 
-export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedWeek, setSelectedWeek] = useState(null);
-  const [statusFilters, setStatusFilters] = useState(null);
-  const [epiWeeks, setEpiWeeks] = useState(null);
-
-  useEffect(() => {
-    !!filters && setEpiWeeks(filters.epiWeekFilters.map(filter => filter.epiWeek).reverse());
-  }, [filters]);
-
-  const openFilter = (event) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedWeek(parseInt(event.currentTarget.id));
-    setStatusFilters(getStatusFilter(parseInt(event.currentTarget.id)));
-    setIsOpen(true);
-  }
-
-  const getStatusFilter = (week) => {
-    return Object.assign({}, filters.epiWeekFilters.find(epiWeekFilter => epiWeekFilter.epiWeek === week));
-  }
-
-  const filterIsActive = (week) => {
-    const filter = filters.epiWeekFilters.find(epiWeekFilter => epiWeekFilter.epiWeek === week);
-    return !!filter && (!filter.reportingCorrectly || !filter.reportingWithErrors || !filter.notReporting);
-  }
-
+export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRange, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const onChangePage = (e, page) => {
     onChange({ type: 'changePage', pageNumber: page });
-  }
-
-  const handleClose = (fields) => {
-    onChange({ type: 'updateSorting', week: selectedWeek, filters: fields });
-    setIsOpen(false);
   }
 
   const handleTooltipClick = e => e.stopPropagation();
@@ -59,19 +26,22 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
 
     return text;
   }
-  
-  const toFixed = (num, fixed) => {
-      var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
-      return num.toString().match(re)[0];
+
+  const roundToFixed = (value, decimals) => {
+    const multiplier = Math.pow(10, decimals);
+    return Math.round(value * multiplier) / multiplier;
   }
 
   const renderPercentage = (active, total) => {
     var percentage = active * 100 / total;
-    return toFixed(percentage, 2);
+    return roundToFixed(percentage, 1);
   }
 
+  if (!filters || !epiDateRange) {
+    return <Loading />
+  }
 
-  return !!filters && !!epiWeeks && (
+  return (
     <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
@@ -80,11 +50,10 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
             <TableCell className={`${styles.villageColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
             <TableCell className={`${styles.daysColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
 
-            {epiWeeks.map(week => (
-              <TableCell key={`filter_week_${week}`} className={styles.weekColumn}>
-                <div id={week} onClick={openFilter} className={styles.filterHeader}>
-                  {`${strings(stringKeys.dataCollector.performanceList.epiWeek)} ${week}`}
-                  <Icon className={styles.filterIcon}>{filterIsActive(week) ? 'filter_alt' : 'expand_more'}</Icon>
+            {epiDateRange.map(week => (
+              <TableCell key={`filter_week_${week.epiWeek}`} className={styles.weekColumn}>
+                <div className={styles.filterHeader}>
+                  {`${strings(stringKeys.dataCollector.performanceList.epiWeek)} ${week.epiWeek}`}
                 </div>
               </TableCell>
             ))}
@@ -135,12 +104,6 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
         </TableBody>
       </Table>
       {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />}
-
-      <DataCollectorsPerformanceColumnFilters
-        open={isOpen}
-        anchorEl={anchorEl}
-        filters={statusFilters}
-        onClose={handleClose} />
     </TableContainer>
   );
 }

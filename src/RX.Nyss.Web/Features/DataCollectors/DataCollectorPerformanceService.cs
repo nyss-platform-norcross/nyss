@@ -76,7 +76,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public IList<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IList<DataCollectorWithRawReportData> dataCollectors, List<EpiDate> epiDateRange)
         {
-            if (IsWeekFiltersActive(filters) || !dataCollectors.Any())
+            if (!dataCollectors.Any())
             {
                 return null;
             }
@@ -147,14 +147,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             grouping != null && grouping.Any()
                 ? grouping.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
                 : ReportingStatus.NotReporting;
-
-        private bool IsWeekFiltersActive(DataCollectorPerformanceFiltersRequestDto filters) =>
-            filters.EpiWeekFilters.Any(IsReportingStatusFilterActiveForWeek);
-
-        private bool IsReportingStatusFilterActiveForWeek(PerformanceStatusFilterDto weekFilter) =>
-            !weekFilter.NotReporting
-            || !weekFilter.ReportingCorrectly
-            || !weekFilter.ReportingWithErrors;
 
         private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated)
         {

@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Data;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -58,10 +57,10 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     .FilterByTrainingMode(request.Filter.TrainingStatus);
 
                 var currentDate = _dateTimeProvider.UtcNow;
-                var fromEpiWeek = request.Filter.EpiWeekFilters.First().EpiWeek;
-                var toEpiWeek = request.Filter.EpiWeekFilters.Last().EpiWeek;
-                var fromDate = _dateTimeProvider.GetFirstDateOfEpiWeek(currentDate.AddDays(-8 * 7).Year, fromEpiWeek);
-                var previousEpiWeekDate = _dateTimeProvider.GetFirstDateOfEpiWeek(currentDate.AddDays(-7).Year, toEpiWeek);
+                var fromEpiDate = _dateTimeProvider.GetEpiDate(currentDate.AddDays(-8 * 7));
+                var toEpiDate = _dateTimeProvider.GetEpiDate(currentDate.AddDays(-7));
+                var fromDate = _dateTimeProvider.GetFirstDateOfEpiWeek(fromEpiDate.EpiYear, fromEpiDate.EpiWeek);
+                var previousEpiWeekDate = _dateTimeProvider.GetFirstDateOfEpiWeek(toEpiDate.EpiYear, toEpiDate.EpiWeek);
                 var rowsPerPage = _config.PaginationRowsPerPage;
                 var totalRows = await dataCollectors.CountAsync(cancellationToken);
                 var epiDateRange = _dateTimeProvider.GetEpiDateRange(fromDate, previousEpiWeekDate).ToList();
@@ -76,13 +75,13 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     .Page(request.Filter.PageNumber, rowsPerPage);
 
                 var dataCollectorPerformances = _dataCollectorPerformanceService.GetDataCollectorPerformance(paginatedDataCollectorsWithReportsData, currentDate, epiDateRange)
-                    .FilterByStatusForEpiWeeks(request.Filter.EpiWeekFilters)
                     .AsPaginatedList(request.Filter.PageNumber, totalRows, rowsPerPage);
 
                 var dataCollectorPerformanceDto = new DataCollectorPerformanceResponseDto
                 {
                     Completeness = dataCollectorCompleteness,
-                    Performance = dataCollectorPerformances
+                    Performance = dataCollectorPerformances,
+                    EpiDateRange = epiDateRange.AsEnumerable().Reverse().ToList()
                 };
 
                 return Success(dataCollectorPerformanceDto);

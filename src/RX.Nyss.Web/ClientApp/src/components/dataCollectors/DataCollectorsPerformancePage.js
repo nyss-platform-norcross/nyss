@@ -1,4 +1,4 @@
-import React, { Fragment, useReducer, useEffect } from 'react';
+import { Fragment, useReducer, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { connect, shallowEqual } from "react-redux";
 import { withLayout } from '../../utils/layout';
@@ -9,7 +9,6 @@ import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
-import { assignInArray } from '../../utils/immutable';
 import TableActions from '../common/tableActions/TableActions';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import { stringKeys, strings } from '../../strings';
@@ -29,21 +28,6 @@ const resetFilter = (filters) => {
   }
 }
 
-const onSort = (state, week, filters) => {
-  return {
-    value: {
-      ...state,
-      epiWeekFilters: assignInArray(state.epiWeekFilters, (filter) => filter.epiWeek === week, (filter) => ({
-        ...filter,
-        reportingCorrectly: filters.reportingCorrectly,
-        reportingWithErrors: filters.reportingWithErrors,
-        notReporting: filters.notReporting
-      }))
-    },
-    changed: !shallowEqual(state.epiWeekFilters.find(f => f.epiWeek === week), filters)
-  }
-}
-
 const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPerformanceList, ...props }) => {
   useMount(() => {
     props.openDataCollectorsPerformanceList(projectId, props.filters);
@@ -55,7 +39,6 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
       case 'updateName': return { value: { ...state.value, name: action.name }, changed: state.value.name !== action.name };
       case 'updateSupervisor': return { value: { ...state.value, supervisorId: action.supervisorId }, changed: state.value.supervisorId !== action.supervisorId };
       case 'updateTrainingStatus': return { value: { ...state.value, trainingStatus: action.trainingStatus }, changed: state.value.trainingStatus !== action.trainingStatus };
-      case 'updateSorting': return onSort(state.value, action.week, action.filters);
       case 'changePage': return { value: { ...state.value, pageNumber: action.pageNumber }, changed: state.value.pageNumber !== action.pageNumber };
       case 'reset': return resetFilter(initialState.dataCollectors.performanceListFilters);
       default: return state;
@@ -84,6 +67,7 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
       <DataCollectorsPerformanceTable
         list={props.listData.data}
         completeness={props.completeness}
+        epiDateRange={props.epiDateRange}
         rowsPerPage={props.listData.rowsPerPage}
         totalRows={props.listData.totalRows}
         page={props.listData.page}
@@ -110,6 +94,7 @@ const mapStateToProps = (state, ownProps) => ({
   listData: state.dataCollectors.performanceListData,
   completeness: state.dataCollectors.completeness,
   isListFetching: state.dataCollectors.performanceListFetching,
+  epiDateRange: state.dataCollectors.epiDateRange
 });
 
 const mapDispatchToProps = {

@@ -1,5 +1,3 @@
-import { generateEpiWeekFilters } from "./utils/date";
-
 export const initialState = {
   appData: {
     appReady: false,
@@ -224,8 +222,7 @@ export const initialState = {
       name: '',
       supervisorId: null,
       trainingStatus: 'Trained',
-      pageNumber: 1,
-      epiWeekFilters: generateEpiWeekFilters()
+      pageNumber: 1
     },
     filtersData: {
       supervisors: [],
