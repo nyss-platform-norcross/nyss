@@ -44,7 +44,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
-        private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
+        private readonly IEmailToSMSService _emailToSMSService;
+        private readonly ISmsPublisherService _smsPublisherService;
         private List<NationalSociety> _nationalSocieties;
         private static DateTime DateForPerformance = new DateTime(2021, 8, 1);
 
@@ -71,8 +72,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 nationalSocietyStructureService,
                 geolocationService,
                 authorizationService);
-
-            _dataCollectorPerformanceService = new DataCollectorPerformanceService(config, dateTimeProvider, _dataCollectorService);
 
             // Arrange
             _nationalSocieties = new List<NationalSociety>
@@ -491,348 +490,40 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             await _nyssContextMock.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
         }
 
-        [Theory]
-        [MemberData(nameof(GetPerformanceTestData))]
-        public async Task GetDataCollectorPerformance_WhenDataCollectorsHaveReported_ShouldReturnCorrectStatus(string phoneNumber, List<RawReport> reports, List<ReportingStatusForEpiWeek> reportingStatusForEpiWeeks)
+        [Fact]
+        public async Task ReplaceSupervisor_WhenUsingIotHub_ShouldSendSmsToDataCollectorsThroughIotHub()
         {
             // Arrange
-            var rawReportsMockDbSet = reports.AsQueryable().BuildMockDbSet();
-            var dataCollectors = new List<DataCollector>
+            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
             {
-                new DataCollector
-                {
-                    PhoneNumber = phoneNumber,
-                    DataCollectorLocations = new List<DataCollectorLocation>
-                    {
-                        new DataCollectorLocation
-                        {
-                            Village = new Village { Name = "Coronia" }
-                        }
-                    },
-                    Project = new Project
-                    {
-                        Id = ProjectId,
-                        NationalSociety = _nationalSocieties[0]
-                    },
-                    RawReports = reports,
-                    Supervisor = new SupervisorUser(),
-                    Deployed = true
-                }
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                SupervisorId = SupervisorId
             };
-            var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
-
-            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
-            _nyssContextMock.DataCollectors.Returns(dataCollectorsMockDbSet);
-
-            var epiWeekStart = 24;
 
             // Act
-            var result = await _dataCollectorPerformanceService.Performance(ProjectId, new DataCollectorPerformanceFiltersRequestDto
-            {
-                EpiWeekFilters = Enumerable.Range(epiWeekStart, 8).Select(week => new PerformanceStatusFilterDto
-                {
-                    EpiWeek = week,
-                    ReportingCorrectly = true,
-                    ReportingWithErrors = true,
-                    NotReporting = true
-                })
-            });
+            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
 
             // Assert
-            reportingStatusForEpiWeeks.ForEach(rs =>
-            {
-                result.Value.Performance.Data[0].PerformanceInEpiWeeks
-                    .Where(p => p.EpiWeek == rs.EpiWeek)
-                    .Select(p => p.ReportingStatus)
-                    .First()
-                    .ShouldBe(rs.ReportingStatus);
-
-                result.Value.Completeness
-                    .Where(c => c.EpiWeek == rs.EpiWeek)
-                    .Select(c => c.Percentage)
-                    .First()
-                    .ShouldBe(rs.Completeness);
-            });
+            res.IsSuccess.ShouldBe(true);
+            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
         }
 
         [Fact]
-        public async Task SetDeployedState_WhenSetToNotDeployed_ShouldReturnCorrectMessage()
+        public async Task ReplaceSupervisor_WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
         {
             // Arrange
-            var setDeployedStateDto = new SetDeployedStateRequestDto
+            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
             {
                 DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                Deployed = false
+                SupervisorId = 2
             };
 
             // Act
-            var res = await _dataCollectorService.SetDeployedState(setDeployedStateDto);
+            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
 
             // Assert
-            res.IsSuccess.ShouldBeTrue();
-            res.Message.Key.ShouldBe(ResultKey.DataCollector.SetToNotDeployedSuccess);
-        }
-
-        [Fact]
-        public async Task SetDeployedState_WhenSetToDeployed_ShouldReturnCorrectMessage()
-        {
-            // Arrange
-            var setDeployedStateDto = new SetDeployedStateRequestDto
-            {
-                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                Deployed = true
-            };
-
-            // Act
-            var res = await _dataCollectorService.SetDeployedState(setDeployedStateDto);
-
-            // Assert
-            res.IsSuccess.ShouldBeTrue();
-            res.Message.Key.ShouldBe(ResultKey.DataCollector.SetToDeployedSuccess);
-        }
-
-        public static IEnumerable<object[]> GetPerformanceTestData()
-        {
-            yield return new object[]
-            {
-                DataCollectorPhoneNumber1,
-                new List<RawReport>
-                {
-                    new RawReport
-                    {
-                        ReceivedAt = DateForPerformance,
-                        IsTraining = false,
-                        Report = new Report(),
-                        ReportId = 1
-                    }
-                },
-                new List<ReportingStatusForEpiWeek>
-                {
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 24,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    },
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 25,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 26,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 27,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 28,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 29,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 30,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 31,
-                        ReportingStatus = ReportingStatus.ReportingCorrectly,
-                        Completeness = 100
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                DataCollectorPhoneNumber1,
-                new List<RawReport>
-                {
-                    new RawReport
-                    {
-                        ReceivedAt = DateForPerformance.AddDays(-8),
-                        IsTraining = false,
-                        Report = new Report(),
-                        ReportId = 2
-                    },
-                    new RawReport
-                    {
-                        ReceivedAt = DateForPerformance,
-                        IsTraining = false
-                    }
-                },
-                new List<ReportingStatusForEpiWeek>
-                {
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 24,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    },
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 25,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 26,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 27,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 28,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 29,
-                        ReportingStatus = ReportingStatus.ReportingCorrectly,
-                        Completeness = 100
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 30,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 31,
-                        ReportingStatus = ReportingStatus.ReportingWithErrors,
-                        Completeness = 100
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                DataCollectorPhoneNumber1,
-                new List<RawReport>(),
-                new List<ReportingStatusForEpiWeek>
-                {
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 24,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    },
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 25,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 26,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 27,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 28,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 29,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 30,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 31,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                DataCollectorPhoneNumber1,
-                new List<RawReport>
-                {
-                    new RawReport
-                    {
-                        ReceivedAt = DateForPerformance.AddDays(-8),
-                        IsTraining = false,
-                        Report = new Report(),
-                        ReportId = 3
-                    },
-                    new RawReport
-                    {
-                        ReceivedAt = DateForPerformance.AddDays(-35),
-                        IsTraining = false
-                    }
-                },
-                new List<ReportingStatusForEpiWeek>
-                {
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 24,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    },
-                    new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 25,
-                        ReportingStatus = ReportingStatus.ReportingWithErrors,
-                        Completeness = 100
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 26,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 27,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 28,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 29,
-                        ReportingStatus = ReportingStatus.ReportingCorrectly,
-                        Completeness = 100
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 30,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }, new ReportingStatusForEpiWeek
-                    {
-                        EpiWeek = 31,
-                        ReportingStatus = ReportingStatus.NotReporting,
-                        Completeness = 0
-                    }
-                }
-            };
+            res.IsSuccess.ShouldBe(true);
+            await _emailToSMSService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
         }
     }
 
