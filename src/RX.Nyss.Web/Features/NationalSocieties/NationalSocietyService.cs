@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -20,12 +18,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
     {
         Task<Result<List<NationalSocietyListResponseDto>>> List();
 
-        Task<Result<NationalSocietyResponseDto>> Get(int id);
-
-        Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
-
-        Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
-
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
 
         Task<Result> Reopen(int nationalSocietyId);
@@ -37,19 +29,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;
 
-        private readonly ILoggerAdapter _loggerAdapter;
-
         private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
-            ILoggerAdapter loggerAdapter,
             IAuthorizationService authorizationService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
-            _loggerAdapter = loggerAdapter;
             _authorizationService = authorizationService;
         }
 
@@ -83,95 +71,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .ToListAsync();
 
             return Success(list);
-        }
-
-        public async Task<Result<NationalSocietyResponseDto>> Get(int id)
-        {
-            var currentUserName = _authorizationService.GetCurrentUserName();
-
-            var nationalSociety = await _nyssContext.NationalSocieties
-                .Select(n => new NationalSocietyResponseDto
-                {
-                    Id = n.Id,
-                    ContentLanguageId = n.ContentLanguage.Id,
-                    ContentLanguageName = n.ContentLanguage.DisplayName,
-                    Name = n.Name,
-                    CountryId = n.Country.Id,
-                    CountryName = n.Country.Name,
-                    IsCurrentUserHeadManager = n.Organizations.Any(o => o.HeadManager.EmailAddress == currentUserName),
-                    IsArchived = n.IsArchived,
-                    HasCoordinator = n.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
-                })
-                .FirstOrDefaultAsync(n => n.Id == id);
-
-            return nationalSociety != null
-                ? Success(nationalSociety)
-                : Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
-        }
-
-        public async Task<Result> Create(CreateNationalSocietyRequestDto dto)
-        {
-            var nationalSociety = new NationalSociety
-            {
-                Name = dto.Name,
-                ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
-                Country = await GetCountryById(dto.CountryId),
-                IsArchived = false,
-                StartDate = DateTime.UtcNow
-            };
-
-            await _nyssContext.AddAsync(nationalSociety);
-            await _nyssContext.SaveChangesAsync();
-
-            nationalSociety.DefaultOrganization = new Organization
-            {
-                Name = dto.InitialOrganizationName,
-                NationalSociety = nationalSociety
-            };
-
-            await _nyssContext.SaveChangesAsync();
-
-            _loggerAdapter.Info($"A national society {nationalSociety} was created");
-            return Success(nationalSociety.Id);
-        }
-
-        public async Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto dto)
-        {
-            var currentUser = await _authorizationService.GetCurrentUser();
-
-            var nationalSocietyData = await _nyssContext.NationalSocieties
-                .Where(n => n.Id == nationalSocietyId)
-                .Select(ns => new
-                {
-                    NationalSociety = ns,
-                    CurrentUserOrganizationId = ns.NationalSocietyUsers
-                        .Where(uns => uns.User == currentUser)
-                        .Select(uns => uns.OrganizationId)
-                        .SingleOrDefault(),
-                    HasCoordinator = ns.NationalSocietyUsers
-                        .Any(uns => uns.User.Role == Role.Coordinator)
-                })
-                .SingleAsync();
-
-            var nationalSociety = nationalSocietyData.NationalSociety;
-
-            if (nationalSociety.IsArchived)
-            {
-                return Error(ResultKey.NationalSociety.Edit.CannotEditArchivedNationalSociety);
-            }
-
-            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
-            {
-                return Error(ResultKey.UnexpectedError);
-            }
-
-            nationalSociety.Name = dto.Name;
-            nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
-            nationalSociety.Country = await GetCountryById(dto.CountryId);
-
-            await _nyssContext.SaveChangesAsync();
-
-            return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>
