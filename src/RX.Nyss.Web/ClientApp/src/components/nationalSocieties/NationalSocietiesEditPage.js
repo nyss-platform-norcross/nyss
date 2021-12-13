@@ -15,8 +15,7 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
-
-export const EpiWeekStandards = ['Monday', 'Sunday'];
+import { EpiWeekStandards } from './logic/nationalSocietiesConstants';
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -118,7 +117,7 @@ const NationalSocietiesEditPageComponent = (props) => {
               field={form.fields.epiWeekStartDay}
             >
               {EpiWeekStandards.map(itm => (
-                <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(`nationalSociety.form.epiWeekStandard.${itm}`)}</MenuItem>
+                <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(stringKeys.nationalSociety.form.epiWeekStandard[itm].label)}</MenuItem>
               ))}
             </SelectField>
           </Grid>          

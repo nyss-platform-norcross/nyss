@@ -15,7 +15,7 @@ import { MenuItem, Button, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import { EpiWeekStandards } from './NationalSocietiesEditPage';
+import { EpiWeekStandards } from './logic/nationalSocietiesConstants';
 
 const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -115,7 +115,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
               field={form.fields.epiWeekStartDay}
             >
               {EpiWeekStandards.map(itm => (
-                <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(`nationalSociety.form.epiWeekStandard.${itm}`)}</MenuItem>
+                <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(stringKeys.nationalSociety.form.epiWeekStandard[itm].label)}</MenuItem>
               ))}
             </SelectField>
           </Grid>                

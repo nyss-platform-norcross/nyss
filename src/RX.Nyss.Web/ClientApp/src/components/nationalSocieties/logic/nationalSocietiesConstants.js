@@ -13,3 +13,5 @@ export const entityTypes = {
   nationalSociety: id => `nationalSociety:${id}`,
   project: id => `project:${id}`
 }
+
+export const EpiWeekStandards = ['Monday', 'Sunday'];

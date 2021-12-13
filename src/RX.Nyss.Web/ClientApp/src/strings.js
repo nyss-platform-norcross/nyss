@@ -63,7 +63,15 @@ export const stringKeys = {
       create: "nationalSociety.form.create",
       update: "nationalSociety.form.update",
       epiWeekStandard: {
-        title: "nationalSociety.form.epiWeekStandard.title"
+        title: "nationalSociety.form.epiWeekStandard.title",
+        "Sunday": {
+          label: "nationalSociety.form.epiWeekStandard.sunday.label",
+          description: "nationalSociety.form.epiWeekStandard.sunday.description"
+        },
+        "Monday": {
+          label: "nationalSociety.form.epiWeekStandard.monday.label",
+          description: "nationalSociety.form.epiWeekStandard.monday.description"
+        }
       }
     },
     messages: {
