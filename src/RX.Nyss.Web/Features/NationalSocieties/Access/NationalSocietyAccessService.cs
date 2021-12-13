@@ -45,7 +45,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
 
             return await _nyssContext.UserNationalSocieties
                 .AnyAsync(uns1 => uns1.UserId == userId
-                    && !(uns1.User is DataConsumerUser && uns1.User.IsFirstLogin)
                     && uns1.NationalSociety.NationalSocietyUsers.Any(uns2 => uns2.User.EmailAddress == currentUserName));
         }
 

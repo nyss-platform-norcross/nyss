@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.Users
                     OrganizationId = uns.Organization != null ? uns.Organization.Id : 0,
                     IsHeadManager = uns.Organization.HeadManagerId.HasValue && uns.Organization.HeadManagerId == uns.User.Id,
                     IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id,
-                    IsVerified = !uns.User.IsFirstLogin
+                    IsVerified = !uns.User.IsFirstLogin,
                 })
                 .OrderByDescending(u => u.IsHeadManager).ThenBy(u => u.Name)
                 .ToListAsync();
