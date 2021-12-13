@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -46,10 +47,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
         public class Handler : IRequestHandler<EditDataCollectorCommand, Result>
         {
             private readonly INyssContext _nyssContext;
+            private readonly IDateTimeProvider _dateTimeProvider;
 
-            public Handler(INyssContext nyssContext)
+            public Handler(INyssContext nyssContext, IDateTimeProvider dateTimeProvider)
             {
                 _nyssContext = nyssContext;
+                _dateTimeProvider = dateTimeProvider;
             }
 
             public async Task<Result> Handle(EditDataCollectorCommand request, CancellationToken cancellationToken)
@@ -59,6 +62,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     .ThenInclude(x => x.NationalSociety)
                     .Include(dc => dc.Supervisor)
                     .Include(dc => dc.DataCollectorLocations)
+                    .Include(dc => dc.DatesNotDeployed)
                     .SingleAsync(dc => dc.Id == request.Id, cancellationToken);
 
                 if (dataCollector.Project.State != ProjectState.Open)
@@ -94,6 +98,15 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                 dataCollector.HeadSupervisor = headSupervisor;
                 dataCollector.Deployed = request.Deployed;
 
+                if (request.Deployed)
+                {
+                    UpdateNotDeployedDate(dataCollector);
+                }
+                else
+                {
+                    await AddNotDeployedDate(dataCollector, cancellationToken);
+                }
+
                 dataCollector.DataCollectorLocations = await EditDataCollectorLocations(dataCollector.DataCollectorLocations, request.Locations, nationalSocietyId);
 
                 await _nyssContext.SaveChangesAsync(cancellationToken);
@@ -125,6 +138,26 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
             {
                 var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
                 return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
+            }
+
+            private void UpdateNotDeployedDate(DataCollector dataCollector)
+            {
+                var deployedDateToUpdate = dataCollector.DatesNotDeployed.FirstOrDefault(d => d.EndDate == null);
+                if (deployedDateToUpdate != null)
+                {
+                    deployedDateToUpdate.EndDate = _dateTimeProvider.UtcNow;
+                }
+            }
+
+            private async Task AddNotDeployedDate(DataCollector dataCollector, CancellationToken cancellationToken)
+            {
+                var dateNotDeployed = new DataCollectorNotDeployed
+                {
+                    DataCollectorId = dataCollector.Id,
+                    StartDate = _dateTimeProvider.UtcNow
+                };
+
+                await _nyssContext.DataCollectorNotDeployedDates.AddAsync(dateNotDeployed, cancellationToken);
             }
         }
     }
