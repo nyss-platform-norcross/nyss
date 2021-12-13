@@ -35,18 +35,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     .Where(dc => command.DataCollectorIds.Contains(dc.Id))
                     .ToListAsync(cancellationToken);
 
-                await SetDeployedState(dataCollectors, command.Deployed, cancellationToken);
-
-                await _nyssContext.SaveChangesAsync(cancellationToken);
-
-                return SuccessMessage(command.Deployed
-                    ? ResultKey.DataCollector.SetToDeployedSuccess
-                    : ResultKey.DataCollector.SetToNotDeployedSuccess);
-            }
-
-            private async Task SetDeployedState(List<DataCollector> dataCollectors, bool deployed, CancellationToken cancellationToken)
-            {
-                if (deployed)
+                if (command.Deployed)
                 {
                     var deployedEndDate = _dateTimeProvider.UtcNow;
                     dataCollectors.ForEach(dc =>
@@ -70,6 +59,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
 
                     await _nyssContext.DataCollectorNotDeployedDates.AddRangeAsync(datesNotDeployed, cancellationToken);
                 }
+
+                await _nyssContext.SaveChangesAsync(cancellationToken);
+
+                return SuccessMessage(command.Deployed
+                    ? ResultKey.DataCollector.SetToDeployedSuccess
+                    : ResultKey.DataCollector.SetToNotDeployedSuccess);
             }
         }
     }
