@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -18,28 +19,32 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
 {
     public class EditDataCollectorCommandTests
     {
+        private const int SupervisorId = 1;
+
+        private const int HeadSupervisorId = 2;
+
+        private const int DataCollectorId = 1;
+
+        private const string DataCollectorPhoneNumber = "+4725323525";
+
         private readonly INyssContext _nyssContextMock;
 
-        private readonly EditDataCollectorCommand.Handler _handler;
+        private readonly IDateTimeProvider _mockDateTimeProvider;
 
-        private const int SupervisorId = 1;
-        private const int HeadSupervisorId = 2;
-        private const int DataCollectorId = 1;
-        private const string DataCollectorPhoneNumber = "+4725323525";
+        private readonly EditDataCollectorCommand.Handler _handler;
 
         public EditDataCollectorCommandTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
+            _mockDateTimeProvider = Substitute.For<IDateTimeProvider>();
 
             ArrangeData();
 
-            _handler = new EditDataCollectorCommand.Handler(_nyssContextMock);
+            _handler = new EditDataCollectorCommand.Handler(_nyssContextMock, _mockDateTimeProvider);
         }
 
-
-
         [Fact]
-        public void EditDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
+        public void WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
             // Arrange
             var command = new EditDataCollectorCommand
@@ -64,7 +69,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
         [Theory]
         [InlineData(DataCollectorType.Human, "Human")]
         [InlineData(DataCollectorType.CollectionPoint, null)]
-        public async Task EditDataCollector_WhenSuccessful_ShouldReturnSuccess(DataCollectorType type, string displayName)
+        public async Task WhenSuccessful_ShouldReturnSuccess(DataCollectorType type, string displayName)
         {
             // Arrange
             var command = new EditDataCollectorCommand
@@ -103,7 +108,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
         [Theory]
         [InlineData(DataCollectorType.Human, "Human")]
         [InlineData(DataCollectorType.CollectionPoint, null)]
-        public async Task EditDataCollector_WhenPhoneNumberIsEmpty_ShouldReturnSuccess(DataCollectorType type, string displayName)
+        public async Task WhenPhoneNumberIsEmpty_ShouldReturnSuccess(DataCollectorType type, string displayName)
         {
             // Arrange
             var command = new EditDataCollectorCommand
@@ -140,7 +145,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
         }
 
         [Fact]
-        public async Task EditDataCollector_WhenEditingToBeLinkedToHeadSupervisor_ShouldReturnSuccess()
+        public async Task WhenEditingToBeLinkedToHeadSupervisor_ShouldReturnSuccess()
         {
             // Arrange
             var command = new EditDataCollectorCommand

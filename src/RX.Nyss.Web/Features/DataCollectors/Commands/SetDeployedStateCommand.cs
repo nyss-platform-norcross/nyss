@@ -15,11 +15,13 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
     public class SetDeployedStateCommand : IRequest<Result>
     {
         public IEnumerable<int> DataCollectorIds { get; set; }
+
         public bool Deployed { get; set; }
 
         public class Handler : IRequestHandler<SetDeployedStateCommand, Result>
         {
             private readonly INyssContext _nyssContext;
+
             private readonly IDateTimeProvider _dateTimeProvider;
 
             public Handler(INyssContext nyssContext, IDateTimeProvider dateTimeProvider)

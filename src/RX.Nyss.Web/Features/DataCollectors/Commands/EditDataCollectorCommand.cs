@@ -47,6 +47,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
         public class Handler : IRequestHandler<EditDataCollectorCommand, Result>
         {
             private readonly INyssContext _nyssContext;
+
             private readonly IDateTimeProvider _dateTimeProvider;
 
             public Handler(INyssContext nyssContext, IDateTimeProvider dateTimeProvider)
@@ -107,9 +108,12 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     await AddNotDeployedDate(dataCollector, cancellationToken);
                 }
 
-                dataCollector.DataCollectorLocations = await EditDataCollectorLocations(dataCollector.DataCollectorLocations, request.Locations, nationalSocietyId);
+                dataCollector.DataCollectorLocations = await EditDataCollectorLocations(
+                    dataCollector.DataCollectorLocations,
+                    request.Locations, nationalSocietyId);
 
                 await _nyssContext.SaveChangesAsync(cancellationToken);
+
                 return SuccessMessage(ResultKey.DataCollector.EditSuccess);
             }
 
