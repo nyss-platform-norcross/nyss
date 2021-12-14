@@ -90,6 +90,8 @@ function* openModule({ path, params }) {
   const sideMenu = getMenu(path, menuParams, placeholders.leftMenu, path, user);
   const tabMenu = getMenu(path, menuParams, placeholders.tabMenu, path, user);
 
+  console.log("openModule", path);
+
   yield put(actions.openModule.success(path, menuParams, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
 }
 

@@ -506,7 +506,10 @@ export const stringKeys = {
       },
       generatePdf: "project.dashboard.generatePdf"
     },
-    settings: "project.settings.title"
+    settings: "project.settings.title",
+    errorMessages: {
+      title: "project.settings.errorMessages.title",
+    }
   },
   globalCoordinator: {
     title: "globalCoordinator.title",
