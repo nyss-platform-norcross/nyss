@@ -6,7 +6,7 @@ export const getIconFromStatus = (status) => {
     case performanceStatus.reportingCorrectly: return "check";
     case performanceStatus.reportingWithErrors: return "close";
     case performanceStatus.notReporting: return "access_time";
-    default: return "contact_support";
+    default: return null;
   }
 }
 

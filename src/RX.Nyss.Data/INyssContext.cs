@@ -51,6 +51,7 @@ namespace RX.Nyss.Data
         DbSet<TechnicalAdvisorUserGatewayModem> TechnicalAdvisorUserGatewayModems { get; set; }
         DbSet<AlertNotHandledNotificationRecipient> AlertNotHandledNotificationRecipients { get; set; }
         DbSet<DataCollectorLocation> DataCollectorLocations { get; set; }
+        DbSet<DataCollectorNotDeployed> DataCollectorNotDeployedDates { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;

@@ -87,6 +87,7 @@ namespace RX.Nyss.Data
         public DbSet<TechnicalAdvisorUserGatewayModem> TechnicalAdvisorUserGatewayModems { get; set; }
         public DbSet<DataCollectorLocation> DataCollectorLocations { get; set; }
         public DbSet<AlertNotHandledNotificationRecipient> AlertNotHandledNotificationRecipients { get; set; }
+        public DbSet<DataCollectorNotDeployed> DataCollectorNotDeployedDates { get; set; }
 
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);

@@ -47,8 +47,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
 
         Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId);
-
-        Task<Result> SetDeployedState(SetDeployedStateRequestDto dto);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -497,21 +495,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(dto.InTraining
                 ? ResultKey.DataCollector.SetInTrainingSuccess
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
-        }
-
-        public async Task<Result> SetDeployedState(SetDeployedStateRequestDto dto)
-        {
-            var dataCollectors = await _nyssContext.DataCollectors
-                .Where(dc => dto.DataCollectorIds.Contains(dc.Id))
-                .ToListAsync();
-
-            dataCollectors.ForEach(dc => dc.Deployed = dto.Deployed);
-
-            await _nyssContext.SaveChangesAsync();
-
-            return SuccessMessage(dto.Deployed
-                ? ResultKey.DataCollector.SetToDeployedSuccess
-                : ResultKey.DataCollector.SetToNotDeployedSuccess);
         }
 
         public async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
