@@ -81,7 +81,7 @@ export const projectsSiteMap = [
     path: "/projects/:projectId/errorMessages",
     title: () => strings(stringKeys.project.errorMessages.title),
     placeholder: placeholders.tabMenu,
-    access: accessMap.projetErrorMessages.list,
+    access: accessMap.projectErrorMessages.list,
     placeholderIndex: 4,
     middleStepOnly: true,
   },     

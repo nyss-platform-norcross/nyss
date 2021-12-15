@@ -97,7 +97,8 @@ export const accessMap = {
   translations: {
     list: [Administrator, GlobalCoordinator]
   },
-  projetErrorMessages: {
+  projectErrorMessages: {
     list: [Administrator, Manager, TechnicalAdvisor],
+    edit: [Administrator, Manager, TechnicalAdvisor],
   }
 };

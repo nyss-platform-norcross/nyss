@@ -136,7 +136,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
           <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
 
-          <AuthRoute exact path='/projects/:projectId/errorMessages' component={ProjectErrorMessagesPage} roles={accessMap.projetErrorMessages.list} />
+          <AuthRoute exact path='/projects/:projectId/errorMessages' component={ProjectErrorMessagesPage} roles={accessMap.projectErrorMessages.list} />
 
           <Redirect exact from='/projects/:projectId/reports' to='/projects/:projectId/reports/correct' />
           <AuthRoute exact path='/projects/:projectId/reports/correct' component={CorrectReportsListPage} roles={accessMap.reports.list} />
