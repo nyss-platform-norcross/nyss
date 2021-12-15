@@ -12,6 +12,7 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import SubmitButton from "../forms/submitButton/SubmitButton";
 import { accessMap } from "../../authentication/accessMap";
 import TextInputField from "../forms/TextInputField";
+import * as http from "../../utils/http";
 import styles from "./ProjectErrorMessagesPage.module.scss";
 
 const MessageTitles = {
@@ -29,7 +30,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
   async function fetchData() {
-    setErrorMessages(await httpGet(`/api/project/${props.projectId}/errorMessages`));
+    setErrorMessages(await http.get(`/api/project/${props.projectId}/errorMessages`));
   }
 
   function edit() {
@@ -63,7 +64,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
     });
 
     try {
-      setErrorMessages(await httpPut(url, data));
+      setErrorMessages(await http.put(url, data));
       setForm(null); 
     } catch (error) {
       console.error(error);
@@ -139,29 +140,6 @@ const mapStateToProps = (_, ownProps) => ({
 });
 
 const mapDispatchToProps = {};
-
-async function httpGet(url) {
-  const response = await fetch(url);
-
-  if (!response.ok) throw new Error(`Request '${url}' failed: ${response.status}`);
-  
-  return await response.json();
-}
-
-async function httpPut(url, data) {
-  const response = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  
-  if (!response.ok) throw new Error(`Request '${url}' failed: ${response.status}`);
-
-  return await response.json();
-}
-
 
 export const ProjectErrorMessagesPage = withLayout(
   Layout,
