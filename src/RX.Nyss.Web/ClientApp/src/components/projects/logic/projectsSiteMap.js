@@ -84,5 +84,5 @@ export const projectsSiteMap = [
     access: accessMap.projetErrorMessages.list,
     placeholderIndex: 4,
     middleStepOnly: true,
-  },   
+  },     
 ];
