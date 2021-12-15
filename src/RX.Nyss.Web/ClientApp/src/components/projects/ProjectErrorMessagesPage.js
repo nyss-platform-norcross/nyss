@@ -29,23 +29,18 @@ const ProjectErrorMessagesPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
   async function fetchData() {
-    const url = `/api/project/${props.projectId}/errorMessages`;
-    const response = await fetch(url);
-
-    if (!response.ok) return;
-
-    setErrorMessages(await response.json());
+    setErrorMessages(await httpGet(`/api/project/${props.projectId}/errorMessages`));
   }
 
   function edit() {
     const fields = {};
     const validation = {};
-    
-    errorMessages.forEach(itm => {
+
+    errorMessages.forEach((itm) => {
       fields[itm.key] = itm.message;
       validation[itm.key] = [validators.required, validators.maxLength(160)];
     });
-    
+
     setForm(createForm(fields, validation));
   }
 
@@ -53,22 +48,28 @@ const ProjectErrorMessagesPageComponent = (props) => {
     setForm(null);
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
 
     if (!form.isValid()) {
       return;
-    };
+    }
 
+    const url = `/api/project/${props.projectId}/errorMessages`;
     const data = {};
 
-    errorMessages.forEach(itm => {
+    errorMessages.forEach((itm) => {
       data[itm.key] = form.fields[itm.key].value;
     });
 
-    // TODO: Send data
-    //setForm(null);
-    setIsSaving(true);
+    try {
+      setErrorMessages(await httpPut(url, data));
+      setForm(null); 
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   useEffect(() => {
@@ -138,6 +139,29 @@ const mapStateToProps = (_, ownProps) => ({
 });
 
 const mapDispatchToProps = {};
+
+async function httpGet(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) throw new Error(`Request '${url}' failed: ${response.status}`);
+  
+  return await response.json();
+}
+
+async function httpPut(url, data) {
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) throw new Error(`Request '${url}' failed: ${response.status}`);
+
+  return await response.json();
+}
+
 
 export const ProjectErrorMessagesPage = withLayout(
   Layout,

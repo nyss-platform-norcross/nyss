@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Projects.Commands;
 using RX.Nyss.Web.Features.Projects.Dto;
 using RX.Nyss.Web.Features.Projects.Queries;
 using RX.Nyss.Web.Utils;
@@ -102,5 +103,16 @@ namespace RX.Nyss.Web.Features.Projects
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager,Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IReadOnlyList<ProjectErrorMessageDto>> GetErrorMessages(int projectId) =>
             await Sender.Send(new GetProjectErrorMessagesQuery(projectId));
+
+        /// <summary>
+        /// Updates error message
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        /// <param name="body">Key-value pair with messages</param>
+        /// <returns></returns>
+        [HttpPut("{projectId:int}/errorMessages")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager,Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IReadOnlyList<ProjectErrorMessageDto>> UpdateErrorMessages([FromRoute] int projectId, [FromBody] Dictionary<string, string> body) =>
+            await Sender.Send(new UpdateProjectErrorMessagesCommand(projectId, body));
     }
 }
