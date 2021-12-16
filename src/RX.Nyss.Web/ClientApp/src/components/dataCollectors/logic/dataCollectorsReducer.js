@@ -68,7 +68,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formFetching: true, nationalSocietyId: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTOR_CREATION.SUCCESS:
-      return { ...state, formFetching: false, nationalSocietyId: action.nationalSocietyId, formDefaultSupervisorId: action.defaultSupervisorId, formRegions: action.regions, formSupervisors: action.supervisors, formDefaultLocation: action.defaultLocation, filters: initialState.dataCollectors.filters, listStale: filterIsSet(state.filters) };
+      return { ...state, formFetching: false, nationalSocietyId: action.nationalSocietyId, formDefaultSupervisorId: action.defaultSupervisorId, formRegions: action.regions, formSupervisors: action.supervisors, formDefaultLocation: action.defaultLocation, filters: initialState.dataCollectors.filters, countryCode: action.countryCode, listStale: filterIsSet(state.filters) };
 
     case actions.OPEN_DATA_COLLECTOR_CREATION.FAILURE:
       return { ...state, formFetching: false, formError: action.message };

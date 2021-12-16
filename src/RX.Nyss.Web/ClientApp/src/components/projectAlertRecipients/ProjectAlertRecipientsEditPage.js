@@ -115,7 +115,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
   if (!props.formData || !form) {
     return null;
   }
-console.log(props.formData)
+  
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -165,7 +165,7 @@ console.log(props.formData)
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      defaultCountry={"no"}
+                      defaultCountry={props.formData.countryCode}
                   />
                   </Grid>
 

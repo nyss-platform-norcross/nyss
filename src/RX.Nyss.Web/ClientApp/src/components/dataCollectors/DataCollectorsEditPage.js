@@ -200,7 +200,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              defaultCountry={"no"}
+              defaultCountry={props.data.nationalSocietyCountryCode}
             />
           </Grid>
 
@@ -209,7 +209,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              defaultCountry={"no"}
+              defaultCountry={props.data.nationalSocietyCountryCode}
             />
           </Grid>)}
 

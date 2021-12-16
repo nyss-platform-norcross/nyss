@@ -131,7 +131,7 @@ const DataCollectorsCreatePageComponent = (props) => {
   if (!form) {
     return null;
   }
-  
+
   return (
     <Fragment>
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
@@ -216,7 +216,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              defaultCountry={'no'}
+              defaultCountry={props.countryCode}
             />
           </Grid>
           {type === dataCollectorType.human && (<Grid item xs={12}>
@@ -224,7 +224,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              defaultCountry="no"
+              defaultCountry={props.countryCode}
             />
           </Grid>)}
 
@@ -294,7 +294,8 @@ const mapStateToProps = (state, ownProps) => ({
   defaultSupervisorId: state.dataCollectors.formDefaultSupervisorId,
   isGettingCountryLocation: state.dataCollectors.gettingLocation,
   country: state.dataCollectors.countryData,
-  error: state.dataCollectors.formError
+  error: state.dataCollectors.formError,
+  countryCode: state.dataCollectors.countryCode
 });
 
 const mapDispatchToProps = {

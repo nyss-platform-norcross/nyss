@@ -122,7 +122,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   if (!props.formData) {
     return null;
   }
-console.log(props)
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -172,7 +172,7 @@ console.log(props)
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      defaultCountry={"no"}
+                      defaultCountry={props.formData.countryCode}
                   />
                   </Grid>
 

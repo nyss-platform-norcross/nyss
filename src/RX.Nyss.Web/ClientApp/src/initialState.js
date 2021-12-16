@@ -202,6 +202,7 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
+    countryCode: null,
     mapOverviewDataCollectorLocations: [],
     mapOverviewCenterLocation: null,
     mapOverviewFilters: null,
@@ -268,7 +269,8 @@ export const initialState = {
     correctReportsSorting: null,
     incorrectReportsPaginatedListData: null,
     incorrectReportsFilters: null,
-    incorrectReportsSorting: null
+    incorrectReportsSorting: null,
+    countryCode: null
   },
   nationalSocietyReports: {
     listFetching: false,

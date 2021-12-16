@@ -99,6 +99,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     BirthGroupDecade = dc.BirthGroupDecade,
                     PhoneNumber = dc.PhoneNumber,
                     AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
+                    
                     Locations = dc.DataCollectorLocations.Select(dcl => new GetDataCollectorResponseDto.DataCollectorLocationDto
                     {
                         Id = dcl.Id,
@@ -137,6 +138,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         ? dc.Supervisor.Id
                         : dc.HeadSupervisor.Id,
                     NationalSocietyId = dc.Project.NationalSociety.Id,
+                    NationalSocietyCountryCode = dc.Project.NationalSociety.Country.CountryCode,
                     ProjectId = dc.Project.Id,
                     Deployed = dc.Deployed
                 })
@@ -173,6 +175,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     NationalSocietyId = dc.NationalSociety.Id,
                     CountryName = dc.NationalSociety.Country.Name,
+                    CountryCode = dc.NationalSociety.Country.CountryCode,
                     OrganizationId = dc.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == currentUser.Id)
                         .Select(nsu => nsu.OrganizationId)
@@ -201,6 +204,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 Regions = regions.Value,
                 Supervisors = supervisors,
                 DefaultSupervisorId = defaultSupervisorId,
+                CountryCode = projectData.CountryCode,
                 DefaultLocation = locationFromCountry.IsSuccess
                     ? new LocationDto
                     {
