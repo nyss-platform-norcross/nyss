@@ -28,7 +28,7 @@ import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
-import CountryCode from "../forms/CountryCode";
+import PhoneInputField from "../forms/PhoneInputField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 
@@ -212,7 +212,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>)}
 
           <Grid item xs={12}>
-            <CountryCode
+            <PhoneInputField
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -220,7 +220,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
           {type === dataCollectorType.human && (<Grid item xs={12}>
-            <CountryCode
+            <PhoneInputField
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}

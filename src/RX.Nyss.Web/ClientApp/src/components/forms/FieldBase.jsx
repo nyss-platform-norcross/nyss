@@ -23,17 +23,22 @@ class FieldBase extends PureComponent {
     value ? (value.inputValue || value.title) : '';
 
   handleChange = (e, val) => {
-    const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
-    const value = type === "checkbox"
-      ? e.target.checked
-      : (type === "date"
-        ? dayjs(e)
-        : this.setAutoCompleteValue(val) || e.target.value);
+    const type = typeof e !== 'string' ? this.getElementType((e.nativeEvent && e.nativeEvent.target) || e) : null;
+    const value = this.getValue(type, e, val);
 
     this.setState({ value: value });
     this.props.field._customError = null;
     this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
     this.props.field.touched = true;
+  }
+
+  getValue = (type, e, val) => {
+    if (!type) return e;
+    return type === "checkbox"
+      ? e.target.checked
+      : (type === "date"
+        ? dayjs(e)
+        : this.setAutoCompleteValue(val) || e.target.value);
   }
 
   handleBlur = () => {

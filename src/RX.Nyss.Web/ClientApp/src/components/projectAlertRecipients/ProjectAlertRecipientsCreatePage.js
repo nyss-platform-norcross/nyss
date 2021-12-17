@@ -7,7 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import CountryCode from '../forms/CountryCode';
+import PhoneInputField from '../forms/PhoneInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -168,7 +168,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                   </Grid>
 
                   <Grid item xs={12}>
-                  <CountryCode 
+                  <PhoneInputField 
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"

@@ -8,7 +8,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import CountryCode from '../forms/CountryCode'
+import PhoneInputField from '../forms/PhoneInputField'
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
@@ -106,7 +106,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
   if (!props.data || !form || props.isFetching) {
     return <Loading />;
   }
-console.log(props.countryCode)
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error.message} />}
@@ -123,7 +123,7 @@ console.log(props.countryCode)
           </Grid>
 
           <Grid item xs={12}>
-          <CountryCode 
+          <PhoneInputField 
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -132,7 +132,7 @@ console.log(props.countryCode)
           </Grid>
 
           <Grid item xs={12}>
-          <CountryCode 
+          <PhoneInputField 
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}

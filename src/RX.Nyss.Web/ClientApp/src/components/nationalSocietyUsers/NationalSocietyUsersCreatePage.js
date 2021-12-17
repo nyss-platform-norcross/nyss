@@ -9,7 +9,7 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
-import CountryCode from '../forms/CountryCode';
+import PhoneInputField from '../forms/PhoneInputField';
 import { MenuItem, Button, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -239,7 +239,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <CountryCode 
+            <PhoneInputField 
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -248,10 +248,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <CountryCode 
-              label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
-              name="phoneNumber"
-              field={form.fields.phoneNumber}
+          <PhoneInputField 
+              label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
+              name="additionalPhoneNumber"
+              field={form.fields.additionalPhoneNumber}
               defaultCountry={props.data.countryCode}
           />
           </Grid>

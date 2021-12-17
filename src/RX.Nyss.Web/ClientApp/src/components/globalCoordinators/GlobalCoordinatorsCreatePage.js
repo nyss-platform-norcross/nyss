@@ -10,7 +10,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import CountryCode from '../forms/CountryCode';
+import PhoneInputField from '../forms/PhoneInputField';
 import { useMount } from '../../utils/lifecycle';
 import { Grid, Button } from '@material-ui/core';
 import { stringKeys, strings } from '../../strings';
@@ -80,7 +80,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <CountryCode 
+          <PhoneInputField 
               label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -89,7 +89,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <CountryCode 
+          <PhoneInputField 
               label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
