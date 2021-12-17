@@ -99,7 +99,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     BirthGroupDecade = dc.BirthGroupDecade,
                     PhoneNumber = dc.PhoneNumber,
                     AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
-                    
                     Locations = dc.DataCollectorLocations.Select(dcl => new GetDataCollectorResponseDto.DataCollectorLocationDto
                     {
                         Id = dcl.Id,

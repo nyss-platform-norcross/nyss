@@ -358,7 +358,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     Name = gm.Name
                 })
                 .ToListAsync();
-            
+
             var countryCode = await _nyssContext.NationalSocieties
                 .Where(n => n.Id == nationalSocietyId)
                 .Select(n => n.Country.CountryCode)
