@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
@@ -74,15 +73,6 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest) =>
             await Sender.Send(new ExportReportExcelQuery(projectId, filterRequest)).AsFileResult();
-
-        /// <summary>
-        /// Mark the selected report as error.
-        /// </summary>
-        /// <param name="reportId">The ID of the report to be marked as error</param>
-        [HttpPost("{reportId:int}/markAsError")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ReportAccess)]
-        public async Task<Result> MarkAsError(int reportId) =>
-            await _reportService.MarkAsError(reportId);
 
         /// <summary>
         /// Gets human health risks for the project.

@@ -9,7 +9,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }
-        public bool? IsMarkedAsError { get; set; }
         public string Region { get; set; }
         public string District { get; set; }
         public string Village { get; set; }

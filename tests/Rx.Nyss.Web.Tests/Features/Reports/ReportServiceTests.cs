@@ -450,32 +450,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         }
 
         [Fact]
-        public async Task AcceptReport_WhenMarkedAsError_ShouldFail()
-        {
-            // Arrange
-            var rawReports = new List<RawReport>
-            {
-                new RawReport
-                {
-                    Id = 1,
-                    Report = new Report
-                    {
-                        MarkedAsError = true
-                    }
-                }
-            };
-            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
-
-            // Act
-            var result = await _reportService.AcceptReport(1);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Report.CannotCrossCheckErrorReport);
-        }
-
-        [Fact]
         public async Task DismissReport_WhenErrorReport_ShouldNotBeAllowed()
         {
             // Arrange
@@ -570,32 +544,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             // Assert
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Report.AlreadyCrossChecked);
-        }
-
-        [Fact]
-        public async Task DismissReport_WhenMarkedAsError_ShouldFail()
-        {
-            // Arrange
-            var rawReports = new List<RawReport>
-            {
-                new RawReport
-                {
-                    Id = 1,
-                    Report = new Report
-                    {
-                        MarkedAsError = true
-                    }
-                }
-            };
-            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
-
-            // Act
-            var result = await _reportService.DismissReport(1);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Report.CannotCrossCheckErrorReport);
         }
 
         [Fact]

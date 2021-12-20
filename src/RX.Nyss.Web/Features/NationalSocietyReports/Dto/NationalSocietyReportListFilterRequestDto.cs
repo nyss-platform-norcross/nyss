@@ -12,7 +12,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public ReportErrorFilterType? ErrorType { get; set; }
         public IList<int> HealthRisks { get; set; }
         public AreaDto Locations { get; set; }
-        public bool FormatCorrect { get; set; }
         public ReportStatusFilterDto ReportStatus { get; set; }
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }

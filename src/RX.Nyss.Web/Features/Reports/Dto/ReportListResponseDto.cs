@@ -37,7 +37,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? ReferredCount { get; set; }
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
-        public bool? IsMarkedAsError { get; set; }
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
         public DateTime DateTime { get; set; }

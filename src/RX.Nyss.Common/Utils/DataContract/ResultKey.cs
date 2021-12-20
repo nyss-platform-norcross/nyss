@@ -209,7 +209,6 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string LinkedToSupervisor = "report.linkedToSupervisor";
             public const string LinkedToOrganization = "report.linkedToOrganization";
             public const string AlreadyCrossChecked = "report.alreadyCrossChecked";
-            public const string CannotCrossCheckErrorReport = "report.cannotCrossCheckErrorReport";
             public const string CannotCrossCheckDcpReport = "report.cannotCrossCheckDcpReport";
             public const string CannotCrossCheckReportWithoutLocation = "report.cannotCrossCheckReportWithoutLocation";
 

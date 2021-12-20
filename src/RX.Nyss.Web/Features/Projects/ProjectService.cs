@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -10,7 +9,6 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.Projects.Dto;
@@ -29,7 +27,6 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes);
-        Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
     public class ProjectService : IProjectService
@@ -152,11 +149,11 @@ namespace RX.Nyss.Web.Features.Projects
                     Id = p.Id,
                     Name = p.Name,
                     StartDate = p.StartDate.AddHours(utcOffset),
-                    EndDate = p.EndDate.HasValue ? p.EndDate.Value.AddHours(utcOffset) : (DateTime?)null,
+                    EndDate = p.EndDate.HasValue ? p.EndDate.Value.AddHours(utcOffset) : null,
                     IsClosed = p.State == ProjectState.Closed,
                     TotalReportCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Reports)
-                        .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && !r.IsTraining && !r.MarkedAsError)
+                        .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && !r.IsTraining)
                         .Sum(r => r.ReportedCaseCount),
                     EscalatedAlertCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Alerts.Where(a => a.EscalatedAt.HasValue)).Count(),
@@ -391,13 +388,6 @@ namespace RX.Nyss.Web.Features.Projects
             var result = await GetFormDataDto(nationalSocietyId, contentLanguageId);
             return Success(result);
         }
-
-        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>
-            await _nyssContext.Users.FilterAvailable()
-                .OfType<SupervisorUser>()
-                .Where(u => u.EmailAddress == supervisorIdentityName)
-                .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
-                .ToListAsync();
 
         private IQueryable<Project> GetProjectsForSupervisorOrHeadSupervisor(User currentUser) =>
             currentUser.Role == Role.HeadSupervisor

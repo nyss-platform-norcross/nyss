@@ -115,7 +115,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     {
                         ReportedCaseCount = 1,
                         Status = ReportStatus.Accepted,
-                        MarkedAsError = false,
                     }
                 },
                 new RawReport
@@ -126,7 +125,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     {
                         ReportedCaseCount = 2,
                         Status = ReportStatus.Rejected,
-                        MarkedAsError = false,
                     }
                 },
                 new RawReport
@@ -137,7 +135,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     {
                         ReportedCaseCount = 1,
                         Status = ReportStatus.New,
-                        MarkedAsError = false,
                     }
                 },
                 new RawReport
@@ -148,7 +145,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     {
                         ReportedCaseCount = 1,
                         Status = ReportStatus.Pending,
-                        MarkedAsError = false,
                     }
                 },
             };

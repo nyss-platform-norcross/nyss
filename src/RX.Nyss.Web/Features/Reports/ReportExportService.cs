@@ -93,7 +93,6 @@ namespace RX.Nyss.Web.Features.Reports
                     Status = r.Report != null && !r.Report.IsActivityReport()
                         ? GetReportStatusString(strings, r.Report.Status)
                         : null,
-                    MarkedAsError = r.Report != null && r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
@@ -177,7 +176,6 @@ namespace RX.Nyss.Web.Features.Reports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByDataCollectorType(filter.DataCollectorType)
                     .FilterByHealthRisks(filter.HealthRisks)
-                    .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(filter.Locations)
                     .FilterByReportStatus(filter.ReportStatus)
@@ -192,7 +190,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByArea(filter.Locations)
-                .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByTrainingMode(filter.TrainingStatus);
