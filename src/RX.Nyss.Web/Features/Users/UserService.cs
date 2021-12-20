@@ -110,7 +110,8 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = gm.Id,
                             Name = gm.Name
-                        }).ToList()
+                        }).ToList(),
+                    CountryCode = ns.Country.CountryCode
                 }).SingleAsync();
 
             return Success(formData);
@@ -143,7 +144,8 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = gm.Id,
                             Name = gm.Name
-                        }).ToList()
+                        }).ToList(),
+                    CountryCode = u.UserNationalSociety.NationalSociety.Country.CountryCode
                 }).SingleOrDefaultAsync();
 
             return Success(user);

@@ -81,6 +81,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     {
                         Id = 1,
                         LanguageCode = "en"
+                    },
+                    Country = new Country
+                    {
+                        CountryCode = "en"
                     }
                 },
                 new NationalSociety
@@ -90,6 +94,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     {
                         Id = 1,
                         LanguageCode = "en"
+                    },
+                    Country = new Country
+                    {
+                        CountryCode = "en"
                     }
                 }
             };

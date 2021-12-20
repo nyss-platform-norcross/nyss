@@ -62,7 +62,7 @@ function* openDataCollectorCreation({ projectId }) {
 
     const response = yield call(http.get, `/api/dataCollector/formData?projectId=${projectId}`);
 
-    yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId));
+    yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId, response.value.countryCode));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }

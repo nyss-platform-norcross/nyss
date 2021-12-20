@@ -56,7 +56,7 @@ export const getMapOverview = {
 export const openCreation = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTOR_CREATION.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTOR_CREATION.REQUEST }),
-  success: (regions, supervisors, defaultLocation, defaultSupervisorId) => ({ type: OPEN_DATA_COLLECTOR_CREATION.SUCCESS, regions, supervisors, defaultLocation, defaultSupervisorId }),
+  success: (regions, supervisors, defaultLocation, defaultSupervisorId, countryCode) => ({ type: OPEN_DATA_COLLECTOR_CREATION.SUCCESS, regions, supervisors, defaultLocation, defaultSupervisorId, countryCode }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTOR_CREATION.FAILURE, message })
 };
 

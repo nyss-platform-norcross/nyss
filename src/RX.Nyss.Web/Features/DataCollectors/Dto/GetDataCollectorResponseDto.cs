@@ -29,6 +29,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public int NationalSocietyId { get; set; }
 
+        public string NationalSocietyCountryCode { get; set;}
+
         public int ProjectId { get; set; }
 
         public bool Deployed { get; set; }

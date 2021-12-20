@@ -359,12 +359,18 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 })
                 .ToListAsync();
 
+            var countryCode = await _nyssContext.NationalSocieties
+                .Where(n => n.Id == nationalSocietyId)
+                .Select(n => n.Country.CountryCode)
+                .SingleOrDefaultAsync();
+
             return Success(new ProjectAlertRecipientFormDataDto
             {
                 Supervisors = supervisorFormData,
                 ProjectOrganizations = organizations,
                 HealthRisks = healthRisks,
-                Modems = gatewayModems
+                Modems = gatewayModems,
+                CountryCode = countryCode
             });
         }
 

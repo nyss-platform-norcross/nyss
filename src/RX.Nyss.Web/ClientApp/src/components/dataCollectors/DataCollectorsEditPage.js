@@ -10,6 +10,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
+import PhoneInputField from "../forms/PhoneInputField";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -195,20 +196,20 @@ const DataCollectorsEditPageComponent = (props) => {
           </Grid>)}
 
           <Grid item xs={12}>
-            <TextInputField
+            <PhoneInputField 
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              inputMode={"tel"}
+              defaultCountry={props.data.nationalSocietyCountryCode}
             />
           </Grid>
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
-            <TextInputField
+            <PhoneInputField 
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              inputMode={"tel"}
+              defaultCountry={props.data.nationalSocietyCountryCode}
             />
           </Grid>)}
 

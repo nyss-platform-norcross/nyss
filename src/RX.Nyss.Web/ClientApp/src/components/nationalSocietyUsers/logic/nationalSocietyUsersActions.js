@@ -57,7 +57,7 @@ export const addExisting = {
 export const openEdition = {
   invoke: (nationalSocietyUserId, role) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, nationalSocietyUserId, role }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.REQUEST }),
-  success: (data, organizations, modems) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, organizations, modems }),
+  success: (data, organizations, modems, countryCode) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, organizations, modems, countryCode }),
   failure: (error) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE, error })
 };
 

@@ -31,7 +31,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data, formOrganizations: action.organizations, formModems: action.modems };
+      return { ...state, formFetching: false, formData: action.data, formOrganizations: action.organizations, formModems: action.modems, countryCode: action.countryCode };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE:
       return { ...state, formFetching: false };

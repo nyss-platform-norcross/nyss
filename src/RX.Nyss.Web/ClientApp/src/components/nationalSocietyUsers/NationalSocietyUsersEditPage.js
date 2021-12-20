@@ -8,6 +8,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
+import PhoneInputField from '../forms/PhoneInputField'
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
@@ -122,21 +123,21 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <PhoneInputField 
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              inputMode={"tel"}
-            />
+              defaultCountry={props.countryCode}
+          />
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+          <PhoneInputField 
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              inputMode={"tel"}
-            />
+              defaultCountry={props.countryCode}
+          />
           </Grid>
 
           {canChangeOrganization && (
@@ -270,7 +271,8 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.nationalSocietyUsers.formData,
   callingUserRoles: state.appData.user.roles,
   error: state.nationalSocietyUsers.formError,
-  modems: state.nationalSocietyUsers.formModems
+  modems: state.nationalSocietyUsers.formModems,
+  countryCode: state.nationalSocietyUsers.countryCode
 });
 
 const mapDispatchToProps = {

@@ -103,12 +103,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
         }
 
-        public async Task<ContentLanguage> GetLanguageById(int id) =>
-            await _nyssContext.ContentLanguages.FindAsync(id);
-
-        public async Task<Country> GetCountryById(int id) =>
-            await _nyssContext.Countries.FindAsync(id);
-
         private IQueryable<NationalSociety> GetNationalSocietiesQuery()
         {
             if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
