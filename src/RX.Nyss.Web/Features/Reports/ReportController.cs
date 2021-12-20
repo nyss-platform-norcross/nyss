@@ -96,11 +96,11 @@ namespace RX.Nyss.Web.Features.Reports
         /// <summary>
         /// Sends a report for testing purposes.
         /// </summary>
-        /// <param name="report">The report to send</param>
+        /// <param name="cmd">The report to send</param>
         [HttpPost("sendReport")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
-        public async Task<Result> SendReport([FromBody]SendReportRequestDto report) =>
-            await _reportSenderService.SendReport(report);
+        public async Task<Result> SendReport([FromBody] SendReportCommand cmd) =>
+            await Sender.Send(cmd);
 
         /// <summary>
         /// Gets send report form data

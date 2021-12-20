@@ -19,7 +19,6 @@ namespace RX.Nyss.Web.Features.Reports
 {
     public interface IReportSenderService
     {
-        Task<Result> SendReport(SendReportRequestDto report);
         Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId);
     }
 
@@ -43,55 +42,6 @@ namespace RX.Nyss.Web.Features.Reports
             _config = config;
             _nyssContext = nyssContext;
             _authorizationService = authorizationService;
-        }
-
-        public async Task<Result> SendReport(SendReportRequestDto report)
-        {
-            using var httpClient = _httpClientFactory.CreateClient();
-            var isHeadSupervisor = _authorizationService.IsCurrentUserInRole(Role.HeadSupervisor);
-
-            var dataCollectorData = await _nyssContext.DataCollectors
-                .Where(dc => dc.Id == report.DataCollectorId)
-                .Select(dc => new
-                {
-                    DataCollectorId = dc.Id,
-                    NationalSocietyId = dc.Project.NationalSocietyId
-                })
-                .SingleOrDefaultAsync();
-            var gatewayData = await _nyssContext.GatewaySettings
-                .Include(gs => gs.Modems)
-                .Where(gs => gs.NationalSocietyId == dataCollectorData.NationalSocietyId)
-                .Select(gs => new
-                {
-                    ApiKey = gs.ApiKey,
-                    Modem = gs.Modems.FirstOrDefault(gm => gm.Id == report.ModemId)
-                })
-                .FirstOrDefaultAsync();
-
-            if (gatewayData == null)
-            {
-                return Error(ResultKey.Report.NoGatewaySettingFoundForNationalSociety);
-            }
-
-            var baseUri = new Uri(_config.FuncAppBaseUrl);
-            var requestUri = new Uri(baseUri, new Uri("/api/enqueueNyssReport", UriKind.Relative));
-            var reportProps = new Dictionary<string, string>
-            {
-                { "Datacollectorid", dataCollectorData.DataCollectorId.ToString() },
-                { "Timestamp", report.Timestamp },
-                { "Text", report.Text },
-                { "Modemno", gatewayData.Modem?.ModemId.ToString() },
-                { "Headsupervisor", isHeadSupervisor ? "true" : null },
-                { "UtcOffset", report.UtcOffset.ToString() },
-                { "Apikey", gatewayData.ApiKey }
-            };
-            var content = new FormUrlEncodedContent(reportProps);
-
-            var responseMessage = await httpClient.PostAsync(requestUri, content);
-
-            responseMessage.EnsureSuccessStatusCode();
-
-            return SuccessMessage(ResultKey.Report.ReportSentSuccessfully);
         }
 
         public async Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId)
