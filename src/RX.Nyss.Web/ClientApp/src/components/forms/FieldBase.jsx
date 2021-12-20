@@ -23,6 +23,7 @@ class FieldBase extends PureComponent {
     value ? (value.inputValue || value.title) : '';
 
   handleChange = (e, val) => {
+    // phone number component sends value where other elements send event
     const type = typeof e !== 'string' ? this.getElementType((e.nativeEvent && e.nativeEvent.target) || e) : null;
     const value = this.getValue(type, e, val);
 
@@ -33,7 +34,7 @@ class FieldBase extends PureComponent {
   }
 
   getValue = (type, e, val) => {
-    if (!type) return e;
+    if (!type) return `+${e}`; // phone number input custom change handling
     return type === "checkbox"
       ? e.target.checked
       : (type === "date"
