@@ -15,10 +15,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorPerformanceService
     {
-        IList<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IList<DataCollectorWithRawReportData> dataCollectors, List<EpiDate> epiDateRange);
+        IList<Completeness> GetDataCollectorCompleteness(IList<DataCollectorWithRawReportData> dataCollectors, List<EpiDate> epiDateRange, DayOfWeek epiWeekStartDay);
 
         IList<DataCollectorPerformance> GetDataCollectorPerformance(IEnumerable<DataCollectorWithRawReportData> dataCollectorsWithReportsData, DateTime currentDate,
-            List<EpiDate> epiDateRange);
+            List<EpiDate> epiDateRange, DayOfWeek epiWeekStartDay);
 
         Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, DateTime fromDate,
             DateTime toDate, CancellationToken cancellationToken);
@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         {
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt,
-                            EpiDate = _dateTimeProvider.GetEpiDate(r.ReceivedAt)
+                            EpiDate = _dateTimeProvider.GetEpiDate(r.ReceivedAt, r.DataCollector.Project.NationalSociety.EpiWeekStartDay)
                         }),
                     DatesNotDeployed = dc.DatesNotDeployed
                 }).ToListAsync(cancellationToken);
@@ -69,12 +69,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         {
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt,
-                            EpiDate = _dateTimeProvider.GetEpiDate(r.ReceivedAt)
+                            EpiDate = _dateTimeProvider.GetEpiDate(r.ReceivedAt, r.DataCollector.Project.NationalSociety.EpiWeekStartDay)
                         }),
                     DatesNotDeployed = dc.DatesNotDeployed
                 }).ToListAsync(cancellationToken);
 
-        public IList<Completeness> GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IList<DataCollectorWithRawReportData> dataCollectors, List<EpiDate> epiDateRange)
+        public IList<Completeness> GetDataCollectorCompleteness(IList<DataCollectorWithRawReportData> dataCollectors, List<EpiDate> epiDateRange, DayOfWeek epiWeekStartDay)
         {
             if (!dataCollectors.Any())
             {
@@ -101,14 +101,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return epiDateRange.Select(epiDate => new Completeness
             {
                 EpiWeek = epiDate.EpiWeek,
-                TotalDataCollectors = TotalDataCollectorsDeployedInWeek(epiDate, dataCollectors),
+                TotalDataCollectors = TotalDataCollectorsDeployedInWeek(epiDate, epiWeekStartDay, dataCollectors),
                 ActiveDataCollectors = dataCollectorCompleteness
                     .FirstOrDefault(dc => dc.EpiDate.EpiWeek == epiDate.EpiWeek && dc.EpiDate.EpiYear == epiDate.EpiYear)?.Active ?? 0
             }).ToList();
         }
 
         public IList<DataCollectorPerformance> GetDataCollectorPerformance(IEnumerable<DataCollectorWithRawReportData> dataCollectorsWithReportsData, DateTime currentDate,
-            List<EpiDate> epiDateRange) =>
+            List<EpiDate> epiDateRange, DayOfWeek epiWeekStartDay) =>
             dataCollectorsWithReportsData
                 .Select(dc =>
                 {
@@ -132,36 +132,36 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             {
                                 EpiWeek = epiDate.EpiWeek,
                                 EpiYear = epiDate.EpiYear,
-                                ReportingStatus = DataCollectorExistedInWeek(epiDate, dc.CreatedAt) && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList())
+                                ReportingStatus = DataCollectorExistedInWeek(epiDate, dc.CreatedAt, epiWeekStartDay) && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList(), epiWeekStartDay)
                                     ? GetDataCollectorStatus(reportsGroupedByWeek.FirstOrDefault(r => r.Key.EpiWeek == epiDate.EpiWeek && r.Key.EpiYear == epiDate.EpiYear))
                                     : null
                             }).Reverse().ToList()
                     };
                 }).ToList();
 
-        private int TotalDataCollectorsDeployedInWeek(EpiDate epiDate, IEnumerable<DataCollectorWithRawReportData> dataCollectors) =>
-            dataCollectors.Count(dc => DataCollectorExistedInWeek(epiDate, dc.CreatedAt)
-                && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList()));
+        private int TotalDataCollectorsDeployedInWeek(EpiDate epiDate, DayOfWeek epiWeekStartDay, IEnumerable<DataCollectorWithRawReportData> dataCollectors) =>
+            dataCollectors.Count(dc => DataCollectorExistedInWeek(epiDate, dc.CreatedAt, epiWeekStartDay)
+                && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList(), epiWeekStartDay));
 
         private ReportingStatus GetDataCollectorStatus(IGrouping<EpiDate, RawReportData> grouping) =>
             grouping != null && grouping.Any()
                 ? grouping.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
                 : ReportingStatus.NotReporting;
 
-        private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated)
+        private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated, DayOfWeek epiWeekStartDay)
         {
-            var epiDataDataCollectorCreated = _dateTimeProvider.GetEpiDate(dataCollectorCreated);
+            var epiDataDataCollectorCreated = _dateTimeProvider.GetEpiDate(dataCollectorCreated, epiWeekStartDay);
             return epiDataDataCollectorCreated.EpiYear <= date.EpiYear && epiDataDataCollectorCreated.EpiWeek <= date.EpiWeek;
         }
 
-        private bool DataCollectorWasDeployedInWeek(EpiDate date, List<DataCollectorNotDeployed> datesNotDeployed)
+        private bool DataCollectorWasDeployedInWeek(EpiDate date, List<DataCollectorNotDeployed> datesNotDeployed, DayOfWeek epiWeekStartDay)
         {
             if (!datesNotDeployed.Any())
             {
                 return true;
             }
 
-            var firstDayOfEpiWeek = _dateTimeProvider.GetFirstDateOfEpiWeek(date.EpiYear, date.EpiWeek);
+            var firstDayOfEpiWeek = _dateTimeProvider.GetFirstDateOfEpiWeek(date.EpiYear, date.EpiWeek, epiWeekStartDay);
             var lastDayOfEpiWeek = firstDayOfEpiWeek.AddDays(7);
 
             var dataCollectorNotDeployedInWeek = datesNotDeployed.Any(d => d.StartDate < firstDayOfEpiWeek

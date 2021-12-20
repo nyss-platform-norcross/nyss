@@ -65,6 +65,11 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var filters = request.Filter;
                 var projectId = request.ProjectId;
 
+                var epiWeekStartDay = await _nyssContext.Projects
+                    .Where(p => p.Id == projectId)
+                    .Select(p => p.NationalSociety.EpiWeekStartDay)
+                    .SingleAsync(cancellationToken);
+
                 var strings = await _stringsService.GetForCurrentUser();
 
                 var dataCollectors = (await _dataCollectorService.GetDataCollectorsForCurrentUserInProject(projectId))
@@ -82,13 +87,13 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                     .FirstOrDefaultAsync(cancellationToken);
 
                 var currentDate = _dateTimeProvider.UtcNow;
-                var epiDateRange = _dateTimeProvider.GetEpiDateRange(projectStartDate, currentDate).ToList();
+                var epiDateRange = _dateTimeProvider.GetEpiDateRange(projectStartDate, currentDate, epiWeekStartDay).ToList();
 
                 var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, cancellationToken);
 
-                var dataCollectorPerformance = _dataCollectorPerformanceService.GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange);
+                var dataCollectorPerformance = _dataCollectorPerformanceService.GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange, epiWeekStartDay);
 
-                var completenessPerWeek = _dataCollectorPerformanceService.GetDataCollectorCompleteness(request.Filter, dataCollectorsWithReportsData, epiDateRange);
+                var completenessPerWeek = _dataCollectorPerformanceService.GetDataCollectorCompleteness(dataCollectorsWithReportsData, epiDateRange, epiWeekStartDay);
 
                 var excelSheet = GetExcelData(strings, dataCollectorPerformance, completenessPerWeek, epiDateRange);
 

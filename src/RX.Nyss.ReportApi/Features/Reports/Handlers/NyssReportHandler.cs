@@ -108,7 +108,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         var parsedReport = reportValidationResult.ReportData.ParsedReport;
                         var projectHealthRisk = reportValidationResult.ReportData.ProjectHealthRisk;
 
-                        var epiDate = _dateTimeProvider.GetEpiDate(rawReport.ReceivedAt);
+                        var epiDate = _dateTimeProvider.GetEpiDate(rawReport.ReceivedAt, gatewaySetting.NationalSociety.EpiWeekStartDay);
 
                         report = new Report
                         {

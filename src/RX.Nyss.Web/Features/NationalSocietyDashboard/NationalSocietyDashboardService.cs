@@ -76,8 +76,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 return Success(new NationalSocietyDashboardResponseDto());
             }
 
+            var epiWeekStartDay = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => ns.EpiWeekStartDay)
+                .SingleAsync();
+
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
-            var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType);
+            var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
