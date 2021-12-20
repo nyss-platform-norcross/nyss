@@ -303,13 +303,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         {
             if (gatewaySetting != null && errorReport.DataCollector != null)
             {
-                var feedbackMessage = errorReport.ReportErrorType switch
+                var smsErrorKey = errorReport.ReportErrorType switch
                 {
-                    ReportErrorType.FormatError => await GetFeedbackMessageContent(SmsContentKey.ReportError.FormatError, errorReport.LanguageCode),
-                    ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(SmsContentKey.ReportError.HealthRiskNotFound, errorReport.LanguageCode),
+                    ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
+                    ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
+                    ReportErrorType.CollectionPointNonHumanHealthRisk => SmsContentKey.ReportError.CollectionPointNonHumanHealthRisk,
+                    ReportErrorType.HealthRiskNotFound => SmsContentKey.ReportError.HealthRiskNotFound,
+                    ReportErrorType.Gateway => SmsContentKey.ReportError.Gateway,
+                    ReportErrorType.FormatError => SmsContentKey.ReportError.FormatError,
                     ReportErrorType.TooLong => null,
-                    _ => await GetFeedbackMessageContent(SmsContentKey.ReportError.Other, errorReport.LanguageCode)
+                    _ => SmsContentKey.ReportError.Other,
                 };
+
+                var feedbackMessage = await GetFeedbackMessageContent(smsErrorKey, errorReport.LanguageCode);
 
                 if (string.IsNullOrEmpty(feedbackMessage))
                 {

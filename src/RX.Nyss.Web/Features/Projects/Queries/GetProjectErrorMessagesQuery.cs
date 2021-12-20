@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Projects.Dto;
 
@@ -23,11 +24,11 @@ namespace RX.Nyss.Web.Features.Projects.Queries
         {
             private static readonly string[] MessagesKeys =
             {
-                "report.errorType.healthRiskNotFound",
-                "report.errorType.dataCollectorUsedCollectionPointFormat",
-                "report.errorType.collectionPointUsedDataCollectorFormat",
-                "report.errorType.gateway",
-                //?? Wrong reporting format: Reporting format cannot be used for human health risks
+                SmsContentKey.ReportError.HealthRiskNotFound,
+                SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
+                SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
+                SmsContentKey.ReportError.CollectionPointNonHumanHealthRisk,
+                SmsContentKey.ReportError.Gateway,
             };
 
             private readonly INyssContext _context;
@@ -55,7 +56,7 @@ namespace RX.Nyss.Web.Features.Projects.Queries
 
                 var lang = project.NationalSociety.ContentLanguage.LanguageCode;
 
-                var strings = await _stringsResourcesService.GetStrings(lang);
+                var strings = (await _stringsResourcesService.GetSmsContentResources(lang)).Value;
 
                 var projectMessages = await _context.ProjectErrorMessages
                     .Where(x => x.ProjectId == request.ProjectId)
@@ -64,7 +65,7 @@ namespace RX.Nyss.Web.Features.Projects.Queries
                 return MessagesKeys.Select(key => new ProjectErrorMessageDto
                 {
                     Key = key,
-                    Message = projectMessages.SingleOrDefault(x => x.MessageKey == key)?.Message ?? strings.Get(key),
+                    Message = projectMessages.SingleOrDefault(x => x.MessageKey == key)?.Message ?? strings[key],
                 }).ToArray();
             }
         }

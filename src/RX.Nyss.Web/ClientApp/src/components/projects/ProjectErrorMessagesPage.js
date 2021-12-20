@@ -15,15 +15,6 @@ import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
 import styles from "./ProjectErrorMessagesPage.module.scss";
 
-const MessageTitles = {
-  "report.errorType.healthRiskNotFound": "Health risk not used in project",
-  "report.errorType.dataCollectorUsedCollectionPointFormat":
-    "Wrong reporting format: Data collector used data collection point reporting format",
-  "report.errorType.collectionPointUsedDataCollectorFormat":
-    "Wrong reporting format: Data collection point used data collector reporting format",
-  "report.errorType.gateway": "SMS gateway error - contact manager",
-};
-
 const ProjectErrorMessagesPageComponent = (props) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -65,7 +56,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
 
     try {
       setErrorMessages(await http.put(url, data));
-      setForm(null); 
+      setForm(null);
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,11 +75,11 @@ const ProjectErrorMessagesPageComponent = (props) => {
   return (
     <Form onSubmit={onSubmit} fullWidth>
       <Grid container spacing={4} fixed="true" style={{ maxWidth: 800 }}>
-        {errorMessages.map((itm) => (
+        {errorMessages.map(itm => (
           <Grid item xs={12} key={itm.key}>
             <Card>
               <CardContent>
-                <Typography variant="h3">{MessageTitles[itm.key]}</Typography>
+                <Typography variant="h3">{strings(`${itm.key}.title`)}</Typography>
                 {!form && (
                   <Typography variant="body1" gutterBottom>
                     {itm.message}
