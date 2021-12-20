@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 }
             });
 
-            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day);
+            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day, DayOfWeek.Sunday);
 
             result.Sum(r => r.DeathCount).ShouldBe(5);
             result.Sum(r => r.ReferredCount).ShouldBe(7);
@@ -105,7 +105,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 }
             });
 
-            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day);
+            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day, DayOfWeek.Sunday);
 
             result.Where(x => x.Period == "01/01").Sum(r => r.DeathCount).ShouldBe(1);
             result.Where(x => x.Period == "02/01").Sum(r => r.DeathCount).ShouldBe(5);
@@ -143,7 +143,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 }
             });
 
-            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Week);
+            var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Week, DayOfWeek.Sunday);
 
             result.Where(x => x.Period == "1").Sum(r => r.DeathCount).ShouldBe(1);
             result.Where(x => x.Period == "53").Sum(r => r.DeathCount).ShouldBe(5);
