@@ -45,10 +45,6 @@ const CorrectReportsListPageComponent = (props) => {
   const handleSortChange = (sorting) =>
     props.getList(props.projectId, props.page, props.filters, sorting);
 
-  const handleMarkAsError = (reportId) => {
-    props.markAsError(reportId);
-  }
-
   const handleSendReport = (e) => {
     e.stopPropagation();
     props.openSendReport(props.projectId);
@@ -120,7 +116,6 @@ const CorrectReportsListPageComponent = (props) => {
         onSort={handleSortChange}
         projectId={props.projectId}
         goToEditing={props.goToEditing}
-        markAsError={handleMarkAsError}
         isMarkingAsError={props.isMarkingAsError}
         user={props.user}
         projectIsClosed={props.projectIsClosed}
@@ -158,7 +153,6 @@ const mapDispatchToProps = {
   getList: reportsActions.getCorrectList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
-  markAsError: reportsActions.markAsError.invoke,
   goToEditing: reportsActions.goToEditing,
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke,

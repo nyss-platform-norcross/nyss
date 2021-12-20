@@ -11,7 +11,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import { accessMap } from '../../authentication/accessMap';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { DataCollectorType } from '../common/filters/logic/reportFilterConstsants';
 import { DateColumnName, reportStatus, ReportType } from './logic/reportsConstants';
 import {
@@ -24,11 +23,9 @@ import {
 } from '@material-ui/core';
 import { alertStatus } from '../alerts/logic/alertsConstants';
 
-export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEditing, projectId,
+export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEditing, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed,
   goToAlert, acceptReport, dismissReport }) => {
-
-  const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
   const [value, setValue] = useState(sorting);
 
   const updateValue = (change) => {
@@ -58,20 +55,6 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     onChangePage(page);
   }
 
-  const markAsErrorConfirmed = () => {
-    markAsError(markErrorConfirmationDialog.reportId);
-    setMarkErrorConfirmationDialog({ isOpen: false })
-  }
-
-  const canMarkAsError = (row) =>
-    !projectIsClosed
-    && !row.isAnonymized
-    && row.isValid
-    && !row.alert
-    && !row.isMarkedAsError
-    && !row.isActivityReport
-    && !!row.dataCollectorDisplayName;
-
   const alertAllowsCrossCheckingOfReport = (alert) =>
     alert.status === alertStatus.pending
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
@@ -87,12 +70,6 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
     && !!report.village;
 
   const getRowMenu = (row) => [
-    {
-      title: strings(stringKeys.reports.list.markAsError),
-      roles: accessMap.reports.markAsError,
-      disabled: !canMarkAsError(row),
-      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.id, isMarkedAsError: row.isMarkedAsError })
-    },
     {
       title: strings(stringKeys.reports.list.goToAlert),
       roles: accessMap.reports.goToAlert,
@@ -201,16 +178,6 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
         </Table>
         <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
       </TableContainer>
-
-      <ConfirmationDialog
-        isOpened={markErrorConfirmationDialog.isOpen}
-        isFetching={isMarkingAsError}
-        titleText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
-        contentText={strings(stringKeys.reports.list.markAsErrorConfirmationText)}
-        submit={() => markAsErrorConfirmed()}
-        close={() => setMarkErrorConfirmationDialog({ isOpen: false })}
-        roles={accessMap.reports.markAsError}
-      />
     </Fragment>
   );
 }
