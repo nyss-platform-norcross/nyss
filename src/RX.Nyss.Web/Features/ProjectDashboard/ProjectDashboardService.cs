@@ -112,19 +112,24 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 return Success(new ProjectDashboardResponseDto());
             }
 
+            var epiWeekStartDay = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSociety.EpiWeekStartDay)
+                .SingleAsync();
+
             var filters = MapToReportFilters(projectId, filtersDto);
-            var reportsByFeaturesAndDate = await _reportsDashboardByFeatureService.GetReportsGroupedByFeaturesAndDate(filters, filtersDto.GroupingType);
+            var reportsByFeaturesAndDate = await _reportsDashboardByFeatureService.GetReportsGroupedByFeaturesAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
 
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = await _projectDashboardSummaryService.GetData(filters),
-                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType),
+                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType, epiWeekStartDay),
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
-                ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType),
+                ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType, epiWeekStartDay),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
                 ReportsGroupedByFeatures = GetReportsGroupedByFeatures(reportsByFeaturesAndDate),
                 DataCollectionPointReportsGroupedByDate = filtersDto.DataCollectorType == FiltersRequestDto.DataCollectorTypeFilterDto.DataCollectionPoint
-                    ? await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(filters, filtersDto.GroupingType)
+                    ? await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(filters, filtersDto.GroupingType, epiWeekStartDay)
                     : Enumerable.Empty<DataCollectionPointsReportsByDateDto>()
             };
 

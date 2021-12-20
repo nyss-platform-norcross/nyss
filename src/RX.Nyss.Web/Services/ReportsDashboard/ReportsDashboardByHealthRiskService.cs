@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardByHealthRiskService
     {
-        Task<ReportByHealthRiskAndDateResponseDto> GetReportsGroupedByHealthRiskAndDate(ReportsFilter filters, DatesGroupingType groupingType);
+        Task<ReportByHealthRiskAndDateResponseDto> GetReportsGroupedByHealthRiskAndDate(ReportsFilter filters, DatesGroupingType groupingType, DayOfWeek epiWeekStartDay);
     }
 
     public class ReportsDashboardByHealthRiskService : IReportsDashboardByHealthRiskService
@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             _nyssContext = nyssContext;
         }
 
-        public async Task<ReportByHealthRiskAndDateResponseDto> GetReportsGroupedByHealthRiskAndDate(ReportsFilter filters, DatesGroupingType groupingType)
+        public async Task<ReportByHealthRiskAndDateResponseDto> GetReportsGroupedByHealthRiskAndDate(ReportsFilter filters, DatesGroupingType groupingType, DayOfWeek epiWeekStartDay)
         {
             var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
 
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 await GroupReportsByHealthRiskAndDay(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
+                await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), epiWeekStartDay),
 
                 _ =>
                 throw new InvalidOperationException()
@@ -131,7 +131,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             };
         }
 
-        private async Task<ReportByHealthRiskAndDateResponseDto> GroupReportsByHealthRiskAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<ReportByHealthRiskAndDateResponseDto> GroupReportsByHealthRiskAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate, DayOfWeek epiWeekStartDay)
         {
             var groupedReports = await reports
                 .GroupBy(r => new
@@ -202,7 +202,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToList();
 
-            var allPeriods = _dateTimeProvider.GetEpiDateRange(startDate, endDate)
+            var allPeriods = _dateTimeProvider.GetEpiDateRange(startDate, endDate, epiWeekStartDay)
                 .Select(day => day.EpiWeek.ToString());
 
             return new ReportByHealthRiskAndDateResponseDto

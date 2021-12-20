@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardByFeatureService
     {
-        Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(ReportsFilter filters, DatesGroupingType groupingType);
+        Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(ReportsFilter filters, DatesGroupingType groupingType, DayOfWeek epiWeekStartDay);
     }
 
     public class ReportsDashboardByFeatureService : IReportsDashboardByFeatureService
@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(ReportsFilter filters, DatesGroupingType groupingType)
+        public async Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(ReportsFilter filters, DatesGroupingType groupingType, DayOfWeek epiWeekStartDay)
         {
             var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
 
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 await GroupReportsByFeaturesAndDay(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
+                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), epiWeekStartDay),
 
                 _ =>
                 throw new InvalidOperationException()
@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .ToList();
         }
 
-        private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate, DayOfWeek epiWeekStartDay)
         {
             var groupedReports = await reports
                 .Select(r => new
@@ -132,7 +132,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToListAsync();
 
-            var missingWeeks = _dateTimeProvider.GetEpiDateRange(startDate, endDate)
+            var missingWeeks = _dateTimeProvider.GetEpiDateRange(startDate, endDate, epiWeekStartDay)
                 .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
                 .Select(epiDate => new
                 {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -25,7 +26,9 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Queries
         private const int DataCollectorWithoutReportsId = 2;
         private const string DataCollectorWithReportsName = "HasReported";
         private const string DataCollectorWithoutReportsName = "NoReports";
+        private const DayOfWeek EpiWeekStartDay = DayOfWeek.Sunday;
         private readonly DateTime _startDate;
+        private readonly INyssContext _nyssContextMock;
         private readonly DataCollectorPerformanceQuery.Handler _handler;
 
         public DataCollectorPerformanceQueryTests()
@@ -36,12 +39,15 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Queries
             var dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
             var configMock = Substitute.For<INyssWebConfig>();
             var dataCollectorPerformanceServiceMock = new DataCollectorPerformanceService(dateTimeProviderMock);
+            _nyssContextMock = Substitute.For<INyssContext>();
+
+            ArrangeEpiWeekStandardData();
 
             var dataCollectorsQueryable = ArrangeDataCollectorData();
             configMock.PaginationRowsPerPage.Returns(10);
             _authorizationService.GetCurrentUserName().Returns("admin@example.com");
             dateTimeProviderMock.UtcNow.Returns(_startDate.AddDays(7 * 8));
-            dateTimeProviderMock.GetEpiDateRange(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(new List<EpiDate>
+            dateTimeProviderMock.GetEpiDateRange(Arg.Any<DateTime>(), Arg.Any<DateTime>(), EpiWeekStartDay).Returns(new List<EpiDate>
             {
                 new (49, 2021),
                 new (50, 2021),
@@ -52,13 +58,13 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Queries
                 new (3, 2022),
                 new (4, 2022)
             });
-            dateTimeProviderMock.GetEpiDate(_startDate.AddDays(3)).Returns(new EpiDate(50, 2021));
-            dateTimeProviderMock.GetEpiDate(_startDate.AddDays(16)).Returns(new EpiDate(52, 2021));
-            dateTimeProviderMock.GetFirstDateOfEpiWeek(2021, 50).Returns(new DateTime(2021, 12, 12));
-            dateTimeProviderMock.GetFirstDateOfEpiWeek(2021, 52).Returns(new DateTime(2021, 12, 26));
+            dateTimeProviderMock.GetEpiDate(_startDate.AddDays(3), Arg.Any<DayOfWeek>()).Returns(new EpiDate(50, 2021));
+            dateTimeProviderMock.GetEpiDate(_startDate.AddDays(16), Arg.Any<DayOfWeek>()).Returns(new EpiDate(52, 2021));
+            dateTimeProviderMock.GetFirstDateOfEpiWeek(2021, 50, Arg.Any<DayOfWeek>()).Returns(new DateTime(2021, 12, 12));
+            dateTimeProviderMock.GetFirstDateOfEpiWeek(2021, 52, Arg.Any<DayOfWeek>()).Returns(new DateTime(2021, 12, 26));
             dataCollectorServiceMock.GetDataCollectorsForCurrentUserInProject(ProjectId).Returns(dataCollectorsQueryable);
 
-            _handler = new DataCollectorPerformanceQuery.Handler(dataCollectorServiceMock, dataCollectorPerformanceServiceMock, dateTimeProviderMock, configMock);
+            _handler = new DataCollectorPerformanceQuery.Handler(_nyssContextMock, dataCollectorServiceMock, dataCollectorPerformanceServiceMock, dateTimeProviderMock, configMock);
         }
 
         [Fact]
@@ -109,6 +115,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Queries
                 new NationalSociety
                 {
                     Id = 1,
+                    EpiWeekStartDay = EpiWeekStartDay,
                     NationalSocietyUsers = new List<UserNationalSociety> { new UserNationalSociety { User = new AdministratorUser { EmailAddress = "admin@example.com" } } }
                 }
             };
@@ -173,7 +180,31 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Queries
                 }
             };
 
+            var rawReports = dataCollectors[0].RawReports;
+            foreach (var rawReport in rawReports)
+            {
+                rawReport.DataCollector = dataCollectors[0];
+            }
+
             return dataCollectors.AsQueryable().BuildMockDbSet();
+        }
+
+        private void ArrangeEpiWeekStandardData()
+        {
+            var nationalSocieties = new List<NationalSociety> { new () { EpiWeekStartDay = EpiWeekStartDay } };
+            var projects = new List<Project>
+            {
+                new()
+                {
+                    Id = ProjectId,
+                    NationalSociety = nationalSocieties[0]
+                }
+            };
+
+            var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
+            _nyssContextMock.Projects.Returns(projectsDbSet);
         }
     }
 }

@@ -60,10 +60,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             config.PaginationRowsPerPage.Returns(5);
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
-            dateTimeProvider.GetEpiWeek(DateForPerformance).Returns(31);
-            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-8)).Returns(29);
-            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-35)).Returns(25);
-            dateTimeProvider.GetEpiDateRange(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(Enumerable.Range(24, 8).Select(week => new EpiDate(week, 2021)));
+            dateTimeProvider.GetEpiWeek(DateForPerformance, DayOfWeek.Sunday).Returns(31);
+            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-8), DayOfWeek.Sunday).Returns(29);
+            dateTimeProvider.GetEpiWeek(DateForPerformance.AddDays(-35), DayOfWeek.Sunday).Returns(25);
+            dateTimeProvider.GetEpiDateRange(Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<DayOfWeek>()).Returns(Enumerable.Range(24, 8).Select(week => new EpiDate(week, 2021)));
             _dataCollectorService = new DataCollectorService(
                 _nyssContextMock,
                 config,

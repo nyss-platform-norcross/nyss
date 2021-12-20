@@ -64,6 +64,11 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
+            var epiWeekStartDay = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSociety.EpiWeekStartDay)
+                .SingleAsync();
+
             var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
 
             var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
@@ -108,8 +113,8 @@ namespace RX.Nyss.Web.Features.Reports
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    EpiWeek = r.Report != null ? r.Report.EpiWeek : _dateTimeProvider.GetEpiWeek(r.ReceivedAt),
-                    EpiYear = r.Report != null ? r.Report.EpiYear : _dateTimeProvider.GetEpiDate(r.ReceivedAt).EpiYear,
+                    EpiWeek = r.Report != null ? r.Report.EpiWeek : _dateTimeProvider.GetEpiWeek(r.ReceivedAt, epiWeekStartDay),
+                    EpiYear = r.Report != null ? r.Report.EpiYear : _dateTimeProvider.GetEpiDate(r.ReceivedAt, epiWeekStartDay).EpiYear,
                     ReportAlertId = r.Report.ReportAlerts
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)

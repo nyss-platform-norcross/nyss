@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
             _config.View.Returns(new ConfigSingleton.ViewOptions { NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard });
 
             //act
-            var result = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(new ReportsFilter(), DatesGroupingType.Day);
+            var result = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(new ReportsFilter(), DatesGroupingType.Day, DayOfWeek.Sunday);
 
             //assert
             result.Villages.Count().ShouldBe(numberOfGroupedVillagesInProjectDashboard + 1);
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
             {
                 StartDate = startDate,
                 EndDate = endDate
-            }, DatesGroupingType.Day);
+            }, DatesGroupingType.Day, DayOfWeek.Sunday);
 
             var total = res
                 .Select(r => r.CountFemalesBelowFive + r.CountUnspecifiedSexAndAge + r.CountMalesBelowFive + r.CountFemalesAtLeastFive + r.CountMalesAtLeastFive)

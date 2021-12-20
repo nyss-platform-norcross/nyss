@@ -449,8 +449,8 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 r.IsTraining = r.DataCollector.IsInTrainingMode;
                 r.CreatedAt = BaseDate.AddDays(r.Id - 1);
                 r.ReceivedAt = r.CreatedAt;
-                r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
-                r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
+                r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt, DayOfWeek.Sunday).EpiWeek;
+                r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt, DayOfWeek.Sunday).EpiYear;
                 r.ProjectHealthRisk = ProjectHealthRisks[(r.Id - 1) % 3 == 0
                     ? 0
                     : 1];
