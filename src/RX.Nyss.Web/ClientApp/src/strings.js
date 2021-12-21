@@ -509,6 +509,7 @@ export const stringKeys = {
     settings: "project.settings.title",
     errorMessages: {
       title: "project.settings.errorMessages.title",
+      tooLongWarning: "project.settings.errorMessages.tooLongWarning",
     }
   },
   globalCoordinator: {

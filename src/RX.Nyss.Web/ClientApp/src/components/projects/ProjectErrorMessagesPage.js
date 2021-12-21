@@ -15,6 +15,9 @@ import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
 import styles from "./ProjectErrorMessagesPage.module.scss";
 
+const MESSAGE_MAX_LEN = 320;
+const MESSAGE_WARNING_LEN = 160;
+
 const ProjectErrorMessagesPageComponent = (props) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,7 +33,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
 
     errorMessages.forEach((itm) => {
       fields[itm.key] = itm.message;
-      validation[itm.key] = [validators.required, validators.maxLength(160)];
+      validation[itm.key] = [validators.required, validators.maxLength(MESSAGE_MAX_LEN)];
     });
 
     setForm(createForm(fields, validation));
@@ -85,13 +88,15 @@ const ProjectErrorMessagesPageComponent = (props) => {
                     {itm.message}
                   </Typography>
                 )}
-                {form && (
+                {form && (<>
                   <TextInputField
                     className={styles.input}
                     name={itm.key}
                     field={form.fields[itm.key]}
                     multiline
                   />
+                  <InputWarningMessage formField={form.fields[itm.key]} />
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -125,6 +130,30 @@ const ProjectErrorMessagesPageComponent = (props) => {
     </Form>
   );
 };
+
+const InputWarningMessage = ({ formField }) => {
+  const [message, setMessage] = useState("");
+
+  function validate(value) {
+    const message = value.length > MESSAGE_WARNING_LEN
+      ? strings(stringKeys.project.errorMessages.tooLongWarning)
+      : "";
+
+    setMessage(message);
+  }
+
+  useEffect(() => {
+    formField.subscribe(({ newValue }) => {
+      validate(newValue);
+    });
+
+    validate(formField.value);
+  }, []);
+
+  return (
+    <p className={styles.inputWarningMsg}>{message}</p>
+  )
+}
 
 const mapStateToProps = (_, ownProps) => ({
   projectId: ownProps.match.params.projectId,
