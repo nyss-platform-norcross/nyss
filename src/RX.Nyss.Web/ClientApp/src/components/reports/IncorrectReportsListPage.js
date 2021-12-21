@@ -96,8 +96,7 @@ const IncorrectReportsListPageComponent = (props) => {
       {open && (
         <SendReportDialog close={() => setOpen(false)}
           projectId={props.projectId}
-          openSendReport={props.openSendReport}
-          sendReport={props.sendReport} />
+          openSendReport={props.openSendReport} />
       )}
 
       <div className={styles.filtersGrid}>
@@ -150,7 +149,6 @@ const mapDispatchToProps = {
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
   openSendReport: reportsActions.openSendReport.invoke,
-  sendReport: reportsActions.sendReport.invoke,
   trackReportExport: reportsActions.trackReportExport,
   markAsCorrected: reportsActions.markAsCorrected.invoke,
   markAsNotCorrected: reportsActions.markAsNotCorrected.invoke,

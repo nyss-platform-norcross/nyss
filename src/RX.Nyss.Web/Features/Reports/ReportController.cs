@@ -144,5 +144,15 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> UndoCorrect(int reportId) =>
             await Sender.Send(new UndoCorrectReportCommand(reportId));
+
+        /// <summary>
+        /// Gets report status
+        /// </summary>
+        /// <param name="query">Query</param>
+        /// <returns></returns>
+        [HttpGet("status")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<ReportStatusDto> GetStatus([FromQuery] GetReportStatusQuery query) =>
+            await Sender.Send(query);
     }
 }
