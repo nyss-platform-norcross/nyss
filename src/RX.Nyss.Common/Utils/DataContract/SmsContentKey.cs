@@ -12,7 +12,7 @@ namespace RX.Nyss.Common.Utils.DataContract
 
             public const string CollectionPointUsedDataCollectorFormat = "sms.error.collectionPointUsedDataCollectorFormat";
 
-            public const string CollectionPointNonHumanHealthRisk = "sms.error.collectionPointNonHumanHealthRisk";
+            public const string FormatCannotBeUsedForNonHumanHealthRisk = "sms.error.formatCannotBeUsedForNonHumanHealthRisk";
 
             public const string Gateway = "sms.error.gateway";
 

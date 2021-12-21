@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.Projects.Queries
                 SmsContentKey.ReportError.HealthRiskNotFound,
                 SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
                 SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
-                SmsContentKey.ReportError.CollectionPointNonHumanHealthRisk,
+                SmsContentKey.ReportError.FormatCannotBeUsedForNonHumanHealthRisk,
                 SmsContentKey.ReportError.Gateway,
             };
 

@@ -325,7 +325,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
                 ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
-                ReportErrorType.CollectionPointNonHumanHealthRisk => SmsContentKey.ReportError.CollectionPointNonHumanHealthRisk,
+                ReportErrorType.SingleReportNonHumanHealthRisk
+                    or ReportErrorType.AggregateReportNonHumanHealthRisk
+                    or ReportErrorType.CollectionPointNonHumanHealthRisk=> SmsContentKey.ReportError.FormatCannotBeUsedForNonHumanHealthRisk,
                 ReportErrorType.HealthRiskNotFound => SmsContentKey.ReportError.HealthRiskNotFound,
                 ReportErrorType.Gateway => SmsContentKey.ReportError.Gateway,
                 ReportErrorType.FormatError => SmsContentKey.ReportError.FormatError,
