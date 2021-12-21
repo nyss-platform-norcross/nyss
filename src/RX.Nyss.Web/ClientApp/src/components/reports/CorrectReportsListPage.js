@@ -61,10 +61,6 @@ const CorrectReportsListPageComponent = (props) => {
     props.exportToExcel(props.projectId, props.filters, props.sorting);
   }
 
-  function onSendReportFail(error) {
-    props.showMessage(error.message);
-  }
-
   return (
     <Fragment>
       <TableActions>
@@ -93,7 +89,7 @@ const CorrectReportsListPageComponent = (props) => {
         <SendReportDialog close={() => setOpen(false)}
           projectId={props.projectId}
           openSendReport={props.openSendReport}
-          onFail={onSendReportFail} />
+          showMessage={props.showMessage} />
       )}
 
       <div className={styles.filtersGrid}>

@@ -1,6 +1,6 @@
 import styles from "./ReportsListPage.module.scss";
 
-import React, { Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
@@ -15,7 +15,7 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { Hidden, Icon } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";
-import { useState } from "react";
+import * as appActions from "../app/logic/appActions";
 
 const Page = "incorrect";
 
@@ -96,7 +96,8 @@ const IncorrectReportsListPageComponent = (props) => {
       {open && (
         <SendReportDialog close={() => setOpen(false)}
           projectId={props.projectId}
-          openSendReport={props.openSendReport} />
+          openSendReport={props.openSendReport}
+          showMessage={props.showMessage} />
       )}
 
       <div className={styles.filtersGrid}>
@@ -152,6 +153,7 @@ const mapDispatchToProps = {
   trackReportExport: reportsActions.trackReportExport,
   markAsCorrected: reportsActions.markAsCorrected.invoke,
   markAsNotCorrected: reportsActions.markAsNotCorrected.invoke,
+  showMessage: appActions.showMessage,
 };
 
 export const IncorrectReportsListPage = withLayout(
