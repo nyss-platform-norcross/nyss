@@ -27,6 +27,15 @@ export const deleteHttp = (path, anonymous) => {
   return callApi(path, "DELETE", undefined, {}, !anonymous);
 }
 
+export const put = (path, data, anonymous) => {
+  const headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  };
+
+  return callApi(path, "PUT", data || {}, headers, !anonymous);
+}
+
 export const handleValidationError = (response) => {
   const message = stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful);
   const data = response.message && response.message.data;

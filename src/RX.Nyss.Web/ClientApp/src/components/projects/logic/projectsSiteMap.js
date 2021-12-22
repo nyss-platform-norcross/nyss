@@ -75,5 +75,14 @@ export const projectsSiteMap = [
     path: "/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient",
     title: () => strings(stringKeys.projectAlertRecipient.form.editionTitle),
     access: accessMap.projectAlertNotifications.editRecipient
-  }
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
+    path: "/projects/:projectId/errorMessages",
+    title: () => strings(stringKeys.project.errorMessages.title),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.projectErrorMessages.list,
+    placeholderIndex: 4,
+    middleStepOnly: true,
+  },     
 ];

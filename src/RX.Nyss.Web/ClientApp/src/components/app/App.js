@@ -63,7 +63,8 @@ import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/Projec
 import { IncorrectReportsListPage } from '../reports/IncorrectReportsListPage';
 import { NationalSocietyCorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyCorrectReportsListPage';
 import { NationalSocietyIncorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyIncorrectReportsListPage';
-import {AlertEventsLogPage} from "../alertEvents/AlertEventsLogPage";
+import { AlertEventsLogPage } from "../alertEvents/AlertEventsLogPage";
+import { ProjectErrorMessagesPage } from "../projects/ProjectErrorMessagesPage";
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -134,6 +135,8 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alertNotifications' component={ProjectAlertNotificationsPage} roles={accessMap.projectAlertNotifications.list} />
           <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
           <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
+
+          <AuthRoute exact path='/projects/:projectId/errorMessages' component={ProjectErrorMessagesPage} roles={accessMap.projectErrorMessages.list} />
 
           <Redirect exact from='/projects/:projectId/reports' to='/projects/:projectId/reports/correct' />
           <AuthRoute exact path='/projects/:projectId/reports/correct' component={CorrectReportsListPage} roles={accessMap.reports.list} />

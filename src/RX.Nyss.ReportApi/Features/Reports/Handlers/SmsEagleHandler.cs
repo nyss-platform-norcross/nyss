@@ -25,27 +25,42 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
     public interface ISmsEagleHandler
     {
         Task Handle(string queryString);
+
         Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId);
     }
 
     public class SmsEagleHandler : ISmsEagleHandler
     {
         private const string SenderParameterName = "sender";
+
         private const string TimestampParameterName = "timestamp";
+
         private const string TextParameterName = "text";
+
         private const string IncomingMessageIdParameterName = "msgid";
+
         private const string OutgoingMessageIdParameterName = "oid";
+
         private const string ModemNumberParameterName = "modemno";
+
         private const string ApiKeyParameterName = "apikey";
 
         private readonly IReportMessageService _reportMessageService;
+
         private readonly INyssContext _nyssContext;
+
         private readonly ILoggerAdapter _loggerAdapter;
+
         private readonly IDateTimeProvider _dateTimeProvider;
+
         private readonly IQueuePublisherService _queuePublisherService;
+
         private readonly IAlertService _alertService;
+
         private readonly IStringsResourcesService _stringsResourcesService;
+
         private readonly IReportValidationService _reportValidationService;
+
         private readonly IAlertNotificationService _alertNotificationService;
 
         public SmsEagleHandler(
@@ -75,7 +90,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var sender = parsedQueryString[SenderParameterName];
             var timestamp = parsedQueryString[TimestampParameterName];
-            var text = parsedQueryString[TextParameterName].Trim();
+            var text = parsedQueryString[TextParameterName]?.Trim() ?? string.Empty;
             var incomingMessageId = parsedQueryString[IncomingMessageIdParameterName].ParseToNullableInt();
             var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
@@ -84,7 +99,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             ErrorReportData errorReportData = null;
             AlertData alertData = null;
             ProjectHealthRisk projectHealthRisk = null;
-            GatewaySetting gatewaySetting = null;
+            GatewaySetting gatewaySetting;
 
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -301,32 +316,46 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task SendFeedbackOnError(ErrorReportData errorReport, GatewaySetting gatewaySetting)
         {
-            if (gatewaySetting != null && errorReport.DataCollector != null)
+            if (gatewaySetting == null || errorReport.DataCollector == null)
             {
-                var feedbackMessage = errorReport.ReportErrorType switch
-                {
-                    ReportErrorType.FormatError => await GetFeedbackMessageContent(SmsContentKey.ReportError.FormatError, errorReport.LanguageCode),
-                    ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(SmsContentKey.ReportError.HealthRiskNotFound, errorReport.LanguageCode),
-                    ReportErrorType.TooLong => null,
-                    _ => await GetFeedbackMessageContent(SmsContentKey.ReportError.Other, errorReport.LanguageCode)
-                };
-
-                if (string.IsNullOrEmpty(feedbackMessage))
-                {
-                    _loggerAdapter.Warn($"No feedback message found for error type {errorReport.ReportErrorType}");
-                    return;
-                }
-
-                var senderList = new List<SendSmsRecipient>
-                {
-                    new SendSmsRecipient
-                    {
-                        PhoneNumber = errorReport.DataCollector.PhoneNumber,
-                        Modem = errorReport.ModemNumber
-                    }
-                };
-                await _queuePublisherService.SendSms(senderList, gatewaySetting, feedbackMessage);
+                return;
             }
+
+            var smsErrorKey = errorReport.ReportErrorType switch
+            {
+                ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
+                ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
+                ReportErrorType.SingleReportNonHumanHealthRisk
+                    or ReportErrorType.AggregateReportNonHumanHealthRisk
+                    or ReportErrorType.CollectionPointNonHumanHealthRisk=> SmsContentKey.ReportError.FormatCannotBeUsedForNonHumanHealthRisk,
+                ReportErrorType.HealthRiskNotFound => SmsContentKey.ReportError.HealthRiskNotFound,
+                ReportErrorType.Gateway => SmsContentKey.ReportError.Gateway,
+                ReportErrorType.FormatError => SmsContentKey.ReportError.FormatError,
+                ReportErrorType.TooLong => null,
+                _ => SmsContentKey.ReportError.Other,
+            };
+
+            var projectErrorMessage = await _nyssContext.ProjectErrorMessages
+                .SingleOrDefaultAsync(x => x.ProjectId == errorReport.DataCollector.Project.Id && x.MessageKey == smsErrorKey);
+
+            var feedbackMessage = projectErrorMessage?.Message ?? await GetFeedbackMessageContent(smsErrorKey, errorReport.LanguageCode);
+
+            if (string.IsNullOrEmpty(feedbackMessage))
+            {
+                _loggerAdapter.Warn($"No feedback message found for error type {errorReport.ReportErrorType}");
+                return;
+            }
+
+            var senderList = new List<SendSmsRecipient>
+            {
+                new SendSmsRecipient
+                {
+                    PhoneNumber = errorReport.DataCollector.PhoneNumber,
+                    Modem = errorReport.ModemNumber
+                }
+            };
+
+            await _queuePublisherService.SendSms(senderList, gatewaySetting, feedbackMessage);
         }
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
