@@ -69,7 +69,10 @@ export const SendReportDialog = ({ close, showMessage }) => {
           clearInterval(intervalHandler.current);
           resolve(status);
         })
-        .catch(reject);
+        .catch(err => {
+          clearInterval(intervalHandler.current);
+          reject(err);
+        });
       }, 3000);
     });
   }
@@ -97,7 +100,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
       await http.post("/api/report/sendReport", data, false, abortController.current.signal);
       const status = await getReportStatus(data.timestamp, data.dataCollectorId);
 
-      showMessage(status.errorType ? status.errorType : stringKeys.reports.sendReport.success);
+      showMessage(status.feedbackMessage ? status.feedbackMessage : stringKeys.reports.sendReport.success);
 
       setIsSending(false);
       close(); 

@@ -8,7 +8,6 @@ using System.Web;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
-using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -321,20 +320,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 return;
             }
 
-            var smsErrorKey = errorReport.ReportErrorType switch
-            {
-                ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.FormatError,
-                ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.FormatError,
-                ReportErrorType.SingleReportNonHumanHealthRisk
-                    or ReportErrorType.AggregateReportNonHumanHealthRisk
-                    or ReportErrorType.CollectionPointNonHumanHealthRisk
-                    or ReportErrorType.EventReportHumanHealthRisk => SmsContentKey.ReportError.FormatError,
-                ReportErrorType.HealthRiskNotFound => SmsContentKey.ReportError.HealthRiskNotFound,
-                ReportErrorType.FormatError => SmsContentKey.ReportError.FormatError,
-                ReportErrorType.Gateway => null,
-                ReportErrorType.TooLong => null,
-                _ => SmsContentKey.ReportError.Other,
-            };
+            var smsErrorKey = errorReport.ReportErrorType.ToSmsErrorKey();
 
             var projectErrorMessage = await _nyssContext.ProjectErrorMessages
                 .SingleOrDefaultAsync(x => x.ProjectId == errorReport.DataCollector.Project.Id && x.MessageKey == smsErrorKey);
