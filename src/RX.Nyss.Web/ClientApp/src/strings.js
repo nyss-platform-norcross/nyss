@@ -1118,7 +1118,8 @@ export const stringKeys = {
     inRange: "validation.valueMustBeInRange",
     invalidTimeFormat: "validation.invalidTimeFormat",
     sexOrAgeUnspecified: "validation.sexOrAgeUnspecified",
-    duplicateLocation: "validation.dataCollector.duplicateLocation"
+    duplicateLocation: "validation.dataCollector.duplicateLocation",
+    timeNotInFuture: "validation.timeNotInFuture",
   },
   nationalSocietyConsents: {
     title: "headManagerConsents.title",

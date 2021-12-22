@@ -49,7 +49,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
       dataCollector: [validators.required],
       gatewayModemId: [validators.requiredWhen(_ => canSelectModem)],
       message: [validators.required],
-      time: [validators.required, validators.time]
+      time: [validators.required, validators.time, validators.timeNotInFuture],
     };
 
     setForm(createForm(fields, validation));

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { strings, stringKeys, stringsFormat, extractString, isStringKey } from "../strings";
 import { useEffect } from "react";
 import { reportAges } from "../components/reports/logic/reportsConstants";
@@ -194,6 +195,11 @@ export const createForm = (fields, validators) => {
   };
 };
 
+function timeNotInFuture(value) {
+  const valueDate = dayjs(`${dayjs().format("YYYY-MM-DD")} ${value}`);
+  return dayjs().isAfter(valueDate);
+}
+
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const phoneNumberRegex = /^\+[0-9]{6}[0-9]*$/;
 const timeRegex = /^[0-9]{2}:[0-9]{2}/;
@@ -212,5 +218,6 @@ export const validators = {
   inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)],
   time: [() => strings(stringKeys.validation.invalidTimeFormat), (value) => !value || timeRegex.test(value)],
   sexAge: (fieldGetter) => [() => strings(stringKeys.validation.sexOrAgeUnspecified), (value, fields) => fieldGetter(fields) === value || value !== reportAges.unspecified],
-  uniqueLocation: (fieldGetter, allLocations) => [() => strings(stringKeys.validation.duplicateLocation), (value, fields) => allLocations.length === 1 || allLocations.filter(l => l.villageId.toString() === value && (l.zoneId == null || l.zoneId.toString() === fieldGetter(fields))).length <= 1]
+  uniqueLocation: (fieldGetter, allLocations) => [() => strings(stringKeys.validation.duplicateLocation), (value, fields) => allLocations.length === 1 || allLocations.filter(l => l.villageId.toString() === value && (l.zoneId == null || l.zoneId.toString() === fieldGetter(fields))).length <= 1],
+  timeNotInFuture: [() => strings(stringKeys.validation.timeNotInFuture), timeNotInFuture],
 };
