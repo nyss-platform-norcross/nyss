@@ -8,9 +8,6 @@ namespace RX.Nyss.ReportApi.Features.Common.Extensions
 {
     public static class ReportQueries
     {
-        public static IQueryable<Report> OnlyCorrectReports(this IQueryable<Report> reports) =>
-            reports.Where(r => !r.MarkedAsError);
-
         public static IQueryable<Report> OnlyRealReports(this IQueryable<Report> reports) =>
             reports.Where(r => !r.IsTraining);
 

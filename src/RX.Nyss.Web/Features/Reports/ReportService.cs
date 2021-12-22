@@ -38,8 +38,6 @@ namespace RX.Nyss.Web.Features.Reports
 
         Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
 
-        Task<Result> MarkAsError(int reportId);
-
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
 
         IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
@@ -184,7 +182,6 @@ namespace RX.Nyss.Web.Features.Reports
                         : r.DataCollector.DisplayName,
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
-                    IsMarkedAsError = r.Report.MarkedAsError,
                     Alert = r.Report.ReportAlerts
                         .OrderByDescending(ra => ra.AlertId)
                         .Select(ra => new ReportListAlert
@@ -358,27 +355,7 @@ namespace RX.Nyss.Web.Features.Reports
             GetRawReportsWithDataCollectorQuery(filters)
                 .AllSuccessfulReports()
                 .Select(r => r.Report)
-                .Where(r => !r.MarkedAsError)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
-
-        public async Task<Result> MarkAsError(int reportId)
-        {
-            var rawReport = await _nyssContext.RawReports
-                .Include(r => r.Report)
-                .Include(r => r.DataCollector.Project)
-                .Where(r => r.Report != null && !r.Report.ReportAlerts.Any())
-                .FirstOrDefaultAsync(r => r.Id == reportId);
-
-            if (rawReport.DataCollector.Project.State != ProjectState.Open)
-            {
-                return Error(ResultKey.Report.ProjectIsClosed);
-            }
-
-            rawReport.Report.MarkedAsError = true;
-            await _nyssContext.SaveChangesAsync();
-
-            return Success();
-        }
 
         public async Task<Result> AcceptReport(int reportId)
         {
@@ -396,11 +373,6 @@ namespace RX.Nyss.Web.Features.Reports
             if (report.Status == ReportStatus.Accepted)
             {
                 return Error(ResultKey.Report.AlreadyCrossChecked);
-            }
-
-            if (report.MarkedAsError)
-            {
-                return Error(ResultKey.Report.CannotCrossCheckErrorReport);
             }
 
             if (report.ReportType == ReportType.DataCollectionPoint)
@@ -439,11 +411,6 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.AlreadyCrossChecked);
             }
 
-            if (report.MarkedAsError)
-            {
-                return Error(ResultKey.Report.CannotCrossCheckErrorReport);
-            }
-
             if (report.ReportType == ReportType.DataCollectionPoint)
             {
                 return Error(ResultKey.Report.CannotCrossCheckDcpReport);
@@ -479,7 +446,6 @@ namespace RX.Nyss.Web.Features.Reports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByDataCollectorType(filter.DataCollectorType)
                     .FilterByHealthRisks(filter.HealthRisks)
-                    .FilterByFormatCorrectness(filter.FormatCorrect)
                     .FilterByErrorType(filter.ErrorType)
                     .FilterByArea(filter.Locations)
                     .FilterByReportStatus(filter.ReportStatus)
@@ -496,7 +462,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByHealthRisks(filter.HealthRisks)
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByArea(filter.Locations)
-                .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByErrorType(filter.ErrorType)
                 .FilterByReportStatus(filter.ReportStatus)
                 .FilterByTrainingMode(filter.TrainingStatus)

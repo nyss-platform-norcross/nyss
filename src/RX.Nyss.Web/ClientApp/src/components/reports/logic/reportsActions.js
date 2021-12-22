@@ -152,13 +152,6 @@ export const exportToCsv = {
   failure: (message) => ({ type: EXPORT_TO_CSV.FAILURE, message }),
 };
 
-export const markAsError = {
-  invoke: (reportId) => ({ type: MARK_AS_ERROR.INVOKE, reportId }),
-  request: () => ({ type: MARK_AS_ERROR.REQUEST }),
-  success: () => ({ type: MARK_AS_ERROR.SUCCESS }),
-  failure: (message) => ({ type: MARK_AS_ERROR.FAILURE, message }),
-};
-
 export const openSendReport = {
   invoke: (projectId) => ({ type: OPEN_SEND_REPORT.INVOKE, projectId }),
   request: () => ({ type: OPEN_SEND_REPORT.REQUEST }),

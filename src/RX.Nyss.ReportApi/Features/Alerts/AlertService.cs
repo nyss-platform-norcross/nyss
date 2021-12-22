@@ -155,7 +155,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             }
 
             var reportsWithLabel = await _nyssContext.Reports
-                .OnlyCorrectReports()
                 .OnlyRealReports()
                 .OnlyReportsThatCanTriggerNewAlert()
                 .FilterByGroupLabel(reportGroupLabel)
@@ -184,7 +183,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var addedSupervisors = new List<SupervisorSmsRecipient>();
             var existingActiveAlertForLabel = await _nyssContext.Reports
-                .OnlyCorrectReports()
                 .OnlyRealReports()
                 .FilterByReportStatus(StatusConstants.ReportStatusesConsideredForAlertProcessing)
                 .FilterByGroupLabel(reportGroupLabel)
@@ -196,7 +194,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             if (existingActiveAlertForLabel != null)
             {
                 var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
-                    .OnlyCorrectReports()
                     .OnlyRealReports()
                     .FilterByReportStatus(StatusConstants.ReportStatusesConsideredForAlertProcessing)
                     .FilterByGroupLabel(reportGroupLabel)

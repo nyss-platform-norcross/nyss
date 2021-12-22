@@ -20,7 +20,6 @@ export const reportsSagas = () => [
   takeEvery(consts.EDIT_REPORT.INVOKE, editReport),
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
-  takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError),
   takeEvery(consts.OPEN_SEND_REPORT.INVOKE, openSendReport),
   takeEvery(consts.SEND_REPORT.INVOKE, sendReport),
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
@@ -217,20 +216,6 @@ function* openReportsModule(projectId) {
     projectIsClosed: project.value.isClosed
   }));
 }
-
-function* markAsError({ reportId }) {
-  const projectId = yield select(state => state.appData.route.params.projectId)
-
-  yield put(actions.markAsError.request());
-  try {
-    yield call(http.post, `/api/report/${reportId}/markAsError`);
-    yield put(actions.markAsError.success());
-    yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
-    yield call(getCorrectReports, { projectId });
-  } catch (error) {
-    yield put(actions.markAsError.failure());
-  }
-};
 
 function* openSendReport({ projectId }) {
   yield put(actions.openSendReport.request());

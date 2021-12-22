@@ -68,7 +68,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .FilterByDataCollectorType(filter.DataCollectorType)
                 .FilterByHealthRisks(filter.HealthRisks)
-                .FilterByFormatCorrectness(filter.FormatCorrect)
                 .FilterByArea(filter.Locations)
                 .FilterByTrainingMode(TrainingStatusDto.Trained)
                 .FilterByReportStatus(filter.ReportStatus)
@@ -83,7 +82,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                         .Select(lc => lc.Name)
                         .SingleOrDefault(),
                     IsValid = r.Report != null,
-                    IsMarkedAsError = r.Report.MarkedAsError,
                     IsAnonymized = currentUser.Role != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                         nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers

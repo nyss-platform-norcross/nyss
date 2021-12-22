@@ -17,13 +17,13 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 
         public IList<int> HealthRisks { get; set; }
 
-        public bool FormatCorrect { get; set; }
-
         public CorrectedStateReportFilterType? CorrectedState { get; set; }
 
         public ReportStatusFilterDto ReportStatus { get; set; }
 
         public TrainingStatusDto TrainingStatus { get; set; }
+
+        public bool FormatCorrect { get; set; }
 
         public string OrderBy { get; set; }
 

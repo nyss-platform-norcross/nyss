@@ -71,14 +71,6 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                     || (area.IncludeUnknownLocation && r.Village == null))
                 : reports;
 
-        public static IQueryable<RawReport> FilterByTrainingMode(this IQueryable<RawReport> rawReports, bool isTraining) =>
-            rawReports.Where(r => r.IsTraining.HasValue && r.IsTraining == isTraining);
-
-        public static IQueryable<RawReport> FilterByFormatCorrectness(this IQueryable<RawReport> rawReports, bool formatCorrect) =>
-            formatCorrect
-                ? rawReports.Where(r => r.Report != null && !r.Report.MarkedAsError)
-                : rawReports.Where(r => r.Report == null || r.Report.MarkedAsError);
-
         public static IQueryable<RawReport> FilterByErrorType(this IQueryable<RawReport> rawReports, ReportErrorFilterType? reportErrorFilterType) =>
             reportErrorFilterType switch
             {

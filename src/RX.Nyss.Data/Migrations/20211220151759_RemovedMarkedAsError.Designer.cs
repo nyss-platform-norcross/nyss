@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -10,9 +11,10 @@ using RX.Nyss.Data;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20211220151759_RemovedMarkedAsError")]
+    partial class RemovedMarkedAsError
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2542,37 +2544,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("NationalSocietyId");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectErrorMessage", b =>
-                {
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MessageKey")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProjectId", "MessageKey");
-
-                    b.ToTable("ProjectErrorMessages");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ProjectHealthRisk", b =>
