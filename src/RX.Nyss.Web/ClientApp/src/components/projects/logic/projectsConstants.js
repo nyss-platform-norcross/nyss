@@ -8,3 +8,4 @@ export const OPEN_PROJECT_EDITION = action("OPEN_PROJECT_EDITION");
 export const EDIT_PROJECT = action("EDIT_PROJECT");
 export const OPEN_PROJECT_OVERVIEW = action("OPEN_PROJECT_OVERVIEW");
 export const CLOSE_PROJECT = action("CLOSE_PROJECT");
+export const OPEN_ERROR_MESSAGES = "OPEN_ERROR_MESSAGES";
