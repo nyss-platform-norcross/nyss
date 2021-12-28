@@ -24,36 +24,17 @@ export const SendReportDialog = ({ close, showMessage }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   dayjs.extend(utc);
   const isFetching = useSelector(state => state.reports.formFetching);
-  const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id })));
+  const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors);
   const formData = useSelector(state => state.reports.sendReport.formData);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
   const [isSending, setIsSending] = useState(false);
+  const [gatewayModemsDisabled, setGatewayModemsDisabled] = useState(false);
   const abortController = useRef(new AbortController());
   const intervalHandler = useRef(0);
+  const dcFieldSubscription = useRef(null);
 
   const canSelectModem = !!formData && formData.modems.length > 0;
-
-  useEffect(() => {
-    if (!formData) {
-      return null;
-    }
-
-    const fields = {
-      dataCollector: null,
-      gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
-      message: '',
-      time: dayjs().format('HH:mm')
-    };
-
-    const validation = {
-      dataCollector: [validators.required],
-      gatewayModemId: [validators.requiredWhen(_ => canSelectModem)],
-      message: [validators.required],
-      time: [validators.required, validators.time, validators.timeNotInFuture],
-    };
-
-    setForm(createForm(fields, validation));
-  }, [canSelectModem, formData]);
+  const dataCollectorsOptions = dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id }));
 
   const handleDateChange = date => {
     setDate(date.format('YYYY-MM-DD'));
@@ -85,7 +66,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
     };
 
     const values = form.getValues();
-    const dataCollector = dataCollectors.filter(dc => dc.title === values.dataCollector)[0];
+    const dataCollector = dataCollectorsOptions.filter(dc => dc.title === values.dataCollector)[0];
 
     const data = {
       dataCollectorId: dataCollector.id,
@@ -131,6 +112,53 @@ export const SendReportDialog = ({ close, showMessage }) => {
     close();
   }
 
+  function onDataCollectorChange({ newValue }) {
+    const dcOption = dataCollectorsOptions.find(dc => dc.title === newValue);
+    const dc = dataCollectors.find(dc => dc.id === dcOption?.id);
+
+    if (dc?.phoneNumber && canSelectModem) {
+      setGatewayModemsDisabled(false);
+      form.fields.gatewayModemId.setValidators([validators.required]);
+    } else {
+      form.fields.gatewayModemId.setValidators([]);
+      form.fields.gatewayModemId.update("");
+      setGatewayModemsDisabled(true);
+    }
+  }
+
+  useEffect(() => {
+    if (!formData) {
+      return null;
+    }
+
+    const fields = {
+      dataCollector: null,
+      gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
+      message: '',
+      time: dayjs().format('HH:mm')
+    };
+
+    const validation = {
+      dataCollector: [validators.required],
+      gatewayModemId: [],
+      message: [validators.required],
+      time: [validators.required, validators.time, validators.timeNotInFuture],
+    };
+
+    setForm(createForm(fields, validation));
+  }, [canSelectModem, formData]);
+  
+  
+  useEffect(() => {
+    if (!form) return;
+
+    dcFieldSubscription.current = form.fields.dataCollector.subscribe(onDataCollectorChange);
+    
+    return () => {
+      dcFieldSubscription.current?.unsubscribe();
+    }
+  }, [form]);
+
   return !!form && (
     <Fragment>
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
@@ -143,7 +171,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
                 <AutocompleteTextInputField
                   label={strings(stringKeys.reports.sendReport.dataCollector)}
                   field={form.fields.dataCollector}
-                  options={dataCollectors}
+                  options={dataCollectorsOptions}
                   allowAddingValue={false}
                   autoSelect
                   name="dataCollectors"
@@ -156,6 +184,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
                     label={strings(stringKeys.reports.sendReport.modem)}
                     field={form.fields.gatewayModemId}
                     name="gatewayModems"
+                    disabled={gatewayModemsDisabled}
                   >
                     {formData.modems.map(modem => (
                       <MenuItem key={`gatewayModem_${modem.id}`} value={modem.id.toString()}>
