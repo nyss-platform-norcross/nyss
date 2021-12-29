@@ -18,6 +18,7 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 import CorrectedButton from "./CorrectedButton";
+import { dcDisplayName } from "./CorrectReportsTable";
 
 export const IncorrectReportsTable = ({
   isListFetching,
@@ -109,9 +110,7 @@ export const IncorrectReportsTable = ({
                   <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
                 </TableCell>
                 <TableCell>
-                  {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
+                  {dcDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>

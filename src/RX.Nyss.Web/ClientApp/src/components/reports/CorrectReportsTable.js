@@ -21,6 +21,7 @@ import {
   TableRow,
   TableSortLabel,
 } from '@material-ui/core';
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import { alertStatus } from '../alerts/logic/alertsConstants';
 
 export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEditing, projectId,
@@ -97,6 +98,10 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
     && !projectIsClosed
     && !row.dataCollectorIsDeleted;
 
+  function ensureEmpty(value) {
+    return value ? value : "";
+  }
+
   return (
     <Fragment>
       <TableContainer sticky>
@@ -137,16 +142,14 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
                 <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
                 <TableCell>
-                  {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
+                  {dcDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+                <TableCell>{ensureEmpty(row.countMalesBelowFive)}</TableCell>
+                <TableCell>{ensureEmpty(row.countMalesAtLeastFive)}</TableCell>
+                <TableCell>{ensureEmpty(row.countFemalesBelowFive)}</TableCell>
+                <TableCell>{ensureEmpty(row.countFemalesAtLeastFive)}</TableCell>
                 {filters.dataCollectorType === DataCollectorType.collectionPoint &&
                 <Fragment>
                   <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
@@ -188,3 +191,19 @@ CorrectReportsTable.propTypes = {
 };
 
 export default CorrectReportsTable;
+
+export function dcDisplayName(row) {
+  const dataRemoveText = "--Data removed--";
+  
+  if (row.dataCollectorDisplayName === dataRemoveText && row.phoneNumber === dataRemoveText) {
+    return <VisibilityOffOutlinedIcon />
+  }
+  
+  return (
+    <>
+      {row.dataCollectorDisplayName}
+      {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
+      {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}      
+    </>
+  );
+}
