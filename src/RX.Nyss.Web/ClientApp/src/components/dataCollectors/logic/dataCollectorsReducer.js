@@ -33,7 +33,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, listFetching: true };
 
     case actions.GET_DATA_COLLECTORS.SUCCESS:
-      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false, listSelectedAll: false  };
+      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false, listSelectedAll: false };
 
     case actions.GET_DATA_COLLECTORS.FAILURE:
       return { ...state, listFetching: false };
@@ -162,6 +162,33 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case nationalSocietyUsersActions.REMOVE_NATIONAL_SOCIETY_USER.SUCCESS: // set filters stale when removing a user
       return { ...state, filtersStale: true };
+
+    case actions.EXPORT_DATA_COLLECTOR_PERFORMANCE.INVOKE:
+      return { ...state, isExporting: true };
+
+    case actions.EXPORT_DATA_COLLECTOR_PERFORMANCE.SUCCESS:
+      return { ...state, isExporting: false };
+
+    case actions.EXPORT_DATA_COLLECTOR_PERFORMANCE.FAILURE:
+      return { ...state, isExporting: false };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE:
+      return { ...state, isExportingToExcel: true };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_EXCEL.SUCCESS:
+      return { ...state, isExportingToExcel: false };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_EXCEL.FAILURE:
+      return { ...state, isExportingToExcel: false };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE:
+      return { ...state, isExportingToCsv: true };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_CSV.SUCCESS:
+      return { ...state, isExportingToCsv: false };
+
+    case actions.EXPORT_DATA_COLLECTORS_TO_CSV.FAILURE:
+      return { ...state, isExportingToCsv: false };
 
     default:
       return state;
