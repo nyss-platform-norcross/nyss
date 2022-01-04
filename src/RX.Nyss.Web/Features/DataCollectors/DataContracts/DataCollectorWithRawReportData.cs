@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.DataContracts
     {
         public string Name { get; set; }
         public string VillageName { get; set; }
+        public string DistrictName { get; set; }
+        public string RegionName { get; set; }
         public string PhoneNumber { get; set; }
         public IEnumerable<RawReportData> ReportsInTimeRange { get; set; }
         public DateTime CreatedAt { get; set; }
