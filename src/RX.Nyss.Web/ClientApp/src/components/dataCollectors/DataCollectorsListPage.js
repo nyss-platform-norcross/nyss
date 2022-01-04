@@ -41,10 +41,10 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
           <TableActionsButton onClick={() => props.goToCreation(projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToCsv}>
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}>
             {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
         </TableActions>
@@ -110,7 +110,9 @@ const mapStateToProps = (state, ownProps) => ({
   supervisors: state.dataCollectors.filtersData.supervisors,
   locations: state.dataCollectors.filtersData.locations,
   filters: state.dataCollectors.filters,
-  callingUserRoles: state.appData.user.roles
+  callingUserRoles: state.appData.user.roles,
+  isExportingToExcel: state.dataCollectors.isExportingToExcel,
+  isExportingToCsv: state.dataCollectors.isExportingToCsv
 });
 
 const mapDispatchToProps = {

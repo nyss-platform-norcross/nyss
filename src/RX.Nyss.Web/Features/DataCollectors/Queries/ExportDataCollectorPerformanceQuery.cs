@@ -120,7 +120,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
 
                 foreach (var completeness in completenessPerWeek)
                 {
-                    var columnIndex = completenessPerWeek.IndexOf(completeness) + 4;
+                    var columnIndex = completenessPerWeek.IndexOf(completeness) + 6;
                     worksheet.Cells[2, 1].Value = strings["dataCollectors.performanceList.completenessTitle"];
                     worksheet.Cells[2, columnIndex].Value = completeness.ActiveDataCollectors / completeness.TotalDataCollectors;
                     worksheet.Cells[2, columnIndex].Style.Numberformat.Format = "#0.0%";
@@ -130,12 +130,14 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 {
                     var index = dataCollectorPerformances.IndexOf(dataCollectorPerformance) + 3;
                     worksheet.Cells[index, 1].Value = dataCollectorPerformance.Name;
-                    worksheet.Cells[index, 2].Value = dataCollectorPerformance.VillageName;
-                    worksheet.Cells[index, 3].Value = dataCollectorPerformance.DaysSinceLastReport;
+                    worksheet.Cells[index, 2].Value = dataCollectorPerformance.RegionName;
+                    worksheet.Cells[index, 3].Value = dataCollectorPerformance.DistrictName;
+                    worksheet.Cells[index, 4].Value = dataCollectorPerformance.VillageName;
+                    worksheet.Cells[index, 5].Value = dataCollectorPerformance.DaysSinceLastReport;
 
                     foreach (var performanceInWeek in dataCollectorPerformance.PerformanceInEpiWeeks)
                     {
-                        var weekIndex = epiDateRange.IndexOf(new EpiDate(performanceInWeek.EpiWeek, performanceInWeek.EpiYear)) + 4;
+                        var weekIndex = epiDateRange.IndexOf(new EpiDate(performanceInWeek.EpiWeek, performanceInWeek.EpiYear)) + 6;
                         worksheet.Cells[index, weekIndex].Value = (int?)performanceInWeek.ReportingStatus;
 
                         if (performanceInWeek.ReportingStatus.HasValue)
@@ -175,6 +177,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var columnbLabels = new List<string>
                 {
                     strings["dataCollectors.performanceList.name"],
+                    strings["dataCollectors.export.region"],
+                    strings["dataCollectors.export.district"],
                     strings["dataCollectors.performanceList.villageName"],
                     strings["dataCollectors.performanceList.daysSinceLastReport"],
                 };

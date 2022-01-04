@@ -63,6 +63,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Name = dc.Name,
                     PhoneNumber = dc.PhoneNumber,
                     VillageName = dc.DataCollectorLocations.First().Village.Name,
+                    DistrictName = dc.DataCollectorLocations.First().Village.District.Name,
+                    RegionName = dc.DataCollectorLocations.First().Village.District.Region.Name,
                     CreatedAt = dc.CreatedAt,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
                         .Select(r => new RawReportData
@@ -121,6 +123,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         Name = dc.Name,
                         PhoneNumber = dc.PhoneNumber,
                         VillageName = dc.VillageName,
+                        DistrictName = dc.DistrictName,
+                        RegionName = dc.RegionName,
                         DaysSinceLastReport = reportsGroupedByWeek.Any()
                             ? (int)(currentDate - reportsGroupedByWeek
                                 .SelectMany(g => g)
@@ -151,7 +155,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated, DayOfWeek epiWeekStartDay)
         {
             var epiDataDataCollectorCreated = _dateTimeProvider.GetEpiDate(dataCollectorCreated, epiWeekStartDay);
-            return epiDataDataCollectorCreated.EpiYear <= date.EpiYear && epiDataDataCollectorCreated.EpiWeek <= date.EpiWeek;
+            return epiDataDataCollectorCreated.EpiYear < date.EpiYear
+                || (epiDataDataCollectorCreated.EpiYear == date.EpiYear && epiDataDataCollectorCreated.EpiWeek <= date.EpiWeek);
         }
 
         private bool DataCollectorWasDeployedInWeek(EpiDate date, List<DataCollectorNotDeployed> datesNotDeployed, DayOfWeek epiWeekStartDay)
@@ -164,7 +169,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var firstDayOfEpiWeek = _dateTimeProvider.GetFirstDateOfEpiWeek(date.EpiYear, date.EpiWeek, epiWeekStartDay);
             var lastDayOfEpiWeek = firstDayOfEpiWeek.AddDays(7);
 
-            var dataCollectorNotDeployedInWeek = datesNotDeployed.Any(d => d.StartDate < firstDayOfEpiWeek
+            var dataCollectorNotDeployedInWeek = datesNotDeployed.Any(d => d.StartDate < lastDayOfEpiWeek
                 && (!d.EndDate.HasValue || d.EndDate > lastDayOfEpiWeek));
 
             return !dataCollectorNotDeployedInWeek;

@@ -54,7 +54,7 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={() => props.exportPerformance(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+        <TableActionsButton onClick={() => props.exportPerformance(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExporting}>
           {strings(stringKeys.dataCollector.exportExcel)}
         </TableActionsButton>
       </TableActions>
@@ -94,7 +94,8 @@ const mapStateToProps = (state, ownProps) => ({
   listData: state.dataCollectors.performanceListData,
   completeness: state.dataCollectors.completeness,
   isListFetching: state.dataCollectors.performanceListFetching,
-  epiDateRange: state.dataCollectors.epiDateRange
+  epiDateRange: state.dataCollectors.epiDateRange,
+  isExporting: state.dataCollectors.isExporting
 });
 
 const mapDispatchToProps = {

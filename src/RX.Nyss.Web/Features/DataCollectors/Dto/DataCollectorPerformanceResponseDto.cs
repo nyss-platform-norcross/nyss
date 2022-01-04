@@ -17,6 +17,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
         public string VillageName { get; set; }
+        public string DistrictName { get; set; }
+        public string RegionName { get; set; }
         public int? DaysSinceLastReport { get; set; }
         public List<PerformanceInEpiWeek> PerformanceInEpiWeeks { get; set; }
     }
