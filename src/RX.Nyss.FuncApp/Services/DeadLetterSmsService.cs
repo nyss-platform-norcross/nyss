@@ -4,7 +4,6 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.FuncApp.Configuration;
-using RX.Nyss.FuncApp.Extensions;
 
 namespace RX.Nyss.FuncApp.Services
 {
@@ -46,7 +45,9 @@ namespace RX.Nyss.FuncApp.Services
             var sender = _serviceBusClient.CreateSender(_sendSmsQueue);
             var count = 0;
 
-            await foreach(var message in receiver.GetMessages(maxTimeToWaitForMessage))
+            var messages = await receiver.ReceiveMessagesAsync(_config.NumberOfMessagesToFetchForResending, maxTimeToWaitForMessage);
+
+            foreach(var message in messages)
             {
                 try
                 {
