@@ -5,7 +5,7 @@ import {
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
   CLOSE_PROJECT,
   OPEN_PROJECT_OVERVIEW,
-  OPEN_ALERT_NOTIFICATIONS
+  OPEN_ERROR_MESSAGES,
 } from "./projectsConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects`);
@@ -69,3 +69,5 @@ export const close = {
   success: (id) => ({ type: CLOSE_PROJECT.SUCCESS, id }),
   failure: (id, message) => ({ type: CLOSE_PROJECT.FAILURE, id, message })
 };
+
+export const openErrorMessages = (projectId) => ({ type: OPEN_ERROR_MESSAGES, projectId });

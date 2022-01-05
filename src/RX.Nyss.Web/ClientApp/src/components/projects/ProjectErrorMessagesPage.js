@@ -13,6 +13,7 @@ import SubmitButton from "../forms/submitButton/SubmitButton";
 import { accessMap } from "../../authentication/accessMap";
 import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
+import { openErrorMessages } from "./logic/projectsActions";
 import styles from "./ProjectErrorMessagesPage.module.scss";
 
 const MESSAGE_MAX_LEN = 320;
@@ -24,6 +25,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
   async function fetchData() {
+    props.openErrorMessages(props.projectId);
     setErrorMessages(await http.get(`/api/project/${props.projectId}/errorMessages`));
   }
 
@@ -159,7 +161,9 @@ const mapStateToProps = (_, ownProps) => ({
   projectId: ownProps.match.params.projectId,
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  openErrorMessages: openErrorMessages,
+};
 
 export const ProjectErrorMessagesPage = withLayout(
   Layout,

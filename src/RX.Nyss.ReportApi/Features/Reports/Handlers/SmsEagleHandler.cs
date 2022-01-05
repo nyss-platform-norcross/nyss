@@ -323,14 +323,15 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             var smsErrorKey = errorReport.ReportErrorType switch
             {
-                ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
-                ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
+                ReportErrorType.DataCollectorUsedCollectionPointFormat => SmsContentKey.ReportError.FormatError,
+                ReportErrorType.CollectionPointUsedDataCollectorFormat => SmsContentKey.ReportError.FormatError,
                 ReportErrorType.SingleReportNonHumanHealthRisk
                     or ReportErrorType.AggregateReportNonHumanHealthRisk
-                    or ReportErrorType.CollectionPointNonHumanHealthRisk=> SmsContentKey.ReportError.FormatCannotBeUsedForNonHumanHealthRisk,
+                    or ReportErrorType.CollectionPointNonHumanHealthRisk
+                    or ReportErrorType.EventReportHumanHealthRisk => SmsContentKey.ReportError.FormatError,
                 ReportErrorType.HealthRiskNotFound => SmsContentKey.ReportError.HealthRiskNotFound,
-                ReportErrorType.Gateway => SmsContentKey.ReportError.Gateway,
                 ReportErrorType.FormatError => SmsContentKey.ReportError.FormatError,
+                ReportErrorType.Gateway => null,
                 ReportErrorType.TooLong => null,
                 _ => SmsContentKey.ReportError.Other,
             };
