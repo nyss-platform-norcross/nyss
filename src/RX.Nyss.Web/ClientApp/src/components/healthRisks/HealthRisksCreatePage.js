@@ -140,6 +140,7 @@ const HealthRisksCreatePageComponent = (props) => {
                       name={`contentLanguage_${lang.id}_caseDefinition`}
                       field={form.fields[`contentLanguage_${lang.id}_caseDefinition`]}
                       multiline
+                      rows={4}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -148,6 +149,7 @@ const HealthRisksCreatePageComponent = (props) => {
                       name={`contentLanguage_${lang.id}_feedbackMessage`}
                       field={form.fields[`contentLanguage_${lang.id}_feedbackMessage`]}
                       multiline
+                      rows={4}
                     />
                   </Grid>
                 </Grid>
