@@ -22,13 +22,11 @@ namespace RX.Nyss.Web.Features.Projects.Queries
 
         public class Handler : IRequestHandler<GetProjectErrorMessagesQuery, IReadOnlyList<ProjectErrorMessageDto>>
         {
-            private static readonly string[] MessagesKeys =
+            private static readonly string[] MessageKeys =
             {
                 SmsContentKey.ReportError.HealthRiskNotFound,
-                SmsContentKey.ReportError.DataCollectorUsedCollectionPointFormat,
-                SmsContentKey.ReportError.CollectionPointUsedDataCollectorFormat,
-                SmsContentKey.ReportError.FormatCannotBeUsedForNonHumanHealthRisk,
-                SmsContentKey.ReportError.Gateway,
+                SmsContentKey.ReportError.FormatError,
+                SmsContentKey.ReportError.Other
             };
 
             private readonly INyssContext _context;
@@ -62,7 +60,7 @@ namespace RX.Nyss.Web.Features.Projects.Queries
                     .Where(x => x.ProjectId == request.ProjectId)
                     .ToListAsync(cancellationToken);
 
-                return MessagesKeys.Select(key => new ProjectErrorMessageDto
+                return MessageKeys.Select(key => new ProjectErrorMessageDto
                 {
                     Key = key,
                     Message = projectMessages.SingleOrDefault(x => x.MessageKey == key)?.Message ?? strings[key],
