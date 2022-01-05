@@ -14,7 +14,8 @@ export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECT_OVERVIEW.INVOKE, openProjectOverview),
   takeEvery(consts.CREATE_PROJECT.INVOKE, createProject),
   takeEvery(consts.EDIT_PROJECT.INVOKE, editProject),
-  takeEvery(consts.CLOSE_PROJECT.INVOKE, closeProject)
+  takeEvery(consts.CLOSE_PROJECT.INVOKE, closeProject),
+  takeEvery(consts.OPEN_ERROR_MESSAGES, openErrorMessages),
 ];
 
 function* openProjectsList({ nationalSocietyId }) {
@@ -144,4 +145,8 @@ function* openProjectDashboardModule(projectId) {
   }));
 
   return project.value;
+}
+
+function* openErrorMessages({ projectId }) {
+  yield call(openProjectDashboardModule, projectId);
 }
