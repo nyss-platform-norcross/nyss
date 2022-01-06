@@ -64,6 +64,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
               name={`healthRisk.${healthRisk.healthRiskId}.caseDefinition`}
               field={form.fields[`healthRisk.${healthRisk.healthRiskId}.caseDefinition`]}
               multiline
+              rows={4}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -72,6 +73,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
               name={`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`}
               field={form.fields[`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`]}
               multiline
+              rows={4}
             />
           </Grid>
         </Grid>
