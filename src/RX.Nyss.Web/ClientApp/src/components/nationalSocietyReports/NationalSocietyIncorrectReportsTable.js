@@ -1,6 +1,6 @@
 import styles from './NationalSocietyReportsTable.module.scss';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { TableContainer } from '../common/table/TableContainer';
 import { Loading } from '../common/loading/Loading';
@@ -17,6 +17,7 @@ import {
   TableRow,
   TableSortLabel,
 } from '@material-ui/core';
+import { renderDataCollectorDisplayName } from '../reports/logic/reportsService';
 
 export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, sorting, onSort }) => {
 
@@ -85,9 +86,7 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
               <TableCell>
-                {row.dataCollectorDisplayName}
-                {row.dataCollectorDisplayName ? <br /> : ''}
-                {row.phoneNumber}
+                {renderDataCollectorDisplayName(row)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
             </TableRow>
