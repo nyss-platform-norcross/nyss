@@ -34,6 +34,7 @@ export const ReportFilters = ({
   onChange,
   showCorrectReportFilters,
   hideTrainingStatusFilter,
+  hideCorrectedFilter
 }) => {
   const [value, setValue] = useState(filters);
 
@@ -195,7 +196,7 @@ export const ReportFilters = ({
             </Fragment>
           )}
 
-          {!showCorrectReportFilters && (
+          {!showCorrectReportFilters && !hideCorrectedFilter && (
             <Fragment>
               <Grid item>
                 <FormControl className={styles.filterItem}>
