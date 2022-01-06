@@ -1,6 +1,6 @@
 import styles from "./NationalSocietyReportsListPage.module.scss";
 
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';
@@ -36,6 +36,7 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
           onChange={handleFiltersChange}
           filters={props.filters}
           hideTrainingStatusFilter
+          hideCorrectedFilter
         />
       </div>
 

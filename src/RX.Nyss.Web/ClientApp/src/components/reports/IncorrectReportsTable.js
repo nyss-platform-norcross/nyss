@@ -1,6 +1,6 @@
 import styles from '../common/table/Table.module.scss';
 
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
@@ -18,6 +18,7 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 import CorrectedButton from "./CorrectedButton";
+import { renderDataCollectorDisplayName } from './logic/reportsService';
 
 export const IncorrectReportsTable = ({
   isListFetching,
@@ -109,9 +110,7 @@ export const IncorrectReportsTable = ({
                   <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
                 </TableCell>
                 <TableCell>
-                  {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
+                  {renderDataCollectorDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>

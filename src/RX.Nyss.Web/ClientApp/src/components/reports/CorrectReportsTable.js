@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
@@ -22,6 +22,7 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 import { alertStatus } from '../alerts/logic/alertsConstants';
+import { renderDataCollectorDisplayName, renderReportValue } from './logic/reportsService';
 
 export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEditing, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed,
@@ -137,21 +138,19 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
                 <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
                 <TableCell>
-                  {row.dataCollectorDisplayName}
-                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ''}
-                  {(!row.isAnonymized || !row.dataCollector) && row.phoneNumber}
+                  {renderDataCollectorDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
-                <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+                <TableCell>{renderReportValue(row.countMalesBelowFive)}</TableCell>
+                <TableCell>{renderReportValue(row.countMalesAtLeastFive)}</TableCell>
+                <TableCell>{renderReportValue(row.countFemalesBelowFive)}</TableCell>
+                <TableCell>{renderReportValue(row.countFemalesAtLeastFive)}</TableCell>
                 {filters.dataCollectorType === DataCollectorType.collectionPoint &&
                 <Fragment>
-                  <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
-                  <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
-                  <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
+                  <TableCell>{renderReportValue(row.referredCount)}</TableCell>
+                  <TableCell>{renderReportValue(row.deathCount)}</TableCell>
+                  <TableCell>{renderReportValue(row.fromOtherVillagesCount)}</TableCell>
                 </Fragment>
                 }
                 <TableCell>
