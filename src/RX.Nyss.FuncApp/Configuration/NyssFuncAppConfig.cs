@@ -7,6 +7,7 @@
         string ReleaseName { get; set; }
         int MaxContentLength { get; set; }
         bool EnableResendingFeedbackMessages { get; set; }
+        int NumberOfMessagesToFetchForResending { get; set; }
     }
 
     public class NyssFuncAppConfig : IConfig
@@ -16,6 +17,7 @@
         public string ReleaseName { get; set; }
         public int MaxContentLength { get; set; }
         public bool EnableResendingFeedbackMessages { get; set; }
+        public int NumberOfMessagesToFetchForResending { get; set; }
 
         public class MailConfigOptions
         {

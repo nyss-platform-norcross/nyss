@@ -17,6 +17,7 @@
   "ReleaseName": "1.0.0.1",
   "MaxContentLength": 500,
   "EnableResendingFeedbackMessages": false,
+  "NumberOfMessagesToFetchForResending": 200,
   "MailConfig": {
     "FromAddress": "",
     "FromName": "Nyss Platform",
