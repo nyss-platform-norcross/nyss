@@ -3,17 +3,17 @@ import * as cache from "./cache";
 import { reloadPage } from "./page";
 import { RequestError } from "./RequestError";
 
-export const post = (path, data, anonymous) => {
+export const post = (path, data, anonymous, abortSignal) => {
   const headers = {
     "Accept": "application/json",
     "Content-Type": "application/json"
   };
 
-  return callApi(path, "POST", data || {}, headers, !anonymous);
+  return callApi(path, "POST", data || {}, headers, !anonymous, abortSignal);
 }
 
-export const get = (path, anonymous) => {
-  return callApi(path, "GET", undefined, {}, !anonymous);
+export const get = (path, anonymous, abortSignal) => {
+  return callApi(path, "GET", undefined, {}, !anonymous, abortSignal);
 }
 
 export const getCached = ({ path, dependencies }) =>
@@ -43,7 +43,7 @@ export const handleValidationError = (response) => {
   throw new RequestError(message, data);
 };
 
-const callApi = (path, method, data, headers = {}, authenticate = false) => {
+const callApi = (path, method, data, headers = {}, authenticate = false, abortSignal = null) => {
   return new Promise((resolve, reject) => {
     let init = {
       method,
@@ -58,11 +58,14 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           ? { "Accept-Language": `${window.userLanguage}, en;q=0.5` }
           : {}
         )
-      })
+      }),
+      signal: abortSignal,
     };
+    
     if (data) {
       init.body = JSON.stringify(data);
     }
+    
     fetch(path, init)
       .then(response => {
         if (response.ok) {
@@ -89,6 +92,6 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
             .then(data => reject(new Error(stringKey(data.message.key))))
             .catch(e => reject(e));
         }
-      });
+      }).catch(reject);
   });
 }

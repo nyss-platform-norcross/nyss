@@ -21,7 +21,6 @@ export const reportsSagas = () => [
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.OPEN_SEND_REPORT.INVOKE, openSendReport),
-  takeEvery(consts.SEND_REPORT.INVOKE, sendReport),
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
   takeEvery(consts.TRACK_REPORT_EXPORT.INVOKE, trackReportExport),
@@ -235,18 +234,6 @@ function* openSendReport({ projectId }) {
     yield put(actions.openSendReport.failure(error.message));
   }
 }
-
-function* sendReport({ report }) {
-  yield put(actions.sendReport.request());
-  try {
-    yield call(http.post, `/api/report/sendReport`, report);
-    yield put(actions.sendReport.success());
-    yield put(appActions.showMessage(stringKeys.reports.sendReport.success));
-  } catch (error) {
-    yield put(actions.sendReport.failure());
-    yield put(appActions.showMessage(error.message));
-  }
-};
 
 function* acceptReport({ reportId }) {
   yield put(actions.acceptReport.request());

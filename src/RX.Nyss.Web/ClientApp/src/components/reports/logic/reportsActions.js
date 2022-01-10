@@ -6,7 +6,6 @@ import {
   EXPORT_TO_EXCEL,
   MARK_AS_ERROR,
   EXPORT_TO_CSV,
-  SEND_REPORT,
   OPEN_SEND_REPORT,
   ACCEPT_REPORT,
   DISMISS_REPORT,
@@ -161,13 +160,6 @@ export const openSendReport = {
     formData,
   }),
   failure: (message) => ({ type: OPEN_SEND_REPORT.FAILURE, message }),
-};
-
-export const sendReport = {
-  invoke: (report) => ({ type: SEND_REPORT.INVOKE, report }),
-  request: () => ({ type: SEND_REPORT.REQUEST }),
-  success: () => ({ type: SEND_REPORT.SUCCESS }),
-  failure: (message) => ({ type: SEND_REPORT.FAILURE, message }),
 };
 
 export const acceptReport = {

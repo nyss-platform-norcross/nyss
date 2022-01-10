@@ -17,14 +17,9 @@ namespace RX.Nyss.Web.Features.Reports
     {
         private readonly IReportService _reportService;
 
-        private readonly IReportSenderService _reportSenderService;
-
-        public ReportController(
-            IReportService reportService,
-            IReportSenderService reportSenderService)
+        public ReportController(IReportService reportService)
         {
             _reportService = reportService;
-            _reportSenderService = reportSenderService;
         }
 
         /// <summary>
@@ -96,11 +91,11 @@ namespace RX.Nyss.Web.Features.Reports
         /// <summary>
         /// Sends a report for testing purposes.
         /// </summary>
-        /// <param name="report">The report to send</param>
+        /// <param name="cmd">The report to send</param>
         [HttpPost("sendReport")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
-        public async Task<Result> SendReport([FromBody]SendReportRequestDto report) =>
-            await _reportSenderService.SendReport(report);
+        public async Task<Result> SendReport([FromBody] SendReportCommand cmd) =>
+            await Sender.Send(cmd);
 
         /// <summary>
         /// Gets send report form data
@@ -110,7 +105,7 @@ namespace RX.Nyss.Web.Features.Reports
         [HttpGet("formData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId) =>
-            await _reportSenderService.GetFormData(nationalSocietyId);
+            await Sender.Send(new GetFormDataQuery(nationalSocietyId));
 
         /// <summary>
         /// Keeps the selected report.
@@ -149,5 +144,15 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> UndoCorrect(int reportId) =>
             await Sender.Send(new UndoCorrectReportCommand(reportId));
+
+        /// <summary>
+        /// Gets report status
+        /// </summary>
+        /// <param name="query">Query</param>
+        /// <returns></returns>
+        [HttpGet("status")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<ReportStatusDto> GetStatus([FromQuery] GetReportStatusQuery query) =>
+            await Sender.Send(query);
     }
 }

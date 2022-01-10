@@ -1,6 +1,6 @@
 import styles from "./ReportsEditPage.module.scss";
 
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { validators, createForm } from '../../utils/forms';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
@@ -16,9 +16,9 @@ import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 import SelectField from "../forms/SelectField";
 import { getUtcOffset } from "../../utils/date";
+import * as http from "../../utils/http";
 
-
-export const SendReportDialog = ({ close, sendReport }) => {
+export const SendReportDialog = ({ close, showMessage }) => {
   const [form, setForm] = useState(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
@@ -27,7 +27,9 @@ export const SendReportDialog = ({ close, sendReport }) => {
   const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id })));
   const formData = useSelector(state => state.reports.sendReport.formData);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const isSending = useSelector(state => state.reports.formSaving);
+  const [isSending, setIsSending] = useState(false);
+  const abortController = useRef(new AbortController());
+  const intervalHandler = useRef(0);
 
   const canSelectModem = !!formData && formData.modems.length > 0;
 
@@ -47,7 +49,7 @@ export const SendReportDialog = ({ close, sendReport }) => {
       dataCollector: [validators.required],
       gatewayModemId: [validators.requiredWhen(_ => canSelectModem)],
       message: [validators.required],
-      time: [validators.required, validators.time]
+      time: [validators.required, validators.time, validators.timeNotInFuture],
     };
 
     setForm(createForm(fields, validation));
@@ -57,7 +59,25 @@ export const SendReportDialog = ({ close, sendReport }) => {
     setDate(date.format('YYYY-MM-DD'));
   }
 
-  const handleSubmit = (e) => {
+  function getReportStatus(timestamp, dataCollectorId) {
+    return new Promise((resolve, reject) => {
+      intervalHandler.current = setInterval(() => {
+        http.get(`/api/report/status?timestamp=${timestamp}&dataCollectorId=${dataCollectorId}`, false, abortController.current.signal)
+        .then(status => {
+          if (!status) return;
+
+          clearInterval(intervalHandler.current);
+          resolve(status);
+        })
+        .catch(err => {
+          clearInterval(intervalHandler.current);
+          reject(err);
+        });
+      }, 3000);
+    });
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!form.isValid()) {
@@ -66,16 +86,50 @@ export const SendReportDialog = ({ close, sendReport }) => {
 
     const values = form.getValues();
     const dataCollector = dataCollectors.filter(dc => dc.title === values.dataCollector)[0];
-    sendReport({
+
+    const data = {
       dataCollectorId: dataCollector.id,
       text: values.message,
       timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss'),
       modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null,
       utcOffset: getUtcOffset()
-    });
+    };
+
+    try {
+      setIsSending(true);
+      await http.post("/api/report/sendReport", data, false, abortController.current.signal);
+      const status = await getReportStatus(data.timestamp, data.dataCollectorId);
+
+      showMessage(status.feedbackMessage ? status.feedbackMessage : stringKeys.reports.sendReport.success);
+
+      setIsSending(false);
+      close(); 
+    } catch (error) {
+      setIsSending(false);
+      
+      if (error.name === 'AbortError') {
+        close();
+        return;
+      };
+      
+      showMessage?.(error.message);
+    }
+  };
+
+  function onClose() {
+    if (isSending) {
+      abortController.current.abort();
+
+      if (intervalHandler.current > 0) {
+        clearInterval(intervalHandler.current);
+        close();
+      }
+      
+      return;
+    }
 
     close();
-  };
+  }
 
   return !!form && (
     <Fragment>
@@ -143,7 +197,7 @@ export const SendReportDialog = ({ close, sendReport }) => {
             </Grid>
 
             <FormActions>
-              <Button onClick={close}>
+              <Button onClick={onClose}>
                 {strings(stringKeys.form.cancel)}
               </Button>
               <SubmitButton isFetching={isSending}>{strings(stringKeys.reports.sendReport.sendReport)}</SubmitButton>

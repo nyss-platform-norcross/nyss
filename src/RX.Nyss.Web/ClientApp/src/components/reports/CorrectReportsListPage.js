@@ -1,6 +1,6 @@
 import styles from "./ReportsListPage.module.scss";
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
@@ -15,7 +15,7 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { Hidden, Icon } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";
-import { useState } from "react";
+import * as appActions from "../app/logic/appActions";
 
 const Page = "correct";
 
@@ -89,7 +89,7 @@ const CorrectReportsListPageComponent = (props) => {
         <SendReportDialog close={() => setOpen(false)}
           projectId={props.projectId}
           openSendReport={props.openSendReport}
-          sendReport={props.sendReport} />
+          showMessage={props.showMessage} />
       )}
 
       <div className={styles.filtersGrid}>
@@ -155,11 +155,11 @@ const mapDispatchToProps = {
   exportToCsv: reportsActions.exportToCsv.invoke,
   goToEditing: reportsActions.goToEditing,
   openSendReport: reportsActions.openSendReport.invoke,
-  sendReport: reportsActions.sendReport.invoke,
   goToAlert: reportsActions.goToAlert,
   acceptReport: reportsActions.acceptReport.invoke,
   dismissReport: reportsActions.dismissReport.invoke,
   trackReportExport: reportsActions.trackReportExport,
+  showMessage: appActions.showMessage,
 };
 
 export const CorrectReportsListPage = withLayout(
