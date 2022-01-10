@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             healthRisks.Any()
                 ? alerts.Where(a => healthRisks.Contains(a.ProjectHealthRisk.HealthRiskId))
                 : alerts;
-                
+
         public static IQueryable<Alert> FilterByArea(this IQueryable<Alert> alerts, AreaDto area) =>
             area != null
                 ? alerts.Where(a => a.AlertReports.Any(ar => area.RegionIds.Contains(ar.Report.RawReport.Village.District.Region.Id)
@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             status switch
             {
                 AlertStatusFilter.All => alerts,
-                AlertStatusFilter.Open => alerts.Where(a => a.Status == AlertStatus.Pending),
+                AlertStatusFilter.Open => alerts.Where(a => a.Status == AlertStatus.Open),
                 AlertStatusFilter.Escalated => alerts.Where(a => a.Status == AlertStatus.Escalated),
                 AlertStatusFilter.Dismissed => alerts.Where(a => a.Status == AlertStatus.Dismissed),
                 AlertStatusFilter.Closed => alerts.Where(a => a.Status == AlertStatus.Closed),
@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                             a.Status == AlertStatus.Closed ? 1 :
                             a.Status == AlertStatus.Escalated ? 2 : 3)
                         .ThenByDescending(a => a.CreatedAt)
-                    : alerts.OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
+                    : alerts.OrderBy(a => a.Status == AlertStatus.Open ? 0 :
                             a.Status == AlertStatus.Escalated ? 1 :
                             a.Status == AlertStatus.Closed ? 2 : 3)
                         .ThenByDescending(a => a.CreatedAt),

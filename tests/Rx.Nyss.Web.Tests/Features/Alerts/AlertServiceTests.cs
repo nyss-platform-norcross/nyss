@@ -145,7 +145,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenAlertAcceptedReportCountIsLowerThanThreshold_ShouldReturnError()
         {
-            _alerts.First().Status = AlertStatus.Pending;
+            _alerts.First().Status = AlertStatus.Open;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -230,7 +230,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
             var alert = _alerts.First();
-            alert.Status = AlertStatus.Pending;
+            alert.Status = AlertStatus.Open;
             alert.ProjectHealthRisk.Id = 1;
             alert.ProjectHealthRisk.Project.Id = 1;
             alert.AlertReports = new List<AlertReport>
@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _gatewaySettings.First().IotHubDeviceName = "TestDevice";
 
             var alert = _alerts.First();
-            alert.Status = AlertStatus.Pending;
+            alert.Status = AlertStatus.Open;
             alert.ProjectHealthRisk.Id = 1;
             alert.ProjectHealthRisk.Project.Id = 1;
             alert.AlertReports = new List<AlertReport>
@@ -355,7 +355,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
             var alert = _alerts.First();
-            alert.Status = AlertStatus.Pending;
+            alert.Status = AlertStatus.Open;
             alert.ProjectHealthRisk.Id = 1;
             alert.ProjectHealthRisk.Project.Id = 1;
 
@@ -405,7 +405,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenAlertMeetsTheCriteria_ChangesAlertStatus()
         {
-            _alerts.First().Status = AlertStatus.Pending;
+            _alerts.First().Status = AlertStatus.Open;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -446,7 +446,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenSendNotificationIsFalse_ShouldNotSendNotification()
         {
-            _alerts.First().Status = AlertStatus.Pending;
+            _alerts.First().Status = AlertStatus.Open;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -495,7 +495,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task DismissAlert_WhenAlertAcceptedReportAndPendingReportCountIsGreaterOrEqualToThreshold_ShouldReturnError()
         {
-            _alerts.First().Status = AlertStatus.Pending;
+            _alerts.First().Status = AlertStatus.Open;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -568,7 +568,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task DismissAlert_WhenAlertMeetsTheCriteria_ChangesAlertStatus()
         {
-            _alerts.First().Status = AlertStatus.Pending;
+            _alerts.First().Status = AlertStatus.Open;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -596,7 +596,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Theory]
         [InlineData(AlertStatus.Closed)]
         [InlineData(AlertStatus.Dismissed)]
-        [InlineData(AlertStatus.Pending)]
+        [InlineData(AlertStatus.Open)]
         public async Task CloseAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
         {
             _alerts.First().Status = status;
@@ -705,11 +705,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private AlertStatus MapToAlertStatus(AlertStatusFilter filter) =>
             filter switch
             {
-                AlertStatusFilter.Open => AlertStatus.Pending,
+                AlertStatusFilter.Open => AlertStatus.Open,
                 AlertStatusFilter.Escalated => AlertStatus.Escalated,
                 AlertStatusFilter.Dismissed => AlertStatus.Dismissed,
                 AlertStatusFilter.Closed => AlertStatus.Closed,
-                _ => AlertStatus.Pending
+                _ => AlertStatus.Open
             };
 
         private static class TestData
@@ -889,7 +889,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     new Alert
                     {
                         Id = 1,
-                        Status = AlertStatus.Pending,
+                        Status = AlertStatus.Open,
                         CreatedAt = new DateTime(2020, 1, 2),
                         EscalatedBy = DefaultUser,
                         DismissedBy = DefaultUser,

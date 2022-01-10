@@ -137,7 +137,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             //assert
             result.Alert.ShouldBeOfType<Data.Models.Alert>();
-            result.Alert.Status.ShouldBe(AlertStatus.Pending);
+            result.Alert.Status.ShouldBe(AlertStatus.Open);
             existingAlerts.ShouldNotContain(result.Alert);
         }
 
@@ -229,7 +229,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             //assert
             result.Alert.ShouldBeOfType<Data.Models.Alert>();
-            result.Alert.Status.ShouldBe(AlertStatus.Pending);
+            result.Alert.Status.ShouldBe(AlertStatus.Open);
             existingAlerts.ShouldNotContain(result.Alert);
         }
 

@@ -2,7 +2,7 @@
 {
     public enum AlertStatus
     {
-        Pending,
+        Open,
         Dismissed,
         Escalated,
         Closed

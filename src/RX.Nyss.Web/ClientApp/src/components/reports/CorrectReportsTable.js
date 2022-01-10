@@ -57,7 +57,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
   }
 
   const alertAllowsCrossCheckingOfReport = (alert) =>
-    alert.status === alertStatus.pending
+    alert.status === alertStatus.open
     || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
 
   const canCrossCheck = (report, reportStatus) =>

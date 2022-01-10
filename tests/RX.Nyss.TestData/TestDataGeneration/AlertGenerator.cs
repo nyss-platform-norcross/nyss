@@ -17,7 +17,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             var newAlert = new Alert
             {
                 Id = _numerator.Next,
-                Status = AlertStatus.Pending,
+                Status = AlertStatus.Open,
                 ProjectHealthRisk = projectHealthRisk,
                 AlertReports = new List<AlertReport>()
             };

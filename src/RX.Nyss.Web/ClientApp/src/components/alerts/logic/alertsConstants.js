@@ -37,7 +37,7 @@ export const alertStatusFilters = {
 }
 
 export const alertStatus = {
-  pending: "Pending",
+  open: "Open",
   escalated: "Escalated",
   dismissed: "Dismissed",
   closed: "Closed"
