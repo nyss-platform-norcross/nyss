@@ -30,10 +30,10 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
         }
 
         public async Task<bool> PhoneNumberExists(string phoneNumber) =>
-            await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber);
+            !string.IsNullOrEmpty(phoneNumber) && await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber);
 
         public async Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber) =>
-            await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber && dc.Id != currentDataCollectorId);
+            !string.IsNullOrEmpty(phoneNumber) && await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber && dc.Id != currentDataCollectorId);
 
         public async Task<bool> IsAllowedToCreateForSupervisor(int supervisorId)
         {
