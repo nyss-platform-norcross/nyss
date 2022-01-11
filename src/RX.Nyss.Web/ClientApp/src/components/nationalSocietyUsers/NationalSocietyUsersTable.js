@@ -40,7 +40,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
 
   const canBeEdited = (row) => {
     const allowedRoles = [Roles.Administrator, Roles.Manager];
-    
+
     return user.roles.some(r => allowedRoles.indexOf(r) !== -1);
   }
 
@@ -55,7 +55,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.organization)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.project)}</TableCell>
-            <TableCell align="center">{strings(stringKeys.nationalSocietyUser.list.headManager)}</TableCell>
+            <TableCell>{strings(stringKeys.nationalSocietyUser.list.headManager)}</TableCell>
             <TableCell style={{ width: "16%" }} />
           </TableRow>
         </TableHead>
@@ -68,7 +68,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
               <TableCell>{row.organizationName}</TableCell>
               <TableCell>{row.project}</TableCell>
-              <TableCell align="center">{
+              <TableCell>{
                 (row.isHeadManager && <CheckIcon fontSize="small" />) ||
                 (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.nationalSocietyConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
               }

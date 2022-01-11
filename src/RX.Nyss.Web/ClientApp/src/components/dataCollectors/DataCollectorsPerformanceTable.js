@@ -47,8 +47,8 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
         <TableHead>
           <TableRow>
             <TableCell className={styles.nameColumn}>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
-            <TableCell className={`${styles.villageColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
-            <TableCell className={`${styles.daysColumn} ${styles.centeredText}`}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
+            <TableCell className={styles.villageColumn}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
+            <TableCell className={styles.daysColumn}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
 
             {epiDateRange.map(week => (
               <TableCell key={`filter_week_${week.epiWeek}`} className={styles.weekColumn}>
