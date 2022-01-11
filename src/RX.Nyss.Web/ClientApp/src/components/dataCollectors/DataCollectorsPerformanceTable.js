@@ -91,10 +91,10 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
                   <br />
                   {row.phoneNumber}
                 </TableCell>
-                <TableCell className={styles.centeredText}>{row.villageName}</TableCell>
-                <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
+                <TableCell>{row.villageName}</TableCell>
+                <TableCell>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
                 {row.performanceInEpiWeeks.map(week => (
-                  <TableCell className={styles.centeredText} key={`dc_performance_${week.epiWeek}`}>
+                  <TableCell key={`dc_performance_${week.epiWeek}`}>
                     <DataCollectorStatusIcon status={week.reportingStatus} icon={getIconFromStatus(week.reportingStatus)} />
                   </TableCell>
                 ))}
