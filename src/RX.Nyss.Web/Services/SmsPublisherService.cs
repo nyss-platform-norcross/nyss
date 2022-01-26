@@ -3,26 +3,26 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
 {
     public interface ISmsPublisherService
     {
-        Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage, bool specifyModem);
+        Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage);
     }
 
     public class SmsPublisherService : ISmsPublisherService
     {
-        private readonly QueueClient _queueClient;
+        private readonly ServiceBusSender _sender;
 
-        public SmsPublisherService(INyssWebConfig config)
+        public SmsPublisherService(INyssWebConfig config, ServiceBusClient serviceBusClient)
         {
-            _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
+            _sender = serviceBusClient.CreateSender(config.ServiceBusQueues.SendSmsQueue);
         }
 
-        public async Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage, bool specifyModem) =>
+        public async Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage) =>
             await Task.WhenAll(recipients.Select(recipient =>
             {
                 var sendSms = new SendSmsMessage
@@ -33,13 +33,13 @@ namespace RX.Nyss.Web.Services
                     ModemNumber = recipient.Modem
                 };
 
-                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
+                var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
                 {
-                    Label = "RX.Nyss.Web",
-                    UserProperties = { { "IoTHubDevice", iotHubDeviceName } }
+                    Subject = "RX.Nyss.Web",
+                    ApplicationProperties = { {"IoTHubDevice", iotHubDeviceName } }
                 };
 
-                return _queueClient.SendAsync(message);
+                return _sender.SendMessageAsync(message);
             }));
     }
 

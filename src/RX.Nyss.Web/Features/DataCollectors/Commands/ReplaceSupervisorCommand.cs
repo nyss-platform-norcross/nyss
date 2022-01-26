@@ -107,8 +107,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     await _smsPublisherService.SendSms(
                         gatewaySetting.IotHubDeviceName,
                         recipientsDataCollectors,
-                        message,
-                        gatewaySetting.Modems.Any());
+                        message);
                 }
 
                 var dataCollectors = replaceSupervisorDatas.Select(d => d.DataCollector.DisplayName);

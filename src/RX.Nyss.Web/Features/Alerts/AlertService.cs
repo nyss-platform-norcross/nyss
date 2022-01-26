@@ -643,7 +643,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
                 if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
                 {
-                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, notificationRecipients, text, gatewaySetting.Modems.Any());
+                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, notificationRecipients, text);
                 }
                 else
                 {
