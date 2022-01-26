@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data.Models;
@@ -21,21 +21,21 @@ namespace RX.Nyss.ReportApi.Services
 
     public class QueuePublisherService : IQueuePublisherService
     {
-        private readonly IQueueClient _sendEmailQueueClient;
-        private readonly IQueueClient _checkAlertQueueClient;
-        private readonly IQueueClient _sendSmsQueueClient;
+        private readonly ServiceBusSender _sendEmailQueueSender;
+        private readonly ServiceBusSender _checkAlertQueueSender;
+        private readonly ServiceBusSender _sendSmsQueueSender;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider, ILoggerAdapter loggerAdapter, IQueueClientProvider queueClientProvider)
+        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider, ILoggerAdapter loggerAdapter, ServiceBusClient serviceBusClient)
         {
             _config = config;
             _dateTimeProvider = dateTimeProvider;
             _loggerAdapter = loggerAdapter;
-            _sendEmailQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendEmailQueue);
-            _checkAlertQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.CheckAlertQueue);
-            _sendSmsQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendSmsQueue);
+            _sendEmailQueueSender = serviceBusClient.CreateSender(config.ServiceBusQueues.SendEmailQueue);
+            _checkAlertQueueSender = serviceBusClient.CreateSender(config.ServiceBusQueues.CheckAlertQueue);
+            _sendSmsQueueSender = serviceBusClient.CreateSender(config.ServiceBusQueues.SendSmsQueue);
         }
 
         public async Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message)
@@ -57,13 +57,13 @@ namespace RX.Nyss.ReportApi.Services
 
         public async Task QueueAlertCheck(int alertId)
         {
-            var message = new Message(Encoding.UTF8.GetBytes(alertId.ToString()))
+            var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(alertId.ToString()))
             {
-                Label = "RX.Nyss.ReportApi",
-                ScheduledEnqueueTimeUtc = _dateTimeProvider.UtcNow.AddMinutes(_config.CheckAlertTimeoutInMinutes)
+                Subject = "RX.Nyss.ReportApi",
+                ScheduledEnqueueTime = _dateTimeProvider.UtcNow.AddMinutes(_config.CheckAlertTimeoutInMinutes)
             };
 
-            await _checkAlertQueueClient.SendAsync(message);
+            await _checkAlertQueueSender.SendMessageAsync(message);
         }
 
         public Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false)
@@ -80,9 +80,9 @@ namespace RX.Nyss.ReportApi.Services
                 SendAsTextOnly = sendAsTextOnly
             };
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi" };
+            var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail)));
 
-            return _sendEmailQueueClient.SendAsync(message);
+            return _sendEmailQueueSender.SendMessageAsync(message);
         }
 
         private async Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
@@ -101,13 +101,13 @@ namespace RX.Nyss.ReportApi.Services
                     ModemNumber = specifyModemWhenSending ? recipient.Modem : null
                 };
 
-                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
+                var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
                 {
-                    Label = "RX.Nyss.ReportApi",
-                    UserProperties = { { "IoTHubDevice", iotHubDeviceName } }
+                    Subject = "RX.Nyss.ReportApi",
+                    ApplicationProperties = { { "IotHubDevice", iotHubDeviceName } }
                 };
 
-                return _sendSmsQueueClient.SendAsync(message);
+                return _sendSmsQueueSender.SendMessageAsync(message);
             }));
     }
 

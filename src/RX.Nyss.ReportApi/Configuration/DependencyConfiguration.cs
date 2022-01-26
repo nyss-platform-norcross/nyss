@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
@@ -30,7 +31,14 @@ namespace RX.Nyss.ReportApi.Configuration
             RegisterWebFramework(serviceCollection);
             RegisterSwagger(serviceCollection);
             RegisterServiceCollection(serviceCollection, config);
+            RegisterAzureClients(serviceCollection, config.ConnectionStrings);
         }
+
+        private static void RegisterAzureClients(IServiceCollection serviceCollection, ConnectionStringOptions connectionStrings) =>
+            serviceCollection.AddAzureClients(builder =>
+            {
+                builder.AddServiceBusClient(connectionStrings.ServiceBus);
+            });
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
             ILoggingOptions loggingOptions, IConfiguration configuration)
@@ -60,7 +68,7 @@ namespace RX.Nyss.ReportApi.Configuration
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 })
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
                 .ConfigureApiBehaviorOptions(options =>
