@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -9,6 +7,7 @@ using MediatR;
 namespace RX.Nyss.Web.Utils
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -23,6 +22,7 @@ namespace RX.Nyss.Web.Utils
             {
                 await validator.ValidateAndThrowAsync(request, cancellationToken: cancellationToken);
             }
+
             return await next();
         }
     }
