@@ -1,62 +1,61 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace RX.Nyss.FuncApp.Services
+namespace RX.Nyss.FuncApp.Services;
+
+public class SendGridEmailClient : IEmailClient
 {
-    public class SendGridEmailClient : IEmailClient
+    private readonly IConfig _config;
+    private readonly IEmailAttachmentService _emailAttachmentService;
+
+    public SendGridEmailClient(IConfig config, IEmailAttachmentService emailAttachmentService)
     {
-        private readonly IConfig _config;
-        private readonly IEmailAttachmentService _emailAttachmentService;
+        _config = config;
+        _emailAttachmentService = emailAttachmentService;
+    }
 
-        public SendGridEmailClient(IConfig config, IEmailAttachmentService emailAttachmentService)
+    public async Task SendEmail(SendEmailMessage message, bool sandboxMode, BlobContainerClient blobContainer)
+    {
+        var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
+        var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Html);
+
+        if (!string.IsNullOrEmpty(message.AttachmentFilename))
         {
-            _config = config;
-            _emailAttachmentService = emailAttachmentService;
+            await _emailAttachmentService.AttachPdf(sendGridMessage, message.AttachmentFilename, blobContainer);
         }
 
-        public async Task SendEmail(SendEmailMessage message, bool sandboxMode, CloudBlobContainer blobContainer)
-        {
-            var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
-            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Html);
+        await sendGridClient.SendEmailAsync(sendGridMessage);
+    }
 
-            if (!string.IsNullOrEmpty(message.AttachmentFilename))
+    public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
+    {
+        var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
+        var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Text);
+
+        await sendGridClient.SendEmailAsync(sendGridMessage);
+    }
+
+    private SendGridMessage CreateSendGridMessage(SendEmailMessage message, bool sandboxMode, string contentType)
+    {
+        var msg = new SendGridMessage
+        {
+            From = new EmailAddress(_config.MailConfig.FromAddress, _config.MailConfig.FromName),
+            Subject = message.Subject,
+            MailSettings = new MailSettings
             {
-                await _emailAttachmentService.AttachPdf(sendGridMessage, message.AttachmentFilename, blobContainer);
-            }
-
-            await sendGridClient.SendEmailAsync(sendGridMessage);
-        }
-
-        public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
-        {
-            var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
-            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Text);
-
-            await sendGridClient.SendEmailAsync(sendGridMessage);
-        }
-
-        private SendGridMessage CreateSendGridMessage(SendEmailMessage message, bool sandboxMode, string contentType)
-        {
-            var msg = new SendGridMessage
-            {
-                From = new EmailAddress(_config.MailConfig.FromAddress, _config.MailConfig.FromName),
-                Subject = message.Subject,
-                MailSettings = new MailSettings
+                SandboxMode = new SandboxMode
                 {
-                    SandboxMode = new SandboxMode
-                    {
-                        Enable = sandboxMode
-                    }
+                    Enable = sandboxMode
                 }
-            };
+            }
+        };
 
-            msg.AddTo(message.To.Email, message.To.Name);
-            msg.AddContent(contentType, message.Body);
-            return msg;
-        }
+        msg.AddTo(message.To.Email, message.To.Name);
+        msg.AddContent(contentType, message.Body);
+        return msg;
     }
 }

@@ -1,26 +1,23 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
 using SendGrid.Helpers.Mail;
 
-namespace RX.Nyss.FuncApp.Services
-{
-    public interface IEmailAttachmentService
-    {
-        Task AttachPdf(SendGridMessage message, string filename, CloudBlobContainer blobContainer);
-    }
+namespace RX.Nyss.FuncApp.Services;
 
-    public class EmailAttachmentService : IEmailAttachmentService
+public interface IEmailAttachmentService
+{
+    Task AttachPdf(SendGridMessage message, string filename, BlobContainerClient blobContainer);
+}
+
+public class EmailAttachmentService : IEmailAttachmentService
+{
+    public async Task AttachPdf(SendGridMessage message, string filename, BlobContainerClient blobContainer)
     {
-        public async Task AttachPdf(SendGridMessage message, string filename, CloudBlobContainer blobContainer)
-        {
-            var attachment = blobContainer.GetBlockBlobReference(filename);
-            using (var stream = new MemoryStream())
-            {
-                await attachment.DownloadToStreamAsync(stream);
-                stream.Position = 0;
-                await message.AddAttachmentAsync(filename, stream, "application/pdf");
-            }
-        }
+        var blobClient = blobContainer.GetBlobClient(filename);
+        await using var stream = new MemoryStream();
+        await blobClient.DownloadToAsync(stream);
+        stream.Position = 0;
+        await message.AddAttachmentAsync(filename, stream, "application/pdf");
     }
 }
