@@ -2,33 +2,32 @@
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 
-namespace RX.Nyss.Common.Services
+namespace RX.Nyss.Common.Services;
+
+public interface IDataBlobService
 {
-    public interface IDataBlobService
+    Task StorePlatformAgreement(string sourceAgreement, string blobName);
+    Task StorePublicStats(string stats);
+}
+
+public class DataBlobService : IDataBlobService
+{
+    private readonly IConfig _config;
+
+    public DataBlobService(IConfig config)
     {
-        Task StorePlatformAgreement(string sourceAgreement, string blobName);
-        Task StorePublicStats(string stats);
+        _config = config;
     }
 
-    public class DataBlobService : IDataBlobService
+    public async Task StorePlatformAgreement(string sourceAgreement, string blobName)
     {
-        private readonly IConfig _config;
+        var blobProvider = new BlobProvider(_config.PlatformAgreementsContainerName, _config.ConnectionStrings.DataBlobContainer);
+        await blobProvider.CopyBlob(sourceAgreement, blobName);
+    }
 
-        public DataBlobService(IConfig config)
-        {
-            _config = config;
-        }
-
-        public async Task StorePlatformAgreement(string sourceAgreement, string blobName)
-        {
-            var blobProvider = new BlobProvider(_config.PlatformAgreementsContainerName, _config.ConnectionStrings.DataBlobContainer);
-            await blobProvider.CopyBlob(sourceAgreement, blobName);
-        }
-
-        public async Task StorePublicStats(string stats)
-        {
-            var blobProvider = new BlobProvider(_config.PublicStatsBlobContainerName, _config.ConnectionStrings.DataBlobContainer);
-            await blobProvider.SetBlobValue(_config.PublicStatsBlobObjectName, stats);
-        }
+    public async Task StorePublicStats(string stats)
+    {
+        var blobProvider = new BlobProvider(_config.PublicStatsBlobContainerName, _config.ConnectionStrings.DataBlobContainer);
+        await blobProvider.SetBlobValue(_config.PublicStatsBlobObjectName, stats);
     }
 }

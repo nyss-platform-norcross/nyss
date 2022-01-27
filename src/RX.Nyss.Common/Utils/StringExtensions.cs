@@ -1,41 +1,40 @@
 ﻿using System;
 
-namespace RX.Nyss.Common.Utils
+namespace RX.Nyss.Common.Utils;
+
+public static class StringExtensions
 {
-    public static class StringExtensions
+    public static int? ParseToNullableInt(this string value) => int.TryParse(value, out var outValue)
+        ? (int?)outValue
+        : null;
+
+    public static string SubstringFromEnd(this string s, int numberOfCharacters)
     {
-        public static int? ParseToNullableInt(this string value) => int.TryParse(value, out var outValue)
-            ? (int?)outValue
-            : null;
+        var maxNumberOfChars = Math.Min(s.Length, numberOfCharacters);
+        return s.Substring(s.Length - maxNumberOfChars, maxNumberOfChars);
+    }
 
-        public static string SubstringFromEnd(this string s, int numberOfCharacters)
+    public static string Truncate(this string s, int maxLength)
+    {
+        if (maxLength <= 0)
         {
-            var maxNumberOfChars = Math.Min(s.Length, numberOfCharacters);
-            return s.Substring(s.Length - maxNumberOfChars, maxNumberOfChars);
+            return string.Empty;
         }
 
-        public static string Truncate(this string s, int maxLength)
+        if (string.IsNullOrEmpty(s) || s.Length <= maxLength)
         {
-            if (maxLength <= 0)
-            {
-                return string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(s) || s.Length <= maxLength)
-            {
-                return s;
-            }
-
-            return s.Substring(0, maxLength);
+            return s;
         }
 
-        public static string ToCamelCase(this string str)
+        return s.Substring(0, maxLength);
+    }
+
+    public static string ToCamelCase(this string str)
+    {
+        if (!string.IsNullOrEmpty(str) && str.Length > 1)
         {
-            if (!string.IsNullOrEmpty(str) && str.Length > 1)
-            {
-                return char.ToLowerInvariant(str[0]) + str.Substring(1);
-            }
-            return str;
+            return char.ToLowerInvariant(str[0]) + str.Substring(1);
         }
+        return str;
     }
 }
