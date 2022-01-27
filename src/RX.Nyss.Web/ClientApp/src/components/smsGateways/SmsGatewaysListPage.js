@@ -27,6 +27,8 @@ const SmsGatewaysListPageComponent = (props) => {
             icon={<AddIcon />}
             roles={accessMap.smsGateways.add}
             condition={!props.nationalSocietyHasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)}
+            variant={"contained"}
+            color={"primary"}
           >
             {strings(stringKeys.smsGateway.addNew)}
           </TableActionsButton>

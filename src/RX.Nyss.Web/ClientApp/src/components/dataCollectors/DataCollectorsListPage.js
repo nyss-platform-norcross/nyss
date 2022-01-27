@@ -38,13 +38,28 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(projectId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(projectId)}
+            variant="contained"
+            color="primary"
+            icon={<AddIcon />}
+          >
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToCsv}>
+          <TableActionsButton
+            onClick={() => props.exportToCsv(projectId, props.filters)}
+            variant="outlined"
+            color="primary"
+            roles={accessMap.dataCollectors.export}
+            isFetching={props.isExportingToCsv}
+          >
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}>
+          <TableActionsButton  onClick={() => props.exportToExcel(projectId, props.filters)}
+             variant="outlined"
+             color="primary"
+             roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}
+          >
             {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
         </TableActions>

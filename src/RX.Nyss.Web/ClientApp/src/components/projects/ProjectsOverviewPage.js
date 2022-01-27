@@ -66,7 +66,12 @@ const ProjectsOverviewPageComponent = (props) => {
       {!props.isClosed && (
         <FormActions>
           {(!props.data.allowMultipleOrganizations || (props.data.hasCoordinator && props.callingUserRoles.some(r => r === Coordinator || r === Administrator))) && (
-            <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
+            <TableActionsButton
+              onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)}
+              roles={accessMap.projects.edit}
+              variant={"outlined"}
+              color={"primary"}
+            >
               {strings(stringKeys.project.edit)}
             </TableActionsButton>
           )}

@@ -65,21 +65,38 @@ const CorrectReportsListPageComponent = (props) => {
     <Fragment>
       <TableActions>
         <Hidden xsDown>
-          <TableActionsButton onClick={handleRefresh} isFetching={props.isListFetching}>
+          <TableActionsButton
+            variant={"text"}
+            color={"primary"}
+            onClick={handleRefresh}
+            isFetching={props.isListFetching}
+          >
             <Icon>refresh</Icon>
           </TableActionsButton>
         </Hidden>
 
-        <TableActionsButton onClick={exportToCsv}>
+        <TableActionsButton
+          onClick={exportToCsv}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
 
-        <TableActionsButton onClick={exportToExcel}>
+        <TableActionsButton
+          onClick={exportToExcel}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
 
         {canSendReport &&
-          <TableActionsButton onClick={handleSendReport}>
+          <TableActionsButton
+            onClick={handleSendReport}
+            variant={"outlined"}
+            color={"primary"}
+          >
             {strings(stringKeys.reports.list.sendReport)}
           </TableActionsButton>
         }

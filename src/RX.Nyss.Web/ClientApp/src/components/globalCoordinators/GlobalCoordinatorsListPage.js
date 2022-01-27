@@ -22,7 +22,13 @@ const GlobalCoordinatorsListPageComponent = (props) => {
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={props.goToCreation} roles={accessMap.globalCoordinators.add} icon={<AddIcon />}>
+        <TableActionsButton
+          onClick={props.goToCreation}
+          roles={accessMap.globalCoordinators.add}
+          icon={<AddIcon />}
+          variant={"contained"}
+          color={"primary"}
+        >
           {strings(stringKeys.globalCoordinator.addNew)}
         </TableActionsButton>
       </TableActions>

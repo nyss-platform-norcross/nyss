@@ -54,7 +54,13 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={() => props.exportPerformance(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExporting}>
+        <TableActionsButton
+          onClick={() => props.exportPerformance(projectId, props.filters)}
+          roles={accessMap.dataCollectors.export}
+          isFetching={props.isExporting}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.dataCollector.exportExcel)}
         </TableActionsButton>
       </TableActions>

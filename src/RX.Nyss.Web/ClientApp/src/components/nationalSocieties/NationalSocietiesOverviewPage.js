@@ -62,16 +62,16 @@ const NationalSocietiesOverviewPageComponent = (props) => {
               {strings(stringKeys.nationalSociety.form.epiWeekStandard[props.data.epiWeekStartDay].label)}<br/>
               <span style={{ fontSize: 12 }}>({strings(stringKeys.nationalSociety.form.epiWeekStandard[props.data.epiWeekStartDay].description)})</span>
             </Typography>
-          </Grid>          
+          </Grid>
         </Grid>
 
         <FormActions>
           <TableActionsButton
-            variant="outlined"
-            color="primary"
             onClick={() => props.openEdition(props.data.id)}
             roles={accessMap.nationalSocieties.edit}
             condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
+            variant={"contained"}
+            color={"primary"}
           >
             {strings(stringKeys.nationalSociety.edit)}
           </TableActionsButton>

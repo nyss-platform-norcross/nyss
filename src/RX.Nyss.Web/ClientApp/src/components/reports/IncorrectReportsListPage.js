@@ -59,7 +59,7 @@ const IncorrectReportsListPageComponent = (props) => {
   function exportToExcel() {
     props.trackReportExport(Page, "Excel", props.projectId);
     props.exportToExcel(props.projectId, props.filters, props.sorting);
-  } 
+  }
 
   function onCorrectToggle(row) {
     if (row.isCorrected) {
@@ -73,21 +73,37 @@ const IncorrectReportsListPageComponent = (props) => {
     <Fragment>
       <TableActions>
         <Hidden xsDown>
-          <TableActionsButton onClick={handleRefresh} isFetching={props.isListFetching}>
+          <TableActionsButton
+            onClick={handleRefresh}
+            isFetching={props.isListFetching}
+            variant={"text"}
+            color={"primary"}>
             <Icon>refresh</Icon>
           </TableActionsButton>
         </Hidden>
 
-        <TableActionsButton onClick={exportToCsv}>
+        <TableActionsButton
+          onClick={exportToCsv}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
 
-        <TableActionsButton onClick={exportToExcel}>
+        <TableActionsButton
+          onClick={exportToExcel}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
 
         {canSendReport &&
-          <TableActionsButton onClick={handleSendReport}>
+          <TableActionsButton
+            onClick={handleSendReport}
+            variant={"outlined"}
+            color={"primary"}
+          >
             {strings(stringKeys.reports.list.sendReport)}
           </TableActionsButton>
         }

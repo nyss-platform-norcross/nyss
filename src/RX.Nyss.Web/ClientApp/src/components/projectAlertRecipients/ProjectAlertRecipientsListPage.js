@@ -18,7 +18,12 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived && !props.projectIsClosed &&
       <TableActions>
-        <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
+        <TableActionsButton
+          onClick={() => props.goToCreation(props.projectId)}
+          icon={<AddIcon />}
+          variant={"contained"}
+          color={"primary"}
+        >
           {strings(stringKeys.projectAlertRecipient.addNew)}
         </TableActionsButton>
       </TableActions>}

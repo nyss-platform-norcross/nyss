@@ -30,14 +30,18 @@ const AlertsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      
+
       <TableActions>
-        <TableActionsButton onClick={() => props.export(props.projectId, props.filters)}>
+        <TableActionsButton
+          onClick={() => props.export(props.projectId, props.filters)}
+          variant={"outlined"}
+          color={"primary"}
+        >
           {strings(stringKeys.alerts.list.export)}
         </TableActionsButton>
       </TableActions>
 
-      <AlertsFilters 
+      <AlertsFilters
         filters={props.filters}
         filtersData={props.filtersData}
         onChange={handleFilterChange}

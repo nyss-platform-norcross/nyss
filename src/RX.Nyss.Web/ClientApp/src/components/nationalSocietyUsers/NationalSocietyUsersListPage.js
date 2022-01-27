@@ -20,11 +20,20 @@ const NationalSocietyUsersListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToAddExisting(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToAddExisting(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            variant={"contained"}
+            color={"primary"}
+          >
             {strings(stringKeys.nationalSocietyUser.addExisting)}
           </TableActionsButton>
-
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            variant={"contained"}
+            color={"primary"}
+          >
             {strings(stringKeys.nationalSocietyUser.addNew)}
           </TableActionsButton>
         </TableActions>}

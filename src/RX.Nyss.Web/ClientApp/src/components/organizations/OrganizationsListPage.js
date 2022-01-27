@@ -35,7 +35,12 @@ const OrganizationsListPageComponent = (props) => {
     <Fragment>
       {canModify && (
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            color={"primary"}
+            variant={"contained"}
+          >
             {strings(stringKeys.organization.addNew)}
           </TableActionsButton>
         </TableActions>

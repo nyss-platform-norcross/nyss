@@ -21,7 +21,13 @@ const ProjectsListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived && (
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />} roles={accessMap.projects.add}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            roles={accessMap.projects.add}
+            variant={"contained"}
+            color={"primary"}
+          >
             {strings(stringKeys.project.addNew)}
           </TableActionsButton>
         </TableActions>

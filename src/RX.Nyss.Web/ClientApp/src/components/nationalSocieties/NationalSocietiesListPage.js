@@ -22,7 +22,12 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={props.goToCreation} icon={<AddIcon />}>
+        <TableActionsButton
+          onClick={props.goToCreation}
+          icon={<AddIcon />}
+          variant={"contained"}
+          color={"primary"}
+        >
           {strings(stringKeys.nationalSociety.addNew)}
         </TableActionsButton>
       </TableActions>
