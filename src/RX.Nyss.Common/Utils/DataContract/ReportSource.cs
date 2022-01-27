@@ -1,8 +1,7 @@
-namespace RX.Nyss.Common.Utils.DataContract
+namespace RX.Nyss.Common.Utils.DataContract;
+
+public enum ReportSource
 {
-    public enum ReportSource
-    {
-        SmsEagle,
-        Nyss
-    }
+    SmsEagle,
+    Nyss
 }

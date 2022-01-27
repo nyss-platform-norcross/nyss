@@ -1,26 +1,25 @@
 ﻿using System.Collections.Generic;
 
-namespace RX.Nyss.Common.Services.StringsResources
+namespace RX.Nyss.Common.Services.StringsResources;
+
+public class StringsBlob
 {
-    public class StringsBlob
+    public IEnumerable<Entry> Strings { get; set; }
+
+    public class Entry
     {
-        public IEnumerable<Entry> Strings { get; set; }
+        public string Key { get; set; }
 
-        public class Entry
-        {
-            public string Key { get; set; }
+        public string DefaultValue { get; set; }
 
-            public string DefaultValue { get; set; }
+        public bool NeedsImprovement { get; set; }
 
-            public bool NeedsImprovement { get; set; }
+        public IDictionary<string, string> Translations { get; set; }
 
-            public IDictionary<string, string> Translations { get; set; }
-
-            public string GetTranslation(string languageCode) =>
-                (Translations.ContainsKey(languageCode)
-                    ? Translations[languageCode]
-                    : default) ??
-                DefaultValue ?? Key;
-        }
+        public string GetTranslation(string languageCode) =>
+            (Translations.ContainsKey(languageCode)
+                ? Translations[languageCode]
+                : default) ??
+            DefaultValue ?? Key;
     }
 }

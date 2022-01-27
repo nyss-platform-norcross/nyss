@@ -7,166 +7,165 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
-namespace RX.Nyss.Common.Services.StringsResources
+namespace RX.Nyss.Common.Services.StringsResources;
+
+public interface IStringsResourcesService
 {
-    public interface IStringsResourcesService
+    Task<StringsResourcesVault> GetStrings(string languageCode);
+
+    Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode);
+
+    Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
+
+    Task<StringsBlob> GetStringsBlob();
+
+    Task<StringsBlob> GetEmailContentBlob();
+
+    Task<StringsBlob> GetSmsContentBlob();
+
+    Task SaveStringsBlob(StringsBlob blob);
+
+    Task SaveEmailContentsBlob(StringsBlob blob);
+
+    Task SaveSmsContentsBlob(StringsBlob blob);
+
+    Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode);
+}
+
+public class StringsResourcesService : IStringsResourcesService
+{
+    private readonly IGeneralBlobProvider _generalBlobProvider;
+
+    private readonly ILoggerAdapter _loggerAdapter;
+
+    public StringsResourcesService(
+        IGeneralBlobProvider generalBlobProvider,
+        ILoggerAdapter loggerAdapter)
     {
-        Task<StringsResourcesVault> GetStrings(string languageCode);
-
-        Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode);
-
-        Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
-
-        Task<StringsBlob> GetStringsBlob();
-
-        Task<StringsBlob> GetEmailContentBlob();
-
-        Task<StringsBlob> GetSmsContentBlob();
-
-        Task SaveStringsBlob(StringsBlob blob);
-
-        Task SaveEmailContentsBlob(StringsBlob blob);
-
-        Task SaveSmsContentsBlob(StringsBlob blob);
-
-        Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode);
+        _generalBlobProvider = generalBlobProvider;
+        _loggerAdapter = loggerAdapter;
     }
 
-    public class StringsResourcesService : IStringsResourcesService
+    public async Task<StringsResourcesVault> GetStrings(string languageCode)
     {
-        private readonly IGeneralBlobProvider _generalBlobProvider;
+        var result = await GetStringsResources(languageCode);
 
-        private readonly ILoggerAdapter _loggerAdapter;
+        return new StringsResourcesVault(result.Value);
+    }
 
-        public StringsResourcesService(
-            IGeneralBlobProvider generalBlobProvider,
-            ILoggerAdapter loggerAdapter)
+    public async Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode)
+    {
+        try
         {
-            _generalBlobProvider = generalBlobProvider;
-            _loggerAdapter = loggerAdapter;
-        }
+            var stringBlob = await GetStringsBlob();
 
-        public async Task<StringsResourcesVault> GetStrings(string languageCode)
-        {
-            var result = await GetStringsResources(languageCode);
-
-            return new StringsResourcesVault(result.Value);
-        }
-
-        public async Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode)
-        {
-            try
-            {
-                var stringBlob = await GetStringsBlob();
-
-                var dictionary = stringBlob.Strings
-                    .Select(entry => new
+            var dictionary = stringBlob.Strings
+                .Select(entry => new
+                {
+                    entry.Key,
+                    Value = new StringResourceValue
                     {
-                        entry.Key,
-                        Value = new StringResourceValue
-                        {
-                            Value = entry.GetTranslation(languageCode),
-                            NeedsImprovement = entry.NeedsImprovement
-                        }
-                    }).ToDictionary(x => x.Key, x => x.Value);
+                        Value = entry.GetTranslation(languageCode),
+                        NeedsImprovement = entry.NeedsImprovement
+                    }
+                }).ToDictionary(x => x.Key, x => x.Value);
 
-                return Success<IDictionary<string, StringResourceValue>>(dictionary);
-            }
-            catch (Exception exception)
-            {
-                _loggerAdapter.Error(exception, "There was a problem during fetching the strings resources");
-                return Error<IDictionary<string, StringResourceValue>>(ResultKey.UnexpectedError);
-            }
+            return Success<IDictionary<string, StringResourceValue>>(dictionary);
         }
-
-        public async Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode)
+        catch (Exception exception)
         {
-            try
-            {
-                var emailContentsBlob = await GetEmailContentBlob();
-
-                var dictionary = emailContentsBlob.Strings
-                    .Select(entry => new
-                    {
-                        entry.Key,
-                        Value = entry.GetTranslation(languageCode)
-                    })
-                    .OrderBy(x => x.Key)
-                    .ToDictionary(x => x.Key, x => x.Value);
-
-                return Success<IDictionary<string, string>>(dictionary);
-            }
-            catch (Exception exception)
-            {
-                _loggerAdapter.Error(exception, "There was a problem during fetching the email contents resources");
-                return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
-            }
+            _loggerAdapter.Error(exception, "There was a problem during fetching the strings resources");
+            return Error<IDictionary<string, StringResourceValue>>(ResultKey.UnexpectedError);
         }
+    }
 
-        public async Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode)
+    public async Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode)
+    {
+        try
         {
-            try
-            {
-                var smsContentBlob = await GetSmsContentBlob();
+            var emailContentsBlob = await GetEmailContentBlob();
 
-                var dictionary = smsContentBlob.Strings
-                    .Select(entry => new
-                    {
-                        entry.Key,
-                        Value = entry.GetTranslation(languageCode)
-                    })
-                    .OrderBy(x => x.Key)
-                    .ToDictionary(x => x.Key, x => x.Value);
+            var dictionary = emailContentsBlob.Strings
+                .Select(entry => new
+                {
+                    entry.Key,
+                    Value = entry.GetTranslation(languageCode)
+                })
+                .OrderBy(x => x.Key)
+                .ToDictionary(x => x.Key, x => x.Value);
 
-                return Success<IDictionary<string, string>>(dictionary);
-            }
-            catch (Exception exception)
-            {
-                _loggerAdapter.Error(exception, "There was a problem during fetching the Sms contents resources");
-                return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
-            }
+            return Success<IDictionary<string, string>>(dictionary);
         }
-
-        public async Task<StringsBlob> GetStringsBlob()
+        catch (Exception exception)
         {
-            var blobValue = await _generalBlobProvider.GetStringsResources();
-
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            _loggerAdapter.Error(exception, "There was a problem during fetching the email contents resources");
+            return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
         }
+    }
 
-        public async Task SaveStringsBlob(StringsBlob blob)
+    public async Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode)
+    {
+        try
         {
-            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var smsContentBlob = await GetSmsContentBlob();
 
-            await _generalBlobProvider.SaveStringsResources(blobValue);
+            var dictionary = smsContentBlob.Strings
+                .Select(entry => new
+                {
+                    entry.Key,
+                    Value = entry.GetTranslation(languageCode)
+                })
+                .OrderBy(x => x.Key)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            return Success<IDictionary<string, string>>(dictionary);
         }
-
-        public async Task SaveEmailContentsBlob(StringsBlob blob)
+        catch (Exception exception)
         {
-            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-            await _generalBlobProvider.SaveEmailContentResources(blobValue);
+            _loggerAdapter.Error(exception, "There was a problem during fetching the Sms contents resources");
+            return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
         }
+    }
 
-        public async Task SaveSmsContentsBlob(StringsBlob blob)
-        {
-            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+    public async Task<StringsBlob> GetStringsBlob()
+    {
+        var blobValue = await _generalBlobProvider.GetStringsResources();
 
-            await _generalBlobProvider.SaveSmsContentResources(blobValue);
-        }
+        return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+    }
 
-        public async Task<StringsBlob> GetEmailContentBlob()
-        {
-            var blobValue = await _generalBlobProvider.GetEmailContentResources();
+    public async Task SaveStringsBlob(StringsBlob blob)
+    {
+        var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        }
+        await _generalBlobProvider.SaveStringsResources(blobValue);
+    }
 
-        public async Task<StringsBlob> GetSmsContentBlob()
-        {
-            var blobValue = await _generalBlobProvider.GetSmsContentResources();
+    public async Task SaveEmailContentsBlob(StringsBlob blob)
+    {
+        var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        }
+        await _generalBlobProvider.SaveEmailContentResources(blobValue);
+    }
+
+    public async Task SaveSmsContentsBlob(StringsBlob blob)
+    {
+        var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+        await _generalBlobProvider.SaveSmsContentResources(blobValue);
+    }
+
+    public async Task<StringsBlob> GetEmailContentBlob()
+    {
+        var blobValue = await _generalBlobProvider.GetEmailContentResources();
+
+        return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+    }
+
+    public async Task<StringsBlob> GetSmsContentBlob()
+    {
+        var blobValue = await _generalBlobProvider.GetSmsContentResources();
+
+        return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
 }
