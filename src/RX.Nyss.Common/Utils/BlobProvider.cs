@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -26,8 +28,13 @@ public class BlobProvider
 
     public async Task SetBlobValue(string blobName, string value)
     {
+        await using var stream = new MemoryStream();
+        await stream.WriteAsync(Encoding.UTF8.GetBytes(value));
+        stream.Position = 0;
+
         var blob = await GetBlobClient(blobName);
-        await blob.UploadAsync(value);
+        await blob.UploadAsync(stream, true);
+        await stream.DisposeAsync();
     }
 
     public async Task<string> GetBlobUrl(string blobName, TimeSpan lifeTime)
