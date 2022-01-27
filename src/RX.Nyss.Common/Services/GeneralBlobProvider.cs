@@ -14,7 +14,7 @@ namespace RX.Nyss.Common.Services
         Task SaveSmsContentResources(string value);
         Task<string> GetEmailContentResources();
         Task<string> GetSmsContentResources();
-        string GetPlatformAgreementUrl(string languageCode);
+        Task<string> GetPlatformAgreementUrl(string languageCode);
         Task<DateTime?> GetPlatformAgreementLastModifiedDate(string languageCode);
     }
 
@@ -47,12 +47,12 @@ namespace RX.Nyss.Common.Services
         public async Task<string> GetSmsContentResources() =>
             await _blobProvider.GetBlobValue(_config.SmsContentResourcesBlobObjectName);
 
-        public string GetPlatformAgreementUrl(string languageCode) =>
-            _blobProvider.GetBlobUrl(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode), TimeSpan.FromHours(1));
+        public async Task<string> GetPlatformAgreementUrl(string languageCode) =>
+            await _blobProvider.GetBlobUrl(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode), TimeSpan.FromHours(1));
 
         public async Task<DateTime?> GetPlatformAgreementLastModifiedDate(string languageCode)
         {
-            var lastModified = (await _blobProvider.GetBlobProperties(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode)))?.LastModified?.UtcDateTime;
+            var lastModified = (await _blobProvider.GetBlobProperties(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode)))?.LastModified.UtcDateTime;
 
             return lastModified;
         }
