@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using NSubstitute;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
@@ -18,10 +18,10 @@ namespace RX.Nyss.ReportApi.Tests.Services
     public class QueuePublisherServiceTests
     {
         private readonly IQueuePublisherService _queuePublisherService;
-        private readonly IQueueClientProvider _queueClientProviderMock;
-        private readonly IQueueClient _emailQueueClientMock;
-        private readonly IQueueClient _smsQueueClientMock;
-        private readonly IQueueClient _checkAlertQueueClientMock;
+        private readonly ServiceBusClient _serviceBusClientMock;
+        private readonly ServiceBusSender _emailQueueSenderMock;
+        private readonly ServiceBusSender _smsQueueSenderMock;
+        private readonly ServiceBusSender _checkAlertQueueSenderMock;
         private readonly ILoggerAdapter _loggerAdapterMock;
 
         public QueuePublisherServiceTests()
@@ -35,21 +35,21 @@ namespace RX.Nyss.ReportApi.Tests.Services
                     SendSmsQueue = "SendSms"
                 }
             };
-            _emailQueueClientMock = Substitute.For<IQueueClient>();
-            _smsQueueClientMock = Substitute.For<IQueueClient>();
-            _checkAlertQueueClientMock = Substitute.For<IQueueClient>();
+            _emailQueueSenderMock = Substitute.For<ServiceBusSender>();
+            _smsQueueSenderMock = Substitute.For<ServiceBusSender>();
+            _checkAlertQueueSenderMock = Substitute.For<ServiceBusSender>();
 
-            _queueClientProviderMock = Substitute.For<IQueueClientProvider>();
-            _queueClientProviderMock.GetClient("SendEmail").Returns(_emailQueueClientMock);
-            _queueClientProviderMock.GetClient("CheckAlert").Returns(_checkAlertQueueClientMock);
-            _queueClientProviderMock.GetClient("SendSms").Returns(_smsQueueClientMock);
+            _serviceBusClientMock = Substitute.For<ServiceBusClient>();
+            _serviceBusClientMock.CreateSender("SendEmail").Returns(_emailQueueSenderMock);
+            _serviceBusClientMock.CreateSender("CheckAlert").Returns(_checkAlertQueueSenderMock);
+            _serviceBusClientMock.CreateSender("SendSms").Returns(_smsQueueSenderMock);
 
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _queuePublisherService = new QueuePublisherService(
                 nyssReportApiConfig,
                 Substitute.For<IDateTimeProvider>(),
                 _loggerAdapterMock,
-                _queueClientProviderMock);
+                _serviceBusClientMock);
         }
 
         [Fact]
@@ -62,8 +62,8 @@ namespace RX.Nyss.ReportApi.Tests.Services
             };
 
             await _queuePublisherService.SendSms(recipients, new GatewaySetting { EmailAddress = "eagle@example.com" }, "This is a test");
-            await _smsQueueClientMock.DidNotReceive().SendAsync(Arg.Any<Message>());
-            await _emailQueueClientMock.Received(1).SendAsync(Arg.Any<Message>());
+            await _smsQueueSenderMock.DidNotReceive().SendMessageAsync(Arg.Any<ServiceBusMessage>());
+            await _emailQueueSenderMock.Received(1).SendMessageAsync(Arg.Any<ServiceBusMessage>());
         }
 
         [Fact]
@@ -94,8 +94,8 @@ namespace RX.Nyss.ReportApi.Tests.Services
                 SmsMessage = "This is a test"
             });
 
-            await _smsQueueClientMock.Received(1).SendAsync(Arg.Is<Message>(m => Encoding.UTF8.GetString(m.Body) == messageBody));
-            await _emailQueueClientMock.DidNotReceive().SendAsync(Arg.Any<Message>());
+            await _smsQueueSenderMock.Received(1).SendMessageAsync(Arg.Is<ServiceBusMessage>(m => Encoding.UTF8.GetString(m.Body) == messageBody));
+            await _emailQueueSenderMock.DidNotReceive().SendMessageAsync(Arg.Any<ServiceBusMessage>());
         }
 
         [Fact]
@@ -113,8 +113,8 @@ namespace RX.Nyss.ReportApi.Tests.Services
 
 
             // Assert
-            await _smsQueueClientMock.DidNotReceive().SendAsync(Arg.Any<Message>());
-            await _emailQueueClientMock.DidNotReceive().SendAsync(Arg.Any<Message>());
+            await _smsQueueSenderMock.DidNotReceive().SendMessageAsync(Arg.Any<ServiceBusMessage>());
+            await _emailQueueSenderMock.DidNotReceive().SendMessageAsync(Arg.Any<ServiceBusMessage>());
             _loggerAdapterMock.Received(1).Warn($"No email or IoT device found for gateway Missing gateway, not able to send feedback SMS!");
         }
 
@@ -144,13 +144,14 @@ namespace RX.Nyss.ReportApi.Tests.Services
                 ModemNumber = 1,
                 SmsMessage = "Feedback"
             };
-            var sendMessage = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(smsMessage)));
+            var messageJson = JsonSerializer.Serialize(smsMessage);
+            var sendMessage = new ServiceBusMessage(messageJson);
 
             // Act
             await _queuePublisherService.SendSms(recipients, gateway, "Feedback");
 
             // Assert
-            await _smsQueueClientMock.Received(1).SendAsync(Arg.Is<Message>(m => m.Body.Length.Equals(sendMessage.Body.Length)));
+            await _smsQueueSenderMock.Received(1).SendMessageAsync(Arg.Is<ServiceBusMessage>(m => m.Body.ToString() == messageJson));
         }
     }
 }

@@ -343,7 +343,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 .SendEmail((emailAddress, emailAddress), TestData.EscalationEmailSubject, TestData.EscalationEmailBody);
 
             await _smsPublisherService.Received(1)
-                .SendSms("TestDevice", Arg.Is<List<SendSmsRecipient>>(x => x.Count == 1 && x.First().PhoneNumber == phonenumber), smsText, false);
+                .SendSms("TestDevice", Arg.Is<List<SendSmsRecipient>>(x => x.Count == 1 && x.First().PhoneNumber == phonenumber), smsText);
         }
 
         [Fact]
@@ -477,7 +477,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             var result = await _alertService.Escalate(TestData.AlertId, false);
 
-            await _smsPublisherService.Received(0).SendSms(Arg.Any<string>(), Arg.Any<List<SendSmsRecipient>>(), Arg.Any<string>(), false);
+            await _smsPublisherService.Received(0).SendSms(Arg.Any<string>(), Arg.Any<List<SendSmsRecipient>>(), Arg.Any<string>());
             await _emailPublisherService.Received(0).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
 

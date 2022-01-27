@@ -9,6 +9,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
 {
     public class LabeledReportGroup
     {
+        private const string ApiKey = "apikey";
         private readonly EntityNumerator _reportNumerator;
         private readonly Guid _label;
         public DataCollector DataCollector { get; set; }
@@ -35,7 +36,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
                 IsTraining = isTraining,
                 ReceivedAt = receivedAt ?? default,
                 Location = location,
-                RawReport = new RawReport { Village = village ?? default }
+                RawReport = new RawReport { Village = village ?? default, ApiKey = ApiKey }
             });
             return this;
         }

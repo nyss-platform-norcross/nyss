@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
             // Assert
             res.IsSuccess.ShouldBe(true);
 
-            await _mockSmsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
+            await _mockSmsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test");
         }
 
         private static void SetupContext(INyssContext context)
