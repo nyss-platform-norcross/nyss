@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 
@@ -22,10 +24,11 @@ public class GeneralBlobProvider : IGeneralBlobProvider
     private readonly IConfig _config;
     private readonly BlobProvider _blobProvider;
 
-    public GeneralBlobProvider(IConfig config)
+    public GeneralBlobProvider(IConfig config, IAzureClientFactory<BlobServiceClient> azureClientFactory)
     {
         _config = config;
-        _blobProvider = new BlobProvider(config.GeneralBlobContainerName, config.ConnectionStrings.GeneralBlobContainer);
+        var blobServiceClient = azureClientFactory.CreateClient("GeneralBlobClient");
+        _blobProvider = new BlobProvider(blobServiceClient, config.GeneralBlobContainerName);
     }
 
     public async Task<string> GetStringsResources() =>

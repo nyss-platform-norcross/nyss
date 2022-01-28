@@ -69,10 +69,16 @@ namespace RX.Nyss.Web.Configuration
             RegisterAzureClients(serviceCollection, config.ConnectionStrings);
         }
 
-        private static void RegisterAzureClients(IServiceCollection serviceCollection, IConnectionStringOptions connectionStringOptions) =>
+        private static void RegisterAzureClients(IServiceCollection serviceCollection, IConnectionStringOptions connectionStrings) =>
             serviceCollection.AddAzureClients(builder =>
             {
-                builder.AddServiceBusClient(connectionStringOptions.ServiceBus);
+                builder.AddServiceBusClient(connectionStrings.ServiceBus);
+                builder.AddBlobServiceClient(connectionStrings.GeneralBlobContainer)
+                    .WithName("GeneralBlobClient");
+                builder.AddBlobServiceClient(connectionStrings.SmsGatewayBlobContainer)
+                    .WithName("SmsGatewayBlobClient");
+                builder.AddBlobServiceClient(connectionStrings.DataBlobContainer)
+                    .WithName("DataBlobClient");
             });
 
         private static void RegisterMediatR(IServiceCollection serviceCollection)

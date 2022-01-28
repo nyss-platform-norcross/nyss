@@ -11,12 +11,12 @@ namespace RX.Nyss.Common.Utils;
 public class BlobProvider
 {
     private readonly string _blobContainerName;
-    private readonly string _storageAccountConnectionString;
+    private readonly BlobServiceClient _blobServiceClient;
 
-    public BlobProvider(string blobContainerName, string storageAccountConnectionString)
+    public BlobProvider(BlobServiceClient blobServiceClient, string blobContainerName)
     {
+        _blobServiceClient = blobServiceClient;
         _blobContainerName = blobContainerName;
-        _storageAccountConnectionString = storageAccountConnectionString;
     }
 
     public async Task<string> GetBlobValue(string blobName)
@@ -88,7 +88,7 @@ public class BlobProvider
             throw new ArgumentException("The configuration of blob is invalid.");
         }
 
-        var blobContainerClient = new BlobContainerClient(_storageAccountConnectionString, _blobContainerName);
+        var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_blobContainerName);
 
         if (!await blobContainerClient.ExistsAsync())
         {
