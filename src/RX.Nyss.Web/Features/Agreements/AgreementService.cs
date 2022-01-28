@@ -66,8 +66,7 @@ namespace RX.Nyss.Web.Features.Agreements
             var utcNow = _dateTimeProvider.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
-            var sourceUri = await _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
-            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+            await _dataBlobService.StorePlatformAgreement(languageCode, consentDocumentFileName);
 
             foreach (var nationalSociety in staleSocieties.Union(pendingSocieties))
             {
