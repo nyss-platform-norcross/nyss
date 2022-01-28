@@ -5,7 +5,13 @@ import { Button, CircularProgress } from "@material-ui/core";
 
 export const SubmitButton = ({ onClick, regular, isFetching, children, wide }) => {
   return (
-    <Button color={regular ? undefined : "primary"} variant={regular ? undefined : "outlined"} onClick={onClick} disabled={isFetching} type="submit" className={wide ? styles.wide : null}>
+    <Button
+      color={regular ? undefined : "primary"}
+      variant={regular ? undefined : "outlined"}
+      onClick={onClick} disabled={isFetching}
+      type="submit"
+      className={wide ? styles.wide : styles.regular}
+    >
       {isFetching && <CircularProgress size={16} className={styles.progressIcon} />}
       {children}
     </Button>
