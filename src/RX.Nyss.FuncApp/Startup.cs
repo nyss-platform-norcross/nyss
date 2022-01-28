@@ -39,9 +39,9 @@ public static class FunctionHostBuilderExtensions
         var nyssFuncAppConfig = newConfiguration.Get<NyssFuncAppConfig>();
         builder.Services.AddSingleton<IConfiguration>(newConfiguration);
         builder.Services.AddSingleton<IConfig>(nyssFuncAppConfig);
-        builder.Services.AddAzureClients(builder =>
+        builder.Services.AddAzureClients(clientFactoryBuilder =>
         {
-            builder.AddServiceBusClient(newConfiguration["SERVICEBUS_CONNECTIONSTRING"]);
+            clientFactoryBuilder.AddServiceBusClient(newConfiguration["SERVICEBUS_CONNECTIONSTRING"]);
         });
         builder.Services.AddHttpClient();
         builder.Services.AddSingleton<IHttpPostClient, HttpPostClient>();
