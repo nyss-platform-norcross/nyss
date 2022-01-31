@@ -18,6 +18,7 @@ import CheckboxField from '../forms/CheckboxField';
 import { Typography, MenuItem, Button, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { v4 as uuidv4 } from 'uuid';
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);
@@ -238,7 +239,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.create)}</SubmitButton>
         </FormActions>
       </Form>

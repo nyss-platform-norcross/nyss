@@ -1,6 +1,7 @@
 import React from 'react';
 import { strings, stringKeys } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import CancelButton from '../../forms/cancelButton/CancelButton';
 import {
   useTheme,
   DialogTitle,
@@ -27,9 +28,9 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
       <DialogContent>
         <Typography variant="body1">{strings(stringKeys.alerts.assess.alert.closeDescription)}</Typography>
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton variant={"contained"} onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isClosing} onClick={handleClose}>
             {strings(stringKeys.alerts.assess.alert.close)}
           </SubmitButton>

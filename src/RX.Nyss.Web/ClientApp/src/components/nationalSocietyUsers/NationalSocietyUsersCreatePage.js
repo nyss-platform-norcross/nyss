@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import PhoneInputField from '../forms/PhoneInputField';
@@ -239,7 +240,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <PhoneInputField 
+            <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -248,7 +249,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
@@ -361,7 +362,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.create)}</SubmitButton>
         </FormActions>
       </Form>

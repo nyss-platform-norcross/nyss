@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { strings, stringKeys } from "../../strings";
 import FormActions from "../forms/formActions/FormActions";
 import SubmitButton from "../forms/submitButton/SubmitButton";
+import CancelButton from '../forms/cancelButton/CancelButton';
 import {
   useTheme,
   Grid,
@@ -84,9 +85,9 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
           </Grid>
 
           <FormActions>
-            <Button onClick={close}>
+            <CancelButton variant={"contained"} onClick={close}>
               {strings(stringKeys.form.cancel)}
-            </Button>
+            </CancelButton>
             <SubmitButton>
               {strings(stringKeys.dataCollector.form.replaceSupervisor)}
             </SubmitButton>

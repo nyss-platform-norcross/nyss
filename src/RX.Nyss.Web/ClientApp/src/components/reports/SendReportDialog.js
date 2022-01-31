@@ -17,6 +17,7 @@ import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 import SelectField from "../forms/SelectField";
 import { getUtcOffset } from "../../utils/date";
 import * as http from "../../utils/http";
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 export const SendReportDialog = ({ close, showMessage }) => {
   const [form, setForm] = useState(null);
@@ -84,15 +85,15 @@ export const SendReportDialog = ({ close, showMessage }) => {
       showMessage(status.feedbackMessage ? status.feedbackMessage : stringKeys.reports.sendReport.success);
 
       setIsSending(false);
-      close(); 
+      close();
     } catch (error) {
       setIsSending(false);
-      
+
       if (error.name === 'AbortError') {
         close();
         return;
       };
-      
+
       showMessage?.(error.message);
     }
   };
@@ -105,7 +106,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
         clearInterval(intervalHandler.current);
         close();
       }
-      
+
       return;
     }
 
@@ -147,13 +148,13 @@ export const SendReportDialog = ({ close, showMessage }) => {
 
     setForm(createForm(fields, validation));
   }, [canSelectModem, formData]);
-  
-  
+
+
   useEffect(() => {
     if (!form) return;
 
     dcFieldSubscription.current = form.fields.dataCollector.subscribe(onDataCollectorChange);
-    
+
     return () => {
       dcFieldSubscription.current?.unsubscribe();
     }
@@ -226,9 +227,9 @@ export const SendReportDialog = ({ close, showMessage }) => {
             </Grid>
 
             <FormActions>
-              <Button onClick={onClose}>
+              <CancelButton variant={"contained"} onClick={onClose}>
                 {strings(stringKeys.form.cancel)}
-              </Button>
+              </CancelButton>
               <SubmitButton isFetching={isSending}>{strings(stringKeys.reports.sendReport.sendReport)}</SubmitButton>
             </FormActions>
           </Form>

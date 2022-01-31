@@ -15,6 +15,7 @@ import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
 import { openErrorMessages } from "./logic/projectsActions";
 import styles from "./ProjectErrorMessagesPage.module.scss";
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 const MESSAGE_MAX_LEN = 320;
 const MESSAGE_WARNING_LEN = 160;
@@ -108,9 +109,9 @@ const ProjectErrorMessagesPageComponent = (props) => {
           <FormActions className={styles.formsActions}>
             {form && (
               <>
-                <Button onClick={cancelEdit}>
+                <CancelButton variant={"contained"} onClick={cancelEdit}>
                   {strings(stringKeys.form.cancel)}
-                </Button>
+                </CancelButton>
                 <SubmitButton isFetching={isSaving}>
                   {strings(stringKeys.project.form.update)}
                 </SubmitButton>

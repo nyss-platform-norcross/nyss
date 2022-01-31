@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import PhoneInputField from '../forms/PhoneInputField';
 import { Button, Grid } from "@material-ui/core";
@@ -73,7 +74,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -82,7 +83,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
@@ -99,7 +100,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.update)}</SubmitButton>
         </FormActions>
       </Form>

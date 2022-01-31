@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -33,8 +34,8 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
   });
 
   const canSelectModem = props.formData?.modems && props.formData.modems.length > 0;
-  const canSelectOrganization = props.formData?.organizations 
-    && props.formData.organizations.length > 0 
+  const canSelectOrganization = props.formData?.organizations
+    && props.formData.organizations.length > 0
     && props.user.roles.some(r => r === Administrator);
 
   useCustomErrors(form, props.error);
@@ -49,7 +50,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
     }
 
     return props.formData.organizations;
-  }, [props.formData]);  
+  }, [props.formData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +70,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   useEffect(() => {
     if (canSelectOrganization || !props.formData) return;
-    
+
     const organizations = props.formData.organizations.filter(o => o.isDefaultOrganization);
     const preSelected = organizations.length > 0 ? organizations[0] : props.formData.organizations[0];
 
@@ -104,7 +105,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
               name="organizationId"
               customProps={{
                 disabled: false,
-              }}                
+              }}
               >
               {availableOrganizations.map(organization => (
                 <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
@@ -133,7 +134,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.addExisting)}</SubmitButton>
         </FormActions>
       </Form>

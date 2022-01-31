@@ -13,6 +13,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
+import CancelButton from '../../forms/cancelButton/CancelButton';
+
 
 export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert }) => {
   const theme = useTheme();
@@ -35,9 +37,10 @@ export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, ale
         </Grid>
 
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton
+            variant={"contained"} onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, false)}>
             {strings(stringKeys.alerts.assess.alert.escalate)}
           </SubmitButton>

@@ -7,16 +7,18 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
+
 
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -131,7 +133,12 @@ const ProjectsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToOverview(props.nationalSocietyId, props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton
+            variant={"contained"}
+            onClick={() => props.goToOverview(props.nationalSocietyId, props.projectId)}
+          >
+            {strings(stringKeys.form.cancel)}
+          </CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.update)}</SubmitButton>
         </FormActions>
       </Form>

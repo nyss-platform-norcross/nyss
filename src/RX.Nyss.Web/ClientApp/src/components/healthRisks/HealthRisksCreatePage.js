@@ -9,6 +9,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import CancelButton from '../forms/cancelButton/CancelButton';
 import { Typography, Button, MenuItem, Grid } from '@material-ui/core';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
@@ -205,7 +206,7 @@ const HealthRisksCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.healthRisk.form.create)}</SubmitButton>
         </FormActions>
       </Form>

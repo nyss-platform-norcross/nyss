@@ -24,6 +24,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
 import { getUtcOffset } from "../../../utils/date";
+import CancelButton from '../../forms/cancelButton/CancelButton';
+
 
 export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
@@ -176,9 +178,9 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
           </Grid>
 
           <FormActions>
-            <Button onClick={close}>
+            <CancelButton variant={"contained"} onClick={close}>
               {strings(stringKeys.form.cancel)}
-            </Button>
+            </CancelButton>
             <SubmitButton isFetching={isSaving}>
               {strings(stringKeys.alerts.eventLog.addNew)}
             </SubmitButton>

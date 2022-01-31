@@ -4,6 +4,7 @@ import React from 'react';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import CancelButton from '../../forms/cancelButton/CancelButton';
 import { withAccessRestriction } from "../hasAccess/HasAccess";
 import {
   useTheme,
@@ -32,9 +33,9 @@ export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, cl
         }
         {children}
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton variant={"contained"} onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isFetching} onClick={submit}>
             {strings(stringKeys.form.confirm)}
           </SubmitButton>

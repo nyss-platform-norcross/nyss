@@ -4,6 +4,7 @@ import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
+import CancelButton from '../../forms/cancelButton/CancelButton';
 import { Button } from "@material-ui/core";
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
@@ -38,7 +39,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
   return (
     <Fragment>
       <FormActions>
-        <Button onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</Button>
+        <CancelButton variant={"contained"} onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
 
         {!props.isPendingAlertState && (
           <Fragment>

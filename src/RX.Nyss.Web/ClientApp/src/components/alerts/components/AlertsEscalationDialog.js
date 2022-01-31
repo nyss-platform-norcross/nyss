@@ -3,6 +3,7 @@ import { strings, stringKeys } from "../../../strings";
 import DisplayField from "../../forms/DisplayField";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import CancelButton from '../../forms/cancelButton/CancelButton';
 import {
   useTheme,
   DialogTitle,
@@ -42,9 +43,9 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
         </Typography>
 
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton variant={"contained"} onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, true)}>
             {strings(stringKeys.alerts.assess.alert.escalate)}
           </SubmitButton>

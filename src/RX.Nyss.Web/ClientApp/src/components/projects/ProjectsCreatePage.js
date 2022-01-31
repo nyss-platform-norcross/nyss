@@ -18,6 +18,7 @@ import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
 import * as roles from '../../authentication/roles';
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -168,7 +169,7 @@ const ProjectsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.create)}</SubmitButton>
         </FormActions>
       </Form>

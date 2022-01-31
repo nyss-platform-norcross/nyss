@@ -7,7 +7,7 @@ export const SubmitButton = ({ onClick, regular, isFetching, children, wide }) =
   return (
     <Button
       color={regular ? undefined : "primary"}
-      variant={regular ? undefined : "outlined"}
+      variant={regular ? undefined : "contained"}
       onClick={onClick} disabled={isFetching}
       type="submit"
       className={wide ? styles.wide : styles.regular}

@@ -19,6 +19,7 @@ import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import dayjs from 'dayjs';
 import { reportAges, reportCountToSexAge, reportSexes, reportStatus, ReportType } from './logic/reportsConstants';
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 const ReportsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -356,7 +357,7 @@ const ReportsEditPageComponent = (props) => {
           )}
 
           <FormActions className={styles.tableActionsContainer}>
-            <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+            <CancelButton variant={"contained"} onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
             <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
           </FormActions>
         </Grid>

@@ -26,6 +26,7 @@ import {
   Grid,
 } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
+import CancelButton from "../forms/cancelButton/CancelButton";
 
 const ProjectAlertRecipientsCreatePageComponent = (props) => {
   const [freeTextOrganizations, setFreeTextOrganizations] = useState([]);
@@ -168,7 +169,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                   </Grid>
 
                   <Grid item xs={12}>
-                  <PhoneInputField 
+                  <PhoneInputField
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
@@ -259,7 +260,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton variant={"contained"} onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.projectAlertRecipient.form.create)}</SubmitButton>
         </FormActions>
       </Form>
