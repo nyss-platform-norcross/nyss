@@ -11,8 +11,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 AlertStatus.Escalated => AlertAssessmentStatus.Escalated,
                 AlertStatus.Dismissed => AlertAssessmentStatus.Dismissed,
                 AlertStatus.Closed => AlertAssessmentStatus.Closed,
-                AlertStatus.Pending when acceptedReports >= countThreshold => AlertAssessmentStatus.ToEscalate,
-                AlertStatus.Pending when acceptedReports + pendingReports >= countThreshold => AlertAssessmentStatus.Open,
+                AlertStatus.Open when acceptedReports >= countThreshold => AlertAssessmentStatus.ToEscalate,
+                AlertStatus.Open when acceptedReports + pendingReports >= countThreshold => AlertAssessmentStatus.Open,
                 _ => AlertAssessmentStatus.ToDismiss
             };
     }

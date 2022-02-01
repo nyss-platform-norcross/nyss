@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Theory]
-        [InlineData(AlertStatus.Pending)]
+        [InlineData(AlertStatus.Open)]
         [InlineData(AlertStatus.Escalated)]
         public async Task AcceptReport_WhenAlertIsInRightStatus_ShouldReturnSuccess(AlertStatus status)
         {
@@ -86,7 +86,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [InlineData(ReportStatus.Accepted)]
         public async Task AcceptReport_WhenReportIsNotPending_ShouldReturnError(ReportStatus status)
         {
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = status;
 
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
@@ -98,7 +98,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task AcceptReport_WhenCriteriaAreMet_ShouldUpdateStatusInDatabase()
         {
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = ReportStatus.Pending;
 
             await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var alertAssessmentStatus = AlertAssessmentStatus.ToEscalate;
             _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
 
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = ReportStatus.Pending;
 
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
@@ -140,7 +140,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [InlineData(ReportStatus.Accepted)]
         public async Task DismissReport_WhenReportIsNotPending_ShouldReturnError(ReportStatus status)
         {
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = status;
 
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
@@ -152,7 +152,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task DismissReport_WhenCriteriaAreMet_ShouldUpdateStatusInDatabase()
         {
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = ReportStatus.Pending;
 
             await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
@@ -169,7 +169,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var alertAssessmentStatus = AlertAssessmentStatus.ToEscalate;
             _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
 
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = ReportStatus.Pending;
 
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
@@ -184,7 +184,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var alertAssessmentStatus = AlertAssessmentStatus.Open;
             _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
 
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Alert.Status = AlertStatus.Open;
             _alertReports.First().Report.Status = ReportStatus.Accepted;
 
             var result = await _alertReportService.ResetReport(TestData.AlertId, TestData.ReportId);
@@ -219,7 +219,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             var report = _alertReports.First();
             report.Report.Status = ReportStatus.Pending;
-            report.Alert.Status = AlertStatus.Pending;
+            report.Alert.Status = AlertStatus.Open;
             report.Report.AcceptedAt = new DateTime(2020, 2, 1);
             report.Alert.EscalatedAt = new DateTime(2020, 2, 2);
 

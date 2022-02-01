@@ -964,7 +964,7 @@ export const stringKeys = {
     constants: {
       alertStatus: {
         "All": "alerts.alertStatus.all",
-        "Pending": "alerts.alertStatus.pending",
+        "Open": "alerts.alertStatus.open",
         "Dismissed": "alerts.alertStatus.dismissed",
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"

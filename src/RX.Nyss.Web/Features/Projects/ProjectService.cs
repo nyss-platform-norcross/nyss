@@ -313,7 +313,7 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     Project = p,
                     HasAccessAsHeadManager = p.ProjectOrganizations.Any(po => po.Organization.HeadManager.EmailAddress == currentUserName),
-                    AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
+                    AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Open))
                 })
                 .SingleOrDefaultAsync(x => x.Project.Id == projectId);
 

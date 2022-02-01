@@ -814,7 +814,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
         [Theory]
         [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Pending)]
+        [InlineData(AlertStatus.Open)]
         public async Task CloseProject_WhenOpenOrPendingAlerts_ShouldReturnError(AlertStatus alertStatus)
         {
             // Arrange
@@ -1066,7 +1066,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 new Alert
                                 {
                                     Id = 10,
-                                    Status = AlertStatus.Pending
+                                    Status = AlertStatus.Open
                                 }
                             }
                         }
@@ -1215,7 +1215,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 new Alert
                                 {
                                     Id = 1,
-                                    Status = AlertStatus.Pending
+                                    Status = AlertStatus.Open
                                 },
                                 new Alert
                                 {
@@ -1277,7 +1277,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 new Alert
                                 {
                                     Id = 4,
-                                    Status = AlertStatus.Pending
+                                    Status = AlertStatus.Open
                                 },
                                 new Alert
                                 {

@@ -175,7 +175,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 return;
             }
 
-            if (alert.Status == AlertStatus.Pending)
+            if (alert.Status == AlertStatus.Open)
             {
                 _loggerAdapter.WarnFormat("Alert {0} has not been assessed since it was triggered {1}, sending email to alert not handled recipients", alertId, alert.CreatedAt.ToString("O"));
 

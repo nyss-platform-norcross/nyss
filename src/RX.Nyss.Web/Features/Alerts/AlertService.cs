@@ -223,7 +223,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Pending)
+            if (alertData.Alert.Status != AlertStatus.Open)
             {
                 return Error(ResultKey.Alert.EscalateAlert.WrongStatus);
             }
@@ -308,7 +308,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Pending)
+            if (alertData.Alert.Status != AlertStatus.Open)
             {
                 return Error(ResultKey.Alert.DismissAlert.WrongStatus);
             }

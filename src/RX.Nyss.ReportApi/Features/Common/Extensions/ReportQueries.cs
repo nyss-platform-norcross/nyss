@@ -18,7 +18,7 @@ namespace RX.Nyss.ReportApi.Features.Common.Extensions
             reports.Where(r => r.ReportGroupLabel == reportGroupLabel);
 
         public static IQueryable<Report> NotInExistingAlert(this IQueryable<Report> reports, int? alertIdToIgnore) =>
-            reports.Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
+            reports.Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Open || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
                 || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore));
 
         public static IQueryable<Report> OnlyReportsThatCanTriggerNewAlert(this IQueryable<Report> reports) =>

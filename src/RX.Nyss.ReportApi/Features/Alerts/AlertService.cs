@@ -189,7 +189,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .SelectMany(r => r.ReportAlerts)
                 .Where(ar => !alertIdToIgnore.HasValue || ar.AlertId != alertIdToIgnore.Value)
                 .Select(ra => ra.Alert)
-                .FirstOrDefaultAsync(a => a.Status == AlertStatus.Pending);
+                .FirstOrDefaultAsync(a => a.Status == AlertStatus.Open);
 
             if (existingActiveAlertForLabel != null)
             {
@@ -255,7 +255,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             {
                 ProjectHealthRisk = projectHealthRisk,
                 CreatedAt = DateTime.UtcNow,
-                Status = AlertStatus.Pending
+                Status = AlertStatus.Open
             };
             await _nyssContext.Alerts.AddAsync(newAlert);
             return newAlert;

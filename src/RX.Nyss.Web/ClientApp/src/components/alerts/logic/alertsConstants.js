@@ -30,14 +30,14 @@ export const escalatedOutcomes = {
 
 export const alertStatusFilters = {
   all: "All",
-  open: "Pending",
+  open: "Open",
   escalated: "Escalated",
   dismissed: "Dismissed",
   closed: "Closed"
 }
 
 export const alertStatus = {
-  pending: "Pending",
+  open: "Open",
   escalated: "Escalated",
   dismissed: "Dismissed",
   closed: "Closed"
