@@ -33,7 +33,7 @@ public static class FunctionHostBuilderExtensions
             .AddJsonFile(localSettingsFile, true, true)
             .AddEnvironmentVariables()
             .AddConfiguration(configuration)
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), false);
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
         var newConfiguration = configurationBuilder.Build();
         var nyssFuncAppConfig = newConfiguration.Get<NyssFuncAppConfig>();
