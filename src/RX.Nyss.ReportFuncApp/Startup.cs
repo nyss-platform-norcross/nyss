@@ -34,7 +34,7 @@ namespace RX.Nyss.ReportFuncApp
                 .AddJsonFile(localSettingsFile, true, true)
                 .AddEnvironmentVariables()
                 .AddConfiguration(configuration)
-                .AddUserSecrets(Assembly.GetExecutingAssembly(), false);
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
             var newConfiguration = configurationBuilder.Build();
             var nyssFuncAppConfig = newConfiguration.Get<NyssReportFuncAppConfig>();
