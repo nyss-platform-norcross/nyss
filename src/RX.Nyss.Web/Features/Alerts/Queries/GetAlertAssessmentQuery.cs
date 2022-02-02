@@ -68,12 +68,20 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                         {
                             Id = ar.Report.Id,
                             DataCollector = ar.Report.DataCollector.DisplayName,
-                            OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
-                            OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
+                            OrganizationId = ar.Report.DataCollector.Supervisor != null
+                                ? ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId
+                                : ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties.Single().OrganizationId,
+                            OrganizationName = ar.Report.DataCollector.Supervisor != null
+                                ? ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name
+                                : ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties.Single().Organization.Name,
                             IsAnonymized = (currentUser.Role == Role.Supervisor && ar.Report.DataCollector.Supervisor.Id != currentUser.Id)
                                 || (currentUser.Role == Role.HeadSupervisor && ar.Report.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id),
-                            SupervisorName = ar.Report.DataCollector.Supervisor.Name,
-                            SupervisorPhoneNumber = ar.Report.DataCollector.Supervisor.PhoneNumber,
+                            SupervisorName = ar.Report.DataCollector.Supervisor != null
+                                ? ar.Report.DataCollector.Supervisor.Name
+                                : ar.Report.DataCollector.HeadSupervisor.Name,
+                            SupervisorPhoneNumber = ar.Report.DataCollector.Supervisor != null
+                                ? ar.Report.DataCollector.Supervisor.PhoneNumber
+                                : ar.Report.DataCollector.HeadSupervisor.PhoneNumber,
                             ReceivedAt = ar.Report.ReceivedAt,
                             PhoneNumber = ar.Report.PhoneNumber,
                             Village = ar.Report.RawReport.Village.Name,
