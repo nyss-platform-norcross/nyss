@@ -38,6 +38,8 @@ namespace RX.Nyss.ReportApi.Configuration
             serviceCollection.AddAzureClients(builder =>
             {
                 builder.AddServiceBusClient(connectionStrings.ServiceBus);
+                builder.AddBlobServiceClient(connectionStrings.GeneralBlobContainer)
+                    .WithName("GeneralBlobClient");
                 builder.AddBlobServiceClient(connectionStrings.DataBlobContainer)
                     .WithName("DataBlobClient");
             });
