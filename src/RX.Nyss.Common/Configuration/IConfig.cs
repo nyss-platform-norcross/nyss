@@ -1,9 +1,8 @@
-namespace RX.Nyss.Common.Configuration
+namespace RX.Nyss.Common.Configuration;
+
+public interface IConfig : IBlobConfig
 {
-    public interface IConfig : IBlobConfig
-    {
-        ConnectionStringOptions ConnectionStrings { get; set; }
-        LoggingOptions Logging { get; set; }
-        ServiceBusQueuesOptions ServiceBusQueues { get; set; }
-    }
+    ConnectionStringOptions ConnectionStrings { get; set; }
+    LoggingOptions Logging { get; set; }
+    ServiceBusQueuesOptions ServiceBusQueues { get; set; }
 }

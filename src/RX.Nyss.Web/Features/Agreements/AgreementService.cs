@@ -66,8 +66,7 @@ namespace RX.Nyss.Web.Features.Agreements
             var utcNow = _dateTimeProvider.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
-            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
-            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+            await _dataBlobService.StorePlatformAgreement(languageCode, consentDocumentFileName);
 
             foreach (var nationalSociety in staleSocieties.Union(pendingSocieties))
             {
@@ -165,13 +164,7 @@ namespace RX.Nyss.Web.Features.Agreements
                 return Error<PendingConsentDto>(ResultKey.Consent.NoPendingConsent);
             }
 
-            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
-            var docs = applicationLanguages.Select(apl => new AgreementDocument
-            {
-                Language = apl.DisplayName,
-                LanguageCode = apl.LanguageCode,
-                AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
-            }).Where(d => d.AgreementDocumentUrl != null);
+            var docs = await GetApplicationLanguagesWithAgreementDocument();
 
             var pendingSociety = new PendingConsentDto
             {
@@ -216,6 +209,25 @@ namespace RX.Nyss.Web.Features.Agreements
         {
             var (subject, body) = await _emailTextGeneratorService.GenerateAgreementDocumentEmail(languageCode);
             await _emailPublisherService.SendEmailWithAttachment((user.EmailAddress, user.Name), subject, body, _config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode));
+        }
+
+        private async Task<IEnumerable<AgreementDocument>> GetApplicationLanguagesWithAgreementDocument()
+        {
+            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
+            var applicationLanguagesWithAgreementDocument = new List<AgreementDocument>();
+            foreach (var apl in applicationLanguages)
+            {
+                var agreementDocumentUrl = await _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower());
+                applicationLanguagesWithAgreementDocument.Add(new AgreementDocument
+                {
+                    Language = apl.DisplayName,
+                    LanguageCode = apl.LanguageCode,
+                    AgreementDocumentUrl = agreementDocumentUrl
+                });
+            }
+
+            return applicationLanguagesWithAgreementDocument
+                .Where(d => d.AgreementDocumentUrl != null);
         }
     }
 }

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
@@ -65,7 +66,20 @@ namespace RX.Nyss.Web.Configuration
 
             RegisterServiceCollection(serviceCollection, config);
             RegisterMediatR(serviceCollection);
+            RegisterAzureClients(serviceCollection, config.ConnectionStrings);
         }
+
+        private static void RegisterAzureClients(IServiceCollection serviceCollection, IConnectionStringOptions connectionStrings) =>
+            serviceCollection.AddAzureClients(builder =>
+            {
+                builder.AddServiceBusClient(connectionStrings.ServiceBus);
+                builder.AddBlobServiceClient(connectionStrings.GeneralBlobContainer)
+                    .WithName("GeneralBlobClient");
+                builder.AddBlobServiceClient(connectionStrings.SmsGatewayBlobContainer)
+                    .WithName("SmsGatewayBlobClient");
+                builder.AddBlobServiceClient(connectionStrings.DataBlobContainer)
+                    .WithName("DataBlobClient");
+            });
 
         private static void RegisterMediatR(IServiceCollection serviceCollection)
         {
@@ -286,7 +300,7 @@ namespace RX.Nyss.Web.Configuration
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonStringDateTimeConverter());
                 })

@@ -31,7 +31,7 @@ namespace RX.Nyss.PublicApiFuncApp
                 .AddJsonFile(localSettingsFile, true, true)
                 .AddEnvironmentVariables()
                 .AddConfiguration(configuration)
-                .AddUserSecrets(Assembly.GetExecutingAssembly(), false);
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
             var newConfiguration = configurationBuilder.Build();
             var nyssPublicApiFuncAppConfig = newConfiguration.Get<NyssPublicApiFuncAppConfig>();

@@ -1,34 +1,55 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Azure.Core.Extensions;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Azure;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 
-namespace RX.Nyss.Common.Services
+namespace RX.Nyss.Common.Services;
+
+public interface IDataBlobService
 {
-    public interface IDataBlobService
+    Task StorePlatformAgreement(string sourceAgreement, string blobName);
+    Task StorePublicStats(string stats);
+}
+
+public class DataBlobService : IDataBlobService
+{
+    private readonly IConfig _config;
+    private readonly BlobServiceClient _dataBlobServiceClient;
+    private readonly BlobServiceClient _generalBlobServiceClient;
+    public DataBlobService(IConfig config, IAzureClientFactory<BlobServiceClient> azureClientFactory)
     {
-        Task StorePlatformAgreement(string sourceAgreement, string blobName);
-        Task StorePublicStats(string stats);
+        _config = config;
+        _dataBlobServiceClient = azureClientFactory.CreateClient("DataBlobClient");
+        _generalBlobServiceClient = azureClientFactory.CreateClient("GeneralBlobClient");
     }
 
-    public class DataBlobService : IDataBlobService
+    public async Task StorePlatformAgreement(string languageCode, string blobName)
     {
-        private readonly IConfig _config;
+        var sourceBlobContainerClient = _generalBlobServiceClient.GetBlobContainerClient(_config.GeneralBlobContainerName);
+        var destinationBlobContainerClient = _dataBlobServiceClient.GetBlobContainerClient(_config.PlatformAgreementsContainerName);
+        var sourceBlob = sourceBlobContainerClient.GetBlobClient(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode));
 
-        public DataBlobService(IConfig config)
+        if (!await sourceBlob.ExistsAsync())
         {
-            _config = config;
+            throw new Exception("Platform agreement blob does not exist");
         }
 
-        public async Task StorePlatformAgreement(string sourceAgreement, string blobName)
-        {
-            var blobProvider = new BlobProvider(_config.PlatformAgreementsContainerName, _config.ConnectionStrings.DataBlobContainer);
-            await blobProvider.CopyBlob(sourceAgreement, blobName);
-        }
+        var destinationBlob = destinationBlobContainerClient.GetBlobClient(blobName);
+        BlobDownloadStreamingResult sourceStream = await sourceBlob.DownloadStreamingAsync();
+        await destinationBlob.UploadAsync(sourceStream.Content);
 
-        public async Task StorePublicStats(string stats)
-        {
-            var blobProvider = new BlobProvider(_config.PublicStatsBlobContainerName, _config.ConnectionStrings.DataBlobContainer);
-            await blobProvider.SetBlobValue(_config.PublicStatsBlobObjectName, stats);
-        }
+        sourceStream.Dispose();
+    }
+
+    public async Task StorePublicStats(string stats)
+    {
+        var blobProvider = new BlobProvider(_dataBlobServiceClient, _config.PublicStatsBlobContainerName);
+        await blobProvider.SetBlobValue(_config.PublicStatsBlobObjectName, stats);
     }
 }

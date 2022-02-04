@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
+using RX.Nyss.Web;
 
-namespace RX.Nyss.Web
-{
-    public class Program
-    {
-        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
+var builder = WebApplication.CreateBuilder(args);
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+var startup = new Startup(builder.Configuration);
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+startup.Configure(app, app.Environment);
+
+app.Run();

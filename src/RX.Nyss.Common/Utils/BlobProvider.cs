@@ -1,91 +1,100 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 
-namespace RX.Nyss.Common.Utils
+namespace RX.Nyss.Common.Utils;
+
+public class BlobProvider
 {
-    public class BlobProvider
+    private readonly string _blobContainerName;
+    private readonly BlobServiceClient _blobServiceClient;
+
+    public BlobProvider(BlobServiceClient blobServiceClient, string blobContainerName)
     {
-        private readonly string _blobContainerName;
-        private readonly string _storageAccountConnectionString;
+        _blobServiceClient = blobServiceClient;
+        _blobContainerName = blobContainerName;
+    }
 
-        public BlobProvider(string blobContainerName, string storageAccountConnectionString)
+    public async Task<string> GetBlobValue(string blobName)
+    {
+        var blob = await GetBlobClient(blobName);
+        BlobDownloadResult content = await blob.DownloadContentAsync();
+        return content.Content.ToString();
+    }
+
+    public async Task SetBlobValue(string blobName, string value)
+    {
+        await using var stream = new MemoryStream();
+        await stream.WriteAsync(Encoding.UTF8.GetBytes(value));
+        stream.Position = 0;
+
+        var blob = await GetBlobClient(blobName);
+        await blob.UploadAsync(stream, true);
+        await stream.DisposeAsync();
+    }
+
+    public async Task<string> GetBlobUrl(string blobName, TimeSpan lifeTime)
+    {
+        var blob = await GetBlobClient(blobName);
+        if (!await blob.ExistsAsync())
         {
-            _blobContainerName = blobContainerName;
-            _storageAccountConnectionString = storageAccountConnectionString;
+            return null;
         }
 
-        public async Task<string> GetBlobValue(string blobName)
+        if (!blob.CanGenerateSasUri)
         {
-            var blob = GetBlobReference(blobName);
-            return await blob.DownloadTextAsync();
+            throw new InvalidOperationException("Cannot generate SAS token for blob.");
         }
 
-        public async Task SetBlobValue(string blobName, string value)
+        var blobSasBuilder = new BlobSasBuilder(BlobSasPermissions.Read, DateTimeOffset.UtcNow.Add(lifeTime));
+        blobSasBuilder.ContentDisposition = $"inline; filename*=UTF-8''{blobName}";
+        var sasUri = blob.GenerateSasUri(blobSasBuilder);
+
+        var blobUrl = $"{sasUri}";
+        return blobUrl;
+    }
+
+    public async Task<BlobProperties> GetBlobProperties(string blobName)
+    {
+        var blob = await GetBlobClient(blobName);
+        if (!await blob.ExistsAsync())
         {
-            var blob = GetBlobReference(blobName);
-            await blob.UploadTextAsync(value);
+            return null;
         }
 
-        public string GetBlobUrl(string blobName, TimeSpan lifeTime)
-        {
-            var blob = GetBlobReference(blobName);
-            if (!blob.Exists())
-            {
-                return null;
-            }
-            
-            var sasToken = blob.GetSharedAccessSignature(new SharedAccessBlobPolicy
-            {
-                Permissions = SharedAccessBlobPermissions.Read,
-                SharedAccessExpiryTime = DateTime.UtcNow.Add(lifeTime)
-            }, new SharedAccessBlobHeaders { ContentDisposition = $"inline; filename*=UTF-8''{blobName}" });
+        return await blob.GetPropertiesAsync();
+    }
 
-            var blobUrl = $"{blob.Uri}{sasToken}";
-            return blobUrl;
+    public async Task CopyBlob(string sourceUri, string to)
+    {
+        var newBlob = await GetBlobClient(to);
+        if (await newBlob.ExistsAsync())
+        {
+            throw new Exception($"Blob with name {to} already exists!");
         }
 
-        public async Task<BlobProperties> GetBlobProperties(string blobName)
+        await newBlob.StartCopyFromUriAsync(new Uri(sourceUri));
+    }
+
+    private async Task<BlobClient> GetBlobClient(string blobName)
+    {
+        if (string.IsNullOrWhiteSpace(_blobContainerName) ||
+            string.IsNullOrWhiteSpace(blobName))
         {
-            var blob = GetBlobReference(blobName);
-            if (!blob.Exists())
-            {
-                return null;
-            }
-
-            await blob.FetchAttributesAsync();
-
-            return blob.Properties;
+            throw new ArgumentException("The configuration of blob is invalid.");
         }
 
-        public async Task CopyBlob(string sourceUri, string to)
-        {
-            var newBlob = GetBlobReference(to);
-            if (newBlob.Exists())
-            {
-                throw new Exception($"Blob with name {to} already exists!");
-            }
+        var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_blobContainerName);
 
-            await newBlob.StartCopyAsync(new Uri(sourceUri));
+        if (!await blobContainerClient.ExistsAsync())
+        {
+            throw new InvalidOperationException("Blob container does not exist.");
         }
 
-        private CloudBlockBlob GetBlobReference(string blobName)
-        {
-            if (string.IsNullOrWhiteSpace(_blobContainerName) ||
-                string.IsNullOrWhiteSpace(blobName))
-            {
-                throw new ArgumentException("The configuration of blob is invalid.");
-            }
-
-            if (!CloudStorageAccount.TryParse(_storageAccountConnectionString, out var storageAccount))
-            {
-                throw new InvalidOperationException("Unable to get access to the blob container.");
-            }
-
-            var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(_blobContainerName);
-            return blobContainer.GetBlockBlobReference(blobName);
-        }
+        return blobContainerClient.GetBlobClient(blobName);
     }
 }

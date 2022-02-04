@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -14,11 +14,11 @@ namespace RX.Nyss.Web.Services
 
     public class EmailPublisherService : IEmailPublisherService
     {
-        private readonly QueueClient _queueClient;
+        private readonly ServiceBusSender _sender;
 
-        public EmailPublisherService(INyssWebConfig config)
+        public EmailPublisherService(INyssWebConfig config, ServiceBusClient serviceBusClient)
         {
-            _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
+            _sender = serviceBusClient.CreateSender(config.ServiceBusQueues.SendEmailQueue);
         }
 
         public async Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false)
@@ -35,9 +35,12 @@ namespace RX.Nyss.Web.Services
                 SendAsTextOnly = sendAsTextOnly
             };
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.Web" };
+            var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail)))
+            {
+                Subject = "RX.Nyss.Web"
+            };
 
-            await _queueClient.SendAsync(message);
+            await _sender.SendMessageAsync(message);
         }
 
         public async Task SendEmailWithAttachment((string email, string name) to, string subject, string body, string filename)
@@ -54,9 +57,9 @@ namespace RX.Nyss.Web.Services
                 AttachmentFilename = filename
             };
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.Web" };
+            var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail)));
 
-            await _queueClient.SendAsync(message);
+            await _sender.SendMessageAsync(message);
         }
     }
 

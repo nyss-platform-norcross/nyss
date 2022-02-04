@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 using NSubstitute;
@@ -18,7 +19,7 @@ namespace RX.Nyss.FuncApp.Tests
         private readonly IConfig _configurationMock;
         private readonly IEmailClient _emailClientMock;
         private readonly IWhitelistValidator _whitelistValidator;
-        private readonly CloudBlobContainer _blobContainer;
+        private readonly BlobContainerClient _blobContainerClient;
         private readonly IEmailAttachmentService _emailAttachmentServiceMock;
 
         public EmailServiceTests()
@@ -35,7 +36,7 @@ namespace RX.Nyss.FuncApp.Tests
                 _configurationMock,
                 _emailClientMock,
                 _whitelistValidator);
-            _blobContainer = new CloudBlobContainer(new Uri("https://example.com"));
+            _blobContainerClient = new BlobContainerClient(new Uri("https://example.com"));
         }
 
         [Theory]
@@ -43,10 +44,10 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmail_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
         {
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "", _blobContainer);
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "", _blobContainerClient);
 
             // Assert
-            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true), Arg.Any<CloudBlobContainer>());
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true), Arg.Any<BlobContainerClient>());
         }
 
         [Theory]
@@ -54,10 +55,10 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmail_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
         {
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "", "", _blobContainer);
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "", "", _blobContainerClient);
 
             // Assert
-            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true), Arg.Any<CloudBlobContainer>());
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true), Arg.Any<BlobContainerClient>());
         }
 
         [Fact]
@@ -70,12 +71,12 @@ namespace RX.Nyss.FuncApp.Tests
             _whitelistValidator.IsWhitelistedEmailAddress(Arg.Any<string>(), notWhitelistedEmail).Returns(false);
 
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = whitelistedEmail } }, whitelistedEmail, "", _blobContainer);
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = notWhitelistedEmail } }, whitelistedEmail, "", _blobContainer);
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = whitelistedEmail } }, whitelistedEmail, "", _blobContainerClient);
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = notWhitelistedEmail } }, whitelistedEmail, "", _blobContainerClient);
 
             // Assert
-            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == notWhitelistedEmail), true, Arg.Any<CloudBlobContainer>());
-            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == whitelistedEmail), false, Arg.Any<CloudBlobContainer>());
+            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == notWhitelistedEmail), true, Arg.Any<BlobContainerClient>());
+            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == whitelistedEmail), false, Arg.Any<BlobContainerClient>());
         }
 
         [Theory]
@@ -92,10 +93,10 @@ namespace RX.Nyss.FuncApp.Tests
             some@email.no";
 
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "", _blobContainer);
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "", _blobContainerClient);
 
             // Assert
-            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), false, Arg.Any<CloudBlobContainer>());
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), false, Arg.Any<BlobContainerClient>());
         }
 
         [Theory]
@@ -115,7 +116,7 @@ namespace RX.Nyss.FuncApp.Tests
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
                 SendAsTextOnly = true
-            }, whitelist, phoneNumberWhitelist, _blobContainer);
+            }, whitelist, phoneNumberWhitelist, _blobContainerClient);
 
             // Assert
             await _emailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
@@ -139,7 +140,7 @@ namespace RX.Nyss.FuncApp.Tests
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
                 SendAsTextOnly = true
-            }, whitelist, phoneNumberWhitelist, _blobContainer);
+            }, whitelist, phoneNumberWhitelist, _blobContainerClient);
 
             // Assert
             await _emailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
@@ -160,7 +161,7 @@ namespace RX.Nyss.FuncApp.Tests
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
                 SendAsTextOnly = true
-            }, whitelist, phoneNumberWhitelist, _blobContainer);
+            }, whitelist, phoneNumberWhitelist, _blobContainerClient);
 
             // Assert
             await _emailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
@@ -189,10 +190,10 @@ namespace RX.Nyss.FuncApp.Tests
                 To = new Contact { Email = "user@example.com" },
                 Subject = "Test",
                 AttachmentFilename = "somefile.pdf"
-            }, whitelist, "", _blobContainer);
+            }, whitelist, "", _blobContainerClient);
 
             // Assert
-            await _emailAttachmentServiceMock.Received(1).AttachPdf(Arg.Any<SendGridMessage>(), Arg.Any<string>(), Arg.Any<CloudBlobContainer>());
+            await _emailAttachmentServiceMock.Received(1).AttachPdf(Arg.Any<SendGridMessage>(), Arg.Any<string>(), Arg.Any<BlobContainerClient>());
         }
     }
 }

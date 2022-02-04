@@ -34,6 +34,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
     {
         private const int RowsPerPage = 10;
 
+        private const string ApiKey = "141324";
+
         private readonly IUserService _userService;
 
         private readonly IProjectService _projectService;
@@ -646,7 +648,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 Sender = r.PhoneNumber,
                 ReceivedAt = r.ReceivedAt,
                 IsTraining = r.IsTraining,
-                NationalSociety = nationalSociety
+                NationalSociety = nationalSociety,
+                ApiKey = ApiKey
             })
             .ToList();
 
@@ -662,7 +665,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     IsTraining = r.IsTraining,
                     Village = village,
                     Zone = zone,
-                    NationalSociety = nationalSociety
+                    NationalSociety = nationalSociety,
+                    ApiKey = ApiKey
                 })
                 .ToList();
 
@@ -673,7 +677,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 ErrorType = id % 2 == 0 ? ReportErrorType.FormatError : ReportErrorType.HealthRiskNotFound,
                 ReceivedAt = new DateTime(2020, 1, 1),
                 IsTraining = false,
-                DataCollector = dataCollector
+                DataCollector = dataCollector,
+                ApiKey = ApiKey
             }).ToList();
 
         private static void LinkUnknownRawReportsToReports(List<Report> reports, List<RawReport> rawReports) =>
@@ -830,6 +835,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 new Project
                 {
                     Id = 1,
+                    Name = "Project 1",
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList()
@@ -837,10 +843,18 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 new Project
                 {
                     Id = 2,
+                    Name = "Project 2",
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 2).ToList()
                 }
+            };
+
+            var supervisor = new SupervisorUser
+            {
+                Name = "Super",
+                EmailAddress = "super@example.com",
+                PhoneNumber = "+252352352235"
             };
 
             var dataCollectors = new List<DataCollector>
@@ -848,6 +862,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 new DataCollector
                 {
                     Id = 1,
+                    Name = "DC 1",
                     Project = projects[0],
                     DataCollectorLocations = new List<DataCollectorLocation>
                     {
@@ -860,14 +875,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                         }
                     },
                     DataCollectorType = DataCollectorType.Human,
-                    Supervisor = new SupervisorUser
-                    {
-                        Name = "Super"
-                    }
+                    Supervisor = supervisor
                 },
                 new DataCollector
                 {
                     Id = 2,
+                    Name = "DC 2",
                     Project = projects[1],
                     DataCollectorLocations = new List<DataCollectorLocation>
                     {
@@ -875,18 +888,17 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                         {
                             Id = 2,
                             DataCollectorId = 2,
-                            Village = villages[0]
+                            Village = villages[0],
+                            Location = GetMockPoint(52.330898, 17.047525)
                         }
                     },
                     DataCollectorType = DataCollectorType.Human,
-                    Supervisor = new SupervisorUser
-                    {
-                        Name = "Super"
-                    }
+                    Supervisor = supervisor
                 },
                 new DataCollector
                 {
                     Id = 3,
+                    Name = "DC 3",
                     Project = projects[1],
                     DataCollectorLocations = new List<DataCollectorLocation>
                     {
@@ -894,14 +906,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                         {
                             Id = 3,
                             DataCollectorId = 3,
-                            Village = villages[0]
+                            Village = villages[0],
+                            Location = GetMockPoint(52.330898, 17.047525)
                         }
                     },
                     DataCollectorType = DataCollectorType.CollectionPoint,
-                    Supervisor = new SupervisorUser
-                    {
-                        Name = "Super"
-                    }
+                    Supervisor = supervisor
                 },
                 new DataCollector
                 {
@@ -916,13 +926,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                         {
                             Id = 4,
                             DataCollectorId = 4,
-                            Village = villages[0]
+                            Village = villages[0],
+                            Location = GetMockPoint(52.330898, 17.047525)
                         }
                     },
-                    Supervisor = new SupervisorUser
-                    {
-                        Name = "Super"
-                    }
+                    Supervisor = supervisor
                 }
             };
 
@@ -931,7 +939,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 new AdministratorUser
                 {
                     Role = Role.Administrator,
-                    EmailAddress = "admin@domain.com"
+                    EmailAddress = "admin@domain.com",
+                    Name = "admin",
+                    PhoneNumber = "+3253525234"
                 }
             };
 

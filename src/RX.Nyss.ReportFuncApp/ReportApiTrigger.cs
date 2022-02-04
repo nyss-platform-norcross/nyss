@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Formatting;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RX.Nyss.ReportFuncApp.Configuration;
 using RX.Nyss.ReportFuncApp.Contracts;
 
@@ -29,7 +30,8 @@ namespace RX.Nyss.ReportFuncApp
             _logger.Log(LogLevel.Debug, $"Dequeued report: '{report}'");
 
             var client = _httpClientFactory.CreateClient();
-            var postResult = await client.PostAsync(new Uri(_reportApiBaseUrl, "api/Report"), report, new JsonMediaTypeFormatter());
+            var content = new StringContent(JsonConvert.SerializeObject(report), Encoding.UTF8, "application/json");
+            var postResult = await client.PostAsync(new Uri(_reportApiBaseUrl, "api/Report"), content);
 
             if (!postResult.IsSuccessStatusCode)
             {

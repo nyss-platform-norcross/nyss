@@ -13,20 +13,13 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 3.1.300
-    installationPath: $(Agent.ToolsDirectory)/dotnet
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk'
-  inputs:
-    packageType: sdk
-    version: 5.0.402
+    version: 6.0.101
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: CmdLine@2
   displayName: 'Install gitversion'
   inputs:
-    script: 'dotnet tool install --global GitVersion.Tool --version 5.7.0'
+    script: 'dotnet tool install --global GitVersion.Tool --version 5.8.1'
 
 - task: PowerShell@2
   displayName: 'GitVersion'

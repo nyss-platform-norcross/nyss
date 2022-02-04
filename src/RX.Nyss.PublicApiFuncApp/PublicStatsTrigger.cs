@@ -1,11 +1,12 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
 namespace RX.Nyss.PublicApiFuncApp
@@ -22,16 +23,17 @@ namespace RX.Nyss.PublicApiFuncApp
         [FunctionName("Stats")]
         public async Task<IActionResult> Stats(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "stats")] HttpRequestMessage httpRequestMessage,
-            [Blob("%PublicStatsBlobObjectPath%", FileAccess.Read, Connection = "DATABLOBSTORAGE_CONNECTIONSTRING")] CloudBlockBlob statsBlob)
+            [Blob("%PublicStatsBlobObjectPath%", FileAccess.ReadWrite, Connection = "DATABLOBSTORAGE_CONNECTIONSTRING")] BlobClient statsBlob)
         {
             _logger.LogInformation("Getting public stats from data blob");
+            BlobDownloadResult blobContent = await statsBlob.DownloadContentAsync();
+            var stats = blobContent.Content.ToString();
 
-            if (!await statsBlob.ExistsAsync())
+            if (string.IsNullOrEmpty(stats))
             {
                 return new NotFoundResult();
             }
 
-            var stats = await statsBlob.DownloadTextAsync();
             return new OkObjectResult(JsonConvert.DeserializeObject(stats));
         }
     }

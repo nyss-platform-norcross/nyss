@@ -17,10 +17,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
         private readonly DataCollector _dataCollector = new DataCollector
         {
             DataCollectorType = DataCollectorType.Human,
+            Name = "DC",
             Supervisor = new SupervisorUser
             {
                 Name = "TestSupervisor",
                 PhoneNumber = "+12345678",
+                EmailAddress = "super@example.com",
                 UserNationalSocieties = new List<UserNationalSociety>()
             }
         };
@@ -141,16 +143,22 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
+                var contentLanguage = new ContentLanguage
+                {
+                    LanguageCode = "testLanguageCode",
+                    DisplayName = "test"
+                };
                 var headManager1 = new ManagerUser
                 {
                     EmailAddress = "test@org1.com",
-                    Name = "HeadManager Organization 1"
+                    Name = "HeadManager Organization 1",
+                    PhoneNumber = "+235235235"
                 };
                 var headManager2 = new ManagerUser
                 {
                     EmailAddress = "test@org2.com",
-                    Name = "HeadManager Organization 2"
+                    Name = "HeadManager Organization 2",
+                    PhoneNumber = "+2463463462462"
                 };
 
                 var organization1 = new Organization
@@ -187,6 +195,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 projectHealthRiskWithCountThresholdOf3.Project = new Project
                 {
                     NationalSociety = nationalSociety,
+                    Name = "Project",
                     AlertNotHandledNotificationRecipients = new List<AlertNotHandledNotificationRecipient>
                     {
                         new AlertNotHandledNotificationRecipient
@@ -206,6 +215,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 {
                     Name = "Supervisor Organization 1",
                     PhoneNumber = "+22345678",
+                    EmailAddress = "super@example.com",
                     UserNationalSocieties = new List<UserNationalSociety>
                     {
                         new UserNationalSociety
@@ -222,6 +232,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 {
                     Name = "Supervisor Organization 2",
                     PhoneNumber = "+32345678",
+                    EmailAddress = "super2@example.com",
                     UserNationalSocieties = new List<UserNationalSociety>
                     {
                         new UserNationalSociety
@@ -237,16 +248,27 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var dataCollector1 = new DataCollector
                 {
                     DataCollectorType = DataCollectorType.Human,
+                    Name = "DC 1",
                     Supervisor = supervisor1
                 };
 
                 var dataCollector2 = new DataCollector
                 {
                     DataCollectorType = DataCollectorType.Human,
+                    Name = "DC 2",
                     Supervisor = supervisor2
                 };
 
-                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
+                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent>
+                {
+                    new()
+                    {
+                        ContentLanguage = contentLanguage,
+                        CaseDefinition = "casedef",
+                        FeedbackMessage = "feedback",
+                        Name = "hr"
+                    }
+                };
 
                 var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
                     .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dataCollector1, village: new Village { Name = "VillageName" })
@@ -268,11 +290,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 var dc = new DataCollector
                 {
                     Id = 2,
+                    Name = "DC 2",
                     DataCollectorType = DataCollectorType.Human,
                     Supervisor = new SupervisorUser
                     {
                         Name = "TestSupervisor2",
                         PhoneNumber = "+123456789",
+                        EmailAddress = "super2@example.com",
                         UserNationalSocieties = new List<UserNationalSociety>()
                     }
                 };
