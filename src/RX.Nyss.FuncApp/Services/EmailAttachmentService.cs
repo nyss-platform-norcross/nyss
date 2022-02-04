@@ -19,5 +19,6 @@ public class EmailAttachmentService : IEmailAttachmentService
         await blobClient.DownloadToAsync(stream);
         stream.Position = 0;
         await message.AddAttachmentAsync(filename, stream, "application/pdf");
+        await stream.DisposeAsync();
     }
 }
