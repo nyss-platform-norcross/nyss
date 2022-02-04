@@ -10,7 +10,7 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import PhoneInputField from '../forms/PhoneInputField';
-import { Button, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -100,7 +100,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.update)}</SubmitButton>
         </FormActions>
       </Form>

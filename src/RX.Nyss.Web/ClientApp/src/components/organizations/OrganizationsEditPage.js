@@ -11,7 +11,7 @@ import TextInputField from '../forms/TextInputField';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Button } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CancelButton from '../forms/cancelButton/CancelButton';
 
@@ -77,7 +77,7 @@ const OrganizationsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.organization.form.update)}</SubmitButton>
         </FormActions>
       </Form>

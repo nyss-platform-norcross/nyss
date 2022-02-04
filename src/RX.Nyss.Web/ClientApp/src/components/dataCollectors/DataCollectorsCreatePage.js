@@ -276,7 +276,6 @@ const DataCollectorsCreatePageComponent = (props) => {
         <FormActions className={formStyles.shrinked}>
           <CancelButton
             onClick={() => props.goToList(props.projectId)}
-            variant={"contained"}
           >
             {strings(stringKeys.form.cancel)}
           </CancelButton>

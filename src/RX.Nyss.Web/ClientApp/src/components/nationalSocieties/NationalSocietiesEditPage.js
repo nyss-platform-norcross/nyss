@@ -11,7 +11,7 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -125,7 +125,7 @@ const NationalSocietiesEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToOverview(props.data.id)}>
+          <CancelButton onClick={() => props.goToOverview(props.data.id)}>
             {strings(stringKeys.form.cancel)}
           </CancelButton>
 

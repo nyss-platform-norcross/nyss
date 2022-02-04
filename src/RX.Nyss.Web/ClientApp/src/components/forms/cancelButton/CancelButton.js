@@ -3,12 +3,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button } from "@material-ui/core";
 
-export const CancelButton = ({ onClick, children, variant }) => {
+export const CancelButton = ({ onClick, children }) => {
   return (
     <Button
-      variant={variant}
+      variant="contained"
       onClick={onClick}
-      type="submit"
       className={styles.regular}
     >
       {children}

@@ -12,7 +12,7 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import DateInputField from '../forms/DateInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from '@material-ui/core';
+import { MenuItem, Grid } from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -357,7 +357,7 @@ const ReportsEditPageComponent = (props) => {
           )}
 
           <FormActions className={styles.tableActionsContainer}>
-            <CancelButton variant={"contained"} onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+            <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
             <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
           </FormActions>
         </Grid>

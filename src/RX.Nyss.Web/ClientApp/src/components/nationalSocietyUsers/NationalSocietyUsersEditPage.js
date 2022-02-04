@@ -15,7 +15,7 @@ import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
 import * as roles from '../../authentication/roles';
 import { stringKeys, strings, stringsFormat } from '../../strings';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
@@ -252,7 +252,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.update)}</SubmitButton>
         </FormActions>
       </Form>

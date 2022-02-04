@@ -10,7 +10,7 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Typography, Button, MenuItem } from '@material-ui/core';
+import { Grid, Typography, MenuItem } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
@@ -169,7 +169,7 @@ const ProjectsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.create)}</SubmitButton>
         </FormActions>
       </Form>

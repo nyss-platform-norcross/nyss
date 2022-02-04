@@ -9,7 +9,7 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
-import { Button, Typography, Grid, MenuItem } from "@material-ui/core";
+import { Typography, Grid, MenuItem } from "@material-ui/core";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
@@ -219,7 +219,7 @@ const HealthRisksEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.healthRisk.form.update)}</SubmitButton>
         </FormActions>
       </Form>

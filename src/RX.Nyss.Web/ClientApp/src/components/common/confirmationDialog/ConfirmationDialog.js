@@ -10,7 +10,6 @@ import {
   useTheme,
   DialogTitle,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
   Typography,
@@ -33,7 +32,7 @@ export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, cl
         }
         {children}
         <FormActions>
-          <CancelButton variant={"contained"} onClick={close}>
+          <CancelButton onClick={close}>
             {strings(stringKeys.form.cancel)}
           </CancelButton>
           <SubmitButton isFetching={isFetching} onClick={submit}>

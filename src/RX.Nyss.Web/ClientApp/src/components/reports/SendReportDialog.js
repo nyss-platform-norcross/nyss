@@ -7,7 +7,7 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { strings, stringKeys } from '../../strings';
-import { useTheme, Grid, Button, MenuItem, LinearProgress } from "@material-ui/core"
+import { useTheme, Grid, MenuItem, LinearProgress } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Dialog, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
@@ -227,7 +227,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
             </Grid>
 
             <FormActions>
-              <CancelButton variant={"contained"} onClick={onClose}>
+              <CancelButton onClick={onClose}>
                 {strings(stringKeys.form.cancel)}
               </CancelButton>
               <SubmitButton isFetching={isSending}>{strings(stringKeys.reports.sendReport.sendReport)}</SubmitButton>

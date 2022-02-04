@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import styles from "./CreateAlertEventDialog.module.scss";
 import { stringKeys, strings } from "../../../strings";
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -178,7 +177,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
           </Grid>
 
           <FormActions>
-            <CancelButton variant={"contained"} onClick={close}>
+            <CancelButton onClick={close}>
               {strings(stringKeys.form.cancel)}
             </CancelButton>
             <SubmitButton isFetching={isSaving}>

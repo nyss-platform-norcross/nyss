@@ -13,7 +13,6 @@ import {
   ListItem,
   Typography,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
 } from "@material-ui/core";
@@ -85,7 +84,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
           </Grid>
 
           <FormActions>
-            <CancelButton variant={"contained"} onClick={close}>
+            <CancelButton onClick={close}>
               {strings(stringKeys.form.cancel)}
             </CancelButton>
             <SubmitButton>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Grid, Typography, Card, CardContent, Button } from "@material-ui/core";
+import { Grid, Typography, Card, CardContent } from "@material-ui/core";
 import { stringKeys, strings } from "../../strings";
 import Form from "../forms/form/Form";
 import { validators, createForm } from "../../utils/forms";
@@ -109,7 +109,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
           <FormActions className={styles.formsActions}>
             {form && (
               <>
-                <CancelButton variant={"contained"} onClick={cancelEdit}>
+                <CancelButton onClick={cancelEdit}>
                   {strings(stringKeys.form.cancel)}
                 </CancelButton>
                 <SubmitButton isFetching={isSaving}>
@@ -119,7 +119,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
             )}
             {!form && (
               <TableActionsButton
-                variant={"outlined"}
+                variant={"contained"}
                 color={"primary"}
                 onClick={edit}
                 roles={accessMap.projectErrorMessages.edit}

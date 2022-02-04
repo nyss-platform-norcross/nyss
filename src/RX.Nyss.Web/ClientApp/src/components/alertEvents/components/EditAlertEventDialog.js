@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
 import styles from "./CreateAlertEventDialog.module.scss";
 import {
-  Button,
   Dialog,
   DialogContent,
   Grid,
@@ -100,7 +99,7 @@ export const EditAlertEventDialog = ({ open, close, edit, alertId, eventLogItem,
           </Grid>
 
           <FormActions>
-            <CancelButton variant={"contained"} onClick={close}>
+            <CancelButton onClick={close}>
               {strings(stringKeys.form.cancel)}
             </CancelButton>
             <SubmitButton isFetching={isSaving}>

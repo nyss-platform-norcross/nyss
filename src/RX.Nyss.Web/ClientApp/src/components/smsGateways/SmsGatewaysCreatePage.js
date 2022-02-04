@@ -15,7 +15,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import { Typography, MenuItem, Button, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
+import { Typography, MenuItem, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { v4 as uuidv4 } from 'uuid';
 import CancelButton from "../forms/cancelButton/CancelButton";
@@ -239,7 +239,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.create)}</SubmitButton>
         </FormActions>
       </Form>

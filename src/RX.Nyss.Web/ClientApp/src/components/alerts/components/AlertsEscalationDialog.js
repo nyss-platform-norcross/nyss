@@ -8,7 +8,6 @@ import {
   useTheme,
   DialogTitle,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
   Typography,
@@ -43,7 +42,7 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
         </Typography>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={close}>
+          <CancelButton onClick={close}>
             {strings(stringKeys.form.cancel)}
           </CancelButton>
           <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, true)}>

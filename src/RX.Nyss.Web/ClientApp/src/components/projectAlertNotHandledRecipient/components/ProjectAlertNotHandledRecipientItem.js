@@ -1,7 +1,7 @@
 import styles from './ProjectAlertNotHandledRecipientItem.module.scss';
 import React, { useEffect, useState } from "react";
 import EditIcon from '@material-ui/icons/Edit';
-import { Select, MenuItem, Button, Grid, Typography } from "@material-ui/core";
+import { Select, MenuItem, Grid, Typography } from "@material-ui/core";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { stringKeys, strings } from "../../../strings";
 import { useSelector } from "react-redux";
@@ -94,7 +94,7 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
             </Typography>
           )}
 
-          <CancelButton variant={"contained"} onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.projectAlertNotHandledRecipient.update)}</SubmitButton>
         </Fragment>
       )}
@@ -120,7 +120,7 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
             </Typography>
           )}
 
-          <CancelButton variant={"contained"} onClick={() => setIsCreating(false)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => setIsCreating(false)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={isSaving} onClick={onCreate}>{strings(stringKeys.projectAlertNotHandledRecipient.create)}</SubmitButton>
         </Fragment>
       )}

@@ -134,7 +134,6 @@ const ProjectsEditPageComponent = (props) => {
 
         <FormActions>
           <CancelButton
-            variant={"contained"}
             onClick={() => props.goToOverview(props.nationalSocietyId, props.projectId)}
           >
             {strings(stringKeys.form.cancel)}

@@ -8,7 +8,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import { Button, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -63,7 +63,7 @@ const OrganizationsCreatePageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.organization.form.create)}</SubmitButton>
         </FormActions>
       </Form>

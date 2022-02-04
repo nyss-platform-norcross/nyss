@@ -94,7 +94,7 @@ const CorrectReportsListPageComponent = (props) => {
         {canSendReport &&
           <TableActionsButton
             onClick={handleSendReport}
-            variant={"outlined"}
+            variant={"contained"}
             color={"primary"}
           >
             {strings(stringKeys.reports.list.sendReport)}

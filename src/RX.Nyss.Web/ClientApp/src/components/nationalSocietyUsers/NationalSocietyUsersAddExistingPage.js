@@ -13,7 +13,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Typography, Button, Box, Grid } from '@material-ui/core';
+import { MenuItem, Typography, Box, Grid } from '@material-ui/core';
 import { Administrator } from '../../authentication/roles';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
@@ -134,7 +134,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.addExisting)}</SubmitButton>
         </FormActions>
       </Form>

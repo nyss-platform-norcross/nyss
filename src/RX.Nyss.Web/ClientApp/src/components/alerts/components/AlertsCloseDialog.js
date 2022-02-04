@@ -6,7 +6,6 @@ import {
   useTheme,
   DialogTitle,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
   Typography,
@@ -28,7 +27,7 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
       <DialogContent>
         <Typography variant="body1">{strings(stringKeys.alerts.assess.alert.closeDescription)}</Typography>
         <FormActions>
-          <CancelButton variant={"contained"} onClick={close}>
+          <CancelButton onClick={close}>
             {strings(stringKeys.form.cancel)}
           </CancelButton>
           <SubmitButton isFetching={isClosing} onClick={handleClose}>

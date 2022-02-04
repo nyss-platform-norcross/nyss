@@ -254,7 +254,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
 
         <FormActions className={formStyles.shrinked}>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>
         </FormActions>
       </Form>

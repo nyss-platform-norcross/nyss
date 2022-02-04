@@ -11,7 +11,7 @@ import CancelButton from '../forms/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import PhoneInputField from '../forms/PhoneInputField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, sexValues } from './logic/nationalSocietyUsersConstants';
@@ -362,7 +362,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.create)}</SubmitButton>
         </FormActions>
       </Form>

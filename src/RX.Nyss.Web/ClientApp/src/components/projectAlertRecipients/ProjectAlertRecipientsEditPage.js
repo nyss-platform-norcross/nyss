@@ -20,7 +20,6 @@ import {
   FormControlLabel,
   Checkbox,
   MenuItem,
-  Button,
   Grid,
 } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
@@ -243,7 +242,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <CancelButton variant={"contained"} onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.projectAlertRecipient.form.update)}</SubmitButton>
         </FormActions>
       </Form>

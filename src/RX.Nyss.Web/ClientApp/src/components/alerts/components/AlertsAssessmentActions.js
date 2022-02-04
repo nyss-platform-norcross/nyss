@@ -5,7 +5,6 @@ import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
 import CancelButton from '../../forms/cancelButton/CancelButton';
-import { Button } from "@material-ui/core";
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
 import { AlertsCloseDialog } from "./AlertsCloseDialog";
@@ -39,7 +38,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
   return (
     <Fragment>
       <FormActions>
-        <CancelButton variant={"contained"} onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+        <CancelButton onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
 
         {!props.isPendingAlertState && (
           <Fragment>

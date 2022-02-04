@@ -10,7 +10,7 @@ export const SubmitButton = ({ onClick, regular, isFetching, children, wide }) =
       variant={regular ? undefined : "contained"}
       onClick={onClick} disabled={isFetching}
       type="submit"
-      className={wide ? styles.wide : styles.regular}
+      className={wide ? styles.wide : null}
     >
       {isFetching && <CircularProgress size={16} className={styles.progressIcon} />}
       {children}

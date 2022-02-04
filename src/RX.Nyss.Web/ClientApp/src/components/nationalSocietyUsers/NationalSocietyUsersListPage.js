@@ -23,7 +23,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
           <TableActionsButton
             onClick={() => props.goToAddExisting(props.nationalSocietyId)}
             icon={<AddIcon />}
-            variant={"contained"}
+            variant={"outlined"}
             color={"primary"}
           >
             {strings(stringKeys.nationalSocietyUser.addExisting)}
@@ -31,7 +31,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
             icon={<AddIcon />}
-            variant={"contained"}
+            variant={"outlined"}
             color={"primary"}
           >
             {strings(stringKeys.nationalSocietyUser.addNew)}
