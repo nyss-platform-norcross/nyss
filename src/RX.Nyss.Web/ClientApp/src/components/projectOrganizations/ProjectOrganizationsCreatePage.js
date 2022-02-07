@@ -6,13 +6,13 @@ import * as projectOrganizationsActions from './logic/projectOrganizationsAction
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import SelectField from '../forms/SelectField';
 import { MenuItem, Grid } from '@material-ui/core';
-import CancelButton from "../forms/cancelButton/CancelButton";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const ProjectOrganizationsCreatePageComponent = (props) => {
   const [form] = useState(() => {

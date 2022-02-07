@@ -6,8 +6,8 @@ import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersAction
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
-import CancelButton from '../forms/cancelButton/CancelButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';

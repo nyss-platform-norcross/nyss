@@ -10,7 +10,7 @@ import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 
 const GlobalCoordinatorsListPageComponent = (props) => {

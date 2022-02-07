@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
 import TextInputField from "../forms/TextInputField";
-import SubmitButton from "../forms/submitButton/SubmitButton";
+import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import { createForm, validators } from "../../utils/forms";
 import styles from "./FeedbackDialog.module.scss";
 
@@ -64,13 +64,13 @@ export const FeedbackDialog = ({
     if (result === "ok") {
       setHasSent(true);
       resetForm();
-      setTimeout(handleClose, 1500);      
+      setTimeout(handleClose, 1500);
     }
   }, [result]);
 
   if (!isOpened) {
     return null;
-  }  
+  }
 
   return (
     <Dialog onClose={handleClose} open={isOpened} fullScreen={fullScreen}>

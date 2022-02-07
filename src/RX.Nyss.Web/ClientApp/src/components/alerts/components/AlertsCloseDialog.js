@@ -1,7 +1,7 @@
 import React from 'react';
 import { strings, stringKeys } from "../../../strings";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
-import CancelButton from '../../forms/cancelButton/CancelButton';
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import {
   useTheme,
   DialogTitle,

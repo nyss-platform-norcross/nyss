@@ -1,7 +1,7 @@
 import React from 'react';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import {
   useTheme,
   Grid,
@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
-import CancelButton from '../../forms/cancelButton/CancelButton';
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 
 
 export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert }) => {

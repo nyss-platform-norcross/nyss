@@ -8,14 +8,14 @@ import Layout from "../layout/Layout";
 import { withLayout } from "../../utils/layout";
 import FormActions from "../forms/formActions/FormActions";
 import { Loading } from "../common/loading/Loading";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
-import SubmitButton from "../forms/submitButton/SubmitButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
+import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import { accessMap } from "../../authentication/accessMap";
 import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
 import { openErrorMessages } from "./logic/projectsActions";
 import styles from "./ProjectErrorMessagesPage.module.scss";
-import CancelButton from "../forms/cancelButton/CancelButton";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const MESSAGE_MAX_LEN = 320;
 const MESSAGE_WARNING_LEN = 160;

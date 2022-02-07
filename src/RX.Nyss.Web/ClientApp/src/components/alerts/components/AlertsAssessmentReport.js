@@ -4,7 +4,7 @@ import React, { Fragment, useEffect } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import { assessmentStatus } from "../logic/alertsConstants";
 import {
   Button,

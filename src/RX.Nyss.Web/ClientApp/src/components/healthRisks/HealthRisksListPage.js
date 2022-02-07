@@ -10,7 +10,7 @@ import TableActions from '../common/tableActions/TableActions';
 import HealthRisksTable from './HealthRisksTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 
 const HealthRisksListPageComponent = (props) => {
   useMount(() => {

@@ -10,7 +10,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 import * as roles from '../../authentication/roles';
 

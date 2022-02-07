@@ -11,7 +11,7 @@ import CorrectReportsTable from './CorrectReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { strings, stringKeys } from "../../strings";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
 import { Hidden, Icon } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";

@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import DataCollectorsTable from './DataCollectorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 import { DataCollectorsFilters } from './DataCollectorsFilters';
 import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';

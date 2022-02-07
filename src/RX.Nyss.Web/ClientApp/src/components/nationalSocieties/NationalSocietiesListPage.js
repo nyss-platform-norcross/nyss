@@ -11,7 +11,7 @@ import NationalSocietiesTable from './NationalSocietiesTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import * as nationalSocietyDashboardActions from '../nationalSocietyDashboard/logic/nationalSocietyDashboardActions';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 
 const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule, getList, ...props }) => {
   useMount(() => {

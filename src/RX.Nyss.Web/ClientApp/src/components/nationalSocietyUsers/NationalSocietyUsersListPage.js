@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
 import { useMount } from '../../utils/lifecycle';
 import { stringKeys, strings } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 
 const NationalSocietyUsersListPageComponent = (props) => {
   useMount(() => {

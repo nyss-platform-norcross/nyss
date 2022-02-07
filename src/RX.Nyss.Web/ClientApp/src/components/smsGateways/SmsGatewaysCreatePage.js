@@ -7,7 +7,7 @@ import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
@@ -18,7 +18,7 @@ import CheckboxField from '../forms/CheckboxField';
 import { Typography, MenuItem, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { v4 as uuidv4 } from 'uuid';
-import CancelButton from "../forms/cancelButton/CancelButton";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);

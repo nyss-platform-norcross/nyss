@@ -8,7 +8,7 @@ import AlertsTable from './components/AlertsTable';
 import { useMount } from '../../utils/lifecycle';
 import { AlertsFilters } from './components/AlertsFilters';
 import TableActions from '../common/tableActions/TableActions';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { stringKeys, strings } from '../../strings';
 
 const AlertsListPageComponent = (props) => {

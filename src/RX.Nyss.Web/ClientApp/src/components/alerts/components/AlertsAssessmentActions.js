@@ -2,9 +2,9 @@ import styles from "./AlertsAssessmentActions.module.scss"
 
 import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
-import CancelButton from '../../forms/cancelButton/CancelButton';
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
 import { AlertsCloseDialog } from "./AlertsCloseDialog";

@@ -10,7 +10,7 @@ import Layout from '../layout/Layout';
 import * as projectsActions from './logic/projectsActions';
 import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem";
 import { accessMap } from '../../authentication/accessMap';
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
 import { Chip, Grid, Typography } from "@material-ui/core";
 import { Coordinator, Administrator } from "../../authentication/roles";
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';

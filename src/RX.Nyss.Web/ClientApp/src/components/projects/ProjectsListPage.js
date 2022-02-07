@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import ProjectsTable from './ProjectsTable';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 
 const ProjectsListPageComponent = (props) => {

@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { validators, createForm } from '../../utils/forms';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { strings, stringKeys } from '../../strings';
 import { useTheme, Grid, MenuItem, LinearProgress } from "@material-ui/core"
@@ -17,7 +17,7 @@ import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 import SelectField from "../forms/SelectField";
 import { getUtcOffset } from "../../utils/date";
 import * as http from "../../utils/http";
-import CancelButton from "../forms/cancelButton/CancelButton";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 export const SendReportDialog = ({ close, showMessage }) => {
   const [form, setForm] = useState(null);

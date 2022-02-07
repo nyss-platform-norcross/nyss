@@ -14,7 +14,7 @@ import {
 import SelectField from "../../forms/SelectField";
 import { useMount } from "../../../utils/lifecycle";
 import { createForm, validators } from "../../../utils/forms";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import { useSelector } from "react-redux";
 import Form from "../../forms/form/Form";
 import { DatePicker } from "../../forms/DatePicker";
@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
 import { getUtcOffset } from "../../../utils/date";
-import CancelButton from '../../forms/cancelButton/CancelButton';
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 
 
 export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {

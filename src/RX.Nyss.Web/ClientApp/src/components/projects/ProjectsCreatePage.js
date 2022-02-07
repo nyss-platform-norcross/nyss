@@ -6,7 +6,7 @@ import * as projectsActions from './logic/projectsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -18,7 +18,7 @@ import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
 import * as roles from '../../authentication/roles';
-import CancelButton from "../forms/cancelButton/CancelButton";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);

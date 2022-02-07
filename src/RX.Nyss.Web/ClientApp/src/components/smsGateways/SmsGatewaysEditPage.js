@@ -7,7 +7,7 @@ import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import { Loading } from '../common/loading/Loading';

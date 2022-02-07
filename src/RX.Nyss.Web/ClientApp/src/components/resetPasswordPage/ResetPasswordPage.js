@@ -9,7 +9,7 @@ import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import * as authActions from '../../authentication/authActions';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import FormActions from '../forms/formActions/FormActions';
 import { Link, Paper, Typography, Grid } from '@material-ui/core';
 

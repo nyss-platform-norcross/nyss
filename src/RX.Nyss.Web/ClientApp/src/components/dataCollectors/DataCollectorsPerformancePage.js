@@ -10,7 +10,7 @@ import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFil
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
 import TableActions from '../common/tableActions/TableActions';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { stringKeys, strings } from '../../strings';
 import { accessMap } from '../../authentication/accessMap';
 

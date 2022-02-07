@@ -2,7 +2,7 @@ import styles from "./TableActionsButton.module.scss"
 
 import React from "react";
 import { Button, CircularProgress } from '@material-ui/core';
-import { withAccessRestriction } from "../hasAccess/HasAccess";
+import { withAccessRestriction } from "../../hasAccess/HasAccess";
 
 const TableActionsButtonComponent = ({ onClick, icon, isFetching, children, variant, color }) => (
   <Button

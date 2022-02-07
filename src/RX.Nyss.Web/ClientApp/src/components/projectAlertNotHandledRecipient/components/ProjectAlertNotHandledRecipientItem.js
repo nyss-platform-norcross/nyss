@@ -2,11 +2,11 @@ import styles from './ProjectAlertNotHandledRecipientItem.module.scss';
 import React, { useEffect, useState } from "react";
 import EditIcon from '@material-ui/icons/Edit';
 import { Select, MenuItem, Grid, Typography } from "@material-ui/core";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import { stringKeys, strings } from "../../../strings";
 import { useSelector } from "react-redux";
 import { Fragment } from 'react';
-import CancelButton from "../../forms/cancelButton/CancelButton";
+import CancelButton from "../../common/buttons/cancelButton/CancelButton";
 
 export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, organizationId, edit, create }) => {
   const [isEditing, setIsEditing] = useState(false);

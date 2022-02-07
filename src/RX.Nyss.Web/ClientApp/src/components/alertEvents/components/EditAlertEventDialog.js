@@ -14,8 +14,8 @@ import { stringKeys, strings } from "../../../strings";
 import Form from "../../forms/form/Form";
 import TextInputField from "../../forms/TextInputField";
 import FormActions from "../../forms/formActions/FormActions";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
-import CancelButton from '../../forms/cancelButton/CancelButton';
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import * as dayjs from "dayjs";
 import Typography from "@material-ui/core/Typography";
 
