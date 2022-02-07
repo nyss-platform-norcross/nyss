@@ -59,7 +59,6 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
           roles={accessMap.dataCollectors.export}
           isFetching={props.isExporting}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.dataCollector.exportExcel)}
         </TableActionsButton>

@@ -41,7 +41,6 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
           <TableActionsButton
             onClick={() => props.exportToCsv(projectId, props.filters)}
             variant="outlined"
-            color="primary"
             roles={accessMap.dataCollectors.export}
             isFetching={props.isExportingToCsv}
           >
@@ -49,7 +48,6 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
           </TableActionsButton>
           <TableActionsButton  onClick={() => props.exportToExcel(projectId, props.filters)}
              variant="outlined"
-             color="primary"
              roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}
           >
             {strings(stringKeys.dataCollector.exportExcel)}
@@ -57,7 +55,6 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
           <TableActionsButton
             onClick={() => props.goToCreation(projectId)}
             variant="contained"
-            color="primary"
             icon={<AddIcon />}
           >
             {strings(stringKeys.dataCollector.addNew)}

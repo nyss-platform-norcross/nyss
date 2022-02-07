@@ -71,7 +71,6 @@ const NationalSocietiesOverviewPageComponent = (props) => {
             roles={accessMap.nationalSocieties.edit}
             condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
             variant={"contained"}
-            color={"primary"}
           >
             {strings(stringKeys.nationalSociety.edit)}
           </TableActionsButton>

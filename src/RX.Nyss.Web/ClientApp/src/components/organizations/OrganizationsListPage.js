@@ -38,7 +38,6 @@ const OrganizationsListPageComponent = (props) => {
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
             icon={<AddIcon />}
-            color={"primary"}
             variant={"contained"}
           >
             {strings(stringKeys.organization.addNew)}

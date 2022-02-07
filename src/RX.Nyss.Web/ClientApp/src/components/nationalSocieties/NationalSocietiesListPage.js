@@ -26,7 +26,6 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
           onClick={props.goToCreation}
           icon={<AddIcon />}
           variant={"contained"}
-          color={"primary"}
         >
           {strings(stringKeys.nationalSociety.addNew)}
         </TableActionsButton>

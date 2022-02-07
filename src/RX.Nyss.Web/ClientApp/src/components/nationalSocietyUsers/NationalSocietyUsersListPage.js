@@ -24,15 +24,13 @@ const NationalSocietyUsersListPageComponent = (props) => {
             onClick={() => props.goToAddExisting(props.nationalSocietyId)}
             icon={<AddIcon />}
             variant={"outlined"}
-            color={"primary"}
           >
             {strings(stringKeys.nationalSocietyUser.addExisting)}
           </TableActionsButton>
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
             icon={<AddIcon />}
-            variant={"outlined"}
-            color={"primary"}
+            variant={"contained"}
           >
             {strings(stringKeys.nationalSocietyUser.addNew)}
           </TableActionsButton>

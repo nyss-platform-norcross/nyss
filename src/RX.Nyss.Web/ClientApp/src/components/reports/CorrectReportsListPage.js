@@ -67,7 +67,6 @@ const CorrectReportsListPageComponent = (props) => {
         <Hidden xsDown>
           <TableActionsButton
             variant={"text"}
-            color={"primary"}
             onClick={handleRefresh}
             isFetching={props.isListFetching}
           >
@@ -78,7 +77,6 @@ const CorrectReportsListPageComponent = (props) => {
         <TableActionsButton
           onClick={exportToCsv}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
@@ -86,7 +84,6 @@ const CorrectReportsListPageComponent = (props) => {
         <TableActionsButton
           onClick={exportToExcel}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
@@ -95,7 +92,6 @@ const CorrectReportsListPageComponent = (props) => {
           <TableActionsButton
             onClick={handleSendReport}
             variant={"contained"}
-            color={"primary"}
           >
             {strings(stringKeys.reports.list.sendReport)}
           </TableActionsButton>

@@ -22,7 +22,6 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
           onClick={() => props.goToCreation(props.projectId)}
           icon={<AddIcon />}
           variant={"contained"}
-          color={"primary"}
         >
           {strings(stringKeys.projectAlertRecipient.addNew)}
         </TableActionsButton>

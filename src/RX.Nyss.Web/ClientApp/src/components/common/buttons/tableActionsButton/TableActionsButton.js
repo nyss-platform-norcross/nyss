@@ -4,12 +4,12 @@ import React from "react";
 import { Button, CircularProgress } from '@material-ui/core';
 import { withAccessRestriction } from "../../hasAccess/HasAccess";
 
-const TableActionsButtonComponent = ({ onClick, icon, isFetching, children, variant, color }) => (
+const TableActionsButtonComponent = ({ onClick, icon, isFetching, children, variant }) => (
   <Button
     onClick={onClick}
     startIcon={icon}
     variant={variant}
-    color={color}
+    color="primary"
     className={styles.button}
     disabled={isFetching}
   >

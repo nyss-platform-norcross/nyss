@@ -76,8 +76,7 @@ const IncorrectReportsListPageComponent = (props) => {
           <TableActionsButton
             onClick={handleRefresh}
             isFetching={props.isListFetching}
-            variant={"text"}
-            color={"primary"}>
+            variant={"text"}>
             <Icon>refresh</Icon>
           </TableActionsButton>
         </Hidden>
@@ -85,7 +84,6 @@ const IncorrectReportsListPageComponent = (props) => {
         <TableActionsButton
           onClick={exportToCsv}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
@@ -93,7 +91,6 @@ const IncorrectReportsListPageComponent = (props) => {
         <TableActionsButton
           onClick={exportToExcel}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
@@ -101,8 +98,7 @@ const IncorrectReportsListPageComponent = (props) => {
         {canSendReport &&
           <TableActionsButton
             onClick={handleSendReport}
-            variant={"outlined"}
-            color={"primary"}
+            variant={"contained"}
           >
             {strings(stringKeys.reports.list.sendReport)}
           </TableActionsButton>

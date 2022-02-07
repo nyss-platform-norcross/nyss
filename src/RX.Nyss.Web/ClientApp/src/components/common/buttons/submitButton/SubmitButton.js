@@ -6,7 +6,7 @@ import { Button, CircularProgress } from "@material-ui/core";
 export const SubmitButton = ({ onClick, regular, isFetching, children, wide }) => {
   return (
     <Button
-      color={regular ? undefined : "primary"}
+      color="primary"
       variant={regular ? undefined : "contained"}
       onClick={onClick} disabled={isFetching}
       type="submit"

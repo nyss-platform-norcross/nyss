@@ -120,7 +120,6 @@ const ProjectErrorMessagesPageComponent = (props) => {
             {!form && (
               <TableActionsButton
                 variant={"contained"}
-                color={"primary"}
                 onClick={edit}
                 roles={accessMap.projectErrorMessages.edit}
               >

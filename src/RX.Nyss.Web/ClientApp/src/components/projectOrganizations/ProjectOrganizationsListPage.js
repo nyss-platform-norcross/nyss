@@ -26,7 +26,6 @@ const ProjectOrganizationsListPageComponent = (props) => {
           icon={<AddIcon />}
           roles={accessMap.projectOrganizations.add}
           variant={"contained"}
-          color={"primary"}
         >
           {strings(stringKeys.projectOrganization.addNew)}
         </TableActionsButton>

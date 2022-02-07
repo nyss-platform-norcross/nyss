@@ -35,7 +35,6 @@ const AlertsListPageComponent = (props) => {
         <TableActionsButton
           onClick={() => props.export(props.projectId, props.filters)}
           variant={"outlined"}
-          color={"primary"}
         >
           {strings(stringKeys.alerts.list.export)}
         </TableActionsButton>

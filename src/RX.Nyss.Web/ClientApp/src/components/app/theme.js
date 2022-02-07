@@ -56,9 +56,6 @@ export const theme = createTheme({
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
       },
-      text: {
-        textDecoration: "underline"
-      },
       startIcon: {
         "@media (max-width: 1279px)": {
           display: "none"

@@ -27,7 +27,6 @@ const GlobalCoordinatorsListPageComponent = (props) => {
           roles={accessMap.globalCoordinators.add}
           icon={<AddIcon />}
           variant={"contained"}
-          color={"primary"}
         >
           {strings(stringKeys.globalCoordinator.addNew)}
         </TableActionsButton>

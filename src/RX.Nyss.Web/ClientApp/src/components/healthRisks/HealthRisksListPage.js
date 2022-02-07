@@ -25,7 +25,6 @@ const HealthRisksListPageComponent = (props) => {
           onClick={props.goToCreation}
           icon={<AddIcon />}
           variant={"contained"}
-          color={"primary"}
         >
           {strings(stringKeys.healthRisk.addNew)}
         </TableActionsButton>

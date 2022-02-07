@@ -39,7 +39,6 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
         <TableActionsButton
           onClick={() => setCreateDialogOpened(true)}
           variant={"contained"}
-          color={"primary"}
           roles={accessMap.alertEvents.add}
           icon={<AddIcon/>}>
           {strings(stringKeys.alerts.eventLog.addNew)}

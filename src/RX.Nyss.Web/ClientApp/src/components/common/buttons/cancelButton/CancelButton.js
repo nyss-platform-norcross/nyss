@@ -1,12 +1,12 @@
 import styles from "./CancelButton.module.scss";
-import React from "react";
 import PropTypes from "prop-types";
 import { Button } from "@material-ui/core";
 
 export const CancelButton = ({ onClick, children }) => {
   return (
     <Button
-      variant="contained"
+      variant="text"
+      color="primary"
       onClick={onClick}
       className={styles.regular}
     >

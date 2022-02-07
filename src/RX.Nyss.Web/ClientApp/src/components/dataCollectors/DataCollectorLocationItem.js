@@ -274,7 +274,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 </Grid>
 
                 {!isOnlyLocation && (
-                  <Button className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
+                  <Button color="primary" className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
                 )}
               </Grid>
             </Grid>

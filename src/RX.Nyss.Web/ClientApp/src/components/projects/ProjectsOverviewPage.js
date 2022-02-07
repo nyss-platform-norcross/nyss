@@ -70,7 +70,6 @@ const ProjectsOverviewPageComponent = (props) => {
               onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)}
               roles={accessMap.projects.edit}
               variant={"contained"}
-              color={"primary"}
             >
               {strings(stringKeys.project.edit)}
             </TableActionsButton>
