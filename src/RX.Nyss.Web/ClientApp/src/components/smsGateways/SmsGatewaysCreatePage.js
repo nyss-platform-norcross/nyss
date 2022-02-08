@@ -29,7 +29,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       name: "",
-      apiKey: uuidv4(),
+      apiKey: uuidv4().replace(/-/g, ''),
       gatewayType: smsEagle,
       emailAddress: "",
       useIotHub: false,
