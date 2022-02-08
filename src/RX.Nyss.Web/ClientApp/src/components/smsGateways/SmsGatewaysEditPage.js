@@ -121,7 +121,7 @@ const SmsGatewaysEditPageComponent = (props) => {
   }
 
   const generateUuid = () => {
-    form.fields.apiKey.update(uuidv4());
+    form.fields.apiKey.update(uuidv4().replace(/-/g, ''));
   }
 
   const copyApiKey = () => {
