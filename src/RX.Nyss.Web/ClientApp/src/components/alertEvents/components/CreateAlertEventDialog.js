@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import styles from "./CreateAlertEventDialog.module.scss";
 import { stringKeys, strings } from "../../../strings";
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -15,7 +14,7 @@ import {
 import SelectField from "../../forms/SelectField";
 import { useMount } from "../../../utils/lifecycle";
 import { createForm, validators } from "../../../utils/forms";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import { useSelector } from "react-redux";
 import Form from "../../forms/form/Form";
 import { DatePicker } from "../../forms/DatePicker";
@@ -24,6 +23,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
 import { getUtcOffset } from "../../../utils/date";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
+
 
 export const CreateAlertEventDialog = ({ close, alertId, openCreation, create }) => {
   const theme = useTheme();
@@ -176,9 +177,9 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
           </Grid>
 
           <FormActions>
-            <Button onClick={close}>
+            <CancelButton onClick={close}>
               {strings(stringKeys.form.cancel)}
-            </Button>
+            </CancelButton>
             <SubmitButton isFetching={isSaving}>
               {strings(stringKeys.alerts.eventLog.addNew)}
             </SubmitButton>

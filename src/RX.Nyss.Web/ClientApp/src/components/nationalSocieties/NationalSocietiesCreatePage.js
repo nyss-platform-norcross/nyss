@@ -8,10 +8,11 @@ import * as appActions from '../app/logic/appActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -49,7 +50,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-    
+
     props.create({
       name: values.name,
       initialOrganizationName: values.initialOrganizationName,
@@ -118,13 +119,13 @@ const NationalSocietiesCreatePageComponent = (props) => {
                 <MenuItem key={`epiWeekStartDay${itm}`} value={itm}>{strings(stringKeys.nationalSociety.form.epiWeekStandard[itm].label)}</MenuItem>
               ))}
             </SelectField>
-          </Grid>                
+          </Grid>
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
+          <CancelButton onClick={() => props.goToList()}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
 
           <SubmitButton isFetching={props.isSaving}>
             {strings(stringKeys.nationalSociety.form.create)}

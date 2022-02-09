@@ -8,7 +8,7 @@ import AlertsTable from './components/AlertsTable';
 import { useMount } from '../../utils/lifecycle';
 import { AlertsFilters } from './components/AlertsFilters';
 import TableActions from '../common/tableActions/TableActions';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { stringKeys, strings } from '../../strings';
 
 const AlertsListPageComponent = (props) => {
@@ -30,14 +30,17 @@ const AlertsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      
+
       <TableActions>
-        <TableActionsButton onClick={() => props.export(props.projectId, props.filters)}>
+        <TableActionsButton
+          onClick={() => props.export(props.projectId, props.filters)}
+          variant={"outlined"}
+        >
           {strings(stringKeys.alerts.list.export)}
         </TableActionsButton>
       </TableActions>
 
-      <AlertsFilters 
+      <AlertsFilters
         filters={props.filters}
         filtersData={props.filtersData}
         onChange={handleFilterChange}

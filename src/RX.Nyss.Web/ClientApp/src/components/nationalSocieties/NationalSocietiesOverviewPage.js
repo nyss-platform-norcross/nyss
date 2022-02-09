@@ -10,7 +10,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 import * as roles from '../../authentication/roles';
 
@@ -62,16 +62,15 @@ const NationalSocietiesOverviewPageComponent = (props) => {
               {strings(stringKeys.nationalSociety.form.epiWeekStandard[props.data.epiWeekStartDay].label)}<br/>
               <span style={{ fontSize: 12 }}>({strings(stringKeys.nationalSociety.form.epiWeekStandard[props.data.epiWeekStartDay].description)})</span>
             </Typography>
-          </Grid>          
+          </Grid>
         </Grid>
 
         <FormActions>
           <TableActionsButton
-            variant="outlined"
-            color="primary"
             onClick={() => props.openEdition(props.data.id)}
             roles={accessMap.nationalSocieties.edit}
             condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
+            variant={"contained"}
           >
             {strings(stringKeys.nationalSociety.edit)}
           </TableActionsButton>

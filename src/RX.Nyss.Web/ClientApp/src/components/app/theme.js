@@ -36,7 +36,7 @@ export const theme = createTheme({
     primary: {
       light: "#8c9eff",
       main: "#C02C2C",
-      dark: "#3d5afe",
+      dark: "#DC3F2E",
       contrastText: "#ffffff"
     },
     secondary: {
@@ -49,16 +49,12 @@ export const theme = createTheme({
   overrides: {
     MuiButton: {
       root: {
-        borderRadius: 0,
-        padding: "10px 15px",
+        padding: "7px 15px",
         textTransform: "none",
         fontSize: 16
       },
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
-      },
-      text: {
-        textDecoration: "underline"
       },
       startIcon: {
         "@media (max-width: 1279px)": {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Grid, Typography, Card, CardContent, Button } from "@material-ui/core";
+import { Grid, Typography, Card, CardContent } from "@material-ui/core";
 import { stringKeys, strings } from "../../strings";
 import Form from "../forms/form/Form";
 import { validators, createForm } from "../../utils/forms";
@@ -8,13 +8,14 @@ import Layout from "../layout/Layout";
 import { withLayout } from "../../utils/layout";
 import FormActions from "../forms/formActions/FormActions";
 import { Loading } from "../common/loading/Loading";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
-import SubmitButton from "../forms/submitButton/SubmitButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
+import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import { accessMap } from "../../authentication/accessMap";
 import TextInputField from "../forms/TextInputField";
 import * as http from "../../utils/http";
 import { openErrorMessages } from "./logic/projectsActions";
 import styles from "./ProjectErrorMessagesPage.module.scss";
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const MESSAGE_MAX_LEN = 320;
 const MESSAGE_WARNING_LEN = 160;
@@ -108,9 +109,9 @@ const ProjectErrorMessagesPageComponent = (props) => {
           <FormActions className={styles.formsActions}>
             {form && (
               <>
-                <Button onClick={cancelEdit}>
+                <CancelButton onClick={cancelEdit}>
                   {strings(stringKeys.form.cancel)}
-                </Button>
+                </CancelButton>
                 <SubmitButton isFetching={isSaving}>
                   {strings(stringKeys.project.form.update)}
                 </SubmitButton>
@@ -118,8 +119,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
             )}
             {!form && (
               <TableActionsButton
-                variant="outlined"
-                color="primary"
+                variant={"contained"}
                 onClick={edit}
                 roles={accessMap.projectErrorMessages.edit}
               >

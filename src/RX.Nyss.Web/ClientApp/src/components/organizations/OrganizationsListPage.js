@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import OrganizationsTable from './OrganizationsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { useCallback } from 'react';
 import * as roles from '../../authentication/roles';
 
@@ -35,7 +35,11 @@ const OrganizationsListPageComponent = (props) => {
     <Fragment>
       {canModify && (
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            variant={"contained"}
+          >
             {strings(stringKeys.organization.addNew)}
           </TableActionsButton>
         </TableActions>

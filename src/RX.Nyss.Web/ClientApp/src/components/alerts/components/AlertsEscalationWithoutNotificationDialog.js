@@ -1,18 +1,19 @@
 import React from 'react';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import {
   useTheme,
   Grid,
   DialogTitle,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
   Typography,
 } from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
+
 
 export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert }) => {
   const theme = useTheme();
@@ -35,9 +36,9 @@ export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, ale
         </Grid>
 
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, false)}>
             {strings(stringKeys.alerts.assess.alert.escalate)}
           </SubmitButton>

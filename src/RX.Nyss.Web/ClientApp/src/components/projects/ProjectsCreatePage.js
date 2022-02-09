@@ -6,11 +6,11 @@ import * as projectsActions from './logic/projectsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Typography, Button, MenuItem } from '@material-ui/core';
+import { Grid, Typography, MenuItem } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
@@ -18,6 +18,7 @@ import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
 import * as roles from '../../authentication/roles';
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -168,7 +169,7 @@ const ProjectsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.create)}</SubmitButton>
         </FormActions>
       </Form>

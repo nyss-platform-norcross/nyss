@@ -7,7 +7,7 @@ import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
@@ -15,9 +15,10 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import { Typography, MenuItem, Button, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
+import { Typography, MenuItem, Grid, Icon, InputAdornment, Snackbar, IconButton } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { v4 as uuidv4 } from 'uuid';
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);
@@ -238,7 +239,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.create)}</SubmitButton>
         </FormActions>
       </Form>

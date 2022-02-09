@@ -6,7 +6,8 @@ import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersAction
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import PhoneInputField from '../forms/PhoneInputField'
 import { Loading } from '../common/loading/Loading';
@@ -14,7 +15,7 @@ import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
 import * as roles from '../../authentication/roles';
 import { stringKeys, strings, stringsFormat } from '../../strings';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
@@ -123,7 +124,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -132,7 +133,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
@@ -251,7 +252,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.update)}</SubmitButton>
         </FormActions>
       </Form>

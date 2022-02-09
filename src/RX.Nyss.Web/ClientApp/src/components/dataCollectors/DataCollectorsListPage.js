@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import DataCollectorsTable from './DataCollectorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 import { DataCollectorsFilters } from './DataCollectorsFilters';
 import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';
@@ -38,14 +38,26 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(projectId)} icon={<AddIcon />}>
-            {strings(stringKeys.dataCollector.addNew)}
-          </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToCsv}>
+          <TableActionsButton
+            onClick={() => props.exportToCsv(projectId, props.filters)}
+            variant="outlined"
+            roles={accessMap.dataCollectors.export}
+            isFetching={props.isExportingToCsv}
+          >
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}>
+          <TableActionsButton  onClick={() => props.exportToExcel(projectId, props.filters)}
+             variant="outlined"
+             roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}
+          >
             {strings(stringKeys.dataCollector.exportExcel)}
+          </TableActionsButton>
+          <TableActionsButton
+            onClick={() => props.goToCreation(projectId)}
+            variant="contained"
+            icon={<AddIcon />}
+          >
+            {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
         </TableActions>
       }

@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
 import { useMount } from '../../utils/lifecycle';
 import { stringKeys, strings } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 
 const NationalSocietyUsersListPageComponent = (props) => {
   useMount(() => {
@@ -20,11 +20,18 @@ const NationalSocietyUsersListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToAddExisting(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToAddExisting(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            variant={"outlined"}
+          >
             {strings(stringKeys.nationalSocietyUser.addExisting)}
           </TableActionsButton>
-
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            variant={"contained"}
+          >
             {strings(stringKeys.nationalSocietyUser.addNew)}
           </TableActionsButton>
         </TableActions>}

@@ -6,12 +6,13 @@ import * as projectOrganizationsActions from './logic/projectOrganizationsAction
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from '@material-ui/core';
+import { MenuItem, Grid } from '@material-ui/core';
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const ProjectOrganizationsCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -71,7 +72,7 @@ const ProjectOrganizationsCreatePageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.projectOrganization.form.create)}</SubmitButton>
         </FormActions>
       </Form>

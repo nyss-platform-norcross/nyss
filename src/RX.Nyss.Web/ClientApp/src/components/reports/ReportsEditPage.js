@@ -8,17 +8,18 @@ import * as reportsActions from './logic/reportsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import DateInputField from '../forms/DateInputField';
 import SelectField from '../forms/SelectField';
-import { MenuItem, Button, Grid } from '@material-ui/core';
+import { MenuItem, Grid } from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import dayjs from 'dayjs';
 import { reportAges, reportCountToSexAge, reportSexes, reportStatus, ReportType } from './logic/reportsConstants';
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
 const ReportsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -356,7 +357,7 @@ const ReportsEditPageComponent = (props) => {
           )}
 
           <FormActions className={styles.tableActionsContainer}>
-            <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+            <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
             <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
           </FormActions>
         </Grid>

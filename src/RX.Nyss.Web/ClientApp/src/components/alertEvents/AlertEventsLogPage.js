@@ -6,7 +6,7 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import * as alertEventsActions from './logic/alertEventsActions'
 import { AlertEventsTable } from './components/AlertEventsTable';
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
 import { accessMap } from "../../authentication/accessMap";
 import { stringKeys, strings } from "../../strings";
 import { CreateAlertEventDialog } from "./components/CreateAlertEventDialog";
@@ -38,8 +38,7 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
       <TableActions>
         <TableActionsButton
           onClick={() => setCreateDialogOpened(true)}
-          variant="outlined"
-          color="primary"
+          variant={"contained"}
           roles={accessMap.alertEvents.add}
           icon={<AddIcon/>}>
           {strings(stringKeys.alerts.eventLog.addNew)}

@@ -10,7 +10,7 @@ import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFil
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
 import TableActions from '../common/tableActions/TableActions';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { stringKeys, strings } from '../../strings';
 import { accessMap } from '../../authentication/accessMap';
 
@@ -54,7 +54,12 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={() => props.exportPerformance(projectId, props.filters)} roles={accessMap.dataCollectors.export} isFetching={props.isExporting}>
+        <TableActionsButton
+          onClick={() => props.exportPerformance(projectId, props.filters)}
+          roles={accessMap.dataCollectors.export}
+          isFetching={props.isExporting}
+          variant={"outlined"}
+        >
           {strings(stringKeys.dataCollector.exportExcel)}
         </TableActionsButton>
       </TableActions>

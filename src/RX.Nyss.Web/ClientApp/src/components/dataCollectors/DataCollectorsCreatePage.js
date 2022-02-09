@@ -16,7 +16,7 @@ import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectField from '../forms/SelectField';
 import RadioGroupField from '../forms/RadioGroupField';
@@ -31,6 +31,8 @@ import CheckboxField from "../forms/CheckboxField";
 import PhoneInputField from "../forms/PhoneInputField";
 import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
+
 
 const DataCollectorsCreatePageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
@@ -85,7 +87,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
     const newForm = createForm(fields, validation);
     newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
-    newForm.fields.supervisorId.subscribe(({ newValue }) => 
+    newForm.fields.supervisorId.subscribe(({ newValue }) =>
       newForm.fields.linkedToHeadSupervisor.update(props.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
     return newForm;
   }, [props.defaultSupervisorId, props.defaultLocation, props.supervisors]);
@@ -272,7 +274,11 @@ const DataCollectorsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions className={formStyles.shrinked}>
-          <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton
+            onClick={() => props.goToList(props.projectId)}
+          >
+            {strings(stringKeys.form.cancel)}
+          </CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.create)}</SubmitButton>
         </FormActions>
       </Form>

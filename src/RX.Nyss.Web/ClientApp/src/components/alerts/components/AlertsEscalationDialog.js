@@ -2,12 +2,12 @@ import React from 'react';
 import { strings, stringKeys } from "../../../strings";
 import DisplayField from "../../forms/DisplayField";
 import FormActions from "../../forms/formActions/FormActions";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import {
   useTheme,
   DialogTitle,
   Dialog,
-  Button,
   DialogContent,
   useMediaQuery,
   Typography,
@@ -42,9 +42,9 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
         </Typography>
 
         <FormActions>
-          <Button onClick={close}>
+          <CancelButton onClick={close}>
             {strings(stringKeys.form.cancel)}
-          </Button>
+          </CancelButton>
           <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, true)}>
             {strings(stringKeys.alerts.assess.alert.escalate)}
           </SubmitButton>

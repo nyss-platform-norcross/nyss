@@ -17,7 +17,7 @@ import { ProjectsDashboardReportSexAgeTable } from "./components/ProjectsDashboa
 import { ProjectsDashboardDataCollectionPointChart } from "./components/ProjectsDashboardDataCollectionPointChart";
 import { strings, stringKeys } from "../../strings";
 import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
-import SubmitButton from "../forms/submitButton/SubmitButton";
+import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 
 const ProjectDashboardPageComponent = ({
   openDashboard,

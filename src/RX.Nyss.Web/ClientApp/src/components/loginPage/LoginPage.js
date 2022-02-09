@@ -13,7 +13,7 @@ import * as authActions from '../../authentication/authActions';
 import { getRedirectUrl, redirectToRoot } from '../../authentication/auth';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import { useMount } from '../../utils/lifecycle';
 
 const LoginPageComponent = (props) => {

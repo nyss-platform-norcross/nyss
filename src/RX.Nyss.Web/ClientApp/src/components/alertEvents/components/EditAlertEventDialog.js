@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
 import styles from "./CreateAlertEventDialog.module.scss";
 import {
-  Button,
   Dialog,
   DialogContent,
   Grid,
@@ -15,7 +14,8 @@ import { stringKeys, strings } from "../../../strings";
 import Form from "../../forms/form/Form";
 import TextInputField from "../../forms/TextInputField";
 import FormActions from "../../forms/formActions/FormActions";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import * as dayjs from "dayjs";
 import Typography from "@material-ui/core/Typography";
 
@@ -99,9 +99,9 @@ export const EditAlertEventDialog = ({ open, close, edit, alertId, eventLogItem,
           </Grid>
 
           <FormActions>
-            <Button onClick={close}>
+            <CancelButton onClick={close}>
               {strings(stringKeys.form.cancel)}
-            </Button>
+            </CancelButton>
             <SubmitButton isFetching={isSaving}>
               {strings(stringKeys.alerts.eventLog.edit)}
             </SubmitButton>

@@ -8,11 +8,12 @@ import * as appActions from '../app/logic/appActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import PhoneInputField from '../forms/PhoneInputField';
 import { useMount } from '../../utils/lifecycle';
-import { Grid, Button } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { stringKeys, strings } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 
@@ -80,7 +81,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -89,11 +90,11 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              defaultCountry={"ch"} 
+              defaultCountry={"ch"}
             />
           </Grid>
 
@@ -107,7 +108,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.create)}</SubmitButton>
         </FormActions>
       </Form>

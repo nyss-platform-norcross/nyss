@@ -11,7 +11,7 @@ import IncorrectReportsTable from './IncorrectReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { strings, stringKeys } from "../../strings";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
 import { Hidden, Icon } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
 import { SendReportDialog } from "./SendReportDialog";
@@ -59,7 +59,7 @@ const IncorrectReportsListPageComponent = (props) => {
   function exportToExcel() {
     props.trackReportExport(Page, "Excel", props.projectId);
     props.exportToExcel(props.projectId, props.filters, props.sorting);
-  } 
+  }
 
   function onCorrectToggle(row) {
     if (row.isCorrected) {
@@ -73,21 +73,33 @@ const IncorrectReportsListPageComponent = (props) => {
     <Fragment>
       <TableActions>
         <Hidden xsDown>
-          <TableActionsButton onClick={handleRefresh} isFetching={props.isListFetching}>
+          <TableActionsButton
+            onClick={handleRefresh}
+            isFetching={props.isListFetching}
+            variant={"text"}>
             <Icon>refresh</Icon>
           </TableActionsButton>
         </Hidden>
 
-        <TableActionsButton onClick={exportToCsv}>
+        <TableActionsButton
+          onClick={exportToCsv}
+          variant={"outlined"}
+        >
           {strings(stringKeys.reports.list.exportToCsv)}
         </TableActionsButton>
 
-        <TableActionsButton onClick={exportToExcel}>
+        <TableActionsButton
+          onClick={exportToExcel}
+          variant={"outlined"}
+        >
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
 
         {canSendReport &&
-          <TableActionsButton onClick={handleSendReport}>
+          <TableActionsButton
+            onClick={handleSendReport}
+            variant={"contained"}
+          >
             {strings(stringKeys.reports.list.sendReport)}
           </TableActionsButton>
         }

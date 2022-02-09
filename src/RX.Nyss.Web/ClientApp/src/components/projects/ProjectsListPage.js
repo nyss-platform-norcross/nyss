@@ -9,7 +9,7 @@ import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import ProjectsTable from './ProjectsTable';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 
 const ProjectsListPageComponent = (props) => {
@@ -21,7 +21,12 @@ const ProjectsListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived && (
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />} roles={accessMap.projects.add}>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            roles={accessMap.projects.add}
+            variant={"contained"}
+          >
             {strings(stringKeys.project.addNew)}
           </TableActionsButton>
         </TableActions>

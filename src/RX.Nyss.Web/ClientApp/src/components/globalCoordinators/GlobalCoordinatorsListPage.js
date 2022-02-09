@@ -10,7 +10,7 @@ import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 
 const GlobalCoordinatorsListPageComponent = (props) => {
@@ -22,7 +22,12 @@ const GlobalCoordinatorsListPageComponent = (props) => {
   return (
     <Fragment>
       <TableActions>
-        <TableActionsButton onClick={props.goToCreation} roles={accessMap.globalCoordinators.add} icon={<AddIcon />}>
+        <TableActionsButton
+          onClick={props.goToCreation}
+          roles={accessMap.globalCoordinators.add}
+          icon={<AddIcon />}
+          variant={"contained"}
+        >
           {strings(stringKeys.globalCoordinator.addNew)}
         </TableActionsButton>
       </TableActions>

@@ -2,9 +2,9 @@ import styles from "./AlertsAssessmentActions.module.scss"
 
 import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
-import { Button } from "@material-ui/core";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
 import { AlertsCloseDialog } from "./AlertsCloseDialog";
@@ -38,7 +38,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
   return (
     <Fragment>
       <FormActions>
-        <Button onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</Button>
+        <CancelButton onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
 
         {!props.isPendingAlertState && (
           <Fragment>

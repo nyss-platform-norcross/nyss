@@ -4,7 +4,7 @@ import React, { Fragment, useEffect } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
-import SubmitButton from "../../forms/submitButton/SubmitButton";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
 import { assessmentStatus } from "../logic/alertsConstants";
 import {
   Button,
@@ -131,7 +131,7 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
 
             {showResetOption && (
               <Fragment>
-                <Button variant="text" onClick={() => resetReport(alertId, report.id)} disabled={report.isResetting}>
+                <Button variant="text" color="primary" onClick={() => resetReport(alertId, report.id)} disabled={report.isResetting}>
                   {report.isResetting && <CircularProgress size={16} className={styles.progressIcon} />}
                   {strings(stringKeys.alerts.assess.report.reset)}
                 </Button>

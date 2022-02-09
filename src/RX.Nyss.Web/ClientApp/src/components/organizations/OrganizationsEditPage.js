@@ -6,13 +6,15 @@ import * as organizationsActions from './logic/organizationsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Button } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
+
 
 const OrganizationsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -75,7 +77,7 @@ const OrganizationsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.organization.form.update)}</SubmitButton>
         </FormActions>
       </Form>

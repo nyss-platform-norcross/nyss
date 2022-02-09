@@ -6,11 +6,12 @@ import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersAction
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import PhoneInputField from '../forms/PhoneInputField';
-import { MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, sexValues } from './logic/nationalSocietyUsersConstants';
@@ -239,7 +240,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <PhoneInputField 
+            <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -248,7 +249,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-          <PhoneInputField 
+          <PhoneInputField
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
@@ -361,7 +362,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.create)}</SubmitButton>
         </FormActions>
       </Form>

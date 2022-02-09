@@ -8,7 +8,8 @@ import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
+import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from '../common/buttons/cancelButton/CancelButton';
 import TextInputField from '../forms/TextInputField';
 import PhoneInputField from "../forms/PhoneInputField";
 import { Loading } from '../common/loading/Loading';
@@ -68,7 +69,7 @@ const DataCollectorsEditPageComponent = (props) => {
     };
 
     const newForm = createForm(fields, validation);
-    newForm.fields.supervisorId.subscribe(({ newValue }) => 
+    newForm.fields.supervisorId.subscribe(({ newValue }) =>
       newForm.fields.linkedToHeadSupervisor.update(props.data.formData.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
 
     setForm(newForm);
@@ -196,7 +197,7 @@ const DataCollectorsEditPageComponent = (props) => {
           </Grid>)}
 
           <Grid item xs={12}>
-            <PhoneInputField 
+            <PhoneInputField
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
@@ -205,7 +206,7 @@ const DataCollectorsEditPageComponent = (props) => {
           </Grid>
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
-            <PhoneInputField 
+            <PhoneInputField
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
@@ -253,7 +254,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
 
         <FormActions className={formStyles.shrinked}>
-          <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>
         </FormActions>
       </Form>
