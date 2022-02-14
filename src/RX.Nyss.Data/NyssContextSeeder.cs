@@ -135,7 +135,7 @@ namespace RX.Nyss.Data
                     new AlertEventSubtype
                     {
                         Id = 4,
-                        Name = "PresumedCasePositiveLab",
+                        Name = "CasePositiveLab",
                         AlertEventTypeId = 4
                     },
                     new AlertEventSubtype
@@ -153,7 +153,7 @@ namespace RX.Nyss.Data
                     new AlertEventSubtype
                     {
                         Id = 7,
-                        Name = "PresumedCaseNegativeLab",
+                        Name = "CaseNegativeLab",
                         AlertEventTypeId = 4
                     },
                     new AlertEventSubtype

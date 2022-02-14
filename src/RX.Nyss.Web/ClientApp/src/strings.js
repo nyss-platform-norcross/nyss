@@ -946,7 +946,7 @@ export const stringKeys = {
     eventLog: {
       title: "alerts.eventLog.title",
       addNew: "alerts.eventLog.addNew",
-      edit: "alerts.eventLog.edit",      
+      edit: "alerts.eventLog.edit",
       list: {
         date: "alerts.eventLog.list.date",
         userName: "alerts.eventLog.list.userName",
@@ -984,16 +984,16 @@ export const stringKeys = {
         "Investigation": "alerts.eventTypes.investigation",
         "Outcome": "alerts.eventTypes.outcome",
         "Summary": "alerts.eventTypes.summary",
-        "PublicHealthActionTaken": "alerts.eventTypes.publicHealthActionTaken",        
+        "PublicHealthActionTaken": "alerts.eventTypes.publicHealthActionTaken",
       },
       eventSubtypes: {
         "Investigated": "alerts.eventTypes.subtypes.investigated",
         "NotInvestigated": "alerts.eventTypes.subtypes.notInvestigated",
         "Unknown": "alerts.eventTypes.subtypes.unknown",
-        "PresumedCasePositiveLab": "alerts.eventTypes.subtypes.presumedCasePositiveLab",
+        "CasePositiveLab": "alerts.eventTypes.subtypes.casePositiveLab",
         "PresumedCasePositiveClinical": "alerts.eventTypes.subtypes.presumedCasePositiveClinical",
         "PresumedCasePositiveUnknown": "alerts.eventTypes.subtypes.presumedCasePositiveUnknown",
-        "PresumedCaseNegativeLab": "alerts.eventTypes.subtypes.presumedCaseNegativeLab",
+        "CaseNegativeLab": "alerts.eventTypes.subtypes.caseNegativeLab",
         "PresumedCaseNegativeClinical": "alerts.eventTypes.subtypes.presumedCaseNegativeClinical",
         "PresumedCaseNegativeUnknown": "alerts.eventTypes.subtypes.presumedCaseNegativeUnknown",
         "Recovered": "alerts.eventTypes.subtypes.recovered",
@@ -1162,7 +1162,7 @@ export const stringKeys = {
     dialogDescription: "feedback.dialogDescription",
     privacyMessage: "feedback.privacyMessage",
     thankYou: "feedback.thankYou"
-  },  
+  },
 };
 
 export const isStringKey = (key) =>
