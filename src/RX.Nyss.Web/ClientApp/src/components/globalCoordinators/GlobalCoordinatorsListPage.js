@@ -28,7 +28,7 @@ const GlobalCoordinatorsListPageComponent = (props) => {
           icon={<AddIcon />}
           variant={"contained"}
         >
-          {strings(stringKeys.globalCoordinator.addNew)}
+          {strings(stringKeys.common.buttons.addNew)}
         </TableActionsButton>
       </TableActions>
 

@@ -23,7 +23,7 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
           icon={<AddIcon />}
           variant={"contained"}
         >
-          {strings(stringKeys.projectAlertRecipient.addNew)}
+          {strings(stringKeys.common.buttons.addNew)}
         </TableActionsButton>
       </TableActions>}
 

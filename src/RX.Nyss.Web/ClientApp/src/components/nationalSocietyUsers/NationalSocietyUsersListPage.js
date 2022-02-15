@@ -32,7 +32,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
             icon={<AddIcon />}
             variant={"contained"}
           >
-            {strings(stringKeys.nationalSocietyUser.addNew)}
+            {strings(stringKeys.common.buttons.addNew)}
           </TableActionsButton>
         </TableActions>}
 

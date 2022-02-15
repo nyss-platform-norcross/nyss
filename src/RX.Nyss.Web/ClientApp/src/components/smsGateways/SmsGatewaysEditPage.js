@@ -263,7 +263,7 @@ const SmsGatewaysEditPageComponent = (props) => {
 
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.update)}</SubmitButton>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
 

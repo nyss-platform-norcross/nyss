@@ -358,7 +358,7 @@ const ReportsEditPageComponent = (props) => {
 
           <FormActions className={styles.tableActionsContainer}>
             <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-            <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.reports.form.update)}</SubmitButton>
+            <SubmitButton className={styles.editButton} isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
           </FormActions>
         </Grid>
       </Form>
