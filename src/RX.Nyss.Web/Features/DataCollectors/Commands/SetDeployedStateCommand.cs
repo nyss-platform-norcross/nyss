@@ -37,16 +37,18 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     .Where(dc => command.DataCollectorIds.Contains(dc.Id))
                     .ToListAsync(cancellationToken);
 
+                var utcNow = _dateTimeProvider.UtcNow;
+
                 if (command.Deployed)
                 {
-                    var deployedEndDate = _dateTimeProvider.UtcNow;
                     dataCollectors.ForEach(dc =>
                     {
                         dc.Deployed = true;
                         var deployedDateToUpdate = dc.DatesNotDeployed.FirstOrDefault(d => d.EndDate == null);
+
                         if (deployedDateToUpdate != null)
                         {
-                            deployedDateToUpdate.EndDate = deployedEndDate;
+                            deployedDateToUpdate.EndDate = utcNow;
                         }
                     });
                 }
@@ -56,7 +58,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                     var datesNotDeployed = dataCollectors.Select(dc => new DataCollectorNotDeployed
                     {
                         DataCollectorId = dc.Id,
-                        StartDate = _dateTimeProvider.UtcNow
+                        StartDate = utcNow
                     });
 
                     await _nyssContext.DataCollectorNotDeployedDates.AddRangeAsync(datesNotDeployed, cancellationToken);

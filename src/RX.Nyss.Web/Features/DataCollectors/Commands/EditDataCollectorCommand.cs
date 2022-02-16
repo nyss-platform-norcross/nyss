@@ -97,15 +97,19 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                 dataCollector.Sex = request.Sex;
                 dataCollector.Supervisor = supervisor;
                 dataCollector.HeadSupervisor = headSupervisor;
-                dataCollector.Deployed = request.Deployed;
 
-                if (request.Deployed)
+                if (request.Deployed != dataCollector.Deployed)
                 {
-                    UpdateNotDeployedDate(dataCollector);
-                }
-                else
-                {
-                    await AddNotDeployedDate(dataCollector, cancellationToken);
+                    dataCollector.Deployed = request.Deployed;
+
+                    if (request.Deployed)
+                    {
+                        UpdateNotDeployedDate(dataCollector);
+                    }
+                    else
+                    {
+                        await AddNotDeployedDate(dataCollector, cancellationToken);
+                    }
                 }
 
                 dataCollector.DataCollectorLocations = await EditDataCollectorLocations(
