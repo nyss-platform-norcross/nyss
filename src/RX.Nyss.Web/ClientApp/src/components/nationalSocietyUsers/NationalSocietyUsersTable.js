@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import PropTypes from "prop-types";
 import { Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from '@material-ui/core';
@@ -39,9 +39,23 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   ];
 
   const canBeEdited = (row) => {
-    const allowedRoles = [Roles.Administrator, Roles.Manager];
+    const isGlobalCoordinator = user.roles.some(r => r === Roles.GlobalCoordinator);
+    const isCoordinator = user.roles.some(r => r === Roles.Coordinator);
 
-    return user.roles.some(r => allowedRoles.indexOf(r) !== -1);
+    const isEditingHeadManagerOrCoordinator = row.isHeadManager 
+    || row.isPendingHeadManager 
+    || row.role.toLowerCase() === Roles.Coordinator.toLowerCase();
+
+    if (isGlobalCoordinator) {
+      return isEditingHeadManagerOrCoordinator;
+    }
+
+    if (isCoordinator) {
+      return isEditingHeadManagerOrCoordinator
+        || row.role.toLowerCase() === Roles.DataConsumer.toLowerCase();
+    }
+
+    return true;
   }
 
   return (
