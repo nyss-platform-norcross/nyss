@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
-import { assessmentStatus, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
+import { statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
 import { TableSortLabel, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 
