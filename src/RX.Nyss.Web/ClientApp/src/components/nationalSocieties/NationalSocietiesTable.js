@@ -75,9 +75,9 @@ export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashbo
                 <TableCell>{row.headManagers}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
-                  <TableRowActions directionRightToLeft={userLanguageCode === 'ar'}>
-                    <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                    <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
+                  <TableRowActions directionRtl={userLanguageCode === 'ar'}>
+                    <TableRowAction directionRtl={userLanguageCode === 'ar'} roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowMenu directionRtl={userLanguageCode === 'ar'} id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
