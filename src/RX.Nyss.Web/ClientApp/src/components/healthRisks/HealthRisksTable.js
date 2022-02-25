@@ -10,7 +10,7 @@ import { stringKeys, strings } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
+export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remove, list, rtl }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -33,9 +33,9 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
               <TableCell>{row.name}</TableCell>
               <TableCell>{strings(stringKeys.healthRisk.constants.healthRiskType[row.healthRiskType.toLowerCase()])}</TableCell>
               <TableCell>
-                <TableRowActions>
-                  <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                <TableRowActions directionRtl={rtl}>
+                  <TableRowAction directionRtl={rtl} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>

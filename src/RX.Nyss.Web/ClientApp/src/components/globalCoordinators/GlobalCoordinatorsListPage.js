@@ -1,11 +1,10 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
 import * as appActions from '../app/logic/appActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -19,14 +18,17 @@ const GlobalCoordinatorsListPageComponent = (props) => {
     props.getList();
   });
 
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
+
   return (
     <Fragment>
       <TableActions>
         <TableActionsButton
           onClick={props.goToCreation}
           roles={accessMap.globalCoordinators.add}
-          icon={<AddIcon />}
-          variant={"contained"}
+          add
+          variant='contained'
+          rtl={userLanguageCode === 'ar'}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
@@ -39,6 +41,7 @@ const GlobalCoordinatorsListPageComponent = (props) => {
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
+        rtl={userLanguageCode === 'ar'}
       />
     </Fragment>
   );

@@ -26,8 +26,8 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
         <TableActionsButton
           onClick={props.goToCreation}
           add
-          variant={"contained"}
-          rightToLeft={userLanguageCode === 'ar'}
+          variant='contained'
+          rtl={userLanguageCode === 'ar'}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
@@ -42,6 +42,7 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
         reopen = {props.reopen}
         isArchiving = {props.isArchiving}
         isReopening = {props.isReopening}
+        rtl={userLanguageCode === 'ar'}
       />
     </Fragment>
   );

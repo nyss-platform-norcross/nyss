@@ -11,7 +11,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
+export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, rtl }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -36,9 +36,9 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.organization}</TableCell>
               <TableCell>
-                <TableRowActions>
-                  <TableRowAction roles={accessMap.globalCoordinators.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction roles={accessMap.globalCoordinators.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                <TableRowActions directionRtl={rtl}>
+                  <TableRowAction directionRtl={rtl} roles={accessMap.globalCoordinators.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction directionRtl={rtl} roles={accessMap.globalCoordinators.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>

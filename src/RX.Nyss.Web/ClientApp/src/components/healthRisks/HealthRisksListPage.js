@@ -1,11 +1,10 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as healthRisksActions from './logic/healthRisksActions';
 import * as appActions from '../app/logic/appActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import HealthRisksTable from './HealthRisksTable';
 import { useMount } from '../../utils/lifecycle';
@@ -18,13 +17,16 @@ const HealthRisksListPageComponent = (props) => {
     props.getList();
   });
 
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
+
   return (
     <Fragment>
       <TableActions>
         <TableActionsButton
           onClick={props.goToCreation}
-          icon={<AddIcon />}
+          add
           variant={"contained"}
+          rtl={userLanguageCode === 'ar'}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
@@ -37,6 +39,7 @@ const HealthRisksListPageComponent = (props) => {
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
+        rtl={userLanguageCode === 'ar'}
       />
     </Fragment>
   );
