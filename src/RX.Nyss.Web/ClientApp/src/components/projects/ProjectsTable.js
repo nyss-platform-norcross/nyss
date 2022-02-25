@@ -13,7 +13,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { Typography, Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
-export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSocietyId, close, isClosing, callingUserRoles, isHeadManager }) => {
+export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSocietyId, close, isClosing, callingUserRoles, isHeadManager, rtl }) => {
   const [closeConfirmationDialog, setRemoveConfirmationDialog] = useState({ isOpen: false, projectId: null });
 
   const closeConfirmed = () => {
@@ -66,8 +66,14 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
                 <TableCell>{project.totalReportCount}</TableCell>
                 <TableCell>{project.escalatedAlertCount}</TableCell>
                 <TableCell>
-                  <TableRowActions>
-                    <TableRowMenu id={project.id} items={getRowMenu(project)} icon={<MoreVertIcon />} isFetching={isClosing[project.id]} />
+                  <TableRowActions directionRtl={rtl}>
+                    <TableRowMenu 
+                      id={project.id} 
+                      items={getRowMenu(project)} 
+                      icon={<MoreVertIcon />} 
+                      isFetching={isClosing[project.id]}
+                      directionRtl={rtl}
+                    />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
