@@ -12,7 +12,7 @@ import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFo
 import { useMount } from '../../utils/lifecycle';
 import { stringKeys, strings } from '../../strings';
 
-const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused, directionLeftToRight }) => {
+const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
     window.addEventListener("focus", handleWindowFocus);
     window.addEventListener("storage", handleWindowStorageChange); // IE fix
@@ -40,7 +40,7 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
   }
 
   return (
-    <div className={directionLeftToRight ? styles.layout : `${styles.layout} ${styles.rightToLeft}`}>
+    <div className={styles.layout}>
       {moduleError && (
         <div className={styles.centeredLayoutMessage}>
           <Typography variant="h2">
@@ -64,8 +64,7 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
 const mapStateToProps = (state, ownProps) => ({
   appReady: state.appData.appReady,
   isDevelopment: state.appData.appReady,
-  moduleError: state.appData.moduleError || ownProps.authError,
-  directionLeftToRight: !state.appData.user || state.appData.user.languageCode !== 'ar'
+  moduleError: state.appData.moduleError || ownProps.authError
 });
 
 const mapDispatchToProps = {

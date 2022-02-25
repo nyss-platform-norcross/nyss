@@ -1,7 +1,7 @@
 import styles from "./TableRowAction.module.scss";
 
-export const TableRowActions = ({ children, directionRightToLeft, ...rest }) => (
-  <div className={directionRightToLeft ? `${styles.tableRowActions} ${styles.rightToLeft}` : styles.tableRowActions} {...rest}>
+export const TableRowActions = ({ children, directionRtl, ...rest }) => (
+  <div className={`${styles.tableRowActions} ${directionRtl ? styles.rtl : ''}`} {...rest}>
     {children}
   </div>
 );

@@ -26,7 +26,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
     <div className={styles.drawer}>
       <Drawer
         variant={fullScreen ? "temporary" : "permanent"}
-        anchor={userLanguageCode !== 'ar' ? "left" : "right"}
+        anchor={"left"}
         open={!fullScreen || sideMenuOpen}
         onClose={closeDrawer}
         classes={{

@@ -56,7 +56,8 @@ export function appReducer(state = initialState.appData, action) {
             languageCode: action.user.languageCode,
             homePage: action.user.homePage
           }
-          : null
+          : null,
+        direction: action.user && action.user.languageCode === 'ar' ? 'rtl' : state.direction
       }
 
     case actions.GET_APP_DATA.SUCCESS:

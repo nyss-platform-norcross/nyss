@@ -1,6 +1,7 @@
 import { createTheme } from "@material-ui/core/styles";
 
-export const theme = createTheme({
+export const theme = (direction) => createTheme({
+  direction: direction,
   typography: {
     fontSize: 14,
     fontFamily: ["Poppins", '"Helvetica Neue"', 'Arial'].join(','),
@@ -163,7 +164,8 @@ export const theme = createTheme({
       root: {
         padding: "12px 20px",
         overflow: "hidden",
-        textOverflow: "ellipsis"
+        textOverflow: "ellipsis",
+        textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       primary: {
         fontSize: 16,
@@ -172,7 +174,8 @@ export const theme = createTheme({
     },
     MuiTableCell: {
       root: {
-        fontSize: "1rem"
+        fontSize: "1rem",
+        textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       head: {
         fontWeight: 600,
