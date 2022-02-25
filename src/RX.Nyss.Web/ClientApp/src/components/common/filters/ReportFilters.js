@@ -34,7 +34,8 @@ export const ReportFilters = ({
   onChange,
   showCorrectReportFilters,
   hideTrainingStatusFilter,
-  hideCorrectedFilter
+  hideCorrectedFilter,
+  rtl
 }) => {
   const [value, setValue] = useState(filters);
 
@@ -118,6 +119,7 @@ export const ReportFilters = ({
               onChange={handleLocationChange}
               showUnknownLocation
               filterLabel={locationsFilterLabel}
+              rtl={rtl}
             />
           </Grid>
 
@@ -155,6 +157,7 @@ export const ReportFilters = ({
                   value={value.healthRisks}
                   className={styles.filterItem}
                   renderValues={renderHealthRiskValues}
+                  rtl={rtl}
                 >
                   {healthRisks.map((healthRisk) => (
                     <MenuItem

@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { FormControl, InputLabel, Select } from "@material-ui/core";
 
-const MultiSelectField = ({ name, label, value, controlProps, onChange, children, className, renderValues }) => {
+const MultiSelectField = ({ name, label, value, controlProps, onChange, children, className, renderValues, rtl }) => {
   
   const renderSelectedValues = (selected) => 
     !!renderValues ? renderValues(selected) : selected.join(',');
@@ -21,8 +21,12 @@ const MultiSelectField = ({ name, label, value, controlProps, onChange, children
         className={className}
         MenuProps={{
           anchorOrigin: {
-            horizontal: 'left',
+            horizontal: rtl ? 'right' : 'left',
             vertical: 'bottom'
+          },
+          transformOrigin: {
+            horizontal: rtl ? 'right' : 'left',
+            vertical: 'top'
           },
           getContentAnchorEl: null
         }}>

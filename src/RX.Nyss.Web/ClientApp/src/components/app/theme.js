@@ -130,6 +130,12 @@ export const theme = (direction) => createTheme({
       },
       focused: {},
     },
+    MuiFormControlLabel: {
+      root: {
+        marginRight: direction === 'ltr' ? '16px' : '-11px',
+        marginLeft: direction === 'ltr' ? '-11px' : '16px'
+      }
+    },
     MuiInputLabel: {
       root: {
         zIndex: 1

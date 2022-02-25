@@ -14,7 +14,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { stringKeys, strings } from '../../../strings';
 import LocationItem from './LocationItem';
 
-const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLocation }) => {
+const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLocation, rtl }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -116,7 +116,10 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
         label={strings(stringKeys.filters.area.title)}
         InputProps={{
           readOnly: true,
-          endAdornment: (
+          endAdornment: !rtl && (
+            <ArrowDropDown className={styles.arrow} />
+          ),
+          startAdornment: rtl && (
             <ArrowDropDown className={styles.arrow} />
           )
         }}
@@ -133,17 +136,21 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left'
+          horizontal: rtl ? 'right' : 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: rtl ? 'right' : 'left'
         }}
         PaperProps={{
           className: styles.filterContainer
         }}>
 
         {showUnknownLocation && (
-          <LocationItem type='unknown' data={{ name: strings(stringKeys.filters.area.unknown), selected: includeUnknownLocation }} isVisible onChange={handleChange} />
+          <LocationItem type='unknown' data={{ name: strings(stringKeys.filters.area.unknown), selected: includeUnknownLocation }} isVisible onChange={handleChange} rtl={rtl} />
         )}
         {selectedLocations.map(r => (
-          <LocationItem key={`region_${r.id}`} type='region' data={r} isVisible onChange={handleChange} />
+          <LocationItem key={`region_${r.id}`} type='region' data={r} isVisible onChange={handleChange} rtl={rtl} />
         ))}
 
         <hr className={styles.divider} />
