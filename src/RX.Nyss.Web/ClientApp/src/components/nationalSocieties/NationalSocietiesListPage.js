@@ -1,11 +1,10 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import * as appActions from '../app/logic/appActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietiesTable from './NationalSocietiesTable';
 import { useMount } from '../../utils/lifecycle';
@@ -19,13 +18,16 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
     getList();
   })
 
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
+
   return (
     <Fragment>
       <TableActions>
         <TableActionsButton
           onClick={props.goToCreation}
-          icon={<AddIcon />}
+          add
           variant={"contained"}
+          rightToLeft={userLanguageCode === 'ar'}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>

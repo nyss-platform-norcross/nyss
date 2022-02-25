@@ -13,11 +13,13 @@ import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
+import { useSelector } from 'react-redux';
 
 export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashboard, list, archive, reopen, isArchiving, isReopening }) => {
 
   const [archiveConfirmationDialog, setArchiveConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
   const [reopenConfirmationDialog, setReopenConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
 
   const archiveConfirmed = () => {
     archive(archiveConfirmationDialog.nationalSocietyId);
@@ -73,9 +75,9 @@ export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashbo
                 <TableCell>{row.headManagers}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
-                  <TableRowActions>
-                    <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
+                  <TableRowActions directionRightToLeft={userLanguageCode === 'ar'}>
                     <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
