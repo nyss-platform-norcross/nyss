@@ -27,7 +27,7 @@ const customMultiselectStyle = {
   })
 }
 
-export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange, ...restProps }) => {
+export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange, rtl, ...restProps }) => {
   return (
     <Select
       {...restProps}
@@ -41,6 +41,7 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
       placeholder={""}
       components={components}
       style={customMultiselectStyle}
+      isRtl={rtl}
       TextFieldProps={{
         label: label,
         error: !!error,

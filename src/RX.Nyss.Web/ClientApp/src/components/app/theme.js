@@ -312,6 +312,17 @@ export const theme = (direction) => createTheme({
       paper: {
         maxWidth: '400px'
       }
+    },
+    MuiSelect: {
+      icon: {
+        left: direction === 'ltr' ? null : 0,
+        right: direction === 'ltr' ? 0 : null
+      }
+    },
+    MuiChip: {
+      deleteIcon: {
+        margin: direction === 'ltr' ? '0 5px 0 -6px' : '0 -6px 0 5px'
+      }
     }
   },
 });
