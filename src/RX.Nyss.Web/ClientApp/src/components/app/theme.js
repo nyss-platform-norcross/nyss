@@ -227,7 +227,9 @@ export const theme = (direction) => createTheme({
       selected: {},
       label: {
         backgroundColor: "transparent !important",
-        cursor: "pointer"
+        cursor: "pointer",
+        paddingLeft: direction === 'ltr' ? '4px' : null,
+        paddingRight: direction === 'ltr' ? null : '4px'
       },
       iconContainer: {
         cursor: "pointer",
@@ -235,6 +237,10 @@ export const theme = (direction) => createTheme({
           cursor: "default"
         }
       },
+      group: {
+        marginLeft: direction === 'ltr' ? '17px' : null,
+        marginRight: direction === 'ltr' ? null : '17px'
+      }
     },
     MuiExpansionPanel: {
       root: {
