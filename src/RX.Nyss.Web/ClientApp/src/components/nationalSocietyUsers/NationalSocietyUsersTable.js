@@ -16,7 +16,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user }) => {
+export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user, rtl }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -88,12 +88,12 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               }
               </TableCell>
               <TableCell>
-                <TableRowActions>
-                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
+                <TableRowActions directionRtl={rtl}>
+                  <TableRowMenu directionRtl={rtl} id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
                   {canBeEdited(row) && (
                     <Fragment>
-                      <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                      <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                      <TableRowAction directionRtl={rtl} onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                      <TableRowAction directionRtl={rtl} onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                     </Fragment>
                   )}
                 </TableRowActions>

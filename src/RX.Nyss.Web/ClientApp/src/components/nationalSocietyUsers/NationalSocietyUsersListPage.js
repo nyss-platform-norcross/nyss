@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -16,21 +16,25 @@ const NationalSocietyUsersListPageComponent = (props) => {
     props.openNationalSocietyUsersList(props.nationalSocietyId);
   });
 
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived &&
         <TableActions>
           <TableActionsButton
             onClick={() => props.goToAddExisting(props.nationalSocietyId)}
-            icon={<AddIcon />}
-            variant={"outlined"}
+            add
+            variant='outlined'
+            rtl={useRtlDirection}
           >
             {strings(stringKeys.nationalSocietyUser.addExisting)}
           </TableActionsButton>
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
-            icon={<AddIcon />}
-            variant={"contained"}
+            add
+            variant='contained'
+            rtl={useRtlDirection}
           >
             {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
@@ -47,6 +51,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
         nationalSocietyId={props.nationalSocietyId}
         setAsHeadManager={props.setAsHeadManager}
         user={props.user}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );

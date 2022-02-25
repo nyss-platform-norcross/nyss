@@ -1,10 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import SmsGatewaysTable from './SmsGatewaysTable';
 import { useMount } from '../../utils/lifecycle';
@@ -18,16 +17,19 @@ const SmsGatewaysListPageComponent = (props) => {
     props.openSmsGatewaysList(props.nationalSocietyId);
   });
 
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived && (
         <TableActions>
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
-            icon={<AddIcon />}
             roles={accessMap.smsGateways.add}
             condition={!props.nationalSocietyHasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)}
-            variant={"contained"}
+            add
+            variant='contained'
+            rtl={useRtlDirection}
           >
             {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
@@ -44,6 +46,7 @@ const SmsGatewaysListPageComponent = (props) => {
         nationalSocietyId={props.nationalSocietyId}
         nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
         callingUserRoles={props.callingUserRoles}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );

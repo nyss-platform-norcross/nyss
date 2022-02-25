@@ -1,10 +1,9 @@
 import React, { Fragment, useMemo } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as organizationsActions from './logic/organizationsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import OrganizationsTable from './OrganizationsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -17,6 +16,8 @@ const OrganizationsListPageComponent = (props) => {
   useMount(() => {
     props.openOrganizationsList(props.nationalSocietyId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   const hasAnyRole = useCallback((...roles) =>
     props.callingUserRoles.some(userRole => roles.some(role => role === userRole)),
@@ -37,8 +38,9 @@ const OrganizationsListPageComponent = (props) => {
         <TableActions>
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
-            icon={<AddIcon />}
-            variant={"contained"}
+            variant='contained'
+            add
+            rtl={useRtlDirection}
           >
             {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
@@ -54,6 +56,7 @@ const OrganizationsListPageComponent = (props) => {
         remove={props.remove}
         nationalSocietyId={props.nationalSocietyId}
         canModify={canModify}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );
