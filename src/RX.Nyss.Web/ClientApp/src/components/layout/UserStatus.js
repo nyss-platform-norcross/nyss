@@ -2,17 +2,20 @@ import styles from './UserStatus.module.scss';
 
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Menu, MenuItem, ListItemText, Icon } from "@material-ui/core";
-import * as authActions from '../../authentication/authActions';
-import * as appActions from '../app/logic/appActions';
+import { logout } from '../../authentication/authActions';
+import { sendFeedback } from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import { strings, stringKeys } from '../../strings';
 
-export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedback, sendFeedbackResult }) => {
+export const UserStatusComponent = () => {
   const [anchorEl, setAnchorEl] = useState();
   const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
+  const isSendingFeedback = useSelector(state => state.appData.feedback.isSending);
+  const sendFeedbackResult = useSelector(state => state.appData.feedback.result);
+  const user = useSelector(state => state.appData.user);
 
   const handleClick = (e) => setAnchorEl(e.currentTarget);
   
@@ -29,7 +32,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
 
   return (
     <div>
-      <div className={styles.userStatus} onClick={handleClick}>
+      <div className={user.languageCode !== 'ar' ? styles.userStatus : `${styles.userStatus} ${styles.rightToLeft}`} onClick={handleClick}>
         <div className={styles.userName}>{user.name}</div>
         <ArrowDropDownIcon color="primary" className={styles.arrow} />
       </div>
@@ -54,7 +57,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
           <Icon className={styles.fontIcon}>feedback</Icon>
           {strings(stringKeys.feedback.send)}
         </MenuItem>        
-        <MenuItem onClick={logout} className={styles.authButton}>
+        <MenuItem onClick={logout.invoke} className={styles.authButton}>
           <Icon className={styles.fontIcon}>exit_to_app</Icon>
           {strings(stringKeys.user.logout)}
         </MenuItem>
@@ -62,7 +65,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
       <FeedbackDialog
         isOpened={feedbackDialogOpened}
         close={handleFeedbackDialogClose}
-        sendFeedback={sendFeedback}
+        sendFeedback={sendFeedback.invoke}
         isSending={isSendingFeedback}
         result={sendFeedbackResult} />      
     </div >
@@ -76,16 +79,4 @@ UserStatusComponent.propTypes = {
   sendFeedbackResult: PropTypes.string,  
 };
 
-const mapStateToProps = state => ({
-  user: state.appData.user,
-  isSendingFeedback: state.appData.feedback.isSending,
-  sendFeedbackResult: state.appData.feedback.result,
-});
-
-const mapDispatchToProps = {
-  logout: authActions.logout.invoke,
-  sendFeedback: appActions.sendFeedback.invoke,  
-};
-
-
-export const UserStatus = connect(mapStateToProps, mapDispatchToProps)(UserStatusComponent);
+export const UserStatus = UserStatusComponent;
