@@ -31,7 +31,7 @@ import MultiSelectField from "../../forms/MultiSelectField";
 import LocationFilter from "../../common/filters/LocationFilter";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
-export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organizations, locations, onChange, isFetching, userRoles }) => {
+export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organizations, locations, onChange, isFetching, userRoles, rtl }) => {
   const [value, setValue] = useState(filters);
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
@@ -221,7 +221,8 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                 value={value.locations}
                 filterLabel={renderLocationLabel()}
                 locations={locations}
-                onChange={handleLocationChange} />
+                onChange={handleLocationChange}
+                rtl={rtl} />
             </Grid>
 
             <Grid item>

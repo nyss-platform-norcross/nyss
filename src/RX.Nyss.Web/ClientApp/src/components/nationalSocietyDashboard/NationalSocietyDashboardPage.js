@@ -1,7 +1,7 @@
 import styles from "./NationalSocietyDashboardPage.module.scss";
 import React, { Fragment, useRef } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as nationalSocietyDashboardActions from './logic/nationalSocietyDashboardActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -17,6 +17,8 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
   useMount(() => {
     openDashboard(props.match.params.nationalSocietyId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const dashboardElement = useRef(null);
 
@@ -38,6 +40,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
           filters={props.filters}
           isFetching={isFetching}
           userRoles={userRoles}
+          rtl={useRtlDirection}
         />
       </Grid>
 

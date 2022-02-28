@@ -42,6 +42,7 @@ export const ProjectsDashboardFilters = ({
   isFilterExpanded,
   setIsFilterExpanded,
   userRoles,
+  rtl
 }) => {
   const [value, setValue] = useState(filters);
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
@@ -378,6 +379,7 @@ export const ProjectsDashboardFilters = ({
                 value={value.locations}
                 filterLabel={locationsFilterLabel}
                 onChange={handleLocationChange}
+                rtl={rtl}
               />
             </Grid>
 

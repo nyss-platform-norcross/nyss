@@ -327,6 +327,10 @@ export const theme = (direction) => createTheme({
     MuiChip: {
       deleteIcon: {
         margin: direction === 'ltr' ? '0 5px 0 -6px' : '0 -6px 0 5px'
+      },
+      icon: {
+        marginLeft: direction === 'ltr' ? '5px' : '-6px',
+        marginRight: direction === 'ltr' ? '-6px' : '5px'
       }
     },
     MuiFormHelperText: {
