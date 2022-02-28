@@ -288,7 +288,12 @@ export const theme = (direction) => createTheme({
         padding: '10px !important'
       },
       inputRoot: {
-        paddingRight: 16
+        paddingRight: direction === 'ltr' ? 56 : '0px !important',
+        paddingLeft: direction === 'ltr' ? null : 56
+      },
+      endAdornment: {
+        right: direction === 'ltr' ? 0 : null,
+        left: direction === 'ltr' ? null : 0
       }
     },
     MuiTooltip: {

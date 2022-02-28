@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { renderDataCollectorDisplayName, renderReportValue } from "../reports/logic/reportsService";
 
-export const NationalSocietyCorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort }) => {
+export const NationalSocietyCorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, rtl }) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -122,7 +122,7 @@ export const NationalSocietyCorrectReportsTable = ({ isListFetching, list, page,
           ))}
         </TableBody>
       </Table>
-      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
     </TableContainer>
   );
 }

@@ -15,7 +15,7 @@ const NationalSocietyCorrectReportsListPageComponent = (props) => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
 
-  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   if (!props.data || !props.filters || !props.sorting) {
     return null;
@@ -56,6 +56,7 @@ const NationalSocietyCorrectReportsListPageComponent = (props) => {
           filters={props.filters}
           sorting={props.sorting}
           onSort={handleSortChange}
+          rtl={useRtlDirection}
         />
     </Fragment>
   );

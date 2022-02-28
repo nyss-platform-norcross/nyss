@@ -31,6 +31,7 @@ export const IncorrectReportsTable = ({
   sorting,
   onSort,
   onCorrectToggle,
+  rtl
 }) => {
 
   const [value, setValue] = useState(sorting);
@@ -120,7 +121,7 @@ export const IncorrectReportsTable = ({
             ))}
           </TableBody>
         </Table>
-        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
       </TableContainer>
     </Fragment>
   )

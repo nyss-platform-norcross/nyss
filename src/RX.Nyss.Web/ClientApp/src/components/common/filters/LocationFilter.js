@@ -116,12 +116,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
         label={strings(stringKeys.filters.area.title)}
         InputProps={{
           readOnly: true,
-          endAdornment: !rtl && (
-            <ArrowDropDown className={styles.arrow} />
-          ),
-          startAdornment: rtl && (
-            <ArrowDropDown className={styles.arrow} />
-          )
+          endAdornment: <ArrowDropDown className={styles.arrow} />
         }}
         value={filterLabel}
         inputProps={{

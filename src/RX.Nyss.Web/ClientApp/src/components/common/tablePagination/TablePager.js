@@ -3,9 +3,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { Grid, IconButton, MenuItem, Select } from "@material-ui/core";
 
-export const TablePager = (props) => {
-  const { page, rowsPerPage, totalRows, onChangePage } = props;
-
+export const TablePager = ({ page, rowsPerPage, totalRows, onChangePage, rtl }) => {
   const numberOfPages = Math.ceil(totalRows / rowsPerPage);
   const pagesRange = [...Array(numberOfPages)].map((_, i) => i + 1);
 
@@ -31,7 +29,7 @@ export const TablePager = (props) => {
       className={styles.pager}
     >
       <IconButton onClick={handleBackButtonClick} disabled={page === 1} aria-label="previous page">
-        <KeyboardArrowLeft />
+        {rtl ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
 
       <Select className={`${styles.dropDown}`} onChange={handlePageSelect} value={page}>
@@ -42,7 +40,7 @@ export const TablePager = (props) => {
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(totalRows / rowsPerPage)}
         aria-label="next page">
-        <KeyboardArrowRight />
+        {rtl ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
     </Grid>
   );
