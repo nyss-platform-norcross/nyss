@@ -323,6 +323,11 @@ export const theme = (direction) => createTheme({
       deleteIcon: {
         margin: direction === 'ltr' ? '0 5px 0 -6px' : '0 -6px 0 5px'
       }
+    },
+    MuiFormHelperText: {
+      root: {
+        textAlign: direction === 'ltr' ? 'left' : 'right'
+      }
     }
   },
 });

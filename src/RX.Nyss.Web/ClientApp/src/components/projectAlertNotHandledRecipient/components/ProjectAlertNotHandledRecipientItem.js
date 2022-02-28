@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { Fragment } from 'react';
 import CancelButton from "../../common/buttons/cancelButton/CancelButton";
 
-export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, organizationId, edit, create }) => {
+export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, organizationId, edit, create, rtl }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -75,7 +75,7 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
         <Fragment>
 
           <Select
-            className={styles.recipientNameSelect}
+            className={`${styles.recipientNameSelect} ${rtl ? styles.rtl : ""}`}
             value={selectedUser.userId}
             onChange={handleRecipientChange}
           >

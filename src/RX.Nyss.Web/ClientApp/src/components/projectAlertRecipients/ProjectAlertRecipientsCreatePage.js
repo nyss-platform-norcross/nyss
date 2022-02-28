@@ -222,7 +222,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
 
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnySupervisor} onClick={e => setAcceptAnySupervisor(!acceptAnySupervisor)} />}
+                      control={<Checkbox checked={acceptAnySupervisor} onClick={e => setAcceptAnySupervisor(!acceptAnySupervisor)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anySupervisor)}
                     />
                   </Grid>
@@ -239,7 +239,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                   )}
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={e => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} />}
+                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={e => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anyHealthRisk)}
                     />
                   </Grid>

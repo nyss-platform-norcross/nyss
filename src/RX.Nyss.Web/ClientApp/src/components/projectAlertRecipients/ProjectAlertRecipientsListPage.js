@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as projectAlertRecipientsActions from './logic/projectAlertRecipientsActions';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -14,14 +14,17 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
     props.openProjectAlertRecipientsList(props.projectId);
   });
 
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
+
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived && !props.projectIsClosed &&
       <TableActions>
         <TableActionsButton
           onClick={() => props.goToCreation(props.projectId)}
-          icon={<AddIcon />}
-          variant={"contained"}
+          add
+          variant="contained"
+          rtl={useRtlDirection}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
@@ -35,6 +38,7 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
         remove={props.remove}
         projectId={props.projectId}
         isClosed={props.projectIsClosed}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );
