@@ -6,7 +6,7 @@ import { strings, stringKeys } from "../../../strings";
 import { alertStatusFilters } from "../logic/alertsConstants";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
-export const AlertsFilters = ({ filters, filtersData, onChange }) => {
+export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
   const [value, setValue] = useState(null);
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
   const [healthRisks, setHealthRisks] = useState(null);
@@ -62,6 +62,7 @@ export const AlertsFilters = ({ filters, filtersData, onChange }) => {
               locations={locations}
               filterLabel={locationsFilterLabel}
               onChange={handleLocationChange}
+              rtl={rtl}
             />
           </Grid>
 

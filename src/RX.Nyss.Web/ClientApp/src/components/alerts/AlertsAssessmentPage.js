@@ -1,6 +1,6 @@
 import styles from "./AlertsAssessment.module.scss";
 import React, { useEffect, useMemo, Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import * as alertsActions from './logic/alertsActions';
 import Layout from '../layout/Layout';
@@ -38,6 +38,8 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
   useMount(() => {
     props.openAssessment(projectId, alertId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const handleReset = (alertId, reportId) => {
     props.resetReport(alertId, reportId);
@@ -103,6 +105,7 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
                 resetReport={handleReset}
                 projectIsClosed={props.projectIsClosed}
                 escalatedAt={data.escalatedAt}
+                rtl={useRtlDirection}
               />
             </Grid>
           ))}

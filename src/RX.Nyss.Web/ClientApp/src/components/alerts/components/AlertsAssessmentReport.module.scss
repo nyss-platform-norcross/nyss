@@ -53,6 +53,11 @@
 .indicator {
   margin-right: 10px;
   align-self: center;
+
+  &.rtl {
+    margin-right: unset;
+    margin-left: 10px;
+  }
 }
 
 .accepted {

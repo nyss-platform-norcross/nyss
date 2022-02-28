@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as alertsActions from './logic/alertsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -15,6 +15,8 @@ const AlertsListPageComponent = (props) => {
   useMount(() => {
     props.openAlertsList(props.projectId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const handleFilterChange = (filters) => {
     props.getList(props.projectId, props.data.page, filters);
@@ -44,6 +46,7 @@ const AlertsListPageComponent = (props) => {
         filters={props.filters}
         filtersData={props.filtersData}
         onChange={handleFilterChange}
+        rtl={useRtlDirection}
       />
 
       <AlertsTable
@@ -56,6 +59,7 @@ const AlertsListPageComponent = (props) => {
         page={props.data.page}
         totalRows={props.data.totalRows}
         rowsPerPage={props.data.rowsPerPage}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );
