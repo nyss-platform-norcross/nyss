@@ -3,13 +3,13 @@ import React, { Fragment } from 'react';
 import { stringKeys, strings } from '../../strings';
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 
-export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
+export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk, rtl }) => {
 
   return (
     <Card>
       <CardContent className={styles.healthRisk}>
-        <Typography variant="h2" display="inline">{projectHealthRisk.healthRiskCode}</Typography>
-        <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {projectHealthRisk.healthRiskName}</Typography>
+        <Typography variant="h2" className={styles.header}>{projectHealthRisk.healthRiskCode}</Typography>
+        <Typography variant="h3" className={`${styles.header} ${styles.healthRiskName} ${rtl ? styles.rtl : ""}`}> {projectHealthRisk.healthRiskName}</Typography>
         <Grid container spacing={2} className={styles.healthRiskTextArea}>
           <Grid item xs={12} sm={6}>
             <Typography variant="h6">

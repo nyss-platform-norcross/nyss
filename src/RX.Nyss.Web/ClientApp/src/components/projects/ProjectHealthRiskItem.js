@@ -6,7 +6,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { Card, CardContent, Typography, Grid } from '@material-ui/core';
 
-export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) => {
+export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk, rtl }) => {
   const [ready, setReady] = useState(false);
   const [reportCountThreshold, setReportCountThreshold] = useState(healthRisk.alertRuleCountThreshold || 0);
 
@@ -50,7 +50,20 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
       form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`].update("");
       form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`].update("");
     }
-  }, [form, reportCountThreshold, healthRisk])
+  }, [form, reportCountThreshold, healthRisk]);
+
+  const renderHeader = () =>
+    rtl ? (
+      <Fragment>
+        <Typography variant="h2" className={styles.header}>{healthRisk.healthRiskCode}</Typography>
+        <Typography variant="h3" className={`${styles.header} ${styles.healthRiskName}`}>{healthRisk.healthRiskName}</Typography>
+      </Fragment>
+    ) : (
+      <Fragment>
+        <Typography variant="h3" className={`${styles.header} ${styles.healthRiskNameRtl}`}>{healthRisk.healthRiskName}</Typography>
+        <Typography variant="h2" className={styles.header}>{healthRisk.healthRiskCode}</Typography>
+      </Fragment>
+    );
 
   if (!ready) {
     return null;
@@ -59,8 +72,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   return (
     <Card ref={healthRiskItemRef}>
       <CardContent>
-        <Typography variant="h2" className={styles.header}>{healthRisk.healthRiskCode}</Typography>
-        <Typography variant="h3" className={`${styles.header} ${styles.healthRiskName}`}>{healthRisk.healthRiskName}</Typography>
+        {renderHeader()}
         <Grid container spacing={2} className={styles.content}>
           <Grid item xs={12} sm={6}>
             <TextInputField

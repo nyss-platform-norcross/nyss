@@ -117,6 +117,7 @@ const ProjectsCreatePageComponent = (props) => {
                   label={strings(stringKeys.project.form.allowMultipleOrganizations)}
                   name="allowMultipleOrganizations"
                   field={form.fields.allowMultipleOrganizations}
+                  color="primary"
                 />
               </Grid>
 
