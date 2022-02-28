@@ -5,14 +5,15 @@ import { stringKeys, strings } from '../../strings';
 import { useMount } from '../../utils/lifecycle';
 import TextInputField from '../forms/TextInputField';
 import { DataCollectorMap } from './DataCollectorMap';
-import { validators } from '../../utils/forms';
-import { ConditionalCollapse } from '../common/conditionalCollapse/ConditionalCollapse';
+import { validators } from '../../../utils/forms';
+import { ConditionalCollapse } from '../../common/conditionalCollapse/ConditionalCollapse';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import SelectField from '../forms/SelectField';
-import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
+import SelectField from '../../forms/SelectField';
+import { getFormDistricts, getFormVillages, getFormZones } from '../logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation, allLocations }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, 
+  defaultLocation, isDefaultCollapsed, removeLocation, allLocations, rtl }) => {
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -164,7 +165,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
           <Grid item xs={12} className={styles.locationHeader}>
             <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
 
-            <Grid item className={styles.expandFilterButton}>
+            <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton data-expanded={isExpanded} onClick={onToggleExpand}>
                 <ExpandMore />
               </IconButton>

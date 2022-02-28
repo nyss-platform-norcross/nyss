@@ -22,11 +22,12 @@ import { ValidationMessage } from "../forms/ValidationMessage";
 import { MenuItem, Button, Grid, Typography } from "@material-ui/core";
 import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
-import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
+import { DataCollectorLocationItem } from "./components/DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 
 const DataCollectorsEditPageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [locations, setLocations] = useState(null);
@@ -265,7 +266,7 @@ const DataCollectorsEditPageComponent = (props) => {
               isDefaultCollapsed={allLocationsCollapsed}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
-              //locationCardRef={locationCardRef}
+              rtl={useRtlDirection}
             />
           ))}
 

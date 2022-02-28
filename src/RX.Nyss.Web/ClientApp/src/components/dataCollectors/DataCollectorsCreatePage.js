@@ -29,13 +29,14 @@ import { ValidationMessage } from "../forms/ValidationMessage";
 import { HeadSupervisor, Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 import PhoneInputField from "../forms/PhoneInputField";
-import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
+import { DataCollectorLocationItem } from "./components/DataCollectorLocationItem";
 import { getBirthDecades, parseBirthDecade } from "../../utils/birthYear";
 import CancelButton from '../common/buttons/cancelButton/CancelButton';
 
 
 const DataCollectorsCreatePageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
   const [birthDecades] = useState(getBirthDecades());
   const [type, setType] = useState(dataCollectorType.human);
   const [centerLocation, setCenterLocation] = useState(null);
@@ -290,7 +291,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
-              //locationCardRef={locationCardRef}
+              rtl={useRtlDirection}
             />
           ))}
 

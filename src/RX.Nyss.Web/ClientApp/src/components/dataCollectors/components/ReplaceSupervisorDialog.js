@@ -1,10 +1,9 @@
 import styles from './ReplaceSupervisorDialog.module.scss';
-
-import React, { useState } from 'react';
-import { strings, stringKeys } from "../../strings";
-import FormActions from "../forms/formActions/FormActions";
-import SubmitButton from "../common/buttons/submitButton/SubmitButton";
-import CancelButton from '../common/buttons/cancelButton/CancelButton';
+import { useState } from 'react';
+import { strings, stringKeys } from "../../../strings";
+import FormActions from "../../forms/formActions/FormActions";
+import SubmitButton from "../../common/buttons/submitButton/SubmitButton";
+import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 import {
   useTheme,
   Grid,
@@ -16,9 +15,9 @@ import {
   DialogContent,
   useMediaQuery,
 } from "@material-ui/core";
-import { validators, createForm } from '../../utils/forms';
-import Form from '../forms/form/Form';
-import SelectField from '../forms/SelectField';
+import { validators, createForm } from '../../../utils/forms';
+import Form from '../../forms/form/Form';
+import SelectField from '../../forms/SelectField';
 import WarningIcon from '@material-ui/icons/Warning';
 
 export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, supervisors, replaceSupervisor }) => {

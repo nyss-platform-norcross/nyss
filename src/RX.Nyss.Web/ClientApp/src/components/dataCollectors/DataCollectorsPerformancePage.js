@@ -1,13 +1,13 @@
 import { Fragment, useReducer, useEffect } from 'react';
 import PropTypes from "prop-types";
-import { connect, shallowEqual } from "react-redux";
+import { connect, shallowEqual, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
-import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
+import DataCollectorsPerformanceTable from './components/DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
-import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
-import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
+import { DataCollectorsPerformanceFilters } from './components/DataCollectorsPerformanceFilters';
+import { DataCollectorsPerformanceTableLegend } from './components/DataCollectorsPerformanceTableLegend';
 import { initialState } from '../../initialState';
 import TableActions from '../common/tableActions/TableActions';
 import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
@@ -32,6 +32,8 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
   useMount(() => {
     props.openDataCollectorsPerformanceList(projectId, props.filters);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const filterReducer = (state, action) => {
     switch (action.type) {
@@ -67,8 +69,9 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
       <DataCollectorsPerformanceFilters
         onChange={setFilters}
         filters={filters.value}
+        rtl={useRtlDirection}
       />
-      <DataCollectorsPerformanceTableLegend />
+      <DataCollectorsPerformanceTableLegend rtl={useRtlDirection} />
       <DataCollectorsPerformanceTable
         list={props.listData.data}
         completeness={props.completeness}
@@ -81,6 +84,7 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
         projectId={projectId}
         filters={filters.value}
         onChange={setFilters}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );

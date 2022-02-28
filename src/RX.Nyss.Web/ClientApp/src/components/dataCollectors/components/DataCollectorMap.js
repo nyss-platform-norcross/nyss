@@ -1,11 +1,11 @@
 import styles from './DataCollectorMap.module.scss';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ScaleControl, useMapEvent, useMap } from 'react-leaflet';
-import { retrieveGpsLocation } from '../../utils/map';
+import { retrieveGpsLocation } from '../../../utils/map';
 import MyLocationIcon from '@material-ui/icons/MyLocation';
 import { Tooltip } from '@material-ui/core';
 import { Fragment } from 'react';
-import { stringKeys, strings } from '../../strings';
+import { stringKeys, strings } from '../../../strings';
 
 const MapEventHandler = ({ onMarkerClick, onChange, onZoomChange }) => {
   useMapEvent('click', onMarkerClick);
