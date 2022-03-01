@@ -17,6 +17,17 @@
         }
     }
 
+    &.rtl {
+      a {
+        border-left: 1px solid #8C8C8C;
+        border-right: none;
+
+        &:last-child {
+          border-left: none;
+        }
+      }
+    }
+
     @media screen and (max-width: 899px) {
       display: none;
     }
