@@ -51,7 +51,7 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.role}</TableCell>
               <TableCell>{row.organization}</TableCell>
               <TableCell>{row.email}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell className={rtl ? 'ltr-numerals' : ''}>{row.phoneNumber}</TableCell>
               <TableCell>{renderHealthRisks(row.healthRisks)}</TableCell>
               <TableCell>{renderSupervisors([...row.supervisors, ...row.headSupervisors])}</TableCell>
               <TableCell>

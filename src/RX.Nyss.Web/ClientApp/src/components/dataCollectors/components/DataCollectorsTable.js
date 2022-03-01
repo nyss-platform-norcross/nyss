@@ -134,7 +134,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
               <TableCell>{strings(stringKeys.dataCollector.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.displayName}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell className={rtl ? 'ltr-numerals' : ''}>{row.phoneNumber}</TableCell>
               <TableCell>{row.sex}</TableCell>
               <TableCell>{renderLocation(row.locations)}</TableCell>
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusTrained])}</TableCell>
