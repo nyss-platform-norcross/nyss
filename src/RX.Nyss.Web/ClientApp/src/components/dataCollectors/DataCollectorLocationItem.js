@@ -1,6 +1,6 @@
 import styles from './DataCollectorLocationItem.module.scss';
 import { Button, Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typography } from '@material-ui/core';
-import { useState, useReducer, useEffect } from 'react';
+import {useState, useReducer, useEffect, createRef, useRef, forwardRef, useCallback} from 'react';
 import { stringKeys, strings } from '../../strings';
 import { useMount } from '../../utils/lifecycle';
 import TextInputField from '../forms/TextInputField';
@@ -12,7 +12,7 @@ import SelectField from '../forms/SelectField';
 import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation, allLocations  }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, removeLocation, allLocations }) => {
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,6 +20,18 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   const [districts, setDistricts] = useState(initialDistricts || []);
   const [villages, setVillages] = useState(initialVillages || []);
   const [zones, setZones] = useState(initialZones || []);
+  const locationCardRef = createRef()
+
+
+ const onRefChange = useCallback(node => {
+      if (node === null) {
+        console.log("no node")
+      } else {
+        console.log("node is here", node)
+      }
+    }, []);
+
+
 
   const [mapLocation, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -45,12 +57,23 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
       getFormVillages(location.districtId, setVillages);
     }
 
-    form.addField(`locations_${locationNumber}_latitude`, location.latitude, [validators.required, validators.integer, validators.inRange(-90, 90)]);
-    form.addField(`locations_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)]);
-    form.addField(`locations_${locationNumber}_regionId`, location.regionId.toString(), [validators.required]);
-    form.addField(`locations_${locationNumber}_districtId`, location.districtId.toString(), [validators.required]);
-    form.addField(`locations_${locationNumber}_villageId`, location.villageId.toString(), [validators.required, validators.uniqueLocation(x => x[`locations_${locationNumber}_zoneId`], allLocations)]);
-    form.addField(`locations_${locationNumber}_zoneId`, !!location.zoneId ? location.zoneId.toString() : '');
+    const refs = {
+      latitude: createRef(),
+      longitude: createRef(),
+      regionId: createRef(),
+      districtId: createRef(),
+      villageId: createRef(),
+      zoneId: createRef()
+    }
+    console.log(onRefChange(locationCardRef))
+    console.log(locationCardRef)
+
+    form.addField(`locations_${locationNumber}_latitude`, location.latitude, [validators.required, validators.integer, validators.inRange(-90, 90)], locationCardRef);
+    form.addField(`locations_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)], locationCardRef);
+    form.addField(`locations_${locationNumber}_regionId`, location.regionId.toString(), [validators.required], locationCardRef);
+    form.addField(`locations_${locationNumber}_districtId`, location.districtId.toString(), [validators.required], locationCardRef);
+    form.addField(`locations_${locationNumber}_villageId`, location.villageId.toString(), [validators.required, validators.uniqueLocation(x => x[`locations_${locationNumber}_zoneId`], allLocations)], locationCardRef);
+    form.addField(`locations_${locationNumber}_zoneId`, !!location.zoneId ? location.zoneId.toString() : '', [], locationCardRef);
 
 
     form.fields[`locations_${locationNumber}_latitude`].subscribe(({ newValue }) => dispatch({ type: 'latitude', value: newValue }));
@@ -141,6 +164,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     removeLocation(location);
   }
 
+  const getRef = () => locationCardRef;
+
+
+
   const hasError = () =>
     !!form.fields[`locations_${locationNumber}_latitude`].error
     || !!form.fields[`locations_${locationNumber}_longitude`].error
@@ -155,7 +182,8 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
 
   return (
     <Grid item xs={12}>
-      <Card className={styles.requiredMapLocation} data-with-error={hasError()}>
+      <Card className={styles.requiredMapLocation} ref={locationCardRef}
+            data-with-error={hasError()}>
         <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
           <Grid item xs={12} className={styles.locationHeader}>
             <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
@@ -183,6 +211,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                   field={form.fields[`locations_${locationNumber}_regionId`]}
                   name='regionId'
                   onChange={onRegionChange}
+                  fieldref={getRef()}
                 >
                   {regions.map(region => (
                     <MenuItem key={`region_${region.id}`} value={region.id.toString()}>

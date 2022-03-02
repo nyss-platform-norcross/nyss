@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 import styles from "./DataCollectorsCreateOrEditPage.module.scss";
-import {useState, Fragment, useMemo, createRef} from 'react';
+import {useState, Fragment, useMemo, createRef, useRef} from 'react';
 import { connect, useSelector } from "react-redux";
 import {
   Radio,
@@ -71,7 +71,7 @@ const DataCollectorsCreatePageComponent = (props) => {
       phoneNumber: "",
       additionalPhoneNumber: "",
       deployed: true,
-      linkedToHeadSupervisor: false,
+      linkedToHeadSupervisor: false
     };
 
     const validation = {
@@ -192,7 +192,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.name)}
               name="name"
               field={form.fields.name}
-              fieldRef={form.fields.name.ref}
+              fieldref={form.fields.name.ref}
             />
           </Grid>
 
@@ -201,7 +201,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
-              fieldRef={form.fields.displayName.ref}
+              fieldref={form.fields.displayName.ref}
 
             />
           </Grid>)}
@@ -242,6 +242,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             <PhoneInputField
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
+              fieldref={form.fields.phoneNumber.ref}
               field={form.fields.phoneNumber}
               defaultCountry={props.countryCode}
             />
@@ -293,6 +294,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
+              //locationCardRef={locationCardRef}
             />
           ))}
 

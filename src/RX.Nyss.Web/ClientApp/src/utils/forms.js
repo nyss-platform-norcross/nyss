@@ -104,7 +104,8 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
     _validators: validatorDefinition,
     _customError: null,
     update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers),
-    scrollTo: () => ref.current && ref.current.scrollIntoView()
+    scrollTo: () => ref.current && ref.current.scrollIntoView(),
+    setRef: (element) => this.ref = element
   };
 
   field.setValidators = newValidators => field._validators = newValidators;
@@ -182,8 +183,8 @@ export const createForm = (fields, validators, refs) => {
     },
     getValues: () => getFormValues(form),
     subscribe: subscribeToForm,
-    addField: (name, value, fieldValidators) => {
-      form[name] = createFormField(name, value, fieldValidators, form, formSubscribers)
+    addField: (name, value, fieldValidators, ref) => {
+      form[name] = createFormField(name, value, fieldValidators, form, formSubscribers, ref)
     },
     setCustomErrors: setCustomErrors,
     clearCustomErrors: () => setCustomErrors([]),
