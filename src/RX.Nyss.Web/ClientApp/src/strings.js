@@ -1140,13 +1140,13 @@ export const stringKeys = {
   },
   common: {
     buttons:{
-      "addNew": "common.buttons.addNew",
-      "edit": "common.buttons.edit",
-      "update": "common.buttons.update"
+      add: "common.buttons.add",
+      edit: "common.buttons.edit",
+      update: "common.buttons.update"
     },
     boolean: {
-      "true": "common.true",
-      "false": "common.false"
+      true: "common.true",
+      false: "common.false"
     }
   },
   translations: {

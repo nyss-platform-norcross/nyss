@@ -27,7 +27,7 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
           icon={<AddIcon />}
           variant={"contained"}
         >
-          {strings(stringKeys.common.buttons.addNew)}
+          {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
       </TableActions>
 

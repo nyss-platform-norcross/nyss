@@ -41,7 +41,7 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
           variant={"contained"}
           roles={accessMap.alertEvents.add}
           icon={<AddIcon/>}>
-          {strings(stringKeys.common.buttons.addNew)}
+          {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
       </TableActions>
 

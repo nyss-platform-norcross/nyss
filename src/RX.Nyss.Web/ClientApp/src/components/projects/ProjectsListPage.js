@@ -27,7 +27,7 @@ const ProjectsListPageComponent = (props) => {
             roles={accessMap.projects.add}
             variant={"contained"}
           >
-            {strings(stringKeys.common.buttons.addNew)}
+            {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
         </TableActions>
       )}
