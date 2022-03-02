@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
 import { TextField } from '@material-ui/core';
 
-const TextInput = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type, inputMode, endAdornment, className, fieldref }) => {
+const TextInput = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type, inputMode, endAdornment, className, fieldRef }) => {
   return (
     <TextField
-      ref={fieldref}
+      ref={fieldRef}
       className={className}
       name={name}
       error={!!error}

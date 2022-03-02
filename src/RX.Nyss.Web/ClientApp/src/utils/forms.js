@@ -104,8 +104,7 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
     _validators: validatorDefinition,
     _customError: null,
     update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers),
-    scrollTo: () => ref.current && ref.current.scrollIntoView(),
-    setRef: (element) => this.ref = element
+    scrollTo: () => ref.current && ref.current.scrollIntoView()
   };
 
   field.setValidators = newValidators => field._validators = newValidators;
