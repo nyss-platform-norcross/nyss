@@ -20,17 +20,17 @@ import { sexValues } from './logic/nationalSocietyUsersConstants';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
 
-const NationalSocietyUsersEditPageComponent = (props) => {
+const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSocietyUserId, data, organizations, isFetching, isSaving, error, callingUserRoles, modems, directionRtl, countryCode, openEdition, edit, goToList }) => {
   const [birthDecades] = useState(getBirthDecades());
   const [selectedRole, setRole] = useState(null);
 
   useMount(() => {
-    props.openEdition(props.nationalSocietyUserId);
+    openEdition(nationalSocietyUserId);
   });
 
   const hasAnyRole = useCallback((...roles) =>
-    props.callingUserRoles.some(userRole => roles.some(role => role === userRole)),
-    [props.callingUserRoles]
+    callingUserRoles.some(userRole => roles.some(role => role === userRole)),
+    [callingUserRoles]
   );
 
   const canSelectModem = useMemo(() =>
@@ -38,28 +38,28 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       || selectedRole === roles.TechnicalAdvisor
       || selectedRole === roles.HeadSupervisor
       || selectedRole === roles.Supervisor)
-    && props.modems.length > 0,
-    [props.modems, selectedRole]);
+    && modems.length > 0,
+    [modems, selectedRole]);
 
   const form = useMemo(() => {
-    if (!props.data) {
+    if (!data) {
       return null;
     }
 
     const fields = {
-      id: props.data.id,
-      nationalSocietyId: parseInt(props.nationalSocietyId),
-      role: props.data.role,
-      name: props.data.name,
-      phoneNumber: props.data.phoneNumber,
-      additionalPhoneNumber: props.data.additionalPhoneNumber,
-      organization: props.data.organization,
-      decadeOfBirth: props.data.decadeOfBirth ? props.data.decadeOfBirth.toString() : "",
-      projectId: props.data.projectId ? props.data.projectId.toString() : "",
-      organizationId: props.data.organizationId ? props.data.organizationId.toString() : "",
-      sex: props.data.sex ? props.data.sex : "",
-      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : "",
-      modemId: props.data.modemId ? props.data.modemId.toString() : ""
+      id: data.id,
+      nationalSocietyId: parseInt(nationalSocietyId),
+      role: data.role,
+      name: data.name,
+      phoneNumber: data.phoneNumber,
+      additionalPhoneNumber: data.additionalPhoneNumber,
+      organization: data.organization,
+      decadeOfBirth: data.decadeOfBirth ? data.decadeOfBirth.toString() : "",
+      projectId: data.projectId ? data.projectId.toString() : "",
+      organizationId: data.organizationId ? data.organizationId.toString() : "",
+      sex: data.sex ? data.sex : "",
+      headSupervisorId: data.headSupervisorId ? data.headSupervisorId.toString() : "",
+      modemId: data.modemId ? data.modemId.toString() : ""
     };
 
     const validation = {
@@ -74,12 +74,12 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
-    setRole(props.data.role);
+    setRole(data.role);
 
     return createForm(fields, validation);
-  }, [props.data, props.nationalSocietyId, canSelectModem]);
+  }, [data, nationalSocietyId, canSelectModem]);
 
-  useCustomErrors(form, props.error);
+  useCustomErrors(form, error);
 
   const canChangeOrganization = useMemo(() =>
     hasAnyRole(roles.Administrator) && selectedRole !== roles.DataConsumer,
@@ -94,7 +94,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     const values = form.getValues();
 
-    props.edit(props.nationalSocietyId, {
+    edit(nationalSocietyId, {
       ...values,
       organizationId: !!values.organizationId ? parseInt(values.organizationId) : null,
       projectId: !!values.projectId ? parseInt(values.projectId) : null,
@@ -102,15 +102,15 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       headSupervisorId: !!values.headSupervisorId ? parseInt(values.headSupervisorId) : null,
       modemId: !!values.modemId ? parseInt(values.modemId) : null
     });
-  }, [form, props]);
+  }, [form, nationalSocietyId, edit]);
 
-  if (!props.data || !form || props.isFetching) {
+  if (!data || !form || isFetching) {
     return <Loading />;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error.message} />}
+      {error && <ValidationMessage message={error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
@@ -128,7 +128,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
-              defaultCountry={props.countryCode}
+              defaultCountry={countryCode}
+              rtl={directionRtl}
           />
           </Grid>
 
@@ -137,7 +138,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
-              defaultCountry={props.countryCode}
+              defaultCountry={countryCode}
+              rtl={directionRtl}
           />
           </Grid>
 
@@ -148,7 +150,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 field={form.fields.organizationId}
                 name="organizationId"
               >
-                {props.organizations.map(organization => (
+                {organizations.map(organization => (
                   <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
                     {organization.name}
                   </MenuItem>
@@ -203,7 +205,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                   field={form.fields.projectId}
                   name="projectId"
                 >
-                  {props.data.editSupervisorFormData.availableProjects.map(project => (
+                  {data.editSupervisorFormData.availableProjects.map(project => (
                     <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
                       {project.isClosed
                         ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, { projectName: project.name })
@@ -215,18 +217,18 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Fragment>
           )}
 
-          {selectedRole === roles.Supervisor && props.data.editSupervisorFormData.headSupervisors.length > 0 && (
+          {selectedRole === roles.Supervisor && data.editSupervisorFormData.headSupervisors.length > 0 && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.headSupervisor)}
                 field={form.fields.headSupervisorId}
                 name="headSupervisorId"
               >
-                {!!props.data.headSupervisorId && (
+                {!!data.headSupervisorId && (
                   <MenuItem
                     value={'0'}>{strings(stringKeys.nationalSocietyUser.form.headSupervisorNotAssigned)}</MenuItem>
                 )}
-                {props.data.editSupervisorFormData.headSupervisors.map(headSupervisor => (
+                {data.editSupervisorFormData.headSupervisors.map(headSupervisor => (
                   <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
                     {headSupervisor.name}
                   </MenuItem>
@@ -242,7 +244,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 field={form.fields.modemId}
                 name="modemId"
               >
-                {props.modems.map(modem => (
+                {modems.map(modem => (
                   <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
                     {modem.name}
                   </MenuItem>
@@ -252,8 +254,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
           )}
         </Grid>
         <FormActions>
-          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
+          <CancelButton onClick={() => goToList(nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <SubmitButton isFetching={isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>
@@ -273,7 +275,8 @@ const mapStateToProps = (state, ownProps) => ({
   callingUserRoles: state.appData.user.roles,
   error: state.nationalSocietyUsers.formError,
   modems: state.nationalSocietyUsers.formModems,
-  countryCode: state.nationalSocietyUsers.countryCode
+  countryCode: state.nationalSocietyUsers.countryCode,
+  directionRtl: state.appData.user.languageCode === 'ar'
 });
 
 const mapDispatchToProps = {

@@ -221,6 +221,7 @@ const DataCollectorsEditPageComponent = (props) => {
               name="phoneNumber"
               field={form.fields.phoneNumber}
               defaultCountry={props.data.nationalSocietyCountryCode}
+              rtl={useRtlDirection}
             />
           </Grid>
 
@@ -230,6 +231,7 @@ const DataCollectorsEditPageComponent = (props) => {
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
               defaultCountry={props.data.nationalSocietyCountryCode}
+              rtl={useRtlDirection}
             />
           </Grid>)}
 

@@ -74,7 +74,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
               <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
 
               {completeness.map(week => (
-                <TableCell className={styles.completenessAlignmentAndBorder} key={`completeness_${week.epiWeek}`}>
+                <TableCell className={`${styles.completenessAlignmentAndBorder} ${rtl ? 'ltr-numerals' : ''}`} key={`completeness_${week.epiWeek}`}>
                   <Tooltip title={renderTooltipText(week)} onClick={handleTooltipClick} arrow>
                     <span>{`${renderPercentage(week.activeDataCollectors, week.totalDataCollectors)} %`}</span>
                   </Tooltip>

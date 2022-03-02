@@ -250,6 +250,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
               defaultCountry={props.countryCode}
+              rtl={useRtlDirection}
             />
           </Grid>)}
 
