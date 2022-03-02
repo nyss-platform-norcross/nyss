@@ -337,6 +337,14 @@ export const theme = (direction) => createTheme({
       root: {
         textAlign: direction === 'ltr' ? 'left' : 'right'
       }
+    },
+    MuiSnackbarContent: {
+      action: {
+        marginLeft: direction === 'ltr' ? 'auto' : '-8px',
+        marginRight: direction === 'ltr' ? '-8px' : 'auto',
+        paddingLeft: direction === 'ltr' ? '16px' : '0',
+        paddingRight: direction === 'ltr' ? '0' : '16px'
+      }
     }
   },
 });

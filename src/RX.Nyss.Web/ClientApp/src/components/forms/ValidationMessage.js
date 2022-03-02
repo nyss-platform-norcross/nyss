@@ -1,4 +1,3 @@
-import React from 'react';
 import { SnackbarContent } from '@material-ui/core';
 import { resetPageContentScroll } from '../layout/Layout';
 import { extractString } from '../../strings';
