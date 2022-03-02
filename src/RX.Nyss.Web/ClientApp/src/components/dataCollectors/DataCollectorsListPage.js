@@ -57,7 +57,7 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
             variant="contained"
             icon={<AddIcon />}
           >
-            {strings(stringKeys.dataCollector.addNew)}
+            {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
         </TableActions>
       }

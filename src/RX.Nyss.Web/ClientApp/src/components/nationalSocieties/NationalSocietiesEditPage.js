@@ -130,7 +130,7 @@ const NationalSocietiesEditPageComponent = (props) => {
           </CancelButton>
 
           <SubmitButton isFetching={props.isSaving}>
-            {strings(stringKeys.nationalSociety.form.update)}
+            {strings(stringKeys.common.buttons.update)}
           </SubmitButton>
         </FormActions>
       </Form>

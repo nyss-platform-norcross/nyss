@@ -72,7 +72,7 @@ const NationalSocietiesOverviewPageComponent = (props) => {
             condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
             variant={"contained"}
           >
-            {strings(stringKeys.nationalSociety.edit)}
+            {strings(stringKeys.common.buttons.edit)}
           </TableActionsButton>
         </FormActions>
       </Form>

@@ -101,7 +101,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
 
         <FormActions>
           <CancelButton onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.update)}</SubmitButton>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

@@ -29,7 +29,7 @@ const SmsGatewaysListPageComponent = (props) => {
             condition={!props.nationalSocietyHasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)}
             variant={"contained"}
           >
-            {strings(stringKeys.smsGateway.addNew)}
+            {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
         </TableActions>
       )}

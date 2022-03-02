@@ -170,7 +170,7 @@ const ProjectsCreatePageComponent = (props) => {
 
         <FormActions>
           <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.create)}</SubmitButton>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.add)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

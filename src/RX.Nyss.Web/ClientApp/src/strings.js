@@ -1139,9 +1139,14 @@ export const stringKeys = {
     downloadDirectly: "headManagerConsents.downloadDirectly"
   },
   common: {
+    buttons:{
+      add: "common.buttons.add",
+      edit: "common.buttons.edit",
+      update: "common.buttons.update"
+    },
     boolean: {
-      "true": "common.true",
-      "false": "common.false"
+      true: "common.true",
+      false: "common.false"
     }
   },
   translations: {

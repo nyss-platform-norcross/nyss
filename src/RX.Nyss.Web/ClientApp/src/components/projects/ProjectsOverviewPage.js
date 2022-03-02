@@ -71,7 +71,7 @@ const ProjectsOverviewPageComponent = (props) => {
               roles={accessMap.projects.edit}
               variant={"contained"}
             >
-              {strings(stringKeys.project.edit)}
+              {strings(stringKeys.common.buttons.edit)}
             </TableActionsButton>
           )}
         </FormActions>

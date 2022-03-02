@@ -207,7 +207,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
         <FormActions>
           <CancelButton onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.healthRisk.form.create)}</SubmitButton>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.add)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

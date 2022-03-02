@@ -100,7 +100,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
       <DialogTitle id="form-dialog-title">
-        {strings(stringKeys.alerts.eventLog.addNew)}
+        {strings(stringKeys.common.buttons.add)}
       </DialogTitle>
 
       <DialogContent>
@@ -181,7 +181,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
               {strings(stringKeys.form.cancel)}
             </CancelButton>
             <SubmitButton isFetching={isSaving}>
-              {strings(stringKeys.alerts.eventLog.addNew)}
+              {strings(stringKeys.common.buttons.add)}
             </SubmitButton>
           </FormActions>
         </Form>

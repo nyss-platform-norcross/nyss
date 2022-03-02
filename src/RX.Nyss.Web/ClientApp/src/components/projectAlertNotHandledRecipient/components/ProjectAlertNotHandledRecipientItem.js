@@ -95,7 +95,7 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
           )}
 
           <CancelButton onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.projectAlertNotHandledRecipient.update)}</SubmitButton>
+          <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </Fragment>
       )}
 

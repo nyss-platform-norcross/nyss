@@ -128,7 +128,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
           </CancelButton>
 
           <SubmitButton isFetching={props.isSaving}>
-            {strings(stringKeys.nationalSociety.form.create)}
+            {strings(stringKeys.common.buttons.add)}
           </SubmitButton>
         </FormActions>
       </Form>

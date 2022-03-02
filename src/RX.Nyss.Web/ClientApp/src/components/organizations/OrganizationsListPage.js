@@ -40,7 +40,7 @@ const OrganizationsListPageComponent = (props) => {
             icon={<AddIcon />}
             variant={"contained"}
           >
-            {strings(stringKeys.organization.addNew)}
+            {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
         </TableActions>
       )}

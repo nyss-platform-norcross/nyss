@@ -113,7 +113,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
                   {strings(stringKeys.form.cancel)}
                 </CancelButton>
                 <SubmitButton isFetching={isSaving}>
-                  {strings(stringKeys.project.form.update)}
+                  {strings(stringKeys.common.buttons.update)}
                 </SubmitButton>
               </>
             )}
@@ -123,7 +123,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
                 onClick={edit}
                 roles={accessMap.projectErrorMessages.edit}
               >
-                {strings(stringKeys.project.edit)}
+                {strings(stringKeys.common.buttons.edit)}
               </TableActionsButton>
             )}
           </FormActions>

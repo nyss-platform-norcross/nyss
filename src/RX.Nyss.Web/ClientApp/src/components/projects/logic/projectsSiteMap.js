@@ -52,7 +52,7 @@ export const projectsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
-    title: () => strings(stringKeys.project.edit),
+    title: () => strings(stringKeys.common.buttons.edit),
     access: accessMap.projects.edit,
   },
   {
@@ -84,5 +84,5 @@ export const projectsSiteMap = [
     access: accessMap.projectErrorMessages.list,
     placeholderIndex: 4,
     middleStepOnly: true,
-  },     
+  },
 ];
