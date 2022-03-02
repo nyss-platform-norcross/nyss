@@ -108,6 +108,9 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
         <br />
       </DialogContent>
       {form && <DialogActions>
+        <Button  color="secondary" variant="text">
+          Delete
+        </Button>
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
       </Button>

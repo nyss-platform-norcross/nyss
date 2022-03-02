@@ -119,6 +119,9 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
           label="Needs improvement"
           field={form.fields.needsImprovement}
         />
+        <Button  color="secondary" variant="text">
+          Delete
+        </Button>
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
         </Button>
