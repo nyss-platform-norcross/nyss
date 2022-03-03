@@ -69,6 +69,10 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
       });
   }
 
+  const handleDelete = () => {
+    console.log("delete plz")
+  }
+
   if (!form) {
     return null;
   }
@@ -119,13 +123,13 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
           label="Needs improvement"
           field={form.fields.needsImprovement}
         />
-        <Button  color="secondary" variant="text">
+        <Button onClick={handleDelete} color="secondary" variant="text">
           Delete
         </Button>
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">
+        <Button onClick={handleSave} color="primary" variant="contained">
           Save
         </Button>
       </DialogActions>}

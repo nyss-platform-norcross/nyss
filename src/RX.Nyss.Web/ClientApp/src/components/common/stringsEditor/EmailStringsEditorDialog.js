@@ -118,7 +118,7 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
       {form && <DialogActions>
         <Button  color="secondary" variant="text">Delete</Button>
         <Button onClick={close} color="primary" variant="outlined">Cancel</Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">Save</Button>
+        <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
       </DialogActions>}
     </Dialog>
   );

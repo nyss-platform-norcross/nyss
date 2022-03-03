@@ -114,7 +114,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
       </Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">
+        <Button onClick={handleSave} color="primary" variant="contained">
           Save
       </Button>
       </DialogActions>}
