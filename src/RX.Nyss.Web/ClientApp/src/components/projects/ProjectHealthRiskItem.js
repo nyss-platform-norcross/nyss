@@ -1,5 +1,5 @@
 import styles from './ProjectHealthRiskItem.module.scss';
-import React, { useState, Fragment, useEffect } from 'react';
+import React, {useState, Fragment, useEffect, useRef, useCallback} from 'react';
 import { validators } from '../../utils/forms';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
@@ -10,17 +10,21 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   const [ready, setReady] = useState(false);
   const [reportCountThreshold, setReportCountThreshold] = useState(healthRisk.alertRuleCountThreshold || 0);
 
+  const healthRiskItemRef = useRef(null);
+  const getHealthRiskItemRef = useCallback(node => healthRiskItemRef, []);
+
+
   useMount(() => {
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`, projectHealthRisk.id);
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.caseDefinition`, healthRisk.caseDefinition, [validators.required, validators.maxLength(500)]);
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`, healthRisk.feedbackMessage, [validators.required, validators.maxLength(160)]);
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber]);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`, projectHealthRisk.id, [], healthRiskItemRef);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.caseDefinition`, healthRisk.caseDefinition, [validators.required, validators.maxLength(500)], healthRiskItemRef);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`, healthRisk.feedbackMessage, [validators.required, validators.maxLength(160)], healthRiskItemRef);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber], healthRiskItemRef);
     form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`,
       healthRisk.alertRuleDaysThreshold,
       [
         validators.requiredWhen(f => f[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`] > 1),
         validators.inRange(1, 365)
-      ]);
+      ], healthRiskItemRef);
     form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`,
       healthRisk.alertRuleKilometersThreshold,
       [
@@ -53,7 +57,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   }
 
   return (
-    <Card>
+    <Card ref={healthRiskItemRef}>
       <CardContent>
         <Typography variant="h2" className={styles.header}>{healthRisk.healthRiskCode}</Typography>
         <Typography variant="h3" className={`${styles.header} ${styles.healthRiskName}`}>{healthRisk.healthRiskName}</Typography>
@@ -65,6 +69,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
               field={form.fields[`healthRisk.${healthRisk.healthRiskId}.caseDefinition`]}
               multiline
               rows={4}
+              fieldRef={getHealthRiskItemRef}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -74,6 +79,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
               field={form.fields[`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`]}
               multiline
               rows={4}
+              fieldRef={getHealthRiskItemRef}
             />
           </Grid>
         </Grid>
@@ -94,6 +100,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
                   name={`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`}
                   field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]}
                   inputMode={"numeric"}
+                  fieldRef={getHealthRiskItemRef}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -103,6 +110,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
                   field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]}
                   disabled={!reportCountThreshold || reportCountThreshold <= 1}
                   inputMode={"numeric"}
+                  fieldRef={getHealthRiskItemRef}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -112,6 +120,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
                   field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`]}
                   disabled={!reportCountThreshold || reportCountThreshold <= 1}
                   inputMode={"numeric"}
+                  fieldRef={getHealthRiskItemRef}
                 />
               </Grid>
             </Grid>

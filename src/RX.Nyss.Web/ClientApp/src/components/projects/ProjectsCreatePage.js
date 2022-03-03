@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useMemo, useCallback } from 'react';
+import React, {useState, Fragment, useEffect, useMemo, useCallback, createRef} from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -48,7 +48,14 @@ const ProjectsCreatePageComponent = (props) => {
       alertNotHandledNotificationRecipientId: [validators.required]
     };
 
-    return createForm(fields, validation);
+
+    const refs = {
+      name: createRef(),
+      organizationId: createRef(),
+      alertNotHandledNotificationRecipientId: createRef()
+    }
+
+    return createForm(fields, validation, refs);
   }, [canChangeOrganization]);
 
   useCustomErrors(form, props.error);
@@ -65,8 +72,10 @@ const ProjectsCreatePageComponent = (props) => {
     }
 
     if (!form.isValid()) {
+
+      Object.values(form.fields).filter(e => e.error)[0].scrollTo();
       return;
-    };
+    }
 
     props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
@@ -97,6 +106,7 @@ const ProjectsCreatePageComponent = (props) => {
               name="name"
               field={form.fields.name}
               autoFocus
+              fieldRef={form.fields.name.ref}
             />
           </Grid>
 
@@ -115,6 +125,7 @@ const ProjectsCreatePageComponent = (props) => {
                   label={strings(stringKeys.project.form.organization)}
                   field={form.fields.organizationId}
                   name="organizationId"
+                  fieldRef={form.fields.organizationId.ref}
                 >
                   {props.data.organizations.map(organization => (
                     <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
@@ -131,6 +142,8 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.alertNotHandledNotificationRecipient)}
               name="alertNotHandledNotificationRecipientId"
               field={form.fields.alertNotHandledNotificationRecipientId}
+              fieldRef={form.fields.alertNotHandledNotificationRecipientId.ref}
+
             >
               {props.data.alertNotHandledRecipients.map(recipient => (
                 <MenuItem key={`alertNotHandledRecipient_${recipient.id}`} value={recipient.id.toString()}>

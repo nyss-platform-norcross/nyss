@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, {useState, Fragment, useEffect, createRef, useRef, useCallback} from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -24,6 +24,7 @@ const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
 
+
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.projectId);
   })
@@ -48,7 +49,11 @@ const ProjectsEditPageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)]
     };
 
-    setForm(createForm(fields, validation));
+    const refs = {
+      name: createRef()
+    }
+
+    setForm(createForm(fields, validation, refs));
     setSelectedHealthRisks(props.data.projectHealthRisks);
     return () => setForm(null);
   }, [props.data]);
@@ -61,8 +66,10 @@ const ProjectsEditPageComponent = (props) => {
     }
 
     if (!form.isValid()) {
+
+      Object.values(form.fields).filter(e => e.error)[0].scrollTo();
       return;
-    };
+    }
 
     props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
@@ -94,6 +101,7 @@ const ProjectsEditPageComponent = (props) => {
               label={strings(stringKeys.project.form.name)}
               name="name"
               field={form.fields.name}
+              fieldRef={form.fields.name.ref}
             />
           </Grid>
 
