@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 import styles from "./DataCollectorsCreateOrEditPage.module.scss";
-import React, {useEffect, useState, Fragment, createRef, useRef, useCallback} from 'react';
+import React, {useEffect, useState, Fragment, createRef} from 'react';
 import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';

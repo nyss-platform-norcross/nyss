@@ -15,10 +15,10 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
 
 
   useMount(() => {
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`, projectHealthRisk.id, [], healthRiskItemRef);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId` || '', projectHealthRisk.id, [], healthRiskItemRef);
     form.addField(`healthRisk.${healthRisk.healthRiskId}.caseDefinition`, healthRisk.caseDefinition, [validators.required, validators.maxLength(500)], healthRiskItemRef);
     form.addField(`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`, healthRisk.feedbackMessage, [validators.required, validators.maxLength(160)], healthRiskItemRef);
-    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber], healthRiskItemRef);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`|| '', healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber], healthRiskItemRef);
     form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`,
       healthRisk.alertRuleDaysThreshold,
       [
