@@ -39,6 +39,22 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
+        [HttpPost("deleteString"), AllowAnonymous]
+        public async Task<Result> DeleteString([FromBody] DeleteStringRequestDto dto)
+        {
+            var result = await _resourcesService.DeleteString(dto);
+
+            if (result.IsSuccess)
+            {
+                foreach (var translation in dto.Translations)
+                {
+                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+                }
+            }
+
+            return result;
+        }
+
         [HttpPost("saveEmailString"), AllowAnonymous]
         public async Task<Result> SaveEmailString([FromBody] SaveStringRequestDto dto)
         {

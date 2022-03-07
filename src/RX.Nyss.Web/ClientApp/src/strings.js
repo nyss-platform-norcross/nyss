@@ -1218,6 +1218,10 @@ export function updateStrings(strings) {
   Object.assign(stringList, strings);
 }
 
+export function deleteStrings(strings) {
+  Object.assign(stringList, strings);
+}
+
 export function toggleStringsMode() {
   showKeys = !showKeys;
 }

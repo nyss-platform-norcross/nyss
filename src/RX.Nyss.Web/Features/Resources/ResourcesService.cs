@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Features.Resources
     public interface IResourcesService
     {
         Task<Result<string>> SaveString(SaveStringRequestDto dto);
+        Task<Result<string>> DeleteString(DeleteStringRequestDto dto);
         Task<Result<string>> SaveEmailString(SaveStringRequestDto dto);
         Task<Result<string>> SaveSmsString(SaveStringRequestDto dto);
         Task<Result<GetStringResponseDto>> GetString(string key);
@@ -169,6 +170,24 @@ namespace RX.Nyss.Web.Features.Resources
             }
 
             await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+
+        public async Task<Result<string>> DeleteString(DeleteStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
+            var strings = stringsBlob.Strings.ToList();
+            var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? DeleteEntry(strings, dto.Key);
+
+            var stringsUpdated = strings.Where(x => x.Key != dto.Key);
+
+            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = stringsUpdated.OrderBy(x => x.Key) });
 
             return Success("Success");
         }
@@ -350,6 +369,17 @@ namespace RX.Nyss.Web.Features.Resources
 
             strings.Add(entry);
             return entry;
+        }
+        private static StringsBlob.Entry DeleteEntry(ICollection<StringsBlob.Entry> strings, string key)
+        {
+            var entry = new StringsBlob.Entry
+            {
+                Key = key,
+                Translations = new Dictionary<string, string>()
+            };
+
+            strings.Remove(entry);
+            return null;
         }
     }
 }

@@ -4,10 +4,11 @@ import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
-import { updateStrings } from '../../../strings';
+import { updateStrings, deleteStrings } from '../../../strings';
 import { Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
+import { stringsDeleted } from '../../app/logic/appActions';
 import CheckboxField from '../../forms/CheckboxField';
 
 export const StringsEditorDialog = ({ stringKey, close }) => {
@@ -42,7 +43,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
   const handleSave = () => {
     if (!form.isValid()) {
       return;
-    };
+    }
 
     const values = form.getValues();
 
@@ -70,7 +71,36 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
   }
 
   const handleDelete = () => {
-    console.log("delete plz")
+    if (!form.isValid()) {
+      return;
+    }
+
+    const values = form.getValues();
+
+    const dto = {
+      key: values.key,
+      needsImprovement: values.needsImprovement,
+      translations: languageCodes.map(lang => ({
+        languageCode: lang.languageCode,
+        value: values[`value_${lang.languageCode}`]
+      }))
+    };
+    console.log(dto)
+
+    post('/api/resources/deleteString', dto)
+      .then(() => {
+        updateStrings({
+          [values.key]: {
+
+            value: values[`value_${currentLanguageCode}`]
+
+          }
+        });
+        console.log(dto)
+
+        dispatch(stringsDeleted(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        close();
+    });
   }
 
   if (!form) {

@@ -1,5 +1,6 @@
 import * as actions from "./appConstans";
 import { push } from "connected-react-router";
+import {STRINGS_DELETED} from "./appConstans";
 
 export const showMessage = (messageKey, time) => ({ type: actions.SHOW_MESSAGE.INVOKE, messageKey, time });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
@@ -10,6 +11,7 @@ export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, valu
 export const goToTranslations = () => push(`/translations`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 export const stringsUpdated = (key, translations) => ({ type: actions.STRINGS_UPDATED, key, translations });
+export const stringsDeleted = (key) => ({ type: actions.STRINGS_DELETED, key });
 
 export const initApplication = {
   invoke: () =>
