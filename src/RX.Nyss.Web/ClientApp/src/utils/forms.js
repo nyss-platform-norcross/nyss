@@ -84,14 +84,16 @@ const getFormValues = (fields) => {
   return result;
 };
 
-const createFormField = (name, value, validatorDefinition, form, formSubscribers) => {
+const createFormField = (name, value, validatorDefinition, form, formSubscribers, ref) => {
   const subscribers = [];
+
 
   const field = {
     name: name,
     value: value,
     error: null,
     touched: false,
+    ref: ref,
     subscribe: callback => {
       subscribers.push(callback);
       return {
@@ -101,7 +103,8 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
     _subscribers: subscribers,
     _validators: validatorDefinition,
     _customError: null,
-    update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers)
+    update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers),
+    scrollTo: () => ref.current && ref.current.scrollIntoView()
   };
 
   field.setValidators = newValidators => field._validators = newValidators;
@@ -114,7 +117,7 @@ export const useCustomErrors = (form, error) =>
     form && form.setCustomErrors(error && error.data)
   }, [form, error]);
 
-export const createForm = (fields, validators) => {
+export const createForm = (fields, validators, refs) => {
   const form = {};
 
   const formSubscribers = [];
@@ -124,7 +127,7 @@ export const createForm = (fields, validators) => {
       continue;
     }
 
-    form[name] = createFormField(name, fields[name], validators && validators[name], form, formSubscribers);
+    form[name] = createFormField(name, fields[name], validators && validators[name], form, formSubscribers, refs && refs[name]);
   }
 
   const subscribeToForm = callback => {
@@ -179,8 +182,8 @@ export const createForm = (fields, validators) => {
     },
     getValues: () => getFormValues(form),
     subscribe: subscribeToForm,
-    addField: (name, value, fieldValidators) => {
-      form[name] = createFormField(name, value, fieldValidators, form, formSubscribers)
+    addField: (name, value, fieldValidators, ref) => {
+      form[name] = createFormField(name, value, fieldValidators, form, formSubscribers, ref)
     },
     setCustomErrors: setCustomErrors,
     clearCustomErrors: () => setCustomErrors([]),

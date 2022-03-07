@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 import styles from "./DataCollectorsCreateOrEditPage.module.scss";
-import React, { useEffect, useState, Fragment } from 'react';
+import React, {useEffect, useState, Fragment, createRef, useRef, useCallback} from 'react';
 import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -65,10 +65,23 @@ const DataCollectorsEditPageComponent = (props) => {
       supervisorId: [validators.required],
       birthGroupDecade: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.phoneNumber, validators.maxLength(20)],
-      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber]
+      additionalPhoneNumber: [validators.phoneNumber, validators.maxLength(20)],
     };
 
-    const newForm = createForm(fields, validation);
+    const refs = {
+      dataCollectorType: createRef(),
+      name: createRef(),
+      displayName: createRef(),
+      sex: createRef(),
+      supervisorId: createRef(),
+      birthGroupDecade: createRef(),
+      phoneNumber: createRef(),
+      additionalPhoneNumber: createRef(),
+      deployed: createRef(),
+      linkedToHeadSupervisor: createRef()
+    }
+
+    const newForm = createForm(fields, validation, refs);
     newForm.fields.supervisorId.subscribe(({ newValue }) =>
       newForm.fields.linkedToHeadSupervisor.update(props.data.formData.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
 
@@ -109,10 +122,11 @@ const DataCollectorsEditPageComponent = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!form.isValid()) {
+
+      Object.values(form.fields).filter(e => e.error)[0].scrollTo();
       return;
-    };
+    }
 
     const values = form.getValues();
 
@@ -157,6 +171,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.name)}
               name="name"
               field={form.fields.name}
+              fieldRef={form.fields.name.ref}
             />
           </Grid>
 
@@ -165,6 +180,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
+              fieldRef={form.fields.displayName.ref}
             />
           </Grid>)}
 
@@ -172,6 +188,7 @@ const DataCollectorsEditPageComponent = (props) => {
             <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
               field={form.fields.sex}
+              fieldRef={form.fields.sex.ref}
               name="sex"
             >
               {sexValues.map(type => (
@@ -186,6 +203,7 @@ const DataCollectorsEditPageComponent = (props) => {
             <SelectField
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
+              fieldRef={form.fields.birthGroupDecade.ref}
               name="birthGroupDecade"
             >
               {birthDecades.map(decade => (
@@ -219,6 +237,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.supervisor)}
               field={form.fields.supervisorId}
               name="supervisorId"
+              fieldRef={form.fields.supervisorId.ref}
             >
               {props.data.formData.supervisors.map(supervisor => (
                 <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
@@ -246,6 +265,7 @@ const DataCollectorsEditPageComponent = (props) => {
               isDefaultCollapsed={allLocationsCollapsed}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
+              //locationCardRef={locationCardRef}
             />
           ))}
 

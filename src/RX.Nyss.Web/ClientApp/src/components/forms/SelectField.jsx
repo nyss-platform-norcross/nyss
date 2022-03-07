@@ -4,8 +4,10 @@ import { Select, FormControl, FormHelperText, InputLabel } from "@material-ui/co
 import { createFieldComponent } from "./FieldBase";
 
 const SelectInput = ({ error, disabled, disabledlabel, name, label, value, onChange, controlProps, customProps, children }) => {
-  return (
-    <FormControl error={!!error} disabled={disabled} {...customProps} fullWidth>
+  const { fieldRef, ...rest } = customProps;
+
+return (
+    <FormControl error={!!error} disabled={disabled} {...rest} fullWidth ref={fieldRef}>
       <InputLabel htmlFor={name} shrink>{label}</InputLabel>
       <Select
         value={value}

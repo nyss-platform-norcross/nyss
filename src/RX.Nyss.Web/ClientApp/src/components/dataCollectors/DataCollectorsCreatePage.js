@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 import styles from "./DataCollectorsCreateOrEditPage.module.scss";
-import { useState, Fragment, useMemo } from 'react';
+import {useState, Fragment, useMemo, createRef } from 'react';
 import { connect, useSelector } from "react-redux";
 import {
   Radio,
@@ -82,13 +82,27 @@ const DataCollectorsCreatePageComponent = (props) => {
       supervisorId: [validators.required],
       birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.phoneNumber, validators.maxLength(20)],
-      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber]
+      additionalPhoneNumber: [validators.phoneNumber, validators.maxLength(20)]
     };
 
-    const newForm = createForm(fields, validation);
+    const refs = {
+      dataCollectorType: createRef(),
+      name: createRef(),
+      displayName: createRef(),
+      sex: createRef(),
+      supervisorId: createRef(),
+      birthGroupDecade: createRef(),
+      phoneNumber: createRef(),
+      additionalPhoneNumber: createRef(),
+      deployed: createRef(),
+      linkedToHeadSupervisor: createRef()
+    }
+
+    const newForm = createForm(fields, validation, refs);
     newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
     newForm.fields.supervisorId.subscribe(({ newValue }) =>
       newForm.fields.linkedToHeadSupervisor.update(props.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
+
     return newForm;
   }, [props.defaultSupervisorId, props.defaultLocation, props.supervisors]);
 
@@ -112,12 +126,14 @@ const DataCollectorsCreatePageComponent = (props) => {
     setLocations(locations.filter(l => l.number !== location.number));
   }
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!form.isValid()) {
+
+      Object.values(form.fields).filter(e => e.error)[0].scrollTo();
       return;
-    };
+    }
 
     const values = form.getValues();
 
@@ -131,13 +147,14 @@ const DataCollectorsCreatePageComponent = (props) => {
   }
 
   if (!form) {
+
     return null;
   }
 
   return (
-    <Fragment>
-      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
+    <Fragment>
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message}/>}
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
@@ -172,6 +189,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.name)}
               name="name"
               field={form.fields.name}
+              fieldRef={form.fields.name.ref}
             />
           </Grid>
 
@@ -180,6 +198,8 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
+              fieldRef={form.fields.displayName.ref}
+
             />
           </Grid>)}
 
@@ -187,8 +207,9 @@ const DataCollectorsCreatePageComponent = (props) => {
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.dataCollector.form.sex)}
-                field={form.fields.sex}
                 name="sex"
+                field={form.fields.sex}
+                fieldRef={form.fields.sex.ref}
               >
                 {sexValues.map(type => (
                   <MenuItem key={`sex${type}`} value={type}>
@@ -204,6 +225,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
               name="birthGroupDecade"
+              fieldRef={form.fields.birthGroupDecade.ref}
             >
               {birthDecades.map(decade => (
                 <MenuItem key={`birthDecade_${decade}`} value={decade}>
@@ -217,6 +239,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             <PhoneInputField
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
+              fieldRef={form.fields.phoneNumber.ref}
               field={form.fields.phoneNumber}
               defaultCountry={props.countryCode}
             />
@@ -236,6 +259,7 @@ const DataCollectorsCreatePageComponent = (props) => {
                 label={strings(stringKeys.dataCollector.form.supervisor)}
                 field={form.fields.supervisorId}
                 name="supervisorId"
+                fieldRef={form.fields.supervisorId.ref}
               >
                 {props.supervisors.map(supervisor => (
                   <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
@@ -267,6 +291,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
+              //locationCardRef={locationCardRef}
             />
           ))}
 

@@ -7,13 +7,15 @@ import { FormHelperText, InputLabel } from '@material-ui/core';
 
 const DEMO_NS_COUNTRY = "MI"; // demo National Society
 
-const PhoneInputComponent = ({ error, value, defaultCountry, name, label, controlProps }) => {
+const PhoneInputComponent = ({ error, value, defaultCountry, name, label, controlProps, fieldRef }) => {
 
   return (
     <Fragment>
       <InputLabel className={styles.label}>{label}</InputLabel>
       <PhoneInput
+        ref={fieldRef}
         error={!!error}
+        name={name}
         containerClass={`${styles.container} ${error ? styles.error : null}`}
         inputClass={styles.phoneInput}
         buttonClass={styles.button}
