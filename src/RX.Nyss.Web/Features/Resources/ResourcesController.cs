@@ -44,13 +44,12 @@ namespace RX.Nyss.Web.Features.Resources
         {
             var result = await _resourcesService.DeleteString(dto);
 
-            if (result.IsSuccess)
-            {
-                foreach (var translation in dto.Translations)
-                {
-                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
-                }
-            }
+//            if (result.IsSuccess)
+//            {
+//
+//                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+//
+//            }
 
             return result;
         }

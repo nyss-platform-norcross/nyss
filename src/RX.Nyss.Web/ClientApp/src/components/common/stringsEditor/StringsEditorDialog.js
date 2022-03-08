@@ -78,27 +78,12 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
     const values = form.getValues();
 
     const dto = {
-      key: values.key,
-      needsImprovement: values.needsImprovement,
-      translations: languageCodes.map(lang => ({
-        languageCode: lang.languageCode,
-        value: values[`value_${lang.languageCode}`]
-      }))
+      key: values.key
     };
-    console.log(dto)
 
     post('/api/resources/deleteString', dto)
       .then(() => {
-        updateStrings({
-          [values.key]: {
-
-            value: values[`value_${currentLanguageCode}`]
-
-          }
-        });
-        console.log(dto)
-
-        dispatch(stringsDeleted(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        dispatch(stringsDeleted(dto.key));
         close();
     });
   }

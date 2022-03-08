@@ -182,12 +182,9 @@ namespace RX.Nyss.Web.Features.Resources
             }
 
             var stringsBlob = await _stringsResourcesService.GetStringsBlob();
-            var strings = stringsBlob.Strings.ToList();
-            var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? DeleteEntry(strings, dto.Key);
+            var strings = stringsBlob.Strings.Where(x => x.Key != dto.Key);
 
-            var stringsUpdated = strings.Where(x => x.Key != dto.Key);
-
-            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = stringsUpdated.OrderBy(x => x.Key) });
+            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
 
             return Success("Success");
         }

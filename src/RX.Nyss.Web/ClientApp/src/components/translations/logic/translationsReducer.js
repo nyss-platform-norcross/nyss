@@ -66,21 +66,9 @@ export function translationsReducer(state = initialState.translations, action) {
     case appActions.STRINGS_DELETED:
       return {
         ...state, listTranslations:
-          state.listTranslations.some(t => t.key === action.key)
-            ? removeFromArray(
-              state.listTranslations,
-              item => item.key === action.key,
-              item => ({
-                ...item,
-              })
+          removeFromArray(
+              state.listTranslations, item => item.key === action.key
             )
-            : [
-              ...state.listTranslations,
-              {
-                key: action.key,
-                translations: action.translations
-              }
-            ]
       };
 
     default:
