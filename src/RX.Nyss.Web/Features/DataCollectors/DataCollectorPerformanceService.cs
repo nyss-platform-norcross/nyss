@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             if (!dataCollectors.Any())
             {
-                return null;
+                return new List<Completeness>();
             }
 
             var dataCollectorCompleteness = dataCollectors

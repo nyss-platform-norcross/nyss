@@ -60,7 +60,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
           </TableRow>
         </TableHead>
         <TableBody>
-          {!isListFetching && completeness != null && filters.trainingStatus === 'Trained' && (
+          {!isListFetching && completeness.length > 0 && filters.trainingStatus === 'Trained' && (
             <TableRow hover>
               <TableCell className={styles.completenessBorderBottomColor}>
                 <span className={styles.completeness}>

@@ -1,6 +1,6 @@
 import styles from './DataCollectorLocationItem.module.scss';
 import { Button, Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typography } from '@material-ui/core';
-import { useState, useReducer, useEffect, useRef, useCallback, createRef } from 'react';
+import { useState, useReducer, useEffect, useRef, useCallback } from 'react';
 import { stringKeys, strings } from '../../strings';
 import { useMount } from '../../utils/lifecycle';
 import TextInputField from '../forms/TextInputField';
