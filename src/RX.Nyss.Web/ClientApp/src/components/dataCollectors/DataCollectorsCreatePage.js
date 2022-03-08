@@ -101,8 +101,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     const newForm = createForm(fields, validation, refs);
     newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
     newForm.fields.supervisorId.subscribe(({ newValue }) =>
-      newForm.fields.linkedToHeadSupervisor.update(props.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
-
+      !!newValue && newForm.fields.linkedToHeadSupervisor.update(props.supervisors.filter(s => s.id.toString() === newValue)[0].role === HeadSupervisor));
     return newForm;
   }, [props.defaultSupervisorId, props.defaultLocation, props.supervisors]);
 
