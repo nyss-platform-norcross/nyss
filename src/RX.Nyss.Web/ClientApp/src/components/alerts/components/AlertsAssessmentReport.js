@@ -1,6 +1,6 @@
 import styles from "./AlertsAssessmentReport.module.scss";
 
-import React, { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";

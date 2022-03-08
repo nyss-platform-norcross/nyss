@@ -1,5 +1,4 @@
 import styles from "./TablePager.module.scss";
-import React from 'react';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { Grid, IconButton, MenuItem, Select } from "@material-ui/core";
@@ -29,9 +28,6 @@ export const TablePager = (props) => {
   return (
     <Grid
       container
-      direction="row"
-      justify="flex-end"
-      alignItems="center"
       className={styles.pager}
     >
       <IconButton onClick={handleBackButtonClick} disabled={page === 1} aria-label="previous page">

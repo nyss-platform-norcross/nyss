@@ -153,7 +153,7 @@ const LoginPageComponent = (props) => {
         </div>
       </Grid>
       <Grid item xs={12}>
-        <Grid container justify="center" alignItems="baseline">
+        <Grid container className={styles.loginFooter}>
           <Grid item xs={12}>
             <Typography align="center" variant="h6" className={styles.supportLogoHeader}>Nyss was developed with the support of:</Typography>
           </Grid>
