@@ -11,7 +11,11 @@ export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, valu
 export const goToTranslations = () => push(`/translations`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 export const stringsUpdated = (key, translations) => ({ type: actions.STRINGS_UPDATED, key, translations });
+export const smsStringsUpdated = (key, translations) => ({ type: actions.SMS_STRINGS_UPDATED, key, translations });
+export const emailStringsUpdated = (key, translations) => ({ type: actions.EMAIL_STRINGS_UPDATED, key, translations });
 export const stringsDeleted = (key) => ({ type: actions.STRINGS_DELETED, key });
+export const smsStringsDeleted = (key) => ({ type: actions.SMS_STRINGS_DELETED, key });
+export const emailStringsDeleted = (key) => ({ type: actions.EMAIL_STRINGS_DELETED, key });
 
 export const initApplication = {
   invoke: () =>

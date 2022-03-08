@@ -7,7 +7,7 @@ import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
 import { updateStrings } from '../../../strings';
 import { useDispatch } from 'react-redux';
-import { stringsUpdated } from '../../app/logic/appActions';
+import {smsStringsDeleted, smsStringsUpdated, stringsDeleted, stringsUpdated} from '../../app/logic/appActions';
 import TextInputWithCharacterCountField from '../../forms/TextInputWithCharacterCountField';
 
 export const SmsStringsEditorDialog = ({ stringKey, close }) => {
@@ -55,11 +55,29 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
 
     post('/api/resources/saveSmsString', dto)
       .then(() => {
-        updateStrings({
+        smsStringsUpdated({
           [values.key]: values[`value_${currentLanguageCode}`]
         });
 
-        dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        dispatch(smsStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        close();
+      });
+  }
+
+  const handleDelete = () => {
+    if (!form.isValid()) {
+      return;
+    }
+
+    const values = form.getValues();
+
+    const dto = {
+      key: values.key
+    };
+
+    post('/api/resources/deleteSmsString', dto)
+      .then(() => {
+        dispatch(smsStringsDeleted(dto.key));
         close();
       });
   }
@@ -108,7 +126,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
         <br />
       </DialogContent>
       {form && <DialogActions>
-        <Button  color="secondary" variant="text">
+        <Button onClick={handleDelete} color="secondary" variant="text">
           Delete
         </Button>
         <Button onClick={close} color="primary" variant="outlined">

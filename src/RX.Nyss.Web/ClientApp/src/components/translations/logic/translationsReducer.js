@@ -63,12 +63,68 @@ export function translationsReducer(state = initialState.translations, action) {
             ]
       };
 
+    case appActions.SMS_STRINGS_UPDATED:
+      return {
+        ...state, smsTranslations:
+          state.smsTranslations.some(t => t.key === action.key)
+            ? assignInArray(
+              state.smsTranslations,
+              item => item.key === action.key,
+              item => ({
+                ...item,
+                translations: action.translations
+              })
+            )
+            : [
+              ...state.smsTranslations,
+              {
+                key: action.key,
+                translations: action.translations
+              }
+            ]
+      };
+
+    case appActions.EMAIL_STRINGS_UPDATED:
+      return {
+        ...state, emailTranslations:
+          state.emailTranslations.some(t => t.key === action.key)
+            ? assignInArray(
+              state.emailTranslations,
+              item => item.key === action.key,
+              item => ({
+                ...item,
+                translations: action.translations
+              })
+            )
+            : [
+              ...state.emailTranslations,
+              {
+                key: action.key,
+                translations: action.translations
+              }
+            ]
+      };
+
     case appActions.STRINGS_DELETED:
       return {
         ...state, listTranslations:
           removeFromArray(
               state.listTranslations, item => item.key === action.key
             )
+      };
+    case appActions.SMS_STRINGS_DELETED:
+      return {
+        ...state, smsTranslations:
+          removeFromArray(
+            state.smsTranslations, item => item.key === action.key
+          )
+      };
+    case appActions.EMAIL_STRINGS_DELETED:
+      return {
+        ...state, emailTranslations:
+          removeFromArray(
+            state.emailTranslations, item => item.key === action.key
+          )
       };
 
     default:
