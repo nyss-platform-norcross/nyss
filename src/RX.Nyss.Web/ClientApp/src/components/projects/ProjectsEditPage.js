@@ -96,7 +96,7 @@ const ProjectsEditPageComponent = (props) => {
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={9}>
+          <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.project.form.name)}
               name="name"
@@ -105,7 +105,7 @@ const ProjectsEditPageComponent = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={9}>
+          <Grid item xs={12}>
             <CheckboxField
               label={strings(stringKeys.project.form.allowMultipleOrganizations)}
               name="allowMultipleOrganizations"

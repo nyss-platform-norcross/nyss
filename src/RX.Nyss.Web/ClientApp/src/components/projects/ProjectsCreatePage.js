@@ -48,7 +48,6 @@ const ProjectsCreatePageComponent = (props) => {
       alertNotHandledNotificationRecipientId: [validators.required]
     };
 
-
     const refs = {
       name: createRef(),
       organizationId: createRef(),
@@ -100,7 +99,7 @@ const ProjectsCreatePageComponent = (props) => {
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={9}>
+          <Grid item xs={12} >
             <TextInputField
               label={strings(stringKeys.project.form.name)}
               name="name"
@@ -112,7 +111,7 @@ const ProjectsCreatePageComponent = (props) => {
 
           {canChangeOrganization() && (
             <Fragment>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={12} >
                 <CheckboxField
                   label={strings(stringKeys.project.form.allowMultipleOrganizations)}
                   name="allowMultipleOrganizations"
