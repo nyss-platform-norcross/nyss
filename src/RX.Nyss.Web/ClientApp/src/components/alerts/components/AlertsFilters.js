@@ -5,12 +5,18 @@ import LocationFilter from "../../common/filters/LocationFilter";
 import { strings, stringKeys } from "../../../strings";
 import { alertStatusFilters } from "../logic/alertsConstants";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
+import {DatePicker} from "../../forms/DatePicker";
+import {convertToLocalDate, convertToUtc} from "../../../utils/date";
+
 
 export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
   const [value, setValue] = useState(null);
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
   const [healthRisks, setHealthRisks] = useState(null);
   const [locations, setLocations] = useState([]);
+  const [startDate, setStartDate] = useState("1995-07-16");
+  const [endDate, setEndDate] = useState("1995-07-16");
+
 
   useEffect(() => {
     filters && setValue(filters);
@@ -19,6 +25,9 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
   useEffect(() => {
     filtersData && setHealthRisks(filtersData.healthRisks);
     filtersData && setLocations(filtersData.locations);
+    filtersData && setStartDate(filtersData.startDate);
+    filtersData && setEndDate(filtersData.endDate);
+
   }, [filtersData]);
 
   useEffect(() => {
@@ -46,6 +55,16 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
 
   const handleStatusChange = (event) => {
     onChange(updateValue({ status: event.target.value }));
+  }
+
+  const handleDateFromChange = (date) => {
+    console.log(date)
+    onChange(updateValue({ startDate: convertToUtc(date) }));
+  }
+
+  const handleDateToChange = (date) => {
+    console.log(date)
+    onChange(updateValue({ endDate: convertToUtc(date) }));
   }
 
   if (!value || !healthRisks) {
@@ -100,6 +119,30 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
                 </MenuItem>
               ))}
             </TextField>
+          </Grid>
+          <Grid item>
+            <DatePicker
+              select
+              label={"Start date"}
+              value={convertToLocalDate(value.startDate) || "2021-07-16"}
+              onChange={handleDateFromChange}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              ))}
+            </DatePicker>
+          </Grid>
+          <Grid item>
+            <DatePicker
+              select
+              label={"End date"}
+              value={convertToLocalDate(value.endDate) || "2021-07-16"}
+              onChange={handleDateToChange}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              ))}
+            </DatePicker>
           </Grid>
         </Grid>
       </CardContent>

@@ -43,6 +43,7 @@ export const alertStatus = {
   closed: "Closed"
 }
 
+export const dateFilter = "DateFilter"
 export const timeTriggeredColumn = "TimeTriggered";
 export const timeOfLastReportColumn = "TimeOfLastReport";
 export const statusColumn = "Status";
