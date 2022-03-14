@@ -29,6 +29,11 @@
       transform: rotate(180deg);
     }
   }
+
+  &.rtl {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
 }
 
 .radioGroup {

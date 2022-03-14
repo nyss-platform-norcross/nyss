@@ -86,7 +86,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
-                <TableCell>
+                <TableCell className={styles.phoneNumber}>
                   {row.name}
                   <br />
                   {row.phoneNumber}

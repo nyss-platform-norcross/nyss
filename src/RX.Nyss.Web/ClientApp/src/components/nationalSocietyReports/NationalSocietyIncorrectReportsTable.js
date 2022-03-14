@@ -85,7 +85,7 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
                 <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
-              <TableCell>
+              <TableCell className={styles.phoneNumber}>
                 {renderDataCollectorDisplayName(row)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>

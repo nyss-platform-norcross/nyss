@@ -97,7 +97,7 @@ export const NationalSocietyCorrectReportsTable = ({ isListFetching, list, page,
                 {strings(stringKeys.reports.status[row.status])}
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
-              <TableCell>
+              <TableCell className={styles.phoneNumber}>
                 {renderDataCollectorDisplayName(row)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>

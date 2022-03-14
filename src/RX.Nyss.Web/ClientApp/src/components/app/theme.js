@@ -57,11 +57,6 @@ export const theme = (direction) => createTheme({
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
       },
-      startIcon: {
-        "@media (max-width: 1279px)": {
-          display: "none"
-        }
-      }
     },
     MuiMenu: {
       paper: {
@@ -322,6 +317,10 @@ export const theme = (direction) => createTheme({
       icon: {
         left: direction === 'ltr' ? null : 0,
         right: direction === 'ltr' ? 0 : null
+      },
+      select: {
+        paddingRight: direction === 'ltr' ? '24px' : '10px !important',
+        paddingLeft: direction === 'ltr' ? 10 : '24px'
       }
     },
     MuiChip: {

@@ -33,4 +33,9 @@
   @media screen and (min-width: 1280px) {
     display: none;
   }
+
+  &.rtl {
+    margin-left: 0;
+    margin-right: 15px;
+  }
 }

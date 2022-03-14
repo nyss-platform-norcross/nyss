@@ -7,12 +7,12 @@ import { UserStatus } from './UserStatus';
 import { Icon } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
-const HeaderComponent = ({ sideMenuOpen, toggleSideMenu }) => {
+const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl }) => {
   return (
     <div className={styles.header}>
       <div className={styles.placeholder}>
         <Icon className={styles.toggleMenu} onClick={() => toggleSideMenu(!sideMenuOpen)}>menu</Icon>
-        <img className={styles.smallLogo} src="/images/logo-small.svg" alt="Nyss logo" />
+        <img className={`${styles.smallLogo} ${directionRtl ? styles.rtl : ''}`} src="/images/logo-small.svg" alt="Nyss logo" />
       </div>
       <div className={styles.topMenu}>
         <TopMenu />
@@ -26,7 +26,8 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu }) => {
 
 const mapStateToProps = state => ({
   breadcrumb: state.appData.siteMap.breadcrumb,
-  sideMenuOpen: state.appData.mobile.sideMenuOpen
+  sideMenuOpen: state.appData.mobile.sideMenuOpen,
+  directionRtl: state.appData.user.languageCode === 'ar'
 });
 
 const mapDispatchToProps = {

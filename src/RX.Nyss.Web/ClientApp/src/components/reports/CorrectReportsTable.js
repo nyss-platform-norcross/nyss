@@ -1,3 +1,4 @@
+import styles from './ReportsTable.module.scss';
 import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
@@ -137,7 +138,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
               <TableRow key={row.id} hover>
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
                 <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
-                <TableCell>
+                <TableCell className={styles.phoneNumber}>
                   {renderDataCollectorDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>

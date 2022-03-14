@@ -162,7 +162,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                       }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
               </Grid>
             )}
-            <Grid item className={styles.expandFilterButton}>
+            <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
                 <ExpandMore/>
               </IconButton>
