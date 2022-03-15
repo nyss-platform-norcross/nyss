@@ -15,9 +15,9 @@ namespace RX.Nyss.Data
             SeedAlertEventSubtypes(modelBuilder);
             SeedCountries(modelBuilder);
         }
+
         private static void SeedApplicationLanguages(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<ApplicationLanguage>().
-                HasData(
+            modelBuilder.Entity<ApplicationLanguage>().HasData(
                 new ApplicationLanguage
                 {
                     Id = 1,
@@ -73,8 +73,7 @@ namespace RX.Nyss.Data
                 );
 
         private static void SeedAdministrator(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<AdministratorUser>().
-                HasData(new
+            modelBuilder.Entity<AdministratorUser>().HasData(new
             {
                 Id = 1,
                 IdentityUserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
@@ -249,8 +248,7 @@ namespace RX.Nyss.Data
                 );
 
         private static void SeedCountries(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<Country>().
-                HasData(
+            modelBuilder.Entity<Country>().HasData(
                 new Country
                 {
                     Id = 1,
@@ -1702,6 +1700,12 @@ namespace RX.Nyss.Data
                     Id = 242,
                     CountryCode = "ZW",
                     Name = "Zimbabwe"
+                },
+                new Country
+                {
+                    Id = 243,
+                    CountryCode = "SS",
+                    Name = "South Sudan"
                 }
             );
     }

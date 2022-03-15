@@ -37,6 +37,7 @@ namespace RX.Nyss.Web.Features.AppData
                         Id = cl.Id,
                         Name = cl.Name
                     })
+                    .OrderBy(c => c.Name)
                     .ToListAsync(),
                 ContentLanguages = await _nyssContext.ContentLanguages
                     .Select(cl => new AppDataResponseDto.ContentLanguageDto
