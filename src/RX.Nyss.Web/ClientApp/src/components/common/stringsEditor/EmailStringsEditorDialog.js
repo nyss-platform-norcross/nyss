@@ -4,14 +4,10 @@ import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
-import { updateStrings } from '../../../strings';
 import { useDispatch } from 'react-redux';
 import {
   emailStringsDeleted,
-  emailStringsUpdated,
-  smsStringsUpdated,
-  stringsDeleted,
-  stringsUpdated
+  emailStringsUpdated
 } from '../../app/logic/appActions';
 import TextWithHTMLPreviewInputField from '../../forms/TextInputWithHTMLPreviewField';
 import {

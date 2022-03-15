@@ -398,16 +398,5 @@ namespace RX.Nyss.Web.Features.Resources
             strings.Add(entry);
             return entry;
         }
-        private static StringsBlob.Entry DeleteEntry(ICollection<StringsBlob.Entry> strings, string key)
-        {
-            var entry = new StringsBlob.Entry
-            {
-                Key = key,
-                Translations = new Dictionary<string, string>()
-            };
-
-            strings.Remove(entry);
-            return null;
-        }
     }
 }

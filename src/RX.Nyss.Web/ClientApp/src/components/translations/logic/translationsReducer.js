@@ -2,7 +2,7 @@ import * as actions from "./translationsConstants";
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
 import * as appActions from "../../app/logic/appConstans";
-import {assignInArray, removeFromArray, removeProperty} from "../../../utils/immutable";
+import {assignInArray, removeFromArray} from "../../../utils/immutable";
 
 export function translationsReducer(state = initialState.translations, action) {
   switch (action.type) {

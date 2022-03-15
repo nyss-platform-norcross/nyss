@@ -1,6 +1,5 @@
 import * as actions from "./appConstans";
 import { push } from "connected-react-router";
-import {STRINGS_DELETED} from "./appConstans";
 
 export const showMessage = (messageKey, time) => ({ type: actions.SHOW_MESSAGE.INVOKE, messageKey, time });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });

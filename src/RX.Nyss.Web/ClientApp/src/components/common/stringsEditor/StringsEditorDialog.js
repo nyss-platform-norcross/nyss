@@ -4,7 +4,7 @@ import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
-import { updateStrings, deleteStrings } from '../../../strings';
+import { updateStrings } from '../../../strings';
 import { Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
