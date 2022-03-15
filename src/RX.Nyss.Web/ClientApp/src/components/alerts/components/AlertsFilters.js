@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Grid, TextField, MenuItem, Card, CardContent } from '@material-ui/core';
 import LocationFilter from "../../common/filters/LocationFilter";
 import { strings, stringKeys } from "../../../strings";
-import { alertStatusFilters } from "../logic/alertsConstants";
+import {alertStatusFilters, dateFilter} from "../logic/alertsConstants";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 import {DatePicker} from "../../forms/DatePicker";
 import {convertToLocalDate, convertToUtc} from "../../../utils/date";
@@ -56,6 +56,7 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
   const handleStatusChange = (event) => {
     onChange(updateValue({ status: event.target.value }));
   }
+
 
   const handleDateFromChange = (date) => {
     console.log(date)
@@ -124,7 +125,7 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
             <DatePicker
               select
               label={"Start date"}
-              value={convertToLocalDate(value.startDate) || "2021-07-16"}
+              value={convertToLocalDate(value.startDate)}
               onChange={handleDateFromChange}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
@@ -136,7 +137,7 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
             <DatePicker
               select
               label={"End date"}
-              value={convertToLocalDate(value.endDate) || "2021-07-16"}
+              value={convertToLocalDate(value.endDate)}
               onChange={handleDateToChange}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}

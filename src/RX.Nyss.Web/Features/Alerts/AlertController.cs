@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
@@ -32,8 +33,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("getFiltersData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId) =>
-            _alertService.GetFiltersData(projectId);
+        public Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId, DateTime from, DateTime to) =>
+            _alertService.GetFiltersData(projectId, from, to);
 
         /// <summary>
         /// Lists alerts for a specific project

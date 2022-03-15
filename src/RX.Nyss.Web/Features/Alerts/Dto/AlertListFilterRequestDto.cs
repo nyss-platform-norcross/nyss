@@ -14,5 +14,6 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
         public int UtcOffset { get; set; }
+        public string FromDate { get; set; }
     }
 }

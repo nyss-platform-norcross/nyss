@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
 
-        Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
+        Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId, DateTime from, DateTime to);
 
         Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto);
     }
