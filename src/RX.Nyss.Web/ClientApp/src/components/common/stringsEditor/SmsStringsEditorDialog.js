@@ -54,10 +54,6 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
 
     post('/api/resources/saveSmsString', dto)
       .then(() => {
-        smsStringsUpdated({
-          [values.key]: values[`value_${currentLanguageCode}`]
-        });
-
         dispatch(smsStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
       });

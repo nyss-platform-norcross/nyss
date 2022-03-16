@@ -68,10 +68,6 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
 
     post('/api/resources/saveEmailString', dto)
       .then(() => {
-        emailStringsUpdated({
-          [values.key]: values[`value_${currentLanguageCode}`]
-        });
-
         dispatch(emailStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
       });
