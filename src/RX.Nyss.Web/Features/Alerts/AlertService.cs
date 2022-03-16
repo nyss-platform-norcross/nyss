@@ -209,9 +209,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(alert => new
                 {
                     Alert = alert,
-                    LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id)
+                    ReportLocations = alert.AlertReports.OrderByDescending(r => r.Report.Id)
                         .Select(ar => $"{ar.Report.RawReport.Village.Name}, {ar.Report.RawReport.Village.District.Name}, {ar.Report.RawReport.Village.District.Region.Name}")
-                        .First(),
+                        .Distinct(),
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -268,7 +268,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     notificationEmails,
                     alertData.Project,
                     alertData.HealthRisk,
-                    alertData.LastReportVillage);
+                    alertData.ReportLocations);
 
                 await SendNotificationSmses(
                     alertData.NationalSocietyId,
@@ -276,7 +276,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     notificationPhoneNumbers,
                     alertData.Project,
                     alertData.HealthRisk,
-                    alertData.LastReportVillage);
+                    alertData.ReportLocations.First());
 
                 alertData.Alert.RecipientsNotifiedAt = _dateTimeProvider.UtcNow;
 
@@ -600,16 +600,17 @@ namespace RX.Nyss.Web.Features.Alerts
             return organizationHasReportsInAlert;
         }
 
-        private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, string lastReportVillage)
+        private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, IEnumerable<string> reportLocations)
         {
             try
             {
                 var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
+                var reportLocationsList = reportLocations.Aggregate("", (a, c) => $"{a}<li>{c}</li>\n");
 
                 body = body
                     .Replace("{{project}}", project)
                     .Replace("{{healthRisk}}", healthRisk)
-                    .Replace("{{lastReportVillage}}", lastReportVillage);
+                    .Replace("{{reportLocations}}", reportLocationsList);
 
                 foreach (var email in notificationEmails)
                 {
@@ -624,7 +625,7 @@ namespace RX.Nyss.Web.Features.Alerts
         }
 
         private async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<SendSmsRecipient> notificationRecipients, string project, string healthRisk,
-            string lastReportVillage)
+            string lastReportLocation)
         {
             try
             {
@@ -641,7 +642,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 text = text
                     .Replace("{{project}}", project)
                     .Replace("{{healthRisk}}", healthRisk)
-                    .Replace("{{lastReportVillage}}", lastReportVillage);
+                    .Replace("{{lastReportLocation}}", lastReportLocation);
 
                 if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
                 {
