@@ -39,6 +39,19 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
+        [HttpPost("deleteString"), AllowAnonymous]
+        public async Task<Result> DeleteString([FromBody] DeleteStringRequestDto dto)
+        {
+            var result = await _resourcesService.DeleteString(dto);
+
+//            if (result.IsSuccess)
+//            {
+//                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+//            }
+
+            return result;
+        }
+
         [HttpPost("saveEmailString"), AllowAnonymous]
         public async Task<Result> SaveEmailString([FromBody] SaveStringRequestDto dto)
         {
@@ -55,6 +68,19 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
+        [HttpPost("deleteEmailString"), AllowAnonymous]
+        public async Task<Result> DeleteEmailString([FromBody] DeleteStringRequestDto dto)
+        {
+            var result = await _resourcesService.DeleteEmailString(dto);
+
+//            if (result.IsSuccess)
+//            {
+//                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+//            }
+
+            return result;
+        }
+
         [HttpPost("saveSmsString"), AllowAnonymous]
         public async Task<Result> SaveSmsString([FromBody] SaveStringRequestDto dto)
         {
@@ -67,6 +93,19 @@ namespace RX.Nyss.Web.Features.Resources
                     _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
                 }
             }
+
+            return result;
+        }
+
+        [HttpPost("deleteSmsString"), AllowAnonymous]
+        public async Task<Result> DeleteSmsString([FromBody] DeleteStringRequestDto dto)
+        {
+            var result = await _resourcesService.DeleteSmsString(dto);
+
+//            if (result.IsSuccess)
+//            {
+//                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+//            }
 
             return result;
         }

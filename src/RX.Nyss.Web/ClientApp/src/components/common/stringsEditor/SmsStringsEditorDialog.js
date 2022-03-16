@@ -5,9 +5,8 @@ import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
-import { updateStrings } from '../../../strings';
 import { useDispatch } from 'react-redux';
-import { stringsUpdated } from '../../app/logic/appActions';
+import {smsStringsDeleted, smsStringsUpdated} from '../../app/logic/appActions';
 import TextInputWithCharacterCountField from '../../forms/TextInputWithCharacterCountField';
 
 export const SmsStringsEditorDialog = ({ stringKey, close }) => {
@@ -55,11 +54,25 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
 
     post('/api/resources/saveSmsString', dto)
       .then(() => {
-        updateStrings({
-          [values.key]: values[`value_${currentLanguageCode}`]
-        });
+        dispatch(smsStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        close();
+      });
+  }
 
-        dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+  const handleDelete = () => {
+    if (!form.isValid()) {
+      return;
+    }
+
+    const values = form.getValues();
+
+    const dto = {
+      key: values.key
+    };
+
+    post('/api/resources/deleteSmsString', dto)
+      .then(() => {
+        dispatch(smsStringsDeleted(dto.key));
         close();
       });
   }
@@ -108,10 +121,13 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
         <br />
       </DialogContent>
       {form && <DialogActions>
+        <Button onClick={handleDelete} color="secondary" variant="text">
+          Delete
+        </Button>
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
       </Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">
+        <Button onClick={handleSave} color="primary" variant="contained">
           Save
       </Button>
       </DialogActions>}

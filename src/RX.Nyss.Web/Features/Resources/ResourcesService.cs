@@ -14,8 +14,11 @@ namespace RX.Nyss.Web.Features.Resources
     public interface IResourcesService
     {
         Task<Result<string>> SaveString(SaveStringRequestDto dto);
+        Task<Result<string>> DeleteString(DeleteStringRequestDto dto);
         Task<Result<string>> SaveEmailString(SaveStringRequestDto dto);
+        Task<Result<string>> DeleteEmailString(DeleteStringRequestDto dto);
         Task<Result<string>> SaveSmsString(SaveStringRequestDto dto);
+        Task<Result<string>> DeleteSmsString(DeleteStringRequestDto dto);
         Task<Result<GetStringResponseDto>> GetString(string key);
         Task<Result<GetStringResponseDto>> GetEmailString(string key);
         Task<Result<GetStringResponseDto>> GetSmsString(string key);
@@ -173,6 +176,21 @@ namespace RX.Nyss.Web.Features.Resources
             return Success("Success");
         }
 
+        public async Task<Result<string>> DeleteString(DeleteStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
+            var strings = stringsBlob.Strings.Where(x => x.Key != dto.Key);
+
+            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+
         public async Task<Result<string>> SaveEmailString(SaveStringRequestDto dto)
         {
             if (_config.IsProduction)
@@ -204,6 +222,21 @@ namespace RX.Nyss.Web.Features.Resources
             return Success("Success");
         }
 
+        public async Task<Result<string>> DeleteEmailString(DeleteStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetEmailContentBlob();
+            var strings = stringsBlob.Strings.Where(x => x.Key != dto.Key);
+
+            await _stringsResourcesService.SaveEmailContentsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+
         public async Task<Result<string>> SaveSmsString(SaveStringRequestDto dto)
         {
             if (_config.IsProduction)
@@ -229,6 +262,20 @@ namespace RX.Nyss.Web.Features.Resources
                     entry.Translations.Add(languageCode, dtoTranslation.Value);
                 }
             }
+
+            await _stringsResourcesService.SaveSmsContentsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+        public async Task<Result<string>> DeleteSmsString(DeleteStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetSmsContentBlob();
+            var strings = stringsBlob.Strings.Where(x => x.Key != dto.Key);
 
             await _stringsResourcesService.SaveSmsContentsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
 

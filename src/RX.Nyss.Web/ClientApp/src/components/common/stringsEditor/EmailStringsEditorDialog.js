@@ -4,9 +4,11 @@ import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
-import { updateStrings } from '../../../strings';
 import { useDispatch } from 'react-redux';
-import { stringsUpdated } from '../../app/logic/appActions';
+import {
+  emailStringsDeleted,
+  emailStringsUpdated
+} from '../../app/logic/appActions';
 import TextWithHTMLPreviewInputField from '../../forms/TextInputWithHTMLPreviewField';
 import {
   useTheme,
@@ -66,11 +68,25 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
 
     post('/api/resources/saveEmailString', dto)
       .then(() => {
-        updateStrings({
-          [values.key]: values[`value_${currentLanguageCode}`]
-        });
+        dispatch(emailStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+        close();
+      });
+  }
 
-        dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
+  const handleDelete = () => {
+    if (!form.isValid()) {
+      return;
+    }
+
+    const values = form.getValues();
+
+    const dto = {
+      key: values.key
+    };
+
+    post('/api/resources/deleteEmailString', dto)
+      .then(() => {
+        dispatch(emailStringsDeleted(dto.key));
         close();
       });
   }
@@ -116,8 +132,9 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
         <br />
       </DialogContent>
       {form && <DialogActions>
+        <Button onClick={handleDelete} color="secondary" variant="text">Delete</Button>
         <Button onClick={close} color="primary" variant="outlined">Cancel</Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">Save</Button>
+        <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
       </DialogActions>}
     </Dialog>
   );

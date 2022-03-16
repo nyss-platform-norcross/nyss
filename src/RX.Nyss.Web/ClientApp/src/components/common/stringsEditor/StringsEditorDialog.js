@@ -8,6 +8,7 @@ import { updateStrings } from '../../../strings';
 import { Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
+import { stringsDeleted } from '../../app/logic/appActions';
 import CheckboxField from '../../forms/CheckboxField';
 
 export const StringsEditorDialog = ({ stringKey, close }) => {
@@ -42,7 +43,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
   const handleSave = () => {
     if (!form.isValid()) {
       return;
-    };
+    }
 
     const values = form.getValues();
 
@@ -67,6 +68,24 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
         dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
       });
+  }
+
+  const handleDelete = () => {
+    if (!form.isValid()) {
+      return;
+    }
+
+    const values = form.getValues();
+
+    const dto = {
+      key: values.key
+    };
+
+    post('/api/resources/deleteString', dto)
+      .then(() => {
+        dispatch(stringsDeleted(dto.key));
+        close();
+    });
   }
 
   if (!form) {
@@ -119,10 +138,13 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
           label="Needs improvement"
           field={form.fields.needsImprovement}
         />
+        <Button onClick={handleDelete} color="secondary" variant="text">
+          Delete
+        </Button>
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">
+        <Button onClick={handleSave} color="primary" variant="contained">
           Save
         </Button>
       </DialogActions>}
