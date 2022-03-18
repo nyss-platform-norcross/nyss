@@ -102,7 +102,7 @@ export const stringKeys = {
       title: "nationalSociety.settings.title"
     },
     overview: {
-      title: "nationalSociety.dashboard.overview"
+      title: "nationalSociety.overview.title"
     },
     structure: {
       title: "nationalSociety.structure.title",
