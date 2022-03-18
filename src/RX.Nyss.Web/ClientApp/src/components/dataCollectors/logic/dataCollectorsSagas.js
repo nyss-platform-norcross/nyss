@@ -117,7 +117,7 @@ function* createDataCollector({ data }) {
     const response = yield call(http.post, `/api/dataCollector/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(data.projectId));
-    yield put(appActions.showMessage(stringKeys.dataCollector.messages.creationSuccessful));
+    yield put(appActions.showMessage(response.value));
   } catch (error) {
     yield put(actions.create.failure(error));
   }
@@ -129,7 +129,7 @@ function* editDataCollector({ data }) {
     const response = yield call(http.post, `/api/dataCollector/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(data.projectId));
-    yield put(appActions.showMessage(stringKeys.dataCollector.messages.editionSuccessful));
+    yield put(appActions.showMessage(response.value));
   } catch (error) {
     yield put(actions.edit.failure(error));
   }
@@ -138,12 +138,12 @@ function* editDataCollector({ data }) {
 function* removeDataCollector({ dataCollectorId }) {
   yield put(actions.remove.request(dataCollectorId));
   try {
-    yield call(http.post, `/api/dataCollector/${dataCollectorId}/delete`);
+    const response = yield call(http.post, `/api/dataCollector/${dataCollectorId}/delete`);
     yield put(actions.remove.success(dataCollectorId));
     const projectId = yield select(state => state.appData.route.params.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
     yield call(getDataCollectors, { projectId, filters });
-    yield put(appActions.showMessage(stringKeys.dataCollector.messages.deletionSuccessful));
+    yield put(appActions.showMessage(response.value));
   } catch (error) {
     yield put(actions.remove.failure(dataCollectorId, error.message));
   }

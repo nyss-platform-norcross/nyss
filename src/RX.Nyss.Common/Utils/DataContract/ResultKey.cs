@@ -43,8 +43,6 @@ public static class ResultKey
             public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
             public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
             public const string UnknownError = "user.registration.unknownError";
-            public const string NationalSocietyCoordinatorAlreadyExists = "user.registration.nationalSocietyCoordinatorAlreadyExists";
-            public const string NotHeadManager = "user.registration.notHeadManager";
             public const string HeadManagerAlreadyExists = "user.registration.headManagerAlreadyExists";
             public const string CoordinatorExists = "user.registration.coordinatorExists";
             public const string CannotAssignUserToModemInDifferentNationalSociety = "user.registration.cannotAssignUserToModemInDifferentNationalSociety";
@@ -108,7 +106,6 @@ public static class ResultKey
 
         public static class Creation
         {
-            public const string Success = "nationalSociety.creation.success";
             public const string CountryNotFound = "nationalSociety.creation.countryNotFound";
             public const string LanguageNotFound = "nationalSociety.creation.languageNotFound";
             public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists";
@@ -118,11 +115,6 @@ public static class ResultKey
         {
             public const string Success = "nationalSociety.edit.success";
             public const string CannotEditArchivedNationalSociety = "nationalSociety.edit.cannotEditArchivedNationalSociety";
-        }
-
-        public static class Remove
-        {
-            public const string Success = "nationalSociety.remove.success";
         }
 
         public static class Archive
@@ -150,7 +142,6 @@ public static class ResultKey
             public const string SuccessfullyUpdated = "nationalSociety.smsGateway.successfullyUpdated";
             public const string SuccessfullyDeleted = "nationalSociety.smsGateway.successfullyDeleted";
             public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
-            public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
 
             public static class Deletion
             {
@@ -184,13 +175,11 @@ public static class ResultKey
         public static class Create
         {
             public const string CreationSuccess = "healthRisk.create.success";
-            public const string CreationError = "healthRisk.create.error";
         }
 
         public static class Edit
         {
             public const string EditSuccess = "healthRisk.edit.success";
-            public const string EditError = "healthRisk.edit.error";
         }
 
         public static class Remove
@@ -201,10 +190,7 @@ public static class ResultKey
 
     public static class Report
     {
-        public const string ProjectIsClosed = "report.projectIsClosed";
         public const string ReportNotFound = "report.reportNotFound";
-        public const string NoAccess = "report.noAccess";
-        public const string ReportSentSuccessfully = "report.sentSuccessfully";
         public const string NoGatewaySettingFoundForNationalSociety = "report.noGatewaySettingFoundForNationalSociety";
         public const string LinkedToSupervisor = "report.linkedToSupervisor";
         public const string LinkedToOrganization = "report.linkedToOrganization";
@@ -224,12 +210,10 @@ public static class ResultKey
         public static class Edit
         {
             public const string EditSuccess = "report.edit.success";
-            public const string EditError = "report.edit.error";
             public const string DataCollectorTypeCannotBeChanged = "report.edit.dataCollectorTypeCannotBeChanged";
             public const string SenderDoesNotExist = "report.edit.senderDoesNotExist";
             public const string OnlyNewReportsEditable = "report.edit.onlyNewReportsEditable";
             public const string HealthRiskNotAssignedToProject = "report.healthRiskNotAssignedToProject";
-            public const string HealthRiskCannotBeEdited = "report.healthRiskCannotBeEdited";
             public const string LocationNotFound = "report.edit.locationNotFound";
         }
 
@@ -253,10 +237,6 @@ public static class ResultKey
 
     public static class Project
     {
-        public const string NotFound = "project.notFound";
-        public const string SuccessfullyAdded = "project.successfullyAdded";
-        public const string SuccessfullyUpdated = "project.successfullyUpdated";
-        public const string SuccessfullyClosed = "project.successfullyClosed";
         public const string ProjectDoesNotExist = "project.projectDoesNotExist";
         public const string ProjectAlreadyClosed = "project.projectAlreadyClosed";
         public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
@@ -264,7 +244,6 @@ public static class ResultKey
         public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
         public const string CannotAddProjectInArchivedNationalSociety = "project.cannotAddProjectInArchivedNationalSociety";
         public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
-        public const string CannotRemoveAlertRecipientWithSupervisorsAttached = "project.cannotRemoveAlertRecipientWithSupervisorsAttached";
         public const string OnlyCoordinatorCanAdministrateProjects = "project.onlyCoordinatorCanAdministrateProjects";
         public const string OnlyCoordinatorCanCloseThisProjects = "project.onlyCoordinatorCanCloseThisProjects";
         public const string AllowMultipleOrganizationsFlagCannotBeRemoved = "project.allowMultipleOrganizationsFlagCannotBeRemoved";
@@ -289,10 +268,8 @@ public static class ResultKey
         public const string AlertRecipientDoesNotExist = "alertRecipient.alertRecipientDoesNotExist";
         public const string AlertRecipientSuccessfullyEdited = "alertRecipient.alertRecipientSuccessfullyEdited";
         public const string CurrentUserMustBeTiedToAnOrganization = "alertRecipient.currentUserMustBeTiedToAnOrganization";
-        public const string CannotDeleteAlertRecipientTiedToSupervisors = "alertRecipient.cannotDeleteAlertRecipientTiedToSupervisors";
         public const string ProjectIsClosed = "alertRecipient.projectIsClosed";
         public const string AllSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allSupervisorsMustBeTiedToSameOrganization ";
-        public const string AllHeadSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allHeadSupervisorsMustBeTiedToSameOrganization ";
         public const string ModemMustBeConnectedToSameNationalSociety = "alertRecipient.modemMustBeConnectedToSameNationalSociety";
     }
 
@@ -308,12 +285,8 @@ public static class ResultKey
         public const string CreateSuccess = "dataCollector.create.success";
         public const string EditSuccess = "dataCollector.edit.success";
         public const string PhoneNumberAlreadyExists = "dataCollector.phoneNumberExists";
-        public const string ProjectDoesntExist = "dataCollector.projectDoesntExist";
         public const string DataCollectorNotFound = "dataCollector.notFound";
-        public const string CreateError = "dataCollector.create.error";
-        public const string EditError = "dataCollector.edit.error";
         public const string RemoveSuccess = "dataCollector.remove.success";
-        public const string RemoveError = "dataCollector.remove.error";
         public const string SetInTrainingSuccess = "dataCollector.setInTraining.success";
         public const string SetOutOfTrainingSuccess = "dataCollector.setOutOfTraining.success";
         public const string ProjectIsClosed = "dataCollector.projectIsClosed";
@@ -398,7 +371,6 @@ public static class ResultKey
     {
         public const string CreateSuccess = "alertNotHandledRecipient.create.success";
         public const string EditSuccess = "alertNotHandledRecipient.edit.success";
-        public const string DeleteSuccess = "alertNotHandledRecipient.delete.success";
         public const string UserMustBeInSameOrg = "alertNotHandledRecipient.userMustBeInSameOrg";
         public const string NotFound = "alertNotHandledRecipient.notFound";
         public const string AlreadyExists = "alertNotHandledRecipient.alreadyExists";

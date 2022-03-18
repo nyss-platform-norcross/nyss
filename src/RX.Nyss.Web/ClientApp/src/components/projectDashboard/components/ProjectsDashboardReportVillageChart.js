@@ -45,20 +45,19 @@ const getOptions = (valuesLabel, series, categories) => ({
 });
 
 export const ProjectsDashboardReportVillageChart = ({ data }) => {
-  const moduleStrings = stringKeys.project.dashboard.reportsPerVillageAndDate;
   const categories = data.allPeriods;
   const villages = data.villages.length ? data.villages : [{ name: "", periods: [] } ]
 
   const series = villages.map(village => ({
-    name: village.name === "(rest)" ? strings(moduleStrings.rest, true) : village.name,
+    name: village.name === "(rest)" ? strings(stringKeys.project.dashboard.reportsPerVillageAndDate.rest, true) : village.name,
     data: data.allPeriods.map(period => village.periods.filter(p => p.period === period).map(p => p.count).find(_ => true) || 0),
   }));
 
-  const chartData = getOptions(strings(moduleStrings.numberOfReports, true), series, categories);
+  const chartData = getOptions(strings(stringKeys.project.dashboard.reportsPerVillageAndDate.numberOfReports, true), series, categories);
 
   return (
     <Card data-printable={true}>
-      <CardHeader title={strings(moduleStrings.title)} />
+      <CardHeader title={strings(stringKeys.project.dashboard.reportsPerVillageAndDate.title)} />
       <CardContent>
         <HighchartsReact
           highcharts={Highcharts}

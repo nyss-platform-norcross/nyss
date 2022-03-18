@@ -21,13 +21,13 @@ export const stringKeys = {
     }
   },
   roles: {
-    "TechnicalAdvisor": "roles.technicalAdvisor",
-    "Administrator": "roles.administrator",
-    "GlobalCoordinator": "roles.globalCoordinator",
-    "DataConsumer": "roles.dataConsumer",
-    "Manager": "roles.manager",
-    "Supervisor": "roles.supervisor",
-    "Coordinator": "roles.coordinator"
+    "TechnicalAdvisor": "role.technicalAdvisor",
+    "Administrator": "role.administrator",
+    "GlobalCoordinator": "role.globalCoordinator",
+    "DataConsumer": "role.dataConsumer",
+    "Manager": "role.manager",
+    "Supervisor": "role.supervisor",
+    "Coordinator": "role.coordinator"
   },
   login: {
     title: "login.title",
@@ -41,7 +41,6 @@ export const stringKeys = {
   },
   nationalSociety: {
     title: "nationalSociety.title",
-    addNew: "nationalSociety.addNew",
     edit: "nationalSociety.edit",
     archive:
     {
@@ -60,8 +59,6 @@ export const stringKeys = {
       initialOrganizationName: "nationalSociety.form.initialOrganizationName",
       country: "nationalSociety.form.country",
       contentLanguage: "nationalSociety.form.contentLanguage",
-      create: "nationalSociety.form.create",
-      update: "nationalSociety.form.update",
       epiWeekStandard: {
         title: "nationalSociety.form.epiWeekStandard.title",
         "Sunday": {
@@ -98,7 +95,6 @@ export const stringKeys = {
       coordinator: "nationalSociety.list.coordinator",
       headManager: "nationalSociety.list.headManager",
       technicalAdvisor: "nationalSociety.list.technicalAdvisor",
-      removalConfirmation: "nationalSociety.list.removalConfirmation",
       archive: "nationalSociety.list.archive",
       reopen: "nationalSociety.list.reopen",
     },
@@ -108,45 +104,45 @@ export const stringKeys = {
     dashboard: {
       title: "nationalSociety.dashboard.title",
       numbers: {
-        reportCountTitle: "nationalsociety.dashboard.numbers.reportCountTitle",
-        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
-        alertsSummaryTitle: "nationalsociety.dashboard.numbers.alertsSummaryTitle",
-        dismissedAlerts: "nationalsociety.dashboard.numbers.dismissedAlerts",
-        escalatedAlerts: "nationalsociety.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
-        numberOfVillages: "nationalsociety.dashboard.numbers.numberOfVillages",
-        numberOfDistricts: "nationalsociety.dashboard.numbers.numberOfDistricts"
+        reportCountTitle: "nationalSociety.dashboard.numbers.reportCountTitle",
+        totalReportCount: "nationalSociety.dashboard.numbers.totalReportCount",
+        alertsSummaryTitle: "nationalSociety.dashboard.numbers.alertsSummaryTitle",
+        dismissedAlerts: "nationalSociety.dashboard.numbers.dismissedAlerts",
+        escalatedAlerts: "nationalSociety.dashboard.numbers.escalatedAlerts",
+        closedAlerts: "nationalSociety.dashboard.numbers.closedAlerts",
+        numberOfVillages: "nationalSociety.dashboard.numbers.numberOfVillages",
+        numberOfDistricts: "nationalSociety.dashboard.numbers.numberOfDistricts"
       },
       filters: {
-        title: "nationalsociety.dashboard.filters.title",
-        startDate: "nationalsociety.dashboard.filters.startDate",
-        endDate: "nationalsociety.dashboard.filters.endDate",
-        timeGrouping: "nationalsociety.dashboard.filters.timeGrouping",
-        timeGroupingDay: "nationalsociety.dashboard.filters.timeGrouping.day",
-        timeGroupingWeek: "nationalsociety.dashboard.filters.timeGrouping.week",
-        healthRisk: "nationalsociety.dashboard.filters.healthRisk",
-        organization: "nationalsociety.dashboard.filters.organization",
-        healthRiskAll: "nationalsociety.dashboard.filters.healthRiskAll",
-        organizationsAll: "nationalsociety.dashboard.filters.organizationsAll",
-        reportsType: "nationalsociety.dashboard.filters.reportsType",
-        allReportsType: "nationalsociety.dashboard.filters.allReportsType",
-        dataCollectorReportsType: "nationalsociety.dashboard.filters.dataCollectorReportsType",
-        dataCollectionPointReportsType: "nationalsociety.dashboard.filters.dataCollectionPointReportsType"
+        title: "nationalSociety.dashboard.filters.title",
+        startDate: "nationalSociety.dashboard.filters.startDate",
+        endDate: "nationalSociety.dashboard.filters.endDate",
+        timeGrouping: "nationalSociety.dashboard.filters.timeGrouping",
+        timeGroupingDay: "nationalSociety.dashboard.filters.timeGrouping.day",
+        timeGroupingWeek: "nationalSociety.dashboard.filters.timeGrouping.week",
+        healthRisk: "nationalSociety.dashboard.filters.healthRisk",
+        organization: "nationalSociety.dashboard.filters.organization",
+        healthRiskAll: "nationalSociety.dashboard.filters.healthRiskAll",
+        organizationsAll: "nationalSociety.dashboard.filters.organizationsAll",
+        reportsType: "nationalSociety.dashboard.filters.reportsType",
+        allReportsType: "nationalSociety.dashboard.filters.allReportsType",
+        dataCollectorReportsType: "nationalSociety.dashboard.filters.dataCollectorReportsType",
+        dataCollectionPointReportsType: "nationalSociety.dashboard.filters.dataCollectionPointReportsType"
       },
-      activeDataCollectorCount: "nationalsociety.dashboard.activeDataCollectorCount",
-      referredToHospitalCount: "nationalsociety.dashboard.referredToHospitalCount",
-      fromOtherVillagesCount: "nationalsociety.dashboard.fromOtherVillagesCount",
-      deathCount: "nationalsociety.dashboard.deathCount",
-      startDate: "nationalsociety.dashboard.startDate",
-      dataCollectors: "nationalsociety.dashboard.dataCollectors",
-      dataCollectionPoints: "nationalsociety.dashboard.dataCollectionPoints",
-      healthRisks: "nationalsociety.dashboard.healthRisks",
-      geographicalCoverage: "nationalsociety.dashboard.geographicalCoverage",
+      activeDataCollectorCount: "nationalSociety.dashboard.activeDataCollectorCount",
+      referredToHospitalCount: "nationalSociety.dashboard.referredToHospitalCount",
+      fromOtherVillagesCount: "nationalSociety.dashboard.fromOtherVillagesCount",
+      deathCount: "nationalSociety.dashboard.deathCount",
+      startDate: "nationalSociety.dashboard.startDate",
+      dataCollectors: "nationalSociety.dashboard.dataCollectors",
+      dataCollectionPoints: "nationalSociety.dashboard.dataCollectionPoints",
+      healthRisks: "nationalSociety.dashboard.healthRisks",
+      geographicalCoverage: "nationalSociety.dashboard.geographicalCoverage",
       map: {
-        reportCount: "nationalsociety.dashboard.map.reportCount",
-        title: "nationalsociety.dashboard.map.title",
-        reports: "nationalsociety.dashboard.map.reports",
-        report: "nationalsociety.dashboard.map.report",
+        reportCount: "nationalSociety.dashboard.map.reportCount",
+        title: "nationalSociety.dashboard.map.title",
+        reports: "nationalSociety.dashboard.map.reports",
+        report: "nationalSociety.dashboard.map.report",
       },
       reportsPerVillageAndDate: {
         title: "nationalSociety.dashboard.reportsPerVillageAndDate.title",
@@ -161,7 +157,6 @@ export const stringKeys = {
       title: "nationalSociety.structure.title",
       introduction: "nationalSociety.structure.introduction",
       removalConfirmation: "nationalSociety.structure.removalConfirmation",
-      cancelEdition: "nationalSociety.structure.cancelEdition",
       saveEdition: "nationalSociety.structure.saveEdition",
       saveNew: "nationalSociety.structure.saveNew",
       addRegion: "nationalSociety.structure.addRegion",
@@ -179,7 +174,6 @@ export const stringKeys = {
   },
   healthRisk: {
     title: "healthRisk.title",
-    addNew: "healthRisk.addNew",
     form: {
       creationTitle: "healthRisk.form.creationTitle",
       editionTitle: "healthRisk.form.editionTitle",
@@ -194,9 +188,7 @@ export const stringKeys = {
       alertRuleKilometersThreshold: "healthRisk.form.alertRuleKilometersThreshold",
       contentLanguageName: "healthRisk.form.contentLanguageName",
       contentLanguageCaseDefinition: "healthRisk.form.contentLanguageCaseDefinition",
-      contentLanguageFeedbackMessage: "healthRisk.form.contentLanguageFeedbackMessage",
-      create: "healthRisk.form.create",
-      update: "healthRisk.form.update"
+      contentLanguageFeedbackMessage: "healthRisk.form.contentLanguageFeedbackMessage"
     },
     list: {
       healthRiskCode: "healthRisk.list.healthRiskCode",
@@ -224,7 +216,6 @@ export const stringKeys = {
   },
   smsGateway: {
     title: "smsGateway.title",
-    addNew: "smsGateway.addNew",
     apiKeyCopied: "smsGateway.apiKeyCopied",
     form: {
       creationTitle: "smsGateway.form.creationTitle",
@@ -233,8 +224,6 @@ export const stringKeys = {
       apiKey: "smsGateway.form.apiKey",
       gatewayType: "smsGateway.form.gatewayType",
       emailAddress: "smsGateway.form.emailAddress",
-      create: "smsGateway.form.create",
-      update: "smsGateway.form.update",
       useIotHub: "smsGateway.form.useIotHub",
       iotHubDeviceName: "smsGateway.form.iotHubDeviceName",
       ping: "smsGateway.form.ping",
@@ -262,13 +251,10 @@ export const stringKeys = {
   },
   organization: {
     title: "organization.title",
-    addNew: "organization.addNew",
     form: {
       creationTitle: "organization.form.creationTitle",
       editionTitle: "organization.form.editionTitle",
-      name: "organization.form.name",
-      create: "organization.form.create",
-      update: "organization.form.update"
+      name: "organization.form.name"
     },
     create: {
       success: "organization.create.success"
@@ -289,12 +275,9 @@ export const stringKeys = {
   },
   projectOrganization: {
     title: "projectOrganization.title",
-    addNew: "projectOrganization.addNew",
     form: {
       creationTitle: "projectOrganization.form.creationTitle",
-      organization: "projectOrganization.form.organization",
-      create: "projectOrganization.form.create",
-      update: "projectOrganization.form.update"
+      organization: "projectOrganization.form.organization"
     },
     create: {
       success: "projectOrganization.create.success"
@@ -309,7 +292,6 @@ export const stringKeys = {
   },
   projectAlertRecipient: {
     title: "projectAlertRecipient.title",
-    addNew: "projectAlertRecipient.addNew",
     form: {
       creationTitle: "projectAlertRecipient.form.creationTitle",
       editionTitle: "projectAlertRecipient.form.editionTitle",
@@ -318,8 +300,6 @@ export const stringKeys = {
       projectOrganization: "projectAlertRecipient.form.projectOrganization",
       email: "projectAlertRecipient.form.email",
       phoneNumber: "projectAlertRecipient.form.phoneNumber",
-      create: "projectAlertRecipient.form.create",
-      update: "projectAlertRecipient.form.update",
       supervisors: "projectAlertRecipient.form.supervisors",
       healthRisks: "projectAlertRecipient.form.healthRisks",
       anyHealthRisk: "projectAlertRecipient.form.anyHealthRisk",
@@ -349,9 +329,7 @@ export const stringKeys = {
   },
   projectAlertNotHandledRecipient: {
     title: "projectAlertNotHandledRecipient.title",
-    description: "projectAlertNotHandledRecipient.description",
-    create: "projectAlertNotHandledRecipient.create",
-    update: "projectAlertNotHandledRecipient.update"
+    description: "projectAlertNotHandledRecipient.description"
   },
   project: {
     title: "project.title",
@@ -364,7 +342,6 @@ export const stringKeys = {
       name: "project.form.name",
       allowMultipleOrganizations: "project.form.allowMultipleOrganizations",
       organization: "project.form.organization",
-      timeZone: "project.form.timeZone",
       healthRisks: "project.form.healthRisks",
       healthRisksSection: "project.form.healthRisksSection",
       overviewHealthRisksSection: "project.form.overviewHealthRisksSection",
@@ -374,19 +351,6 @@ export const stringKeys = {
       alertRuleCountThreshold: "project.form.alertRuleCountThreshold",
       alertRuleDaysThreshold: "project.form.alertRuleDaysThreshold",
       alertRuleKilometersThreshold: "project.form.alertRuleKilometersThreshold",
-      alertNotificationsSection: "project.form.alertNotificationsSection",
-      overviewAlertNotificationsSection: "project.form.overviewAlertNotificationsSection",
-      alertNotificationsDescription: "project.form.alertNotificationsDescription",
-      alertNotificationsSupervisorsExplanation: "project.form.alertNotificationsSupervisorExplanation",
-      alertNotificationsRole: "project.form.alertNotificationsRole",
-      alertNotificationsOrganization: "project.form.alertNotificationsOrganization",
-      alertNotificationsEmail: "project.form.alertNotificationsEmail",
-      alertNotificationsPhoneNumber: "project.form.alertNotificationsPhoneNumber",
-      addRecipient: "project.form.addRecipient",
-      addEmail: "project.form.addEmail",
-      addSms: "project.form.addSms",
-      create: "project.form.create",
-      update: "project.form.update",
       alertNotHandledNotificationRecipient: "project.form.alertNotHandledNotificationRecipient"
     },
     messages: {
@@ -409,7 +373,6 @@ export const stringKeys = {
       supervisorCount: "project.list.supervisorCount",
       endDate: "project.list.endDate",
       ongoing: "project.list.ongoing",
-      open: "project.list.open",
       edit: "project.list.edit",
       close: "project.list.close",
       removalConfirmation: "project.list.removalConfirmation",
@@ -443,8 +406,6 @@ export const stringKeys = {
         allReportsType: "project.dashboard.filters.allReportsType",
         dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
         dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
-        notInTraining: "project.dashboard.filters.notInTraining",
-        inTraining: "project.dashboard.filters.inTraining",
         trainingStatus: "project.dashboard.filters.trainingStatus",
       },
       reportsPerHealthRisk: {
@@ -488,21 +449,12 @@ export const stringKeys = {
       referredToHospitalCount: "project.dashboard.referredToHospitalCount",
       fromOtherVillagesCount: "project.dashboard.fromOtherVillagesCount",
       deathCount: "project.dashboard.deathCount",
-      startDate: "project.dashboard.startDate",
       dataCollectors: "project.dashboard.dataCollectors",
       dataCollectionPoints: "project.dashboard.dataCollectionPoints",
-      healthRisks: "project.dashboard.healthRisks",
-      supervisors: "project.dashboard.supervisors",
-      supervisorEmailAddress: "project.dashboard.supervisorEmailAddress",
-      supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
-      supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber",
       alertsSummary: "project.dashboard.alertsSummary",
       geographicalCoverageSummary: "project.dashboard.geographicalCoverageSummary",
       map: {
-        reportCount: "project.dashboard.map.reportCount",
-        title: "project.dashboard.map.title",
-        reports: "project.dashboard.map.reports",
-        report: "project.dashboard.map.report",
+        title: "project.dashboard.map.title"
       },
       generatePdf: "project.dashboard.generatePdf"
     },
@@ -514,7 +466,6 @@ export const stringKeys = {
   },
   globalCoordinator: {
     title: "globalCoordinator.title",
-    addNew: "globalCoordinator.addNew",
     form: {
       creationTitle: "globalCoordinator.form.creationTitle",
       editionTitle: "globalCoordinator.form.editionTitle",
@@ -522,9 +473,7 @@ export const stringKeys = {
       email: "globalCoordinator.form.email",
       phoneNumber: "globalCoordinator.form.phoneNumber",
       additionalPhoneNumber: "globalCoordinator.form.additionalPhoneNumber",
-      organization: "globalCoordinator.form.organization",
-      create: "globalCoordinator.form.create",
-      update: "globalCoordinator.form.update"
+      organization: "globalCoordinator.form.organization"
     },
     list: {
       name: "globalCoordinator.list.name",
@@ -545,8 +494,6 @@ export const stringKeys = {
   },
   nationalSocietyUser: {
     title: "nationalSocietyUser.title",
-    addNew: "nationalSocietyUser.addNew",
-    addSuccess: "nationalSocietyUser.addSuccess",
     addExisting: "nationalSocietyUser.addExisting",
     form: {
       creationTitle: "nationalSocietyUser.form.creationTitle",
@@ -563,13 +510,7 @@ export const stringKeys = {
       phoneNumber: "nationalSocietyUser.form.phoneNumber",
       additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
       customOrganization: "nationalSocietyUser.form.customOrganization",
-      create: "nationalSocietyUser.form.create",
-      addExisting: "nationalSocietyUser.form.addExisting",
       projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
-      update: "nationalSocietyUser.form.update",
-      alertRecipients: "nationalSocietyUser.form.alertRecipients",
-      alertRecipientsAllNotAllowed: "nationalSocietyUser.form.alertRecipientsAllNotAllowed",
-      alertRecipientsAll: "nationalSocietyUser.form.alertRecipientsAll",
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
       confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText",
       headSupervisor: "nationalSocietyUser.form.headSupervisor",
@@ -587,7 +528,6 @@ export const stringKeys = {
     },
     list: {
       name: "nationalSocietyUser.list.name",
-      email: "nationalSocietyUser.list.email",
       phoneNumber: "nationalSocietyUser.list.phoneNumber",
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
@@ -603,7 +543,6 @@ export const stringKeys = {
   },
   dataCollector: {
     title: "dataCollectors.title",
-    addNew: "dataCollectors.addNew",
     exportExcel: "dataCollectors.exportExcel",
     exportCsv: "dataCollectors.exportCsv",
     form: {
@@ -617,8 +556,6 @@ export const stringKeys = {
       additionalPhoneNumber: "dataCollectors.form.additionalPhoneNumber",
       latitude: "dataCollectors.form.latitude",
       longitude: "dataCollectors.form.longitude",
-      create: "dataCollectors.form.create",
-      update: "dataCollectors.form.update",
       birthYearGroup: "dataCollectors.form.birthYearGroup",
       supervisor: "dataCollectors.form.supervisor",
       village: "dataCollectors.form.village",
@@ -715,18 +652,11 @@ export const stringKeys = {
         "NotReporting": "dataCollectors.mapOverview.legend.notReporting",
         "ReportingWithErrors": "dataCollectors.mapOverview.legend.reportingWithErrors"
       }
-    },
-    messages: {
-      creationSuccessful: "dataCollectors.create.success",
-      editionSuccessful: "dataCollectors.edit.success",
-      deletionSuccessful: "dataCollectors.delete.success"
     }
   },
   reports: {
     list: {
-      title: "reports.list.title",
       date: "reports.list.date",
-      time: "reports.list.time",
       healthRisk: "reports.list.healthRisk",
       status: "reports.list.status",
       region: "reports.list.region",
@@ -743,17 +673,8 @@ export const stringKeys = {
       referredCount: "reports.list.referredCount",
       deathCount: "reports.list.deathCount",
       fromOtherVillagesCount: "reports.list.fromOtherVillagesCount",
-      success: "reports.list.success",
-      error: "reports.list.error",
-      selectReportListType: "reports.list.selectReportListType",
-      mainReportsListType: "reports.list.mainReportsListType",
-      training: "reports.list.training",
-      nonTraining: "reports.list.nonTraining",
-      dcpReportListType: "reports.list.dcpReportListType",
       exportToExcel: "reports.list.exportToExcel",
       exportToCsv: "reports.list.exportToCsv",
-      successfulyMarkedAsError: "reports.list.successfulyMarkedAsError",
-      markedAsError: "reports.list.markedAsError",
       editReport: "reports.list.editReport",
       editedSuccesfully: "reports.list.editedSuccessfully",
       sendReport: "reports.list.sendReport",
@@ -787,8 +708,7 @@ export const stringKeys = {
       femalesAtLeastFive: "reports.form.femalesAtLeastFive",
       referredCount: "reports.form.referredCount",
       deathCount: "reports.form.deathCount",
-      fromOtherVillagesCount: "reports.form.fromOtherVillagesCount",
-      update: "reports.form.update"
+      fromOtherVillagesCount: "reports.form.fromOtherVillagesCount"
     },
     title: "reports.title",
     correctReportsTitle: "correctReports.title",
@@ -900,7 +820,6 @@ export const stringKeys = {
       },
       alert: {
         close: "alerts.assess.alert.close",
-        closeComments: "alerts.assess.alert.closeComments",
         closeConfirmation: "alerts.assess.alert.closeConfirmation",
         closeDescription: "alerts.assess.alert.closeDescription",
         escalate: "alerts.assess.alert.escalate",
@@ -920,9 +839,7 @@ export const stringKeys = {
       },
       report: {
         accept: "alerts.assess.report.accept",
-        acceptedSuccessfully: "alerts.assess.report.acceptedSuccessfully",
         dismiss: "alerts.assess.report.dismiss",
-        dismissedSuccessfully: "alerts.assess.report.dismissedSuccessfully",
         reset: "alerts.assess.report.reset",
         resetSuccessfully: "alerts.assess.report.resetSuccessfully",
         sender: "alerts.assess.report.sender",
@@ -945,7 +862,6 @@ export const stringKeys = {
     },
     eventLog: {
       title: "alerts.eventLog.title",
-      addNew: "alerts.eventLog.addNew",
       edit: "alerts.eventLog.edit",
       list: {
         date: "alerts.eventLog.list.date",
@@ -1165,7 +1081,6 @@ export const stringKeys = {
     submit: "feedback.submit",
     dialogTitle: "feedback.dialogTitle",
     dialogDescription: "feedback.dialogDescription",
-    privacyMessage: "feedback.privacyMessage",
     thankYou: "feedback.thankYou"
   },
 };

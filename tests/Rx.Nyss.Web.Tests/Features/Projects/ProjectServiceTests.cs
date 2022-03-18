@@ -340,7 +340,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         phr.AlertRule.KilometersThreshold == 3)));
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyAdded);
         }
 
         [Fact]
@@ -570,7 +569,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyUpdated);
         }
 
         [Fact]
@@ -773,7 +771,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             await _dataCollectorService.Received(1).AnonymizeDataCollectorsWithReports(existingProjectId);
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyClosed);
         }
 
 
@@ -905,7 +902,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.DataCollectors.Received(1).RemoveRange(Arg.Any<IQueryable<DataCollector>>());
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyClosed);
         }
 
         [Fact]
