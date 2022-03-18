@@ -62,14 +62,14 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
                 direction={sorting.sortAscending ? 'asc' : 'desc'}
                 onClick={createSortHandler(DateColumnName)}
               >
-                {strings(stringKeys.nationalSocietyReports.list.date)}
+                {strings(stringKeys.reports.list.date)}
               </TableSortLabel>
             </TableCell>
-            <TableCell style={{ width: '40%' }}>{strings(stringKeys.nationalSocietyReports.list.errorType)}</TableCell>
-            <TableCell style={{ width: '11%' }}>{strings(stringKeys.nationalSocietyReports.list.message)}</TableCell>
-            <TableCell style={{ width: '11%' }}>{strings(stringKeys.nationalSocietyReports.list.project)}</TableCell>
-            <TableCell style={{ width: '11%' }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: '14%' }}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
+            <TableCell style={{ width: '40%' }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
+            <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
+            <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.project)}</TableCell>
+            <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+            <TableCell style={{ width: '14%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

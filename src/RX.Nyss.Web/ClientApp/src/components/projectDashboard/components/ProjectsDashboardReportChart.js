@@ -47,21 +47,19 @@ const getOptions = (valuesLabel, series, categories) => ({
 export const ProjectsDashboardReportChart = ({ data }) => {
   const resizeChart = element => { element && element.chart.reflow() };
 
-  const moduleStrings = stringKeys.project.dashboard.reportsPerHealthRisk;
-
   const categories = data.allPeriods;
   const healthRisks = data.healthRisks.length ? data.healthRisks : [{ healthRiskName: "", periods: [] } ];
 
   const series = healthRisks.map(healthRisk => ({
-    name: healthRisk.healthRiskName === "(rest)" ? strings(moduleStrings.rest, true) : healthRisk.healthRiskName,
+    name: healthRisk.healthRiskName === "(rest)" ? strings(stringKeys.dashboard.reportsPerHealthRisk.rest, true) : healthRisk.healthRiskName,
     data: data.allPeriods.map(period => healthRisk.periods.filter(p => p.period === period).map(p => p.count).find(_ => true) || 0),
   }));
 
-  const chartData = getOptions(strings(stringKeys.project.dashboard.reportsPerHealthRisk.numberOfReports, true), series, categories)
+  const chartData = getOptions(strings(stringKeys.dashboard.reportsPerHealthRisk.numberOfReports, true), series, categories)
 
   return (
     <Card data-printable={true}>
-      <CardHeader title={strings(stringKeys.project.dashboard.reportsPerHealthRisk.title)} />
+      <CardHeader title={strings(stringKeys.dashboard.reportsPerHealthRisk.title)} />
       <CardContent>
         <HighchartsReact
           highcharts={Highcharts}

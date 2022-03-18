@@ -241,7 +241,7 @@ namespace RX.Nyss.Web.Features.Projects
                 await AddAlertNotHandledNotificationRecipient(projectToAdd, dto.AlertNotHandledNotificationRecipientId, organizationId);
                 await _nyssContext.SaveChangesAsync();
 
-                return Success(projectToAdd.Id, ResultKey.Project.SuccessfullyAdded);
+                return Success(projectToAdd.Id);
             }
             catch (ResultException exception)
             {
@@ -295,7 +295,7 @@ namespace RX.Nyss.Web.Features.Projects
 
                 await _nyssContext.SaveChangesAsync();
 
-                return SuccessMessage(ResultKey.Project.SuccessfullyUpdated);
+                return Success();
             }
             catch (ResultException exception)
             {
@@ -355,7 +355,7 @@ namespace RX.Nyss.Web.Features.Projects
                 transactionScope.Complete();
             }
 
-            return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
+            return Success();
         }
 
         public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)

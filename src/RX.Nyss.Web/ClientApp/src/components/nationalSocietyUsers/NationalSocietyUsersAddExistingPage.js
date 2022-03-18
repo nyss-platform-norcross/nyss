@@ -135,7 +135,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
         <FormActions>
           <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.addExisting)}</SubmitButton>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.add)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

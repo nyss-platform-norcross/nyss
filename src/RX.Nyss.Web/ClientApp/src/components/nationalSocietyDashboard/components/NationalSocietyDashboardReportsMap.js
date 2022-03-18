@@ -9,7 +9,7 @@ export const NationalSocietyDashboardReportsMap = ({ data, details, detailsFetch
 
   return (
     <Card>
-      <CardHeader title={strings(stringKeys.nationalSociety.dashboard.map.title)} />
+      <CardHeader title={strings(stringKeys.dashboard.map.title)} />
       <CardContent>
         <ReportsMap
           data={data}

@@ -31,7 +31,7 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
       <Grid item>
         <DatePicker
           onChange={handleDateFromChange}
-          label={strings(stringKeys.project.dashboard.filters.startDate)}
+          label={strings(stringKeys.dashboard.filters.startDate)}
           value={convertToLocalDate(value.startDate)}
         />
       </Grid>
@@ -39,7 +39,7 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
       <Grid item>
         <DatePicker
           onChange={handleDateToChange}
-          label={strings(stringKeys.project.dashboard.filters.endDate)}
+          label={strings(stringKeys.dashboard.filters.endDate)}
           value={convertToLocalDate(value.endDate)}
         />
       </Grid>

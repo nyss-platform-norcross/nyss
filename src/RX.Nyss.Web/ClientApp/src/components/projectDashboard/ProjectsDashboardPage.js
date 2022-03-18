@@ -121,7 +121,7 @@ const ProjectDashboardPageComponent = ({
 
       <Grid item xs={12}>
         <SubmitButton isFetching={isGeneratingPdf} onClick={handleGeneratePdf}>
-          {strings(stringKeys.project.dashboard.generatePdf)}
+          {strings(stringKeys.dashboard.generatePdf)}
         </SubmitButton>
       </Grid>
     </Grid>

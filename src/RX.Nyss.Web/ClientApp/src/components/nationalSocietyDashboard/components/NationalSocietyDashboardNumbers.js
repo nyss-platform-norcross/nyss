@@ -21,18 +21,18 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
     <Grid container spacing={2}>
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.reportCountTitle)} />
+          <CardHeader title={strings(stringKeys.dashboard.numbers.reportCountTitle)} />
           <CardContent>
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.totalReportCount), summary.totalReportCount)}
+            {renderNumber(strings(stringKeys.dashboard.numbers.totalReportCount), summary.totalReportCount)}
           </CardContent>
         </Card>
       </Grid>
 
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectors)} />
+          <CardHeader title={strings(stringKeys.dashboard.dataCollectors)} />
           <CardContent>
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.activeDataCollectorCount), summary.activeDataCollectorCount)}
+            {renderNumber(strings(stringKeys.dashboard.activeDataCollectorCount), summary.activeDataCollectorCount)}
           </CardContent>
         </Card>
       </Grid>
@@ -40,11 +40,11 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
       {reportsType === "dataCollectionPoint" && (
         <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
-            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectionPoints)} />
+            <CardHeader title={strings(stringKeys.dashboard.dataCollectionPoints)} />
             <CardContent>
-              {renderNumber(strings(stringKeys.nationalSociety.dashboard.referredToHospitalCount), summary.dataCollectionPointSummary.referredToHospitalCount)}
-              {renderNumber(strings(stringKeys.nationalSociety.dashboard.fromOtherVillagesCount), summary.dataCollectionPointSummary.fromOtherVillagesCount)}
-              {renderNumber(strings(stringKeys.nationalSociety.dashboard.deathCount), summary.dataCollectionPointSummary.deathCount)}
+              {renderNumber(strings(stringKeys.dashboard.referredToHospitalCount), summary.dataCollectionPointSummary.referredToHospitalCount)}
+              {renderNumber(strings(stringKeys.dashboard.fromOtherVillagesCount), summary.dataCollectionPointSummary.fromOtherVillagesCount)}
+              {renderNumber(strings(stringKeys.dashboard.deathCount), summary.dataCollectionPointSummary.deathCount)}
             </CardContent>
           </Card>
         </Grid>
@@ -53,12 +53,12 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
       {reportsType !== "dataCollectionPoint" && (
         <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
-            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.alertsSummaryTitle)} />
+            <CardHeader title={strings(stringKeys.dashboard.alertsSummary)} />
             <CardContent>
-              {renderNumber(strings(stringKeys.project.dashboard.numbers.openAlerts), summary.alertsSummary.open)}
-              {renderNumber(strings(stringKeys.project.dashboard.numbers.escalatedAlerts), summary.alertsSummary.escalated)}
-              {renderNumber(strings(stringKeys.project.dashboard.numbers.closedAlerts), summary.alertsSummary.closed)}
-              {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), summary.alertsSummary.dismissed)}
+              {renderNumber(strings(stringKeys.dashboard.numbers.openAlerts), summary.alertsSummary.open)}
+              {renderNumber(strings(stringKeys.dashboard.numbers.escalatedAlerts), summary.alertsSummary.escalated)}
+              {renderNumber(strings(stringKeys.dashboard.numbers.closedAlerts), summary.alertsSummary.closed)}
+              {renderNumber(strings(stringKeys.dashboard.numbers.dismissedAlerts), summary.alertsSummary.dismissed)}
             </CardContent>
           </Card>
         </Grid>
@@ -66,10 +66,10 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
 
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.nationalSociety.dashboard.geographicalCoverage)} />
+          <CardHeader title={strings(stringKeys.dashboard.geographicalCoverageSummary)} />
           <CardContent>
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.numberOfVillages), summary.numberOfVillages)}
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.numberOfDistricts), summary.numberOfDistricts)}
+            {renderNumber(strings(stringKeys.dashboard.numbers.numberOfVillages), summary.numberOfVillages)}
+            {renderNumber(strings(stringKeys.dashboard.numbers.numberOfDistricts), summary.numberOfDistricts)}
           </CardContent>
         </Card>
       </Grid>
