@@ -637,7 +637,8 @@ export const stringKeys = {
       dismissReportSuccess: "reports.list.dismissReportSuccess",
       errorType: "reports.list.errorType",
       corrected: "reports.list.corrected",
-      markAsCorrected: "reports.list.markAsCorrected"
+      markAsCorrected: "reports.list.markAsCorrected",
+      project: "reports.list.project"
     },
     form: {
       title: "reports.form.editionTitle",
@@ -663,6 +664,7 @@ export const stringKeys = {
       fromOtherVillagesCount: "reports.form.fromOtherVillagesCount"
     },
     title: "reports.title",
+    nationalSocietyReportsTitle: "reports.nationalSocietyReportsTitle",
     correctReportsTitle: "correctReports.title",
     incorrectReportsTitle: "incorrectReports.title",
     sendReport: {
@@ -705,32 +707,6 @@ export const stringKeys = {
       "belowFive": "report.sexAgeConstants.belowFive",
       "aboveFour": "report.sexAgeConstants.aboveFour"
     }
-  },
-  nationalSocietyReports: {
-    list: {
-      title: "nationalSocietyReports.list.title",
-      date: "nationalSocietyReports.list.date",
-      healthRisk: "nationalSocietyReports.list.healthRisk",
-      status: "nationalSocietyReports.list.status",
-      project: "nationalSocietyReports.list.project",
-      region: "nationalSocietyReports.list.region",
-      district: "nationalSocietyReports.list.district",
-      village: "nationalSocietyReports.list.village",
-      location: "nationalSocietyReports.list.location",
-      zone: "nationalSocietyReports.list.zone",
-      dataCollectorDisplayName: "nationalSocietyReports.list.dataCollectorDisplayName",
-      message: "nationalSocietyReports.list.message",
-      malesBelowFive: "nationalSocietyReports.list.malesBelowFive",
-      malesAtLeastFive: "nationalSocietyReports.list.malesAtLeastFive",
-      femalesBelowFive: "nationalSocietyReports.list.femalesBelowFive",
-      femalesAtLeastFive: "nationalSocietyReports.list.femalesAtLeastFive",
-      referredCount: "nationalSocietyReports.list.referredCount",
-      deathCount: "nationalSocietyReports.list.deathCount",
-      fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
-      markedAsError: "nationalSocietyReports.list.markedAsError",
-      errorType: "nationalSocietyReports.list.errorType"
-    },
-    title: "nationalSocietyReports.title"
   },
   alerts: {
     list: {
