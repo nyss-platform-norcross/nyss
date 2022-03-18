@@ -7,7 +7,7 @@ export const nationalSocietyDashboardSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/dashboard",
-    title: () => strings(stringKeys.nationalSociety.dashboard.title),
+    title: () => strings(stringKeys.dashboard.title),
     access: accessMap.nationalSocieties.showDashboard,
     placeholder: placeholders.leftMenu,
     placeholderIndex: nationalSocietyLeftMenuOrder.dashboard

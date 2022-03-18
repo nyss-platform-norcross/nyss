@@ -110,18 +110,18 @@ export const ProjectsDashboardFilters = ({
     onChange(updateValue({ trainingStatus: event.target.value }));
 
   const collectionsTypes = {
-    all: strings(stringKeys.project.dashboard.filters.allReportsType),
+    all: strings(stringKeys.dashboard.filters.allReportsType),
     dataCollector: strings(
-      stringKeys.project.dashboard.filters.dataCollectorReportsType
+      stringKeys.dashboard.filters.dataCollectorReportsType
     ),
     dataCollectionPoint: strings(
-      stringKeys.project.dashboard.filters.dataCollectionPointReportsType
+      stringKeys.dashboard.filters.dataCollectionPointReportsType
     ),
   };
 
   const renderHealthRiskValues = (selectedIds) =>
     selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.project.dashboard.filters.healthRiskAll)
+      ? strings(stringKeys.dashboard.filters.healthRiskAll)
       : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
   const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
 
@@ -138,7 +138,7 @@ export const ProjectsDashboardFilters = ({
             <Grid item>
               <CardHeader
                 title={strings(
-                  stringKeys.nationalSociety.dashboard.filters.title
+                  stringKeys.dashboard.filters.title
                 )}
               />
             </Grid>
@@ -161,10 +161,10 @@ export const ProjectsDashboardFilters = ({
                     label={
                       value.groupingType === "Day"
                         ? strings(
-                            stringKeys.project.dashboard.filters.timeGroupingDay
+                            stringKeys.dashboard.filters.timeGroupingDay
                           )
                         : strings(
-                            stringKeys.project.dashboard.filters
+                            stringKeys.dashboard.filters
                               .timeGroupingWeek
                           )
                     }
@@ -316,7 +316,7 @@ export const ProjectsDashboardFilters = ({
           <Grid container spacing={2}>
             <CardHeader
               title={strings(
-                stringKeys.nationalSociety.dashboard.filters.title
+                stringKeys.dashboard.filters.title
               )}
               className={styles.filterTitle}
             />
@@ -328,7 +328,7 @@ export const ProjectsDashboardFilters = ({
               <DatePicker
                 className={styles.filterDate}
                 onChange={handleDateFromChange}
-                label={strings(stringKeys.project.dashboard.filters.startDate)}
+                label={strings(stringKeys.dashboard.filters.startDate)}
                 value={convertToLocalDate(value.startDate)}
               />
             </Grid>
@@ -337,7 +337,7 @@ export const ProjectsDashboardFilters = ({
               <DatePicker
                 className={styles.filterDate}
                 onChange={handleDateToChange}
-                label={strings(stringKeys.project.dashboard.filters.endDate)}
+                label={strings(stringKeys.dashboard.filters.endDate)}
                 value={convertToLocalDate(value.endDate)}
               />
             </Grid>
@@ -345,7 +345,7 @@ export const ProjectsDashboardFilters = ({
             <Grid item>
               <FormControl>
                 <FormLabel component="legend">
-                  {strings(stringKeys.project.dashboard.filters.timeGrouping)}
+                  {strings(stringKeys.dashboard.filters.timeGrouping)}
                 </FormLabel>
                 <RadioGroup
                   value={value.groupingType}
@@ -355,7 +355,7 @@ export const ProjectsDashboardFilters = ({
                   <FormControlLabel
                     className={styles.radio}
                     label={strings(
-                      stringKeys.project.dashboard.filters.timeGroupingDay
+                      stringKeys.dashboard.filters.timeGroupingDay
                     )}
                     value={"Day"}
                     control={<Radio color="primary" />}
@@ -363,7 +363,7 @@ export const ProjectsDashboardFilters = ({
                   <FormControlLabel
                     className={styles.radio}
                     label={strings(
-                      stringKeys.project.dashboard.filters.timeGroupingWeek
+                      stringKeys.dashboard.filters.timeGroupingWeek
                     )}
                     value={"Week"}
                     control={<Radio color="primary" />}
@@ -384,7 +384,7 @@ export const ProjectsDashboardFilters = ({
             <Grid item>
               <MultiSelectField
                 name="healthRisks"
-                label={strings(stringKeys.project.dashboard.filters.healthRisk)}
+                label={strings(stringKeys.dashboard.filters.healthRisk)}
                 className={styles.filterItem}
                 onChange={handleHealthRiskChange}
                 value={value.healthRisks}
@@ -402,7 +402,7 @@ export const ProjectsDashboardFilters = ({
               <TextField
                 select
                 label={strings(
-                  stringKeys.project.dashboard.filters.reportsType
+                  stringKeys.dashboard.filters.reportsType
                 )}
                 onChange={handleDataCollectorTypeChange}
                 value={value.dataCollectorType || "all"}
@@ -424,7 +424,7 @@ export const ProjectsDashboardFilters = ({
                 <TextField
                   select
                   label={strings(
-                    stringKeys.project.dashboard.filters.organization
+                    stringKeys.dashboard.filters.organization
                   )}
                   onChange={handleOrganizationChange}
                   value={value.organizationId || 0}
@@ -433,7 +433,7 @@ export const ProjectsDashboardFilters = ({
                 >
                   <MenuItem value={0}>
                     {strings(
-                      stringKeys.project.dashboard.filters.organizationsAll
+                      stringKeys.dashboard.filters.organizationsAll
                     )}
                   </MenuItem>
 
@@ -452,7 +452,7 @@ export const ProjectsDashboardFilters = ({
             <Grid item>
               <FormControl>
                 <FormLabel component="legend">
-                  {strings(stringKeys.project.dashboard.filters.trainingStatus)}
+                  {strings(stringKeys.dashboard.filters.trainingStatus)}
                 </FormLabel>
                 <RadioGroup
                   value={value.trainingStatus}

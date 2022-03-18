@@ -48,37 +48,37 @@ export const ProjectsDashboardReportSexAgeChart = ({ data }) => {
 
   const series = [
     {
-      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.femalesAbove5, true),
+      name: strings(stringKeys.dashboard.reportsPerFeatureAndDate.femalesAbove5, true),
       data: data.map(d => d.countFemalesAtLeastFive),
       color: "#078e5e"
     },
     {
-      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.femalesBelow5, true),
+      name: strings(stringKeys.dashboard.reportsPerFeatureAndDate.femalesBelow5, true),
       data: data.map(d => d.countFemalesBelowFive),
       color: "#47c79a"
     },
     {
-      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.malesAbove5, true),
+      name: strings(stringKeys.dashboard.reportsPerFeatureAndDate.malesAbove5, true),
       data: data.map(d => d.countMalesAtLeastFive),
       color: "#00a0dc"
     },
     {
-      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.malesBelow5, true),
+      name: strings(stringKeys.dashboard.reportsPerFeatureAndDate.malesBelow5, true),
       data: data.map(d => d.countMalesBelowFive),
       color: "#72d5fb"
     },
     {
-      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge, true),
+      name: strings(stringKeys.dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge, true),
       data: data.map(d => d.countUnspecifiedSexAndAge),
       color: "#c2b5ce"
     }
   ];
 
-  const chartData = getOptions(strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.numberOfReports, true), series, categories);
+  const chartData = getOptions(strings(stringKeys.dashboard.reportsPerFeatureAndDate.numberOfReports, true), series, categories);
 
   return (
     <Card data-printable={true}>
-      <CardHeader title={strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.title)} />
+      <CardHeader title={strings(stringKeys.dashboard.reportsPerFeatureAndDate.title)} />
       <CardContent>
         <HighchartsReact
           highcharts={Highcharts}

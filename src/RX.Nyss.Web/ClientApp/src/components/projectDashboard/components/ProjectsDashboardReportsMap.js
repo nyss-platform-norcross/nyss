@@ -9,7 +9,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
 
   return (
     <Card data-printable={true}>
-      <CardHeader title={strings(stringKeys.project.dashboard.map.title)} />
+      <CardHeader title={strings(stringKeys.dashboard.map.title)} />
       <CardContent>
         <ReportsMap
           data={data}

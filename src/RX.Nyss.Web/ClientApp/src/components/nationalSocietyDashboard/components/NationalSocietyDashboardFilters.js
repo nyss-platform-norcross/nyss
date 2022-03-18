@@ -47,9 +47,9 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
   };
 
   const collectionsTypes = {
-    "all": strings(stringKeys.project.dashboard.filters.allReportsType),
-    "dataCollector": strings(stringKeys.project.dashboard.filters.dataCollectorReportsType),
-    "dataCollectionPoint": strings(stringKeys.project.dashboard.filters.dataCollectionPointReportsType)
+    "all": strings(stringKeys.dashboard.filters.allReportsType),
+    "dataCollector": strings(stringKeys.dashboard.filters.dataCollectorReportsType),
+    "dataCollectionPoint": strings(stringKeys.dashboard.filters.dataCollectionPointReportsType)
   }
 
   const handleLocationChange = (locations) => {
@@ -78,7 +78,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
 
   const renderHealthRiskValues = (selectedIds) => 
     selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)
+      ? strings(stringKeys.dashboard.filters.healthRiskAll)
       : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
   const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
 
@@ -98,7 +98,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
         <CardContent className={styles.collapsedFilterBar} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)}/>
+              <CardHeader title={strings(stringKeys.dashboard.filters.title)}/>
             </Grid>
             {!isFilterExpanded && (
               <Fragment>
@@ -109,7 +109,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                 </Grid>
                 <Grid item>
                   <Chip label={
-                    value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
+                    value.groupingType === "Day" ? strings(stringKeys.dashboard.filters.timeGroupingDay) : strings(stringKeys.dashboard.filters.timeGroupingWeek)
                   } onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
                 </Grid>
               </Fragment>
@@ -173,7 +173,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
       <ConditionalCollapse collapsible={isSmallScreen} expanded={isFilterExpanded}>
         {!isSmallScreen && (
           <Grid container spacing={2}>
-            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle} />
+            <CardHeader title={strings(stringKeys.dashboard.filters.title)} className={styles.filterTitle} />
           </Grid>
         )}
         <CardContent>
@@ -182,7 +182,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
               <DatePicker
                 className={styles.filterDate}
                 onChange={handleDateFromChange}
-                label={strings(stringKeys.nationalSociety.dashboard.filters.startDate)}
+                label={strings(stringKeys.dashboard.filters.startDate)}
                 value={convertToLocalDate(value.startDate)}
               />
             </Grid>
@@ -191,24 +191,24 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
               <DatePicker
                 className={styles.filterDate}
                 onChange={handleDateToChange}
-                label={strings(stringKeys.nationalSociety.dashboard.filters.endDate)}
+                label={strings(stringKeys.dashboard.filters.endDate)}
                 value={convertToLocalDate(value.endDate)}
               />
             </Grid>
 
             <Grid item>
               <FormControl>
-                <FormLabel component='legend'>{strings(stringKeys.project.dashboard.filters.timeGrouping)}</FormLabel>
+                <FormLabel component='legend'>{strings(stringKeys.dashboard.filters.timeGrouping)}</FormLabel>
                 <RadioGroup value={value.groupingType} onChange={handleGroupingTypeChange} className={styles.radioGroup}>
                   <FormControlLabel
                     className={styles.radio}
-                    label={strings(stringKeys.project.dashboard.filters.timeGroupingDay)}
+                    label={strings(stringKeys.dashboard.filters.timeGroupingDay)}
                     value={'Day'}
                     control={<Radio color='primary' />}
                   />
                   <FormControlLabel
                     className={styles.radio}
-                    label={strings(stringKeys.project.dashboard.filters.timeGroupingWeek)}
+                    label={strings(stringKeys.dashboard.filters.timeGroupingWeek)}
                     value={'Week'}
                     control={<Radio color='primary' />}
                   />
@@ -227,7 +227,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
             <Grid item>
               <MultiSelectField
                 name="healthRisks"
-                label={strings(stringKeys.nationalSociety.dashboard.filters.healthRisk)}
+                label={strings(stringKeys.dashboard.filters.healthRisk)}
                 onChange={handleHealthRiskChange}
                 value={value.healthRisks}
                 renderValues={renderHealthRiskValues}
@@ -245,7 +245,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
             <Grid item>
               <TextField
                 select
-                label={strings(stringKeys.nationalSociety.dashboard.filters.reportsType)}
+                label={strings(stringKeys.dashboard.filters.reportsType)}
                 onChange={handleDataCollectorTypeChange}
                 value={value.reportsType || "all"}
                 className={styles.filterItem}
@@ -267,13 +267,13 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
               <Grid item>
                 <TextField
                   select
-                  label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
+                  label={strings(stringKeys.dashboard.filters.organization)}
                   onChange={handleOrganizationChange}
                   value={value.organizationId || 0}
                   className={styles.filterItem}
                   InputLabelProps={{ shrink: true }}
                 >
-                  <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
+                  <MenuItem value={0}>{strings(stringKeys.dashboard.filters.organizationsAll)}</MenuItem>
 
                   {organizations.map(organization => (
                     <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>

@@ -7,7 +7,7 @@ export const projectDashboardSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard",
-    title: () => strings(stringKeys.project.dashboard.title),
+    title: () => strings(stringKeys.dashboard.title),
     access: accessMap.projects.showDashboard,
     placeholder: placeholders.leftMenu,
     placeholderIndex: projectLeftMenuOrder.dashboard

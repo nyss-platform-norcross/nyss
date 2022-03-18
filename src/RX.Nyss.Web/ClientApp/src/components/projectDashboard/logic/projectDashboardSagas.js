@@ -104,7 +104,7 @@ function* generatePdf({ containerElement }) {
       projectName: siteMapParams.projectName,
     }
 
-    const title = stringsFormat(stringKeys.project.dashboard.printTitle, printTitleParams, true);
+    const title = stringsFormat(stringKeys.dashboard.printTitle, printTitleParams, true);
 
     yield call(generatePdfDocument, title, containerElement, reportFileName);
     yield put(actions.generatePdf.success());

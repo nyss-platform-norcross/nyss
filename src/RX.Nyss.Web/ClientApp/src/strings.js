@@ -101,55 +101,6 @@ export const stringKeys = {
     settings: {
       title: "nationalSociety.settings.title"
     },
-    dashboard: {
-      title: "nationalSociety.dashboard.title",
-      numbers: {
-        reportCountTitle: "nationalSociety.dashboard.numbers.reportCountTitle",
-        totalReportCount: "nationalSociety.dashboard.numbers.totalReportCount",
-        alertsSummaryTitle: "nationalSociety.dashboard.numbers.alertsSummaryTitle",
-        dismissedAlerts: "nationalSociety.dashboard.numbers.dismissedAlerts",
-        escalatedAlerts: "nationalSociety.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "nationalSociety.dashboard.numbers.closedAlerts",
-        numberOfVillages: "nationalSociety.dashboard.numbers.numberOfVillages",
-        numberOfDistricts: "nationalSociety.dashboard.numbers.numberOfDistricts"
-      },
-      filters: {
-        title: "nationalSociety.dashboard.filters.title",
-        startDate: "nationalSociety.dashboard.filters.startDate",
-        endDate: "nationalSociety.dashboard.filters.endDate",
-        timeGrouping: "nationalSociety.dashboard.filters.timeGrouping",
-        timeGroupingDay: "nationalSociety.dashboard.filters.timeGrouping.day",
-        timeGroupingWeek: "nationalSociety.dashboard.filters.timeGrouping.week",
-        healthRisk: "nationalSociety.dashboard.filters.healthRisk",
-        organization: "nationalSociety.dashboard.filters.organization",
-        healthRiskAll: "nationalSociety.dashboard.filters.healthRiskAll",
-        organizationsAll: "nationalSociety.dashboard.filters.organizationsAll",
-        reportsType: "nationalSociety.dashboard.filters.reportsType",
-        allReportsType: "nationalSociety.dashboard.filters.allReportsType",
-        dataCollectorReportsType: "nationalSociety.dashboard.filters.dataCollectorReportsType",
-        dataCollectionPointReportsType: "nationalSociety.dashboard.filters.dataCollectionPointReportsType"
-      },
-      activeDataCollectorCount: "nationalSociety.dashboard.activeDataCollectorCount",
-      referredToHospitalCount: "nationalSociety.dashboard.referredToHospitalCount",
-      fromOtherVillagesCount: "nationalSociety.dashboard.fromOtherVillagesCount",
-      deathCount: "nationalSociety.dashboard.deathCount",
-      startDate: "nationalSociety.dashboard.startDate",
-      dataCollectors: "nationalSociety.dashboard.dataCollectors",
-      dataCollectionPoints: "nationalSociety.dashboard.dataCollectionPoints",
-      healthRisks: "nationalSociety.dashboard.healthRisks",
-      geographicalCoverage: "nationalSociety.dashboard.geographicalCoverage",
-      map: {
-        reportCount: "nationalSociety.dashboard.map.reportCount",
-        title: "nationalSociety.dashboard.map.title",
-        reports: "nationalSociety.dashboard.map.reports",
-        report: "nationalSociety.dashboard.map.report",
-      },
-      reportsPerVillageAndDate: {
-        title: "nationalSociety.dashboard.reportsPerVillageAndDate.title",
-        rest: "nationalSociety.dashboard.reportsPerVillageAndDate.rest",
-        numberOfReports: "nationalSociety.dashboard.reportsPerVillageAndDate.numberOfReports"
-      },
-    },
     overview: {
       title: "nationalSociety.dashboard.overview"
     },
@@ -379,90 +330,91 @@ export const stringKeys = {
       removalConfirmationText: "project.list.removalConfirmationText",
       removalConfirmationTextTwo: "project.list.removalConfirmationTextTwo"
     },
-    dashboard: {
-      title: "project.dashboard.title",
-      printTitle: "project.dashboard.printTitle",
-      numbers: {
-        reportCountTitle: "project.dashboard.numbers.reportCountTitle",
-        totalReportCount: "project.dashboard.numbers.totalReportCount",
-        openAlerts: "project.dashboard.numbers.openAlerts",
-        dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",
-        escalatedAlerts: "project.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "project.dashboard.numbers.closedAlerts",
-        numberOfVillages: "project.dashboard.numbers.villages",
-        numberOfDistricts: "project.dashboard.numbers.districts"
-      },
-      filters: {
-        startDate: "project.dashboard.filters.startDate",
-        endDate: "project.dashboard.filters.endDate",
-        timeGrouping: "project.dashboard.filters.timeGrouping",
-        timeGroupingDay: "project.dashboard.filters.timeGrouping.day",
-        timeGroupingWeek: "project.dashboard.filters.timeGrouping.week",
-        organization: "project.dashboard.filters.organization",
-        healthRisk: "project.dashboard.filters.healthRisk",
-        organizationsAll: "project.dashboard.filters.organizationsAll",
-        healthRiskAll: "project.dashboard.filters.healthRiskAll",
-        reportsType: "project.dashboard.filters.reportsType",
-        allReportsType: "project.dashboard.filters.allReportsType",
-        dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
-        dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
-        trainingStatus: "project.dashboard.filters.trainingStatus",
-      },
-      reportsPerHealthRisk: {
-        title: "project.dashboard.reportsPerHealthRisk.title",
-        numberOfReports: "project.dashboard.reportsPerHealthRisk.numberOfReports",
-        periods: "project.dashboard.reportsPerHealthRisk.periods",
-        rest: "project.dashboard.reportsPerHealthRisk.rest",
-      },
-      reportsPerFeature: {
-        title: "project.dashboard.reportsPerFeature.title",
-        female: "project.dashboard.reportsPerFeature.female",
-        male: "project.dashboard.reportsPerFeature.male",
-        total: "project.dashboard.reportsPerFeature.total",
-        below5: "project.dashboard.reportsPerFeature.below5",
-        above5: "project.dashboard.reportsPerFeature.above5",
-        unspecifiedAge: "project.dashboard.reportsPerFeature.unspecifiedAge",
-        unspecifiedSex: "project.dashboard.reportsPerFeature.unspecifiedSex"
-      },
-      reportsPerFeatureAndDate: {
-        femalesBelow5: "project.dashboard.reportsPerFeatureAndDate.femalesBelow5",
-        femalesAbove5: "project.dashboard.reportsPerFeatureAndDate.femalesAbove5",
-        malesBelow5: "project.dashboard.reportsPerFeatureAndDate.malesBelow5",
-        malesAbove5: "project.dashboard.reportsPerFeatureAndDate.malesAbove5",
-        unspecifiedSexAndAge: "project.dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge",
-        numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
-        title: "project.dashboard.reportsPerFeatureAndDate.title"
-      },
-      reportsPerVillageAndDate: {
-        title: "project.dashboard.reportsPerVillageAndDate.title",
-        rest: "project.dashboard.reportsPerVillageAndDate.rest",
-        numberOfReports: "project.dashboard.reportsPerVillageAndDate.numberOfReports"
-      },
-      dataCollectionPointReportsByDate: {
-        referredToHospitalCount: "project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
-        deathCount: "project.dashboard.dataCollectionPointReportsByDate.deathCount",
-        fromOtherVillagesCount: "project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount",
-        numberOfReports: "project.dashboard.dataCollectionPointReportsByDate.numberOfReports",
-        title: "project.dashboard.dataCollectionPointReportsByDate.title"
-      },
-      activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
-      referredToHospitalCount: "project.dashboard.referredToHospitalCount",
-      fromOtherVillagesCount: "project.dashboard.fromOtherVillagesCount",
-      deathCount: "project.dashboard.deathCount",
-      dataCollectors: "project.dashboard.dataCollectors",
-      dataCollectionPoints: "project.dashboard.dataCollectionPoints",
-      alertsSummary: "project.dashboard.alertsSummary",
-      geographicalCoverageSummary: "project.dashboard.geographicalCoverageSummary",
-      map: {
-        title: "project.dashboard.map.title"
-      },
-      generatePdf: "project.dashboard.generatePdf"
-    },
     settings: "project.settings.title",
     errorMessages: {
       title: "project.settings.errorMessages.title",
       tooLongWarning: "project.settings.errorMessages.tooLongWarning",
     }
+  },
+  dashboard: {
+    title: "dashboard.title",
+    printTitle: "dashboard.printTitle",
+    numbers: {
+      reportCountTitle: "dashboard.numbers.reportCountTitle",
+      totalReportCount: "dashboard.numbers.totalReportCount",
+      openAlerts: "dashboard.numbers.openAlerts",
+      dismissedAlerts: "dashboard.numbers.dismissedAlerts",
+      escalatedAlerts: "dashboard.numbers.escalatedAlerts",
+      closedAlerts: "dashboard.numbers.closedAlerts",
+      numberOfVillages: "dashboard.numbers.villages",
+      numberOfDistricts: "dashboard.numbers.districts"
+    },
+    filters: {
+      title: "dashboard.filters.title",
+      startDate: "dashboard.filters.startDate",
+      endDate: "dashboard.filters.endDate",
+      timeGrouping: "dashboard.filters.timeGrouping",
+      timeGroupingDay: "dashboard.filters.timeGrouping.day",
+      timeGroupingWeek: "dashboard.filters.timeGrouping.week",
+      organization: "dashboard.filters.organization",
+      healthRisk: "dashboard.filters.healthRisk",
+      organizationsAll: "dashboard.filters.organizationsAll",
+      healthRiskAll: "dashboard.filters.healthRiskAll",
+      reportsType: "dashboard.filters.reportsType",
+      allReportsType: "dashboard.filters.allReportsType",
+      dataCollectorReportsType: "dashboard.filters.dataCollectorReportsType",
+      dataCollectionPointReportsType: "dashboard.filters.dataCollectionPointReportsType",
+      trainingStatus: "dashboard.filters.trainingStatus",
+    },
+    reportsPerHealthRisk: {
+      title: "dashboard.reportsPerHealthRisk.title",
+      numberOfReports: "dashboard.reportsPerHealthRisk.numberOfReports",
+      periods: "dashboard.reportsPerHealthRisk.periods",
+      rest: "dashboard.reportsPerHealthRisk.rest",
+    },
+    reportsPerFeature: {
+      title: "dashboard.reportsPerFeature.title",
+      female: "dashboard.reportsPerFeature.female",
+      male: "dashboard.reportsPerFeature.male",
+      total: "dashboard.reportsPerFeature.total",
+      below5: "dashboard.reportsPerFeature.below5",
+      above5: "dashboard.reportsPerFeature.above5",
+      unspecifiedAge: "dashboard.reportsPerFeature.unspecifiedAge",
+      unspecifiedSex: "dashboard.reportsPerFeature.unspecifiedSex"
+    },
+    reportsPerFeatureAndDate: {
+      femalesBelow5: "dashboard.reportsPerFeatureAndDate.femalesBelow5",
+      femalesAbove5: "dashboard.reportsPerFeatureAndDate.femalesAbove5",
+      malesBelow5: "dashboard.reportsPerFeatureAndDate.malesBelow5",
+      malesAbove5: "dashboard.reportsPerFeatureAndDate.malesAbove5",
+      unspecifiedSexAndAge: "dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge",
+      numberOfReports: "dashboard.reportsPerFeatureAndDate.numberOfReports",
+      title: "dashboard.reportsPerFeatureAndDate.title"
+    },
+    reportsPerVillageAndDate: {
+      title: "dashboard.reportsPerVillageAndDate.title",
+      rest: "dashboard.reportsPerVillageAndDate.rest",
+      numberOfReports: "dashboard.reportsPerVillageAndDate.numberOfReports"
+    },
+    dataCollectionPointReportsByDate: {
+      referredToHospitalCount: "dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
+      deathCount: "dashboard.dataCollectionPointReportsByDate.deathCount",
+      fromOtherVillagesCount: "dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount",
+      numberOfReports: "dashboard.dataCollectionPointReportsByDate.numberOfReports",
+      title: "dashboard.dataCollectionPointReportsByDate.title"
+    },
+    activeDataCollectorCount: "dashboard.activeDataCollectorCount",
+    referredToHospitalCount: "dashboard.referredToHospitalCount",
+    fromOtherVillagesCount: "dashboard.fromOtherVillagesCount",
+    deathCount: "dashboard.deathCount",
+    dataCollectors: "dashboard.dataCollectors",
+    dataCollectionPoints: "dashboard.dataCollectionPoints",
+    alertsSummary: "dashboard.alertsSummary",
+    geographicalCoverageSummary: "dashboard.geographicalCoverageSummary",
+    map: {
+      title: "dashboard.map.title"
+    },
+    generatePdf: "dashboard.generatePdf"
   },
   globalCoordinator: {
     title: "globalCoordinator.title",
