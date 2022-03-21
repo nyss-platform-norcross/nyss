@@ -29,7 +29,12 @@ function* openAlertsList({ projectId }) {
   yield put(actions.openList.request());
   try {
     yield openAlertsModule(projectId);
-
+    const localDate = dayjs();
+    const utcOffset = Math.floor(localDate.utcOffset() / 60);
+    let endDate = localDate.add(-utcOffset, 'hour');
+    endDate = endDate.set('hour', 0);
+    endDate = endDate.set('minute', 0);
+    endDate = endDate.set('second', 0);
     const filtersData = listProjectId !== projectId
       ? (yield call(http.get, `/api/alert/getFiltersData?projectId=${projectId}`)).value
       : yield select(state => state.alerts.filtersData);
@@ -38,6 +43,8 @@ function* openAlertsList({ projectId }) {
       {
         locations: null,
         healthRiskId: null,
+        startDate: endDate.add(-7, "day"),
+        endDate: endDate,
         status: consts.alertStatusFilters.all,
         orderBy: consts.statusColumn,
         sortAscending: false,

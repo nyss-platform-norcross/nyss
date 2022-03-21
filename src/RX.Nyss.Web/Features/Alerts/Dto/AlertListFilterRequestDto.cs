@@ -1,4 +1,5 @@
-﻿using RX.Nyss.Web.Features.Common.Dto;
+﻿using System;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Alerts.Dto
 {
@@ -14,6 +15,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
         public int UtcOffset { get; set; }
-        public string FromDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
+
     }
 }

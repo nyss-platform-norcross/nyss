@@ -11,11 +11,9 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 {
     public static class AlertQueries
     {
-        public static IQueryable<Alert> FilterByDateAndStatus(this IQueryable<Alert> alerts, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<Alert> FilterByDate(this IQueryable<Alert> alerts, DateTimeOffset startDate, DateTimeOffset endDate) =>
             alerts
-                .Where(a => (a.ClosedAt != null && a.ClosedAt > startDate && a.ClosedAt <= endDate) ||
-                    (a.DismissedAt != null && a.DismissedAt > startDate && a.DismissedAt <= endDate) ||
-                    (a.EscalatedAt != null && a.EscalatedAt > startDate && a.EscalatedAt <= endDate));
+                .Where(a => ( a.CreatedAt >= startDate && a.CreatedAt <= endDate));
 
         public static IQueryable<Alert> FilterByProject(this IQueryable<Alert> alerts, int? projectId) =>
             alerts.Where(alert => !projectId.HasValue || alert.ProjectHealthRisk.Project.Id == projectId.Value);
