@@ -4,7 +4,6 @@ import { connect, useSelector } from "react-redux";
 import * as projectOrganizationsActions from './logic/projectOrganizationsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import ProjectOrganizationsTable from './ProjectOrganizationsTable';
 import { useMount } from '../../utils/lifecycle';

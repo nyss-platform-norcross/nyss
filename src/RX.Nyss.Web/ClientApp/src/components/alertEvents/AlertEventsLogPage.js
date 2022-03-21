@@ -11,8 +11,6 @@ import { accessMap } from "../../authentication/accessMap";
 import { stringKeys, strings } from "../../strings";
 import { CreateAlertEventDialog } from "./components/CreateAlertEventDialog";
 import TableActions from "../common/tableActions/TableActions";
-import AddIcon from "@material-ui/icons/Add";
-
 
 const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => {
   const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');

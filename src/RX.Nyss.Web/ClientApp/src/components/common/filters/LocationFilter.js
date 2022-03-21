@@ -97,7 +97,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
     onChange(filterValue);
   }
 
-  const handleDropownClick = (event) => {
+  const handleDropdownClick = (event) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setDialogOpen(true);
@@ -122,7 +122,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
         inputProps={{
           className: styles.clickable
         }}
-        onClick={handleDropownClick}
+        onClick={handleDropdownClick}
       />
 
       <Popover

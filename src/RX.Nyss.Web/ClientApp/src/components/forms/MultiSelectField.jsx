@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { FormControl, InputLabel, Select } from "@material-ui/core";
 
-const MultiSelectField = ({ name, label, value, controlProps, onChange, children, className, renderValues, rtl }) => {
+const MultiSelectField = ({ name, label, value, onChange, children, className, renderValues, rtl }) => {
   
   const renderSelectedValues = (selected) => 
     !!renderValues ? renderValues(selected) : selected.join(',');
@@ -38,7 +38,6 @@ const MultiSelectField = ({ name, label, value, controlProps, onChange, children
 
 MultiSelectField.propTypes = {
   label: PropTypes.string,
-  controlProps: PropTypes.object,
   name: PropTypes.string,
   error: PropTypes.string,
   renderValues: PropTypes.func

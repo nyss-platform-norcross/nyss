@@ -30,7 +30,7 @@ const PhoneInputComponent = ({ error, value, defaultCountry, name, label, contro
         name={name}
         containerClass={`${styles.container} ${error ? styles.error : null}`}
         inputClass={styles.phoneInput}
-        buttonClass={styles.test}
+        buttonClass={styles.button}
         searchClass={styles.search}
         specialLabel={label}
         country={!!defaultCountry && defaultCountry !== DEMO_NS_COUNTRY ? defaultCountry.toLowerCase() : "ch"}

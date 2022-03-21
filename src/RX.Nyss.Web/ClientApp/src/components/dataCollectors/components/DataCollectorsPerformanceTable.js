@@ -33,7 +33,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
   }
 
   const renderPercentage = (active, total) => {
-    var percentage = active * 100 / total;
+    const percentage = active * 100 / total;
     return roundToFixed(percentage, 1);
   }
 

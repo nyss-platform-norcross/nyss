@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import * as projectAlertRecipientsActions from './logic/projectAlertRecipientsActions';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import ProjectAlertRecipientsTable from './ProjectAlertRecipientsTable';
 import { useMount } from '../../utils/lifecycle';

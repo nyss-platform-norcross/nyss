@@ -4,7 +4,6 @@ import { connect, useSelector } from "react-redux";
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
 import { useMount } from '../../utils/lifecycle';
