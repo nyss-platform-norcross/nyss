@@ -28,6 +28,7 @@ const ProjectsCreatePageComponent = (props) => {
 
   useEffect(() => {
     props.data && setHealthRiskDataSource(props.data.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
+    props.data && setSelectedHealthRisks(props.data.healthRisks.filter(hr => hr.healthRiskType === 'Activity' ));
   }, [props.data])
 
   const canChangeOrganization = useCallback(
