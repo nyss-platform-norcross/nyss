@@ -20,7 +20,8 @@ export const initialState = {
     feedback: {
       isSending: false,
       result: "",
-    },    
+    },
+    direction: 'ltr' 
   },
   requests: {
     isFetching: false,

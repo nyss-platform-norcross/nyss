@@ -54,6 +54,11 @@
       transform: rotate(180deg);
     }
   }
+
+  &.rtl {
+    margin-left: unset !important;
+    margin-right: auto !important;
+  }
 }
 
 .removeLocationButton {

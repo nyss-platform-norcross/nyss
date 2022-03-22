@@ -19,7 +19,7 @@ import {
 } from '@material-ui/core';
 import { renderDataCollectorDisplayName } from '../reports/logic/reportsService';
 
-export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, sorting, onSort }) => {
+export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, sorting, onSort, rtl }) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -85,7 +85,7 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
                 <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
-              <TableCell>
+              <TableCell className={styles.phoneNumber}>
                 {renderDataCollectorDisplayName(row)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
@@ -93,7 +93,7 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
           ))}
         </TableBody>
       </Table>
-      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
     </TableContainer>
   );
 }

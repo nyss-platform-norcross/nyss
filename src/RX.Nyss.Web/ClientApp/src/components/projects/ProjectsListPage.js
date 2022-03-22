@@ -1,10 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as projectsActions from './logic/projectsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -17,15 +16,18 @@ const ProjectsListPageComponent = (props) => {
     props.openProjectsList(props.nationalSocietyId);
   });
 
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
+
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived && (
         <TableActions>
           <TableActionsButton
             onClick={() => props.goToCreation(props.nationalSocietyId)}
-            icon={<AddIcon />}
+            add
             roles={accessMap.projects.add}
-            variant={"contained"}
+            variant='contained'
+            rtl={userLanguageCode === 'ar'}
           >
             {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
@@ -41,6 +43,7 @@ const ProjectsListPageComponent = (props) => {
         isClosing={props.isClosing}
         callingUserRoles={props.callingUserRoles}
         isHeadManager={props.isHeadManager}
+        rtl={userLanguageCode === 'ar'}
       />
     </Fragment>
   );

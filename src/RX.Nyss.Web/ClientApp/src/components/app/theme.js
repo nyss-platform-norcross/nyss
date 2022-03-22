@@ -1,6 +1,7 @@
 import { createTheme } from "@material-ui/core/styles";
 
-export const theme = createTheme({
+export const theme = (direction) => createTheme({
+  direction: direction,
   typography: {
     fontSize: 14,
     fontFamily: ["Poppins", '"Helvetica Neue"', 'Arial'].join(','),
@@ -56,11 +57,6 @@ export const theme = createTheme({
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
       },
-      startIcon: {
-        "@media (max-width: 1279px)": {
-          display: "none"
-        }
-      }
     },
     MuiMenu: {
       paper: {
@@ -129,6 +125,12 @@ export const theme = createTheme({
       },
       focused: {},
     },
+    MuiFormControlLabel: {
+      root: {
+        marginRight: direction === 'ltr' ? '16px' : '-11px',
+        marginLeft: direction === 'ltr' ? '-11px' : '16px'
+      }
+    },
     MuiInputLabel: {
       root: {
         zIndex: 1
@@ -163,7 +165,8 @@ export const theme = createTheme({
       root: {
         padding: "12px 20px",
         overflow: "hidden",
-        textOverflow: "ellipsis"
+        textOverflow: "ellipsis",
+        textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       primary: {
         fontSize: 16,
@@ -172,7 +175,8 @@ export const theme = createTheme({
     },
     MuiTableCell: {
       root: {
-        fontSize: "1rem"
+        fontSize: "1rem",
+        textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       head: {
         fontWeight: 600,
@@ -224,7 +228,9 @@ export const theme = createTheme({
       selected: {},
       label: {
         backgroundColor: "transparent !important",
-        cursor: "pointer"
+        cursor: "pointer",
+        paddingLeft: direction === 'ltr' ? '4px' : null,
+        paddingRight: direction === 'ltr' ? null : '4px'
       },
       iconContainer: {
         cursor: "pointer",
@@ -232,6 +238,10 @@ export const theme = createTheme({
           cursor: "default"
         }
       },
+      group: {
+        marginLeft: direction === 'ltr' ? '17px' : null,
+        marginRight: direction === 'ltr' ? null : '17px'
+      }
     },
     MuiExpansionPanel: {
       root: {
@@ -273,7 +283,12 @@ export const theme = createTheme({
         padding: '10px !important'
       },
       inputRoot: {
-        paddingRight: 16
+        paddingRight: direction === 'ltr' ? 56 : '0px !important',
+        paddingLeft: direction === 'ltr' ? null : 56
+      },
+      endAdornment: {
+        right: direction === 'ltr' ? 0 : null,
+        left: direction === 'ltr' ? null : 0
       }
     },
     MuiTooltip: {
@@ -296,6 +311,38 @@ export const theme = createTheme({
     MuiPopover: {
       paper: {
         maxWidth: '400px'
+      }
+    },
+    MuiSelect: {
+      icon: {
+        left: direction === 'ltr' ? null : 0,
+        right: direction === 'ltr' ? 0 : null
+      },
+      select: {
+        paddingRight: direction === 'ltr' ? '24px' : '10px !important',
+        paddingLeft: direction === 'ltr' ? 10 : '24px'
+      }
+    },
+    MuiChip: {
+      deleteIcon: {
+        margin: direction === 'ltr' ? '0 5px 0 -6px' : '0 -6px 0 5px'
+      },
+      icon: {
+        marginLeft: direction === 'ltr' ? '5px' : '-6px',
+        marginRight: direction === 'ltr' ? '-6px' : '5px'
+      }
+    },
+    MuiFormHelperText: {
+      root: {
+        textAlign: direction === 'ltr' ? 'left' : 'right'
+      }
+    },
+    MuiSnackbarContent: {
+      action: {
+        marginLeft: direction === 'ltr' ? 'auto' : '-8px',
+        marginRight: direction === 'ltr' ? '-8px' : 'auto',
+        paddingLeft: direction === 'ltr' ? '16px' : '0',
+        paddingRight: direction === 'ltr' ? '0' : '16px'
       }
     }
   },

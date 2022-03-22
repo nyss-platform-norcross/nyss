@@ -2,7 +2,7 @@ import styles from './SideMenu.module.scss';
 
 import React from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 import { push } from "connected-react-router";
 import { useTheme, List, ListItem, ListItemText, Drawer, useMediaQuery } from "@material-ui/core";
@@ -11,6 +11,8 @@ import { toggleSideMenu } from '../app/logic/appActions';
 const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
 
   const handleItemClick = (item) => {
     push(item.url);
@@ -36,7 +38,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
       >
         <div className={styles.sideMenu}>
           <div className={styles.sideMenuHeader}>
-            <Link to="/" className={styles.logo}>
+            <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>

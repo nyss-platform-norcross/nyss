@@ -1,5 +1,5 @@
-import React, {useState, Fragment, useEffect, useMemo, useCallback, createRef} from 'react';
-import { connect } from "react-redux";
+import React, { useState, Fragment, useEffect, useMemo, useCallback, createRef } from 'react';
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as projectsActions from './logic/projectsActions';
@@ -24,6 +24,7 @@ const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   useEffect(() => {
     props.data && setHealthRiskDataSource(props.data.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
@@ -116,6 +117,7 @@ const ProjectsCreatePageComponent = (props) => {
                   label={strings(stringKeys.project.form.allowMultipleOrganizations)}
                   name="allowMultipleOrganizations"
                   field={form.fields.allowMultipleOrganizations}
+                  color="primary"
                 />
               </Grid>
 
@@ -159,6 +161,7 @@ const ProjectsCreatePageComponent = (props) => {
               onChange={onHealthRiskChange}
               onBlur={e => setHealthRisksFieldTouched(true)}
               error={(healthRisksFieldTouched && selectedHealthRisks.length === 0) ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              rtl={useRtlDirection}
             />
           </Grid>
 

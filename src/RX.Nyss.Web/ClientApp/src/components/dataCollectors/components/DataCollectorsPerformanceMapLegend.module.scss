@@ -13,4 +13,8 @@
 .icon {
   margin-right: 10px;
 
+  &.rtl {
+    margin-right: unset;
+    margin-left: 10px;
+  }
 }

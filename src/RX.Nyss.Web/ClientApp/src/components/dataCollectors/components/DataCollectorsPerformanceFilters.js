@@ -13,14 +13,14 @@ import {
   InputLabel 
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
-import { strings, stringKeys } from '../../strings';
-import useDebounce from '../../utils/debounce';
-import * as roles from '../../authentication/roles';
-import {trainingStatus, trainingStatusAll, trainingStatusTrained} from "./logic/dataCollectorsConstants";
-import LocationFilter from '../common/filters/LocationFilter';
-import { renderFilterLabel } from '../common/filters/logic/locationFilterService';
+import { strings, stringKeys } from '../../../strings';
+import useDebounce from '../../../utils/debounce';
+import * as roles from '../../../authentication/roles';
+import {trainingStatus, trainingStatusAll, trainingStatusTrained} from "../logic/dataCollectorsConstants";
+import LocationFilter from '../../common/filters/LocationFilter';
+import { renderFilterLabel } from '../../common/filters/logic/locationFilterService';
 
-export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
+export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => {
   const locations = useSelector(state => state.dataCollectors.filtersData.locations);
   const supervisors = useSelector(state => state.dataCollectors.filtersData.supervisors);
   const callingUserRoles = useSelector(state => state.appData.user.roles);
@@ -94,6 +94,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
               value={filters.locations}
               filterLabel={locationsFilterLabel}
               onChange={handleAreaChange}
+              rtl={rtl}
             />
           </Grid>
 

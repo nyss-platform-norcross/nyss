@@ -1,15 +1,15 @@
 import styles from './DataCollectorsPerformanceTable.module.scss';
 import PropTypes from "prop-types";
-import { strings, stringKeys } from '../../strings';
-import { TableContainer } from '../common/table/TableContainer';
-import { getIconFromStatus } from './logic/dataCollectorsService';
-import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
-import TablePager from '../common/tablePagination/TablePager';
+import { strings, stringKeys } from '../../../strings';
+import { TableContainer } from '../../common/table/TableContainer';
+import { getIconFromStatus } from '../logic/dataCollectorsService';
+import { DataCollectorStatusIcon } from '../../common/icon/DataCollectorStatusIcon';
+import TablePager from '../../common/tablePagination/TablePager';
 import { Tooltip, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import { Loading } from '../common/loading/Loading';
+import { Loading } from '../../common/loading/Loading';
 
-export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRange, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
+export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRange, page, rowsPerPage, totalRows, isListFetching, filters, onChange, rtl }) => {
   const onChangePage = (e, page) => {
     onChange({ type: 'changePage', pageNumber: page });
   }
@@ -33,7 +33,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
   }
 
   const renderPercentage = (active, total) => {
-    var percentage = active * 100 / total;
+    const percentage = active * 100 / total;
     return roundToFixed(percentage, 1);
   }
 
@@ -74,7 +74,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
               <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
 
               {completeness.map(week => (
-                <TableCell className={styles.completenessAlignmentAndBorder} key={`completeness_${week.epiWeek}`}>
+                <TableCell className={`${styles.completenessAlignmentAndBorder} ${rtl ? 'ltr-numerals' : ''}`} key={`completeness_${week.epiWeek}`}>
                   <Tooltip title={renderTooltipText(week)} onClick={handleTooltipClick} arrow>
                     <span>{`${renderPercentage(week.activeDataCollectors, week.totalDataCollectors)} %`}</span>
                   </Tooltip>
@@ -86,7 +86,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
-                <TableCell>
+                <TableCell className={styles.phoneNumber}>
                   {row.name}
                   <br />
                   {row.phoneNumber}
@@ -103,7 +103,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
           )}
         </TableBody>
       </Table>
-      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />}
+      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} rtl={rtl} />}
     </TableContainer>
   );
 }

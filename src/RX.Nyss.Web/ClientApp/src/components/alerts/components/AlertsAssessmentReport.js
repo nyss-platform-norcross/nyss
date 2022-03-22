@@ -27,17 +27,17 @@ const ReportFormLabel = ({ label, value }) => (
   </div>
 );
 
-const getReportIcon = (status) => {
+const getReportIcon = (status, rtl) => {
   switch (status) {
-    case "Pending": return <Icon className={styles.indicator}>hourglass_empty</Icon>;
-    case "Accepted": return <Icon className={`${styles.indicator} ${styles.accepted}`}>check</Icon>;
-    case "Rejected": return <Icon className={`${styles.indicator} ${styles.rejected}`}>clear</Icon>;
-    case "Closed": return <Icon className={`${styles.indicator}`}>block</Icon>;
-    default: return <Icon className={styles.indicator}>warning</Icon>;
+    case "Pending": return <Icon className={`${styles.indicator} ${rtl ? styles.rtl : ""}`}>hourglass_empty</Icon>;
+    case "Accepted": return <Icon className={`${styles.indicator} ${styles.accepted} ${rtl ? styles.rtl : ""}`}>check</Icon>;
+    case "Rejected": return <Icon className={`${styles.indicator} ${styles.rejected} ${rtl ? styles.rtl : ""}`}>clear</Icon>;
+    case "Closed": return <Icon className={`${styles.indicator} ${rtl ? styles.rtl : ""}`}>block</Icon>;
+    default: return <Icon className={`${styles.indicator} ${rtl ? styles.rtl : ""}`}>warning</Icon>;
   }
 }
 
-export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
+export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptReport, dismissReport, resetReport, status, projectIsClosed, rtl }) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
   const showActions = status !== assessmentStatus.closed && status !== assessmentStatus.dismissed && report.status === "Pending" && !report.isAnonymized;
   const showResetOption = status !== assessmentStatus.closed
@@ -53,7 +53,7 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
   return (
     <Accordion disabled={fromOtherOrg}>
       <AccordionSummary expandIcon={!fromOtherOrg && <ExpandMoreIcon />}>
-        {getReportIcon(report.status)}
+        {getReportIcon(report.status, rtl)}
         <span className={styles.time}>{dayjs(report.receivedAt).format('YYYY-MM-DD HH:mm')}</span>
         <div className={styles.senderContainer}>
           <span className={styles.senderLabel}>

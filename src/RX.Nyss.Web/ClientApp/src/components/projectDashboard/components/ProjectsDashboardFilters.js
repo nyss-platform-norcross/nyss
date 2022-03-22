@@ -42,6 +42,7 @@ export const ProjectsDashboardFilters = ({
   isFilterExpanded,
   setIsFilterExpanded,
   userRoles,
+  rtl
 }) => {
   const [value, setValue] = useState(filters);
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
@@ -296,7 +297,7 @@ export const ProjectsDashboardFilters = ({
                   />
                 </Grid>
               )}              
-            <Grid item className={styles.expandFilterButton}>
+            <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton
                 data-expanded={isFilterExpanded}
                 onClick={() => setIsFilterExpanded(!isFilterExpanded)}
@@ -378,6 +379,7 @@ export const ProjectsDashboardFilters = ({
                 value={value.locations}
                 filterLabel={locationsFilterLabel}
                 onChange={handleLocationChange}
+                rtl={rtl}
               />
             </Grid>
 

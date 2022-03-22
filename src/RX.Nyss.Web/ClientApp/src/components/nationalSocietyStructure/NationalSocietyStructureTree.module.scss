@@ -9,6 +9,11 @@
   .itemAction {
     visibility: hidden;
     margin-left: 15px;
+
+    &.rtl {
+      margin-left: unset;
+      margin-right: 15px;
+    }
   }
 
   &:hover {
@@ -21,12 +26,17 @@
 .addPanel {
   display: flex;
   align-items: center;
-  padding-left: 2px;
 
   .addPanelIcon {
     text-align: right;
     left: 7px;
     position: relative;
     z-index: 1;
+
+    &.rtl {
+      text-align: left;
+      left: unset;
+      right: 7px;
+    }
   }
 }

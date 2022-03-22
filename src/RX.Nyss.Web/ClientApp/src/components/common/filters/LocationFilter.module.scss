@@ -21,14 +21,29 @@
 
   &[type=district] {
     padding-left: 15px;
+
+    &.rtl {
+      padding-left: unset;
+      padding-right: 15px;
+    }
   }
 
   &[type=village] {
     padding-left: 30px;
+
+    &.rtl {
+      padding-left: unset;
+      padding-right: 30px;
+    }
   }
 
   &[type=zone] {
     padding-left: 45px;
+
+    &.rtl {
+      padding-left: unset;
+      padding-right: 45px;
+    }
   }
 }
 
@@ -65,6 +80,11 @@
 
   &[nodata=true] {
     padding-left: 21px;
+
+    &.rtl {
+      padding-left: unset;
+      padding-right: 21px;
+    }
   }
 }
 

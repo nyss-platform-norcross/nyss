@@ -6,7 +6,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { Fragment, useEffect, useState } from 'react';
 import { Checkbox } from '@material-ui/core';
 
-const LocationItem = ({ type, data, isVisible, onChange }) => {
+const LocationItem = ({ type, data, isVisible, onChange, rtl }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [childData, setChildData] = useState(null);
 
@@ -39,7 +39,7 @@ const LocationItem = ({ type, data, isVisible, onChange }) => {
 
     if (!!childData && childData.data.length < 1) {
       return (
-        <span className={styles.iconContainer} nodata='true'>
+        <span className={`${styles.iconContainer} ${rtl ? styles.rtl : ''}`} nodata='true'>
           <Checkbox className={styles.clickable} checked={data.selected} color='primary' onClick={() => handleChange(data.id)} />
         </span>
       );
@@ -55,7 +55,7 @@ const LocationItem = ({ type, data, isVisible, onChange }) => {
 
   return isVisible && (
     <Fragment>
-      <div className={styles.locationFilterItem} type={type}>
+      <div className={`${styles.locationFilterItem} ${rtl ? styles.rtl : ''}`} type={type}>
         {renderIconContainer()}
 
         <span className={styles.clickable} onClick={() => handleChange(data.id)}>
@@ -64,7 +64,7 @@ const LocationItem = ({ type, data, isVisible, onChange }) => {
       </div>
 
       {!!childData && childData.data.map(d => (
-        <LocationItem key={`${childData.type}_${d.id}`} type={childData.type} data={d} isVisible={isExpanded} onChange={onChange} />
+        <LocationItem key={`${childData.type}_${d.id}`} type={childData.type} data={d} isVisible={isExpanded} onChange={onChange} rtl={rtl} />
       ))}
     </Fragment>
   );

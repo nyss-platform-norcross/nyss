@@ -3,6 +3,10 @@
   padding-top: 0;
   padding-bottom: 0;
   white-space: nowrap;
+
+  &.rtl {
+    text-align: left;
+  }
 }
 
 .tableRowAction {
@@ -23,6 +27,11 @@
 
   &.alwaysHighlighted {
     opacity: 1;
+  }
+
+  &.rtl {
+    margin-left: unset;
+    margin-right: 15px;
   }
 }
 

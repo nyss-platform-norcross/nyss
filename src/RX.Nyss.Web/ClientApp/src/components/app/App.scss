@@ -1,3 +1,13 @@
+:root {
+  --selected-flag-padding: 0 0 0 8px;
+  --flag-arrow-left: 20px;
+  --flag-arrow-right: 0;
+  --phone-input-padding-left: 48px;
+  --phone-input-padding-right: 0;
+  --selected-flag-option-margin-right: 7px;
+  --selected-flag-option-margin-left: 0;
+}
+
 html {
     width: 100%;
     height: 100%;
@@ -41,4 +51,28 @@ html {
   svg {
     width: 100%;
   }
+}
+
+.ltr-numerals {
+  direction: ltr;
+}
+
+.react-tel-input > .flag-dropdown > .selected-flag {
+  padding: var(--selected-flag-padding);
+}
+
+.react-tel-input .selected-flag .arrow {
+  left: var(--flag-arrow-left);
+  right: var(--flag-arrow-right);
+}
+
+.react-tel-input .form-control {
+  padding-left: var(--phone-input-padding-left) !important;
+  padding-right: var(--phone-input-padding-right) !important;
+  direction: ltr;
+}
+
+.react-tel-input .country-list .flag {
+  margin-right: var(--selected-flag-option-margin-right) !important;
+  margin-left: var(--selected-flag-option-margin-left);
 }

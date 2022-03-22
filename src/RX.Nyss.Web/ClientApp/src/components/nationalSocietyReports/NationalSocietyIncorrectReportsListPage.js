@@ -2,7 +2,7 @@ import styles from "./NationalSocietyReportsListPage.module.scss";
 
 import { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -14,6 +14,8 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
   useMount(() => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   if (!props.data || !props.filters || !props.sorting) {
     return null;
@@ -37,6 +39,7 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
           filters={props.filters}
           hideTrainingStatusFilter
           hideCorrectedFilter
+          rtl={useRtlDirection}
         />
       </div>
 
@@ -51,6 +54,7 @@ const NationalSocietyIncorrectReportsListPageComponent = (props) => {
           filters={props.filters}
           sorting={props.sorting}
           onSort={handleSortChange}
+          rtl={useRtlDirection}
         />
     </Fragment>
   );

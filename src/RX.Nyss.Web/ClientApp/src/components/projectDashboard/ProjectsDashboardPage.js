@@ -1,7 +1,7 @@
 import styles from "./ProjectsDashboardPage.module.scss";
 import React, { Fragment, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as projectDashboardActions from "./logic/projectDashboardActions";
 import { withLayout } from "../../utils/layout";
 import Layout from "../layout/Layout";
@@ -32,6 +32,8 @@ const ProjectDashboardPageComponent = ({
   useMount(() => {
     openDashboard(props.match.params.projectId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const dashboardElement = useRef(null);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
@@ -66,6 +68,7 @@ const ProjectDashboardPageComponent = ({
           isFilterExpanded={isFilterExpanded}
           setIsFilterExpanded={setIsFilterExpanded}
           userRoles={userRoles}
+          rtl={useRtlDirection}
         />
       </Grid>
 

@@ -27,7 +27,7 @@ import {
 import { MultiSelect } from '../forms/MultiSelect';
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
-const ProjectAlertRecipientsCreatePageComponent = (props) => {
+const ProjectAlertRecipientsCreatePageComponent = ({ formData, listData, projectId, isSaving, error, directionRtl, openCreation, create, goToList }) => {
   const [freeTextOrganizations, setFreeTextOrganizations] = useState([]);
   const [supervisorsDataSource, setSupervisorsDataSource] = useState([]);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
@@ -36,7 +36,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(true);
   const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(true);
   const userRoles = useSelector(state => state.appData.user.roles);
-  const canSelectModem = props.formData != null && props.formData.modems.length > 0;
+  const canSelectModem = formData != null && formData.modems.length > 0;
 
   const [form] = useState(() => {
     const fields = {
@@ -62,21 +62,21 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   });
 
   useMount(() => {
-    props.openCreation(props.projectId);
+    openCreation(projectId);
   });
 
   useEffect(() => {
-    const uniqueOrganizations = [...new Set(props.listData.map(ar => ar.organization))];
+    const uniqueOrganizations = [...new Set(listData.map(ar => ar.organization))];
     setFreeTextOrganizations(uniqueOrganizations.map(o => ({ title: o })));
-  }, [props.listData]);
+  }, [listData]);
 
   useEffect(() => {
     setSelectedSupervisors([]);
-    setSupervisorsDataSource((props.formData && props.formData.supervisors.filter(s => s.organizationId === parseInt(selectedOrganizationId))) || []);
-    if (props.formData && !userRoles.some(r => r === Administrator)) {
-      setSelectedOrganizationId(props.formData.projectOrganizations[0].id)
+    setSupervisorsDataSource((formData && formData.supervisors.filter(s => s.organizationId === parseInt(selectedOrganizationId))) || []);
+    if (formData && !userRoles.some(r => r === Administrator)) {
+      setSelectedOrganizationId(formData.projectOrganizations[0].id)
     }
-  }, [props.formData, selectedOrganizationId, userRoles])
+  }, [formData, selectedOrganizationId, userRoles])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -86,7 +86,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.create(props.projectId, {
+    create(projectId, {
       role: values.role,
       organization: values.organization,
       email: values.email,
@@ -119,13 +119,13 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
     }
   }
 
-  if (!props.formData) {
+  if (!formData) {
     return null;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {error && <ValidationMessage message={error} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={2}>
@@ -172,7 +172,8 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      defaultCountry={props.formData.countryCode}
+                      defaultCountry={formData.countryCode}
+                      rtl={directionRtl}
                   />
                   </Grid>
 
@@ -183,7 +184,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                         field={form.fields.modemId}
                         name="modemId"
                       >
-                        {props.formData.modems.map(modem => (
+                        {formData.modems.map(modem => (
                           <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
                             {modem.name}
                           </MenuItem>
@@ -211,7 +212,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                         field={form.fields.organizationId}
                         name="organizationId"
                       >
-                        {props.formData.projectOrganizations.map(org => (
+                        {formData.projectOrganizations.map(org => (
                           <MenuItem key={org.id} value={JSON.stringify(org.id)}>
                             {org.name}
                           </MenuItem>
@@ -222,7 +223,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
 
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnySupervisor} onClick={e => setAcceptAnySupervisor(!acceptAnySupervisor)} />}
+                      control={<Checkbox checked={acceptAnySupervisor} onClick={e => setAcceptAnySupervisor(!acceptAnySupervisor)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anySupervisor)}
                     />
                   </Grid>
@@ -239,7 +240,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                   )}
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={e => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} />}
+                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={e => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anyHealthRisk)}
                     />
                   </Grid>
@@ -247,7 +248,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                     <Grid item xs={12}>
                       <MultiSelect
                         label={strings(stringKeys.projectAlertRecipient.form.healthRisks)}
-                        options={props.formData.healthRisks.map((s) => { return { label: s.healthRiskName, value: s.id } })}
+                        options={formData.healthRisks.map((s) => { return { label: s.healthRiskName, value: s.id } })}
                         value={selectedHealthRisks}
                         onChange={onHealthRiskChange}
                       />
@@ -259,8 +260,8 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.add)}</SubmitButton>
+          <CancelButton onClick={() => goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <SubmitButton isFetching={isSaving}>{strings(stringKeys.common.buttons.add)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment >
@@ -275,7 +276,8 @@ const mapStateToProps = (state, ownProps) => ({
   listData: state.projectAlertRecipients.listData,
   formData: state.projectAlertRecipients.formData,
   isSaving: state.projectAlertRecipients.formSaving,
-  error: state.projectAlertRecipients.formError
+  error: state.projectAlertRecipients.formError,
+  directionRtl: state.appData.user.languageCode === 'ar'
 });
 
 const mapDispatchToProps = {

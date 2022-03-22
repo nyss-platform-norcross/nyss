@@ -9,3 +9,16 @@
     -ms-word-break: break-word;
   }
 }
+
+.header {
+  display: inline;
+
+  &.healthRiskName {
+    margin-left: 10px;
+
+    &.rtl {
+      margin-left: unset;
+      margin-right: 10px;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import styles from "./DataCollectorsFilters.module.scss";
 import { useState, useEffect, useReducer } from 'react';
-import { strings, stringKeys } from "../../strings";
-import { sexValues, trainingStatus, deployedMode } from './logic/dataCollectorsConstants';
+import { strings, stringKeys } from "../../../strings";
+import { sexValues, trainingStatus, deployedMode } from '../logic/dataCollectorsConstants';
 import {
   InputLabel,
   RadioGroup,
@@ -13,13 +13,13 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
-import * as roles from '../../authentication/roles';
-import useDebounce from "../../utils/debounce";
+import * as roles from '../../../authentication/roles';
+import useDebounce from "../../../utils/debounce";
 import { shallowEqual } from "react-redux";
-import LocationFilter from "../common/filters/LocationFilter";
-import { renderFilterLabel } from "../common/filters/logic/locationFilterService";
+import LocationFilter from "../../common/filters/LocationFilter";
+import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
-export const DataCollectorsFilters = ({ supervisors, locations, onChange, callingUserRoles, filters }) => {
+export const DataCollectorsFilters = ({ supervisors, locations, onChange, callingUserRoles, filters, rtl }) => {
   
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
 
@@ -95,6 +95,7 @@ export const DataCollectorsFilters = ({ supervisors, locations, onChange, callin
               locations={locations}
               filterLabel={locationsFilterLabel}
               onChange={handleLocationChange}
+              rtl={rtl}
             />
           </Grid>
 

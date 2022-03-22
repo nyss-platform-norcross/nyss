@@ -1,10 +1,9 @@
 import styles from "./DataCollectorsPerformanceMapFilters.module.scss"
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Grid } from '@material-ui/core';
-import { strings, stringKeys } from "../../strings";
-import { DatePicker } from "../forms/DatePicker";
-import { convertToLocalDate, convertToUtc } from "../../utils/date";
+import { strings, stringKeys } from "../../../strings";
+import { DatePicker } from "../../forms/DatePicker";
+import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 
 export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
   const [value, setValue] = useState(filters);

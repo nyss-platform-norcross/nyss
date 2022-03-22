@@ -1,3 +1,4 @@
+import styles from './ReportsTable.module.scss';
 import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
@@ -26,7 +27,7 @@ import { renderDataCollectorDisplayName, renderReportValue } from './logic/repor
 
 export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEditing, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, filters, sorting, onSort, projectIsClosed,
-  goToAlert, acceptReport, dismissReport }) => {
+  goToAlert, acceptReport, dismissReport, rtl }) => {
   const [value, setValue] = useState(sorting);
 
   const updateValue = (change) => {
@@ -137,7 +138,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
               <TableRow key={row.id} hover>
                 <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
                 <TableCell>{dashIfEmpty(!row.isActivityReport && (strings(stringKeys.reports.status[row.status])))}</TableCell>
-                <TableCell>
+                <TableCell className={styles.phoneNumber}>
                   {renderDataCollectorDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
@@ -154,19 +155,22 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
                 </Fragment>
                 }
                 <TableCell>
-                  <TableRowActions>
+                  <TableRowActions directionRtl={rtl}>
                     <TableRowAction
                       onClick={() => goToEditing(projectId, row.id)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={canEdit(row)} />
+                      condition={canEdit(row)}
+                      directionRtl={rtl}
+                    />
                     { !row.isActivityReport &&
                     <TableRowMenu
                       id={row.id}
                       icon={<MoreVertIcon />}
                       isFetching={isMarkingAsError[row.id]}
                       items={getRowMenu(row)}
+                      directionRtl={rtl}
                     />
                     }
                   </TableRowActions>
@@ -175,7 +179,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
             ))}
           </TableBody>
         </Table>
-        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
       </TableContainer>
     </Fragment>
   );

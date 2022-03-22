@@ -1,6 +1,6 @@
 import styles from "./ProjectsOverviewPage.module.scss";
 import React, { Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { stringKeys, strings } from '../../strings';
 import { withLayout } from '../../utils/layout';
 import { useMount } from '../../utils/lifecycle';
@@ -18,6 +18,8 @@ const ProjectsOverviewPageComponent = (props) => {
   useMount(() => {
     props.openOverview(props.nationalSocietyId, props.projectId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   if (props.isFetching || !props.data) {
     return <Loading />;
@@ -56,7 +58,7 @@ const ProjectsOverviewPageComponent = (props) => {
           <Grid container spacing={2}>
             {props.data.projectHealthRisks.map(hr =>
               <Grid item xs={12} key={`projectsHealthRiskItem_${hr.healthRiskId}`}>
-                <ProjectsOverviewHealthRiskItem projectHealthRisk={hr} />
+                <ProjectsOverviewHealthRiskItem projectHealthRisk={hr} rtl={useRtlDirection} />
               </Grid>
             )}
           </Grid>

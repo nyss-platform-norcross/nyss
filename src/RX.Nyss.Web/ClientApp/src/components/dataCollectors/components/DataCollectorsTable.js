@@ -1,22 +1,22 @@
 import styles from './DataCollectorsTable.module.scss';
-import tableStyles from '../common/table/Table.module.scss';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import tableStyles from '../../common/table/Table.module.scss';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from "prop-types";
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { TableRowAction } from '../common/tableRowAction/TableRowAction';
-import { strings, stringKeys } from '../../strings';
-import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
-import { TableContainer } from '../common/table/TableContainer';
-import { TableRowActions } from '../common/tableRowAction/TableRowActions';
-import { accessMap } from '../../authentication/accessMap';
-import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
+import { TableRowAction } from '../../common/tableRowAction/TableRowAction';
+import { strings, stringKeys } from '../../../strings';
+import { TableRowMenu } from '../../common/tableRowAction/TableRowMenu';
+import { TableContainer } from '../../common/table/TableContainer';
+import { TableRowActions } from '../../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../../authentication/accessMap';
+import { trainingStatusInTraining, trainingStatusTrained } from '../logic/dataCollectorsConstants';
 import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import TablePager from '../common/tablePagination/TablePager';
+import TablePager from '../../common/tablePagination/TablePager';
 
 export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, page, rowsPerPage, totalRows, projectId,
-  setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor, onChangePage, setDeployedState }) => {
+  setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor, onChangePage, setDeployedState, rtl }) => {
   
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
@@ -108,7 +108,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
         <TableHead>
           <TableRow>
             <TableCell className={styles.checkCell}>
-              <Checkbox onClick={handleSelectAll} checked={listSelectedAll} />
+              <Checkbox onClick={handleSelectAll} checked={listSelectedAll} color="primary" />
             </TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.dataCollectorType)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.name)}</TableCell>
@@ -120,8 +120,8 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
             <TableCell>
               {isSelected && (
-                <TableRowActions style={{ marginRight: 70 }}>
-                  <TableRowMenu icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysHighlighted />
+                <TableRowActions directionRtl={rtl} style={{ marginRight: 70 }}>
+                  <TableRowMenu directionRtl={rtl} icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysHighlighted />
                 </TableRowActions>
               )}
             </TableCell>
@@ -130,27 +130,27 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={tableStyles.clickableRow}>
-              <TableCell className={styles.checkCell}><Checkbox checked={!!row.isSelected} onClick={e => handleSelect(e, row.id, !row.isSelected)} /></TableCell>
+              <TableCell className={styles.checkCell}><Checkbox checked={!!row.isSelected} onClick={e => handleSelect(e, row.id, !row.isSelected)} color="primary" /></TableCell>
               <TableCell>{strings(stringKeys.dataCollector.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.displayName}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell className={rtl ? 'ltr-numerals' : ''}>{row.phoneNumber}</TableCell>
               <TableCell>{row.sex}</TableCell>
               <TableCell>{renderLocation(row.locations)}</TableCell>
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusTrained])}</TableCell>
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
-                <TableRowActions>
-                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isUpdatingDataCollector[row.id]} />
-                  <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                <TableRowActions directionRtl={rtl}>
+                  <TableRowMenu directionRtl={rtl} id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isUpdatingDataCollector[row.id]} />
+                  <TableRowAction directionRtl={rtl} onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />}
+      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} rtl={rtl} />}
     </TableContainer>
   );
 }

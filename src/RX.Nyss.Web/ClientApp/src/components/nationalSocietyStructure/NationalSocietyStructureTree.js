@@ -10,11 +10,12 @@ import { strings, stringKeys } from "../../strings";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 import { Icon } from "@material-ui/core";
 import * as roles from "../../authentication/roles";
+import { useSelector } from "react-redux";
 
-const AddPanel = ({ placeholder, onSave }) => {
+const AddPanel = ({ placeholder, onSave, rtl }) => {
   return (
     <div className={styles.addPanel}>
-      <Icon className={styles.addPanelIcon}>add</Icon>
+      <Icon className={`${styles.addPanelIcon} ${rtl ? styles.rtl : ''}`}>add</Icon>
       <InlineTextEditor
         placeholder={placeholder}
         onSave={onSave}
@@ -25,6 +26,7 @@ const AddPanel = ({ placeholder, onSave }) => {
 
 export const NationalSocietyStructureTree = (props) => {
   const { regions, isFetching, nationalSocietyId } = props;
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   if (isFetching || !regions) {
     return <Loading />;
@@ -52,6 +54,7 @@ export const NationalSocietyStructureTree = (props) => {
             onRemove={props.removeRegion}
             onEdit={props.editRegion}
             canModify={canModify}
+            rtl={useRtlDirection}
           >
             {renderDistricts(region.id)}
           </StructureTreeItem>
@@ -60,6 +63,7 @@ export const NationalSocietyStructureTree = (props) => {
           <AddPanel
             placeholder={strings(stringKeys.nationalSociety.structure.addRegion, true)}
             onSave={name => props.createRegion(nationalSocietyId, name)}
+            rtl={useRtlDirection}
           />
         )}
       </Fragment>
@@ -83,6 +87,7 @@ export const NationalSocietyStructureTree = (props) => {
             onRemove={props.removeDistrict}
             onEdit={props.editDistrict}
             canModify={canModify}
+            rtl={useRtlDirection}
           >
             {renderVillages(district.id)}
           </StructureTreeItem>
@@ -91,6 +96,7 @@ export const NationalSocietyStructureTree = (props) => {
           <AddPanel
             placeholder={strings(stringKeys.nationalSociety.structure.addDistrict, true)}
             onSave={name => props.createDistrict(regionId, name)}
+            rtl={useRtlDirection}
           />
         )}
       </Fragment>
@@ -114,6 +120,7 @@ export const NationalSocietyStructureTree = (props) => {
             onRemove={props.removeVillage}
             onEdit={props.editVillage}
             canModify={canModify}
+            rtl={useRtlDirection}
           >
             {renderZones(village.id)}
           </StructureTreeItem>
@@ -122,6 +129,7 @@ export const NationalSocietyStructureTree = (props) => {
           <AddPanel
             placeholder={strings(stringKeys.nationalSociety.structure.addVillage, true)}
             onSave={name => props.createVillage(districtId, name)}
+            rtl={useRtlDirection}
           />
         )}
       </Fragment>
@@ -145,12 +153,14 @@ export const NationalSocietyStructureTree = (props) => {
             onRemove={props.removeZone}
             onEdit={props.editZone}
             canModify={canModify}
+            rtl={useRtlDirection}
           />
         ))}
         {canModify && (
           <AddPanel
             placeholder={strings(stringKeys.nationalSociety.structure.addZone, true)}
             onSave={name => props.createZone(villageId, name)}
+            rtl={useRtlDirection}
           />
         )}
       </Fragment>

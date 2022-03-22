@@ -1,5 +1,5 @@
 import React, {useEffect, Fragment, useState} from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { Loading } from '../common/loading/Loading';
@@ -11,11 +11,9 @@ import { accessMap } from "../../authentication/accessMap";
 import { stringKeys, strings } from "../../strings";
 import { CreateAlertEventDialog } from "./components/CreateAlertEventDialog";
 import TableActions from "../common/tableActions/TableActions";
-import AddIcon from "@material-ui/icons/Add";
-
 
 const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => {
-
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
   const [createDialogOpened, setCreateDialogOpened] = useState(false);
 
   useMount(() => {
@@ -38,9 +36,11 @@ const AlertEventsLogPageComponent = ({ alertId, projectId, data, ...props }) => 
       <TableActions>
         <TableActionsButton
           onClick={() => setCreateDialogOpened(true)}
-          variant={"contained"}
+          variant="contained"
           roles={accessMap.alertEvents.add}
-          icon={<AddIcon/>}>
+          add
+          rtl={useRtlDirection}
+        >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
       </TableActions>

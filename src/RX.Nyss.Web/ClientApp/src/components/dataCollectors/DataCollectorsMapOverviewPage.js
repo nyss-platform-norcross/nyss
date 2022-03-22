@@ -1,19 +1,21 @@
 import React, { Fragment, useEffect } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
-import { DataCollectorsPerformanceMap } from './DataCollectorsPerformanceMap';
-import { DataCollectorsPerformanceMapFilters } from './DataCollectorsPerformanceMapFilters';
-import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceMapLegend';
+import { DataCollectorsPerformanceMap } from './components/DataCollectorsPerformanceMap';
+import { DataCollectorsPerformanceMapFilters } from './components/DataCollectorsPerformanceMapFilters';
+import { DataCollectorsPerformanceMapLegend } from './components/DataCollectorsPerformanceMapLegend';
 import * as tracking from "../../utils/tracking";
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
   useMount(() => {
     props.openDataCollectorsMapOverview(props.projectId);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const handleFiltersChange = (value) => {
     props.getDataCollectorsMapOverview(props.projectId, value)
@@ -41,7 +43,7 @@ const DataCollectorsMapOverviewPageComponent = (props) => {
         details={props.details}
         detailsFetching={props.detailsFetching}
       />
-      <DataCollectorsPerformanceMapLegend />
+      <DataCollectorsPerformanceMapLegend rtl={useRtlDirection} />
     </Fragment>
   );
 }

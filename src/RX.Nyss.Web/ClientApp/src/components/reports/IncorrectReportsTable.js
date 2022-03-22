@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-
+import reportsTableStyles from './ReportsTable.module.scss';
 import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Loading } from '../common/loading/Loading';
@@ -31,6 +31,7 @@ export const IncorrectReportsTable = ({
   sorting,
   onSort,
   onCorrectToggle,
+  rtl
 }) => {
 
   const [value, setValue] = useState(sorting);
@@ -109,7 +110,7 @@ export const IncorrectReportsTable = ({
                 <TableCell>
                   <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell className={reportsTableStyles.phoneNumber}>
                   {renderDataCollectorDisplayName(row)}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
@@ -120,7 +121,7 @@ export const IncorrectReportsTable = ({
             ))}
           </TableBody>
         </Table>
-        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
       </TableContainer>
     </Fragment>
   )

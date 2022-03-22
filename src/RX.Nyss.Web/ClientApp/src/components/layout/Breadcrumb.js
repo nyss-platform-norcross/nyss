@@ -2,18 +2,20 @@ import styles from './Breadcrumb.module.scss';
 
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import { Breadcrumbs, Hidden } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 
 const BreadcrumbComponent = ({ breadcrumb, push }) => {
+  const directionIsRtl = useSelector(state => state.appData.direction === 'rtl');
   const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
 
   const renderBreadcrumb = (items, disableLastItem) => (
     <Breadcrumbs
       className={styles.container}
-      separator={<NavigateNextIcon fontSize="small" color="primary" />}>
+      separator={directionIsRtl ? <NavigateBeforeIcon fontSize="small" color="primary" /> : <NavigateNextIcon fontSize="small" color="primary" />}>
       {items.map((item, index) => (
         <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
           <div

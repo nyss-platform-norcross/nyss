@@ -1,23 +1,24 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
-import DataCollectorsTable from './DataCollectorsTable';
+import DataCollectorsTable from './components/DataCollectorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { TableActionsButton } from '../common/buttons/tableActionsButton/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
-import { DataCollectorsFilters } from './DataCollectorsFilters';
-import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';
+import { DataCollectorsFilters } from './components/DataCollectorsFilters';
+import { ReplaceSupervisorDialog } from './components/ReplaceSupervisorDialog';
 
 const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...props}) => {
   useMount(() => {
     props.openDataCollectorsList(projectId, props.filters);
   });
+
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const [replaceSupervisorDialogOpened, setReplaceSupervisorDialogOpened] = useState(false);
   const [selectedDataCollectors, setSelectedDataCollectors] = useState([]);
@@ -55,7 +56,8 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
           <TableActionsButton
             onClick={() => props.goToCreation(projectId)}
             variant="contained"
-            icon={<AddIcon />}
+            add
+            rtl={useRtlDirection}
           >
             {strings(stringKeys.common.buttons.add)}
           </TableActionsButton>
@@ -67,7 +69,9 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
         locations={props.locations}
         onChange={handleFilterChange}
         callingUserRoles={props.callingUserRoles}
-        filters={props.filters} />
+        filters={props.filters}
+        rtl={useRtlDirection}
+      />
 
       <DataCollectorsTable
         list={props.listData.data}
@@ -88,6 +92,7 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
         replaceSupervisor={handleReplaceSupervisor}
         onChangePage={onChangePage}
         setDeployedState={props.setDeployedState}
+        rtl={useRtlDirection}
       />
 
       <ReplaceSupervisorDialog

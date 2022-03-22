@@ -13,16 +13,18 @@ import TextInputField from "../forms/TextInputField";
 import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import { createForm, validators } from "../../utils/forms";
 import styles from "./FeedbackDialog.module.scss";
+import { sendFeedback } from '../app/logic/appActions';
+import { useDispatch } from "react-redux";
 
 export const FeedbackDialog = ({
   isOpened,
   close,
   isSending,
-  sendFeedback,
   result,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const dispatch = useDispatch();
   const [form, setForm] = useState(() => {
     const fields = { message: "" };
     const validation = {
@@ -50,9 +52,9 @@ export const FeedbackDialog = ({
       return;
     }
 
-    sendFeedback({
+    dispatch(sendFeedback.invoke({
       message: form.fields.message.value,
-    });
+    }));
   };
 
   const handleClose = () => {

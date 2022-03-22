@@ -65,97 +65,105 @@ import { NationalSocietyCorrectReportsListPage } from '../nationalSocietyReports
 import { NationalSocietyIncorrectReportsListPage } from '../nationalSocietyReports/NationalSocietyIncorrectReportsListPage';
 import { AlertEventsLogPage } from "../alertEvents/AlertEventsLogPage";
 import { ProjectErrorMessagesPage } from "../projects/ProjectErrorMessagesPage";
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
-export const App = ({ history }) => (
-  <ThemeProvider theme={theme}>
-    <MuiPickersUtilsProvider utils={DayJsUtils}>
-      <ConnectedRouter history={history}>
-        <Switch>
-          <Route path='/login' component={LoginPage} />
-          <Route path='/verifyEmail' component={VerifyEmailPage} />
-          <Route path='/resetPassword' component={ResetPasswordPage} />
-          <Route path='/resetPasswordCallback' component={ResetPasswordCallbackPage} />
+export const App = ({ history }) => {
+  const direction = useSelector(state => state.appData.direction);
 
-          <AuthRoute exact path='/' component={Home} />
-          <AuthRoute exact path='/agreements' component={AgreementsPage} ignoreRedirection />
+  useEffect(() => document.body.dir = direction, [direction]);
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietyDashboardPage} roles={accessMap.nationalSocieties.showDashboard} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.edit} />
-          <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
-          <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/structure' component={NationalSocietyStructurePage} roles={accessMap.nationalSocieties.edit} />
-          <Redirect exact from='/nationalsocieties/:nationalSocietyId' to='/nationalsocieties/:nationalSocietyId/dashboard' />
-          <Redirect exact from='/nationalsocieties/:nationalSocietyId/settings' to='/nationalsocieties/:nationalSocietyId/overview' />
+  return (
+    <ThemeProvider theme={theme(direction)}>
+      <MuiPickersUtilsProvider utils={DayJsUtils}>
+        <ConnectedRouter history={history}>
+          <Switch>
+            <Route path='/login' component={LoginPage} />
+            <Route path='/verifyEmail' component={VerifyEmailPage} />
+            <Route path='/resetPassword' component={ResetPasswordPage} />
+            <Route path='/resetPasswordCallback' component={ResetPasswordCallbackPage} />
 
-          <Redirect exact from='/nationalsocieties/:nationalSocietyId/reports' to='/nationalsocieties/:nationalSocietyId/reports/correct' />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/correct' component={NationalSocietyCorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/incorrect' component={NationalSocietyIncorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
+            <AuthRoute exact path='/' component={Home} />
+            <AuthRoute exact path='/agreements' component={AgreementsPage} ignoreRedirection />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietyDashboardPage} roles={accessMap.nationalSocieties.showDashboard} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.edit} />
+            <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
+            <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/structure' component={NationalSocietyStructurePage} roles={accessMap.nationalSocieties.edit} />
+            <Redirect exact from='/nationalsocieties/:nationalSocietyId' to='/nationalsocieties/:nationalSocietyId/dashboard' />
+            <Redirect exact from='/nationalsocieties/:nationalSocietyId/settings' to='/nationalsocieties/:nationalSocietyId/overview' />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations' component={OrganizationsListPage} roles={accessMap.organizations.list} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/add' component={OrganizationsCreatePage} roles={accessMap.organizations.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/:organizationId/edit' component={OrganizationsEditPage} roles={accessMap.organizations.edit} />
+            <Redirect exact from='/nationalsocieties/:nationalSocietyId/reports' to='/nationalsocieties/:nationalSocietyId/reports/correct' />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/correct' component={NationalSocietyCorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports/incorrect' component={NationalSocietyIncorrectReportsListPage} roles={accessMap.nationalSocietyReports.list} />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' component={ProjectDashboardPage} roles={accessMap.projects.showDashboard} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/add' component={ProjectsCreatePage} roles={accessMap.projects.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/edit' component={ProjectsEditPage} roles={accessMap.projects.edit} />
-          <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId/settings' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' roles={accessMap.projects.showOverview} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' component={ProjectsOverviewPage} roles={accessMap.projects.showOverview} />
-          <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users' component={NationalSocietyUsersListPage} roles={accessMap.nationalSocietyUsers.list} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/add' component={NationalSocietyUsersCreatePage} roles={accessMap.nationalSocietyUsers.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/addExisting' component={NationalSocietyUsersAddExistingPage} roles={accessMap.nationalSocietyUsers.add} />
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/:nationalSocietyUserId/edit' component={NationalSocietyUsersEditPage} roles={accessMap.nationalSocietyUsers.edit} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations' component={OrganizationsListPage} roles={accessMap.organizations.list} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/add' component={OrganizationsCreatePage} roles={accessMap.organizations.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/:organizationId/edit' component={OrganizationsEditPage} roles={accessMap.organizations.edit} />
 
-          <AuthRoute exact path='/globalcoordinators' component={GlobalCoordinatorsListPage} roles={accessMap.globalCoordinators.list} />
-          <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
-          <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' component={ProjectDashboardPage} roles={accessMap.projects.showDashboard} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/add' component={ProjectsCreatePage} roles={accessMap.projects.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/edit' component={ProjectsEditPage} roles={accessMap.projects.edit} />
+            <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId/settings' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' roles={accessMap.projects.showOverview} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' component={ProjectsOverviewPage} roles={accessMap.projects.showOverview} />
+            <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' />
+
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users' component={NationalSocietyUsersListPage} roles={accessMap.nationalSocietyUsers.list} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/add' component={NationalSocietyUsersCreatePage} roles={accessMap.nationalSocietyUsers.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/addExisting' component={NationalSocietyUsersAddExistingPage} roles={accessMap.nationalSocietyUsers.add} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/:nationalSocietyUserId/edit' component={NationalSocietyUsersEditPage} roles={accessMap.nationalSocietyUsers.edit} />
+
+            <AuthRoute exact path='/globalcoordinators' component={GlobalCoordinatorsListPage} roles={accessMap.globalCoordinators.list} />
+            <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
+            <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
 
 
-          <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
-          <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
-          <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
+            <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
+            <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
+            <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
 
-          <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/performance' component={DataCollectorsPerformancePage} roles={accessMap.dataCollectors.performanceList} />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
-          <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
+            <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
+            <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
+            <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
+            <AuthRoute exact path='/projects/:projectId/datacollectors/performance' component={DataCollectorsPerformancePage} roles={accessMap.dataCollectors.performanceList} />
+            <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
+            <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 
-          <AuthRoute exact path='/projects/:projectId/organizations' component={ProjectOrganizationsListPage} roles={accessMap.projectOrganizations.list} />
-          <AuthRoute exact path='/projects/:projectId/organizations/add' component={ProjectOrganizationsCreatePage} roles={accessMap.projectOrganizations.add} />
+            <AuthRoute exact path='/projects/:projectId/organizations' component={ProjectOrganizationsListPage} roles={accessMap.projectOrganizations.list} />
+            <AuthRoute exact path='/projects/:projectId/organizations/add' component={ProjectOrganizationsCreatePage} roles={accessMap.projectOrganizations.add} />
 
-          <AuthRoute exact path='/projects/:projectId/alertNotifications' component={ProjectAlertNotificationsPage} roles={accessMap.projectAlertNotifications.list} />
-          <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
-          <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
+            <AuthRoute exact path='/projects/:projectId/alertNotifications' component={ProjectAlertNotificationsPage} roles={accessMap.projectAlertNotifications.list} />
+            <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
+            <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
 
-          <AuthRoute exact path='/projects/:projectId/errorMessages' component={ProjectErrorMessagesPage} roles={accessMap.projectErrorMessages.list} />
+            <AuthRoute exact path='/projects/:projectId/errorMessages' component={ProjectErrorMessagesPage} roles={accessMap.projectErrorMessages.list} />
 
-          <Redirect exact from='/projects/:projectId/reports' to='/projects/:projectId/reports/correct' />
-          <AuthRoute exact path='/projects/:projectId/reports/correct' component={CorrectReportsListPage} roles={accessMap.reports.list} />
-          <AuthRoute exact path='/projects/:projectId/reports/incorrect' component={IncorrectReportsListPage} roles={accessMap.reports.list} />
-          <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />
+            <Redirect exact from='/projects/:projectId/reports' to='/projects/:projectId/reports/correct' />
+            <AuthRoute exact path='/projects/:projectId/reports/correct' component={CorrectReportsListPage} roles={accessMap.reports.list} />
+            <AuthRoute exact path='/projects/:projectId/reports/incorrect' component={IncorrectReportsListPage} roles={accessMap.reports.list} />
+            <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />
 
-          <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
-          <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />
-          <AuthRoute exact path='/projects/:projectId/alerts/:alertId/eventLog' component={AlertEventsLogPage} roles={accessMap.alertEvents.list} />
+            <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
+            <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />
+            <AuthRoute exact path='/projects/:projectId/alerts/:alertId/eventLog' component={AlertEventsLogPage} roles={accessMap.alertEvents.list} />
 
-          <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
-          <AuthRoute exact path='/emailTranslations' component={EmailTranslationsListPage} roles={accessMap.translations.list} />
-          <AuthRoute exact path='/smsTranslations' component={SmsTranslationsListPage} roles={accessMap.translations.list} />
+            <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
+            <AuthRoute exact path='/emailTranslations' component={EmailTranslationsListPage} roles={accessMap.translations.list} />
+            <AuthRoute exact path='/smsTranslations' component={SmsTranslationsListPage} roles={accessMap.translations.list} />
 
-          <Route component={NotFoundPage} />
-        </Switch>
-      </ConnectedRouter>
-    </MuiPickersUtilsProvider>
-  </ThemeProvider>
-);
+            <Route component={NotFoundPage} />
+          </Switch>
+        </ConnectedRouter>
+      </MuiPickersUtilsProvider>
+    </ThemeProvider>
+  );
+}
 
 export default App;

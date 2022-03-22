@@ -26,38 +26,38 @@ import { MultiSelect } from '../forms/MultiSelect';
 import SelectField from '../forms/SelectField';
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
-const ProjectAlertRecipientsEditPageComponent = (props) => {
+const ProjectAlertRecipientsEditPageComponent = ({ formData, listData, alertRecipient, projectId, alertRecipientId, isSaving, error, directionRtl, openEdition, edit, goToList }) => {
   const [freeTextOrganizations, setFreeTextOrganizations] = useState([]);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(false);
   const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(false);
-  const canSelectModem = props.formData != null && props.formData.modems.length > 0;
+  const canSelectModem = formData != null && formData.modems.length > 0;
 
   const [form, setForm] = useState(null);
 
   useMount(() => {
-    props.openEdition(props.projectId, props.alertRecipientId);
+    openEdition(projectId, alertRecipientId);
   });
 
   useEffect(() => {
-    if (props.alertRecipient === null || props.formData === null) {
+    if (alertRecipient === null || formData === null) {
       return;
     }
 
-    const uniqueOrganizations = [...new Set(props.listData.map(ar => ar.organization))];
+    const uniqueOrganizations = [...new Set(listData.map(ar => ar.organization))];
     setFreeTextOrganizations(uniqueOrganizations.map(o => ({ title: o })));
-    setSelectedSupervisors([...props.alertRecipient.supervisors, ...props.alertRecipient.headSupervisors].map((s) => { return { label: s.name, value: s } }));
-    setSelectedHealthRisks(props.alertRecipient.healthRisks.map((hr) => { return { label: hr.healthRiskName, value: hr.id } }));
-    setAcceptAnySupervisor(props.alertRecipient.supervisors.length === 0);
-    setAcceptAnyHealthRisk(props.alertRecipient.healthRisks.length === 0);
+    setSelectedSupervisors([...alertRecipient.supervisors, ...alertRecipient.headSupervisors].map((s) => { return { label: s.name, value: s } }));
+    setSelectedHealthRisks(alertRecipient.healthRisks.map((hr) => { return { label: hr.healthRiskName, value: hr.id } }));
+    setAcceptAnySupervisor(alertRecipient.supervisors.length === 0);
+    setAcceptAnyHealthRisk(alertRecipient.healthRisks.length === 0);
 
     const fields = {
-      role: props.alertRecipient.role,
-      organization: props.alertRecipient.organization,
-      email: props.alertRecipient.email || '',
-      phoneNumber: props.alertRecipient.phoneNumber || '',
-      modemId: props.alertRecipient.modemId || ''
+      role: alertRecipient.role,
+      organization: alertRecipient.organization,
+      email: alertRecipient.email || '',
+      phoneNumber: alertRecipient.phoneNumber || '',
+      modemId: alertRecipient.modemId || ''
     };
 
     const validation = {
@@ -69,7 +69,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
     };
 
     setForm(createForm(fields, validation));
-  }, [props.listData, props.alertRecipient, props.formData, canSelectModem]);
+  }, [listData, alertRecipient, formData, canSelectModem]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,8 +79,8 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.edit(props.projectId, {
-      id: props.alertRecipient.id,
+    edit(projectId, {
+      id: alertRecipient.id,
       role: values.role,
       organization: values.organization,
       email: values.email,
@@ -112,13 +112,13 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
     }
   }
 
-  if (!props.formData || !form) {
+  if (!formData || !form) {
     return null;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {error && <ValidationMessage message={error} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={2}>
@@ -165,7 +165,8 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
-                      defaultCountry={props.formData.countryCode}
+                      defaultCountry={formData.countryCode}
+                      rtl={directionRtl}
                   />
                   </Grid>
 
@@ -176,7 +177,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                         field={form.fields.modemId}
                         name="modemId"
                       >
-                        {props.formData.modems.map(modem => (
+                        {formData.modems.map(modem => (
                           <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
                             {modem.name}
                           </MenuItem>
@@ -199,7 +200,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
 
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnySupervisor} onClick={() => setAcceptAnySupervisor(!acceptAnySupervisor)} />}
+                      control={<Checkbox checked={acceptAnySupervisor} onClick={() => setAcceptAnySupervisor(!acceptAnySupervisor)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anySupervisor)}
                     />
                   </Grid>
@@ -209,8 +210,8 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                       <MultiSelect
                         label={strings(stringKeys.projectAlertRecipient.form.supervisors)}
                         options={
-                          props.formData.supervisors
-                            .filter(s => !selectedSupervisors.some(ss => ss.id === s.id) && s.organizationId === props.alertRecipient.organizationId)
+                          formData.supervisors
+                            .filter(s => !selectedSupervisors.some(ss => ss.id === s.id) && s.organizationId === alertRecipient.organizationId)
                             .map((s) => { return { label: s.name, value: s } })}
                         value={selectedSupervisors}
                         onChange={onSupervisorChange}
@@ -219,7 +220,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                   )}
                   <Grid item xs={12}>
                     <FormControlLabel
-                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={() => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} />}
+                      control={<Checkbox checked={acceptAnyHealthRisk} onClick={() => setAcceptAnyHealthRisk(!acceptAnyHealthRisk)} color="primary" />}
                       label={strings(stringKeys.projectAlertRecipient.form.anyHealthRisk)}
                     />
                   </Grid>
@@ -228,7 +229,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                       <MultiSelect
                         label={strings(stringKeys.projectAlertRecipient.form.healthRisks)}
                         options={
-                          props.formData.healthRisks
+                          formData.healthRisks
                             .filter(hr => !selectedHealthRisks.some(shr => shr.id === hr.id))
                             .map((s) => { return { label: s.healthRiskName, value: s.id } })}
                         value={selectedHealthRisks}
@@ -242,8 +243,8 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
           </Grid>
         </Grid>
         <FormActions>
-          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
-          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
+          <CancelButton onClick={() => goToList(projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+          <SubmitButton isFetching={isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>
@@ -261,7 +262,7 @@ const mapStateToProps = (state, ownProps) => ({
   formData: state.projectAlertRecipients.formData,
   isSaving: state.projectAlertRecipients.formSaving,
   error: state.projectAlertRecipients.formError,
-  countryCode: state.projectAlertRecipients.countryCode
+  directionRtl: state.appData.user.languageCode === 'ar'
 });
 
 const mapDispatchToProps = {

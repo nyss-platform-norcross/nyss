@@ -18,6 +18,7 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
   const isAdministrator = currentUserRoles.filter(r => r === Administrator).length > 0;
   const isFetchingFormData = useSelector(state => state.projectAlertNotHandledRecipients.formDataFetching);
   const isFetchingList = useSelector(state => state.projectAlertNotHandledRecipients.listFetching);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   return !!recipients && (
     <Grid container spacing={4} fixed='true' style={{ maxWidth: 800 }}>
@@ -53,6 +54,7 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
                           getFormData={getFormData}
                           edit={edit}
                           create={create}
+                          rtl={useRtlDirection}
                         />
                       ))}
                   </div>

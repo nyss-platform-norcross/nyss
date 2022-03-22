@@ -3,7 +3,7 @@
   "files.exclude": {
     ".git": true,
     ".vs": true,
-    "**/*-lock.json": true,
+    "**/*-lock.json": false,
     "**/*.DotSettings": true,
     "**/*.user": true,
     "**/bin": true,

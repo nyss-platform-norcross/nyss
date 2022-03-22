@@ -2,7 +2,7 @@ import styles from "./ReportsListPage.module.scss";
 
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
 import TableActions from '../common/tableActions/TableActions';
 import { withLayout } from '../../utils/layout';
@@ -21,6 +21,7 @@ const Page = "correct";
 
 const CorrectReportsListPageComponent = (props) => {
   const [open, setOpen] = useState(false);
+  const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor, roles.Supervisor, roles.HeadSupervisor]
     .some(neededRole => props.user.roles.some(userRole => userRole === neededRole));
@@ -113,6 +114,7 @@ const CorrectReportsListPageComponent = (props) => {
           onChange={handleFiltersChange}
           filters={props.filters}
           showCorrectReportFilters={true}
+          rtl={useRtlDirection}
         />
       </div>
 
@@ -135,6 +137,7 @@ const CorrectReportsListPageComponent = (props) => {
         goToAlert={props.goToAlert}
         acceptReport={props.acceptReport}
         dismissReport={props.dismissReport}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );

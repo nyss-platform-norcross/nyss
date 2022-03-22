@@ -10,7 +10,7 @@ import { statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
 import { TableSortLabel, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 
-export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, onChangePage, onSort, page, rowsPerPage, totalRows }) => {
+export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, onChangePage, onSort, page, rowsPerPage, totalRows, rtl }) => {
   const filters = useSelector(state => state.alerts.filters);
 
   const handlePageChange = (event, page) => {
@@ -73,7 +73,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
           ))}
         </TableBody>
       </Table>
-      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} rtl={rtl} />
     </TableContainer>
   );
 }

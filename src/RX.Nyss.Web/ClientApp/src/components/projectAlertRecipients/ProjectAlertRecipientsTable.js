@@ -10,7 +10,7 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, isClosed }) => {
+export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, isClosed, rtl }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -51,14 +51,14 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.role}</TableCell>
               <TableCell>{row.organization}</TableCell>
               <TableCell>{row.email}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell className={rtl ? 'ltr-numerals' : ''}>{row.phoneNumber}</TableCell>
               <TableCell>{renderHealthRisks(row.healthRisks)}</TableCell>
               <TableCell>{renderSupervisors([...row.supervisors, ...row.headSupervisors])}</TableCell>
               <TableCell>
                 {!isClosed &&
-                  <TableRowActions>
-                    <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                    <TableRowAction onClick={() => remove(projectId, row.id)} confirmationText={strings(stringKeys.projectAlertRecipient.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  <TableRowActions directionRtl={rtl}>
+                    <TableRowAction directionRtl={rtl} onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowAction directionRtl={rtl} onClick={() => remove(projectId, row.id)} confirmationText={strings(stringKeys.projectAlertRecipient.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                   </TableRowActions>}
               </TableCell>
             </TableRow>

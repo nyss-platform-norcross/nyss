@@ -1,10 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as projectOrganizationsActions from './logic/projectOrganizationsActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import ProjectOrganizationsTable from './ProjectOrganizationsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -17,15 +16,18 @@ const ProjectOrganizationsListPageComponent = (props) => {
     props.openProjectOrganizationsList(props.projectId);
   });
 
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived && !props.projectIsClosed &&
       <TableActions>
         <TableActionsButton
           onClick={() => props.goToCreation(props.projectId)}
-          icon={<AddIcon />}
+          add
           roles={accessMap.projectOrganizations.add}
-          variant={"contained"}
+          variant='contained'
+          rtl={useRtlDirection}
         >
           {strings(stringKeys.common.buttons.add)}
         </TableActionsButton>
@@ -38,6 +40,7 @@ const ProjectOrganizationsListPageComponent = (props) => {
         remove={props.remove}
         projectId={props.projectId}
         isClosed={props.projectIsClosed}
+        rtl={useRtlDirection}
       />
     </Fragment>
   );

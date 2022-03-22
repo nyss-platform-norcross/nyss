@@ -6,8 +6,10 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { Icon } from "@material-ui/core";
 import ConfirmationAction from "../common/confirmationAction/ConfirmationAction";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
-export const StructureTreeItem = ({ itemKey, item, canModify, onEdit, onRemove, children }) => {
+export const StructureTreeItem = ({ itemKey, item, canModify, onEdit, onRemove, children, rtl }) => {
   const [isEdited, setIsEdited] = useState(false);
 
   const handleEdit = (e) => {
@@ -42,14 +44,14 @@ export const StructureTreeItem = ({ itemKey, item, canModify, onEdit, onRemove, 
           {canModify && (
             <Fragment>
               <Icon
-                className={styles.itemAction}
+                className={`${styles.itemAction} ${rtl ? styles.rtl : ''}`}
                 onClick={handleEdit}>
                 edit
               </Icon>
               <ConfirmationAction
                 confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
                 onClick={handleRemove}>
-                <Icon className={styles.itemAction}>delete_outline</Icon>
+                <Icon className={`${styles.itemAction} ${rtl ? styles.rtl : ''}`}>delete_outline</Icon>
               </ConfirmationAction>
             </Fragment>
           )}
@@ -62,7 +64,8 @@ export const StructureTreeItem = ({ itemKey, item, canModify, onEdit, onRemove, 
     <TreeItem
       key={`${itemKey}_${item.id}`}
       nodeId={`${itemKey}_${item.id}`}
-      label={treeItemContent(item.name)}>
+      label={treeItemContent(item.name)}
+      expandIcon={rtl ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}>
       {children}
     </TreeItem>
   );

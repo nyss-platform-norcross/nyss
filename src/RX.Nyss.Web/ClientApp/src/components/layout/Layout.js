@@ -10,36 +10,38 @@ import { TabMenu } from './TabMenu';
 
 const pageContentId = "pageContent";
 
-export const resetPageContentScroll = () =>
-{
+export const resetPageContentScroll = () => {
   const element = document.getElementById(pageContentId);
   element && element.scrollTo(0, 0)
 }
 
-export const Layout = ({ fillPage, children }) => (
-  <BaseLayout>
-    <div className={styles.sideMenu}>
-      <SideMenu />
-    </div>
-    <div className={styles.mainContent}>
+export const Layout = ({ fillPage, children }) => {
 
-      <div className={`${styles.header}`}>
-        <Header />
+  return (
+    <BaseLayout>
+      <div className={styles.sideMenu}>
+        <SideMenu />
       </div>
+      <div className={styles.mainContent}>
 
-      <div className={`${styles.pageContentContainer} ${fillPage ? styles.fillPage : null}`} id={pageContentId}>
-        <div className={`${styles.pageContent} ${fillPage ? styles.fillPage : null}`}>
-          <Breadcrumb />
+        <div className={`${styles.header}`}>
+          <Header />
+        </div>
 
-          <div className={fillPage ? styles.fillPage : null}>
-            <TabMenu />
-            {children}
+        <div className={`${styles.pageContentContainer} ${fillPage ? styles.fillPage : null}`} id={pageContentId}>
+          <div className={`${styles.pageContent} ${fillPage ? styles.fillPage : null}`}>
+            <Breadcrumb />
+
+            <div className={fillPage ? styles.fillPage : null}>
+              <TabMenu />
+              {children}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <MessagePopup />
-  </BaseLayout>
-);
+      <MessagePopup />
+    </BaseLayout>
+  );
+}
 
 export default Layout;

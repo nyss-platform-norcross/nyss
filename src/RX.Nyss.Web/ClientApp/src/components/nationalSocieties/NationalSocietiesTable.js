@@ -14,7 +14,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 
-export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashboard, list, archive, reopen, isArchiving, isReopening }) => {
+export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashboard, list, archive, reopen, isArchiving, isReopening, rtl }) => {
 
   const [archiveConfirmationDialog, setArchiveConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
   const [reopenConfirmationDialog, setReopenConfirmationDialog] = useState({ isOpen: false, nationalSocietyId: null });
@@ -73,9 +73,9 @@ export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashbo
                 <TableCell>{row.headManagers}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
-                  <TableRowActions>
-                    <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
-                    <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowActions directionRtl={rtl}>
+                    <TableRowAction directionRtl={rtl} roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowMenu directionRtl={rtl} id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
