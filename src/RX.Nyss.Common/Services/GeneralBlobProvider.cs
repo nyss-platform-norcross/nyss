@@ -35,13 +35,13 @@ public class GeneralBlobProvider : IGeneralBlobProvider
         await _blobProvider.GetBlobValue(_config.StringsResourcesBlobObjectName);
 
     public async Task SaveStringsResources(string value) =>
-        await _blobProvider.SetBlobValue(_config.StringsResourcesBlobObjectName, value);
+        await _blobProvider.SetBlobValue(_config.StringsResourcesBlobObjectName, value, isStringResources: true);
 
     public async Task SaveEmailContentResources(string value) =>
-        await _blobProvider.SetBlobValue(_config.EmailContentResourcesBlobObjectName, value);
+        await _blobProvider.SetBlobValue(_config.EmailContentResourcesBlobObjectName, value, isStringResources: true);
 
     public async Task SaveSmsContentResources(string value) =>
-        await _blobProvider.SetBlobValue(_config.SmsContentResourcesBlobObjectName, value);
+        await _blobProvider.SetBlobValue(_config.SmsContentResourcesBlobObjectName, value, isStringResources: true);
 
     public async Task<string> GetEmailContentResources() =>
         await _blobProvider.GetBlobValue(_config.EmailContentResourcesBlobObjectName);

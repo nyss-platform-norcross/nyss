@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ public class BlobProvider
         return content.Content.ToString();
     }
 
-    public async Task SetBlobValue(string blobName, string value)
+    public async Task SetBlobValue(string blobName, string value, bool isStringResources = false)
     {
         await using var stream = new MemoryStream();
         await stream.WriteAsync(Encoding.UTF8.GetBytes(value));
@@ -34,6 +35,12 @@ public class BlobProvider
 
         var blob = await GetBlobClient(blobName);
         await blob.UploadAsync(stream, true);
+
+        if (isStringResources)
+        {
+            await blob.SetTagsAsync(new Dictionary<string, string> { { "type", "string-resource" } });
+        }
+
         await stream.DisposeAsync();
     }
 
@@ -67,17 +74,6 @@ public class BlobProvider
         }
 
         return await blob.GetPropertiesAsync();
-    }
-
-    public async Task CopyBlob(string sourceUri, string to)
-    {
-        var newBlob = await GetBlobClient(to);
-        if (await newBlob.ExistsAsync())
-        {
-            throw new Exception($"Blob with name {to} already exists!");
-        }
-
-        await newBlob.StartCopyFromUriAsync(new Uri(sourceUri));
     }
 
     private async Task<BlobClient> GetBlobClient(string blobName)
