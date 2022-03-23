@@ -107,5 +107,12 @@ steps:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/Infrastructure'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'scripts'
+    Contents: '*.sql'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
