@@ -68,8 +68,9 @@ const ProjectsCreatePageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 0) {
+    if (selectedHealthRisks.length === 1) {
       setHealthRisksFieldTouched(true);
+      // ERROR MESSAGE: Must include at least one alert rule
     }
 
     if (!form.isValid()) {
@@ -85,7 +86,11 @@ const ProjectsCreatePageComponent = (props) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
-      setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
+        if (Object.values(eventData.removedValue.data).includes("Activity")){
+        console.log('CANT DO THIS')
+      } else {
+        setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
+      }
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);
     }
@@ -145,7 +150,6 @@ const ProjectsCreatePageComponent = (props) => {
               name="alertNotHandledNotificationRecipientId"
               field={form.fields.alertNotHandledNotificationRecipientId}
               fieldRef={form.fields.alertNotHandledNotificationRecipientId.ref}
-
             >
               {props.data.alertNotHandledRecipients.map(recipient => (
                 <MenuItem key={`alertNotHandledRecipient_${recipient.id}`} value={recipient.id.toString()}>
@@ -160,6 +164,7 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
+              value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onBlur={e => setHealthRisksFieldTouched(true)}
               error={(healthRisksFieldTouched && selectedHealthRisks.length === 0) ? `${strings(stringKeys.validation.fieldRequired)}` : null}
               rtl={useRtlDirection}

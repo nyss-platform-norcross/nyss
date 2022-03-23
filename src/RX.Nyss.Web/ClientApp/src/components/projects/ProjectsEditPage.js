@@ -61,7 +61,8 @@ const ProjectsEditPageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 0) {
+    if (selectedHealthRisks.length === 1) {
+      // ERROR MESSAGE: Must include at least one alert rule
       return;
     }
 
@@ -78,7 +79,11 @@ const ProjectsEditPageComponent = (props) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
-      setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
+      if (Object.values(eventData.removedValue.data).includes("Activity")){
+        console.log("Can't do this")
+      } else {
+        setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
+      }
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);
     }
@@ -117,7 +122,7 @@ const ProjectsEditPageComponent = (props) => {
             <MultiSelect
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
-              defaultValue={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
+              value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onChange={onHealthRiskChange}
               error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
             />
