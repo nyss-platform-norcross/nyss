@@ -23,6 +23,7 @@ import CheckboxField from '../forms/CheckboxField';
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
+  const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
 
 
   useMount(() => {
@@ -61,9 +62,10 @@ const ProjectsEditPageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 1) {
-      // ERROR MESSAGE: Must include at least one alert rule
-      return;
+    const preventSubmit = selectedHealthRisks.length === 1
+
+    if (preventSubmit) {
+      setHealthRisksFieldTouched(true)
     }
 
     if (!form.isValid()) {
@@ -72,7 +74,7 @@ const ProjectsEditPageComponent = (props) => {
       return;
     }
 
-    props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks));
+    !preventSubmit && props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
 
   const onHealthRiskChange = (value, eventData) => {
@@ -120,7 +122,7 @@ const ProjectsEditPageComponent = (props) => {
               options={healthRiskDataSource}
               value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onChange={onHealthRiskChange}
-              error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.healthRiskNotFound)}` : null}
             />
           </Grid>
 

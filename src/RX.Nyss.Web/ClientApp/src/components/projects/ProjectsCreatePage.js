@@ -10,7 +10,7 @@ import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Typography, MenuItem } from '@material-ui/core';
+import {Grid, Typography, MenuItem} from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
@@ -19,6 +19,7 @@ import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
 import * as roles from '../../authentication/roles';
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
+
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -65,12 +66,14 @@ const ProjectsCreatePageComponent = (props) => {
     props.openCreation(props.nationalSocietyId);
   })
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 1) {
-      setHealthRisksFieldTouched(true);
-      // ERROR MESSAGE: Must include at least one alert rule
+    const preventSubmit = selectedHealthRisks.length === 1
+
+    if (preventSubmit) {
+      setHealthRisksFieldTouched(true)
     }
 
     if (!form.isValid()) {
@@ -79,7 +82,7 @@ const ProjectsCreatePageComponent = (props) => {
       return;
     }
 
-    props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
+    !preventSubmit && props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
 
   const onHealthRiskChange = (value, eventData) => {
@@ -162,7 +165,7 @@ const ProjectsCreatePageComponent = (props) => {
               onChange={onHealthRiskChange}
               value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onBlur={e => setHealthRisksFieldTouched(true)}
-              error={(healthRisksFieldTouched && selectedHealthRisks.length === 0) ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.healthRiskNotFound)}` : null}
               rtl={useRtlDirection}
             />
           </Grid>
