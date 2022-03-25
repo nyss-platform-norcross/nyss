@@ -110,7 +110,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             await Sender.Send(cmd);
 
         [HttpPost, Route("exportPerformance")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.HeadSupervisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportPerformance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto filters) =>
             await Sender.Send(new ExportDataCollectorPerformanceQuery(projectId, filters)).AsFileResult();
     }
