@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
     {
         public static IQueryable<Alert> FilterByDate(this IQueryable<Alert> alerts, DateTimeOffset startDate, DateTimeOffset endDate) =>
             alerts
-                .Where(a => ( a.CreatedAt >= startDate && a.CreatedAt <= endDate));
+                .Where(a => a.CreatedAt >= startDate && a.CreatedAt <= endDate );
 
         public static IQueryable<Alert> FilterByProject(this IQueryable<Alert> alerts, int? projectId) =>
             alerts.Where(alert => !projectId.HasValue || alert.ProjectHealthRisk.Project.Id == projectId.Value);

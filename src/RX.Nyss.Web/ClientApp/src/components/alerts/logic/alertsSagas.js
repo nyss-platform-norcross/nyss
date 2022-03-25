@@ -30,7 +30,7 @@ function* openAlertsList({ projectId }) {
   try {
     yield openAlertsModule(projectId);
     const localDate = dayjs();
-    const utcOffset = Math.floor(localDate.utcOffset() / 60);
+    const utcOffset = getUtcOffset();
     let endDate = localDate.add(-utcOffset, 'hour');
     endDate = endDate.set('hour', 0);
     endDate = endDate.set('minute', 0);
@@ -48,7 +48,7 @@ function* openAlertsList({ projectId }) {
         status: consts.alertStatusFilters.all,
         orderBy: consts.statusColumn,
         sortAscending: false,
-        utcOffset: getUtcOffset()
+        utcOffset: utcOffset
       };
 
     yield call(getAlerts, { projectId, filters });
