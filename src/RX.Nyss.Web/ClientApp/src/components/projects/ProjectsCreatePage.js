@@ -10,7 +10,7 @@ import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { Grid, Typography, MenuItem } from '@material-ui/core';
+import {Grid, Typography, MenuItem} from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
@@ -20,6 +20,7 @@ import CheckboxField from '../forms/CheckboxField';
 import * as roles from '../../authentication/roles';
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
+
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
@@ -28,6 +29,7 @@ const ProjectsCreatePageComponent = (props) => {
 
   useEffect(() => {
     props.data && setHealthRiskDataSource(props.data.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
+    props.data && setSelectedHealthRisks(props.data.healthRisks.filter(hr => hr.healthRiskType === 'Activity' ));
   }, [props.data])
 
   const canChangeOrganization = useCallback(
@@ -64,11 +66,14 @@ const ProjectsCreatePageComponent = (props) => {
     props.openCreation(props.nationalSocietyId);
   })
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 0) {
-      setHealthRisksFieldTouched(true);
+    const preventSubmit = selectedHealthRisks.length === 1
+
+    if (preventSubmit) {
+      setHealthRisksFieldTouched(true)
     }
 
     if (!form.isValid()) {
@@ -77,7 +82,7 @@ const ProjectsCreatePageComponent = (props) => {
       return;
     }
 
-    props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
+    !preventSubmit && props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
 
   const onHealthRiskChange = (value, eventData) => {
@@ -86,7 +91,7 @@ const ProjectsCreatePageComponent = (props) => {
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
       setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
-      setSelectedHealthRisks([]);
+      setSelectedHealthRisks(props.data.healthRisks.filter(hr => hr.healthRiskType === 'Activity' ));
     }
   }
 
@@ -144,7 +149,6 @@ const ProjectsCreatePageComponent = (props) => {
               name="alertNotHandledNotificationRecipientId"
               field={form.fields.alertNotHandledNotificationRecipientId}
               fieldRef={form.fields.alertNotHandledNotificationRecipientId.ref}
-
             >
               {props.data.alertNotHandledRecipients.map(recipient => (
                 <MenuItem key={`alertNotHandledRecipient_${recipient.id}`} value={recipient.id.toString()}>
@@ -159,8 +163,9 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
+              value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onBlur={e => setHealthRisksFieldTouched(true)}
-              error={(healthRisksFieldTouched && selectedHealthRisks.length === 0) ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
               rtl={useRtlDirection}
             />
           </Grid>

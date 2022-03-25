@@ -56,13 +56,16 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
 };
 
 function MultiValue(props) {
+
+  const isActivityReport = props.data.data.healthRiskType === "Activity"
+
   return (
     <Chip
       tabIndex={-1}
       label={props.children}
       className={`${styles.chip} ${props.isFocused ? styles.chipFocused : ""}`}
-      onDelete={props.removeProps.onClick}
-      deleteIcon={<CancelIcon {...props.removeProps} />}
+      onDelete={!isActivityReport && props.removeProps.onClick}
+      deleteIcon={!isActivityReport && <CancelIcon {...props.removeProps} />}
     />
   );
 }

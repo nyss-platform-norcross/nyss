@@ -23,6 +23,7 @@ import CheckboxField from '../forms/CheckboxField';
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
+  const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
 
 
   useMount(() => {
@@ -61,8 +62,10 @@ const ProjectsEditPageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedHealthRisks.length === 0) {
-      return;
+    const preventSubmit = selectedHealthRisks.length === 1
+
+    if (preventSubmit) {
+      setHealthRisksFieldTouched(true)
     }
 
     if (!form.isValid()) {
@@ -71,16 +74,16 @@ const ProjectsEditPageComponent = (props) => {
       return;
     }
 
-    props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks));
+    !preventSubmit && props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
 
   const onHealthRiskChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
-      setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
+        setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
-      setSelectedHealthRisks([]);
+      setSelectedHealthRisks(props.data.healthRisks.filter(hr => hr.healthRiskType === 'Activity' ));
     }
   }
 
@@ -117,9 +120,9 @@ const ProjectsEditPageComponent = (props) => {
             <MultiSelect
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
-              defaultValue={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
+              value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onChange={onHealthRiskChange}
-              error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
             />
           </Grid>
 
