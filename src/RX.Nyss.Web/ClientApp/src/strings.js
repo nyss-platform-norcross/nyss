@@ -952,7 +952,7 @@ export const stringKeys = {
   validation: {
     invalidPhoneNumber: "validation.invalidPhoneNumber",
     fieldRequired: "validation.fieldRequired",
-    healthRiskNotFound: "validation.healthRiskNotFound",
+    noHealthRiskSelected: "validation.noHealthRiskSelected",
     tooShortString: "validation.tooShortString",
     tooLongString: "validation.tooLongString",
     invalidEmail: "validation.invalidEmail",
