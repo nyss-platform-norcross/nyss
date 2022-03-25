@@ -165,7 +165,7 @@ const ProjectsCreatePageComponent = (props) => {
               onChange={onHealthRiskChange}
               value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onBlur={e => setHealthRisksFieldTouched(true)}
-              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.healthRiskNotFound)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
               rtl={useRtlDirection}
             />
           </Grid>

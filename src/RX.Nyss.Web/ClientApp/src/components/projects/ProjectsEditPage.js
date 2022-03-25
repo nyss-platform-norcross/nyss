@@ -122,7 +122,7 @@ const ProjectsEditPageComponent = (props) => {
               options={healthRiskDataSource}
               value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onChange={onHealthRiskChange}
-              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.healthRiskNotFound)}` : null}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
             />
           </Grid>
 
