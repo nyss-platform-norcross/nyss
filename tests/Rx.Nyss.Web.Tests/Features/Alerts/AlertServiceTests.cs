@@ -648,7 +648,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 HealthRiskId = null,
                 OrderBy = "Status",
                 SortAscending = true,
-                Status = alertStatusFilter
+                Status = alertStatusFilter,
+                StartDate = new DateTime(1990, 1, 1),
+                EndDate = new DateTime(2032, 1, 1)
             });
 
             if (alertStatusFilter == AlertStatusFilter.All)
