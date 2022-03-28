@@ -131,6 +131,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
                 .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
+                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
@@ -397,6 +398,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
                 .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
+                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate)
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
             var alerts = await alertsQuery
