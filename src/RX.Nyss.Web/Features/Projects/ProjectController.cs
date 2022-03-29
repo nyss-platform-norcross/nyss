@@ -82,7 +82,7 @@ namespace RX.Nyss.Web.Features.Projects
         [HttpGet("{projectId:int}/basicData")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId) =>
-            await _projectService.GetBasicData(projectId);
+            await Sender.Send(new GetProjectBasicDataQuery(projectId));
 
         /// <summary>
         /// Get the data required to build a "create new project" form
