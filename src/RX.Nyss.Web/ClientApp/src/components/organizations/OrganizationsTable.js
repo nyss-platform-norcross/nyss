@@ -15,6 +15,16 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
     return <Loading />;
   }
 
+  const isMultipleOrganization = (row) => {
+    // if row isdefaultorganisation and only organisation in list of rows
+    // then dont show the star
+    if (row){
+      return true
+    }
+
+  }
+
+
   return (
     <TableContainer sticky>
       <Table>
