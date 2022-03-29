@@ -141,7 +141,8 @@ function* openProjectDashboardModule(projectId) {
     nationalSocietyCountry: project.value.nationalSociety.countryName,
     projectId: project.value.id,
     projectName: project.value.name,
-    projectIsClosed: project.value.isClosed
+    projectIsClosed: project.value.isClosed,
+    allowMultipleOrganizations: project.value.allowMultipleOrganizations
   }));
 
   return project.value;

@@ -10,7 +10,8 @@ export const projectOrganizationsSiteMap = [
     placeholder: placeholders.tabMenu,
     access: accessMap.projectOrganizations.list,
     placeholderIndex: 2,
-    middleStepOnly: true
+    middleStepOnly: true,
+    hideWhen: (parameters) => !parameters.allowMultipleOrganizations
   },
   {
     parentPath: "/projects/:projectId/organizations",
