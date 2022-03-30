@@ -24,7 +24,6 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result<int>> Create(int nationalSocietyId, CreateProjectRequestDto dto);
         Task<Result> Edit(int projectId, EditProjectRequestDto dto);
         Task<Result> Close(int projectId);
-        Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes);
     }
@@ -356,26 +355,6 @@ namespace RX.Nyss.Web.Features.Projects
             }
 
             return Success();
-        }
-
-        public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)
-        {
-            var project = await _nyssContext.Projects
-                .Select(dc => new ProjectBasicDataResponseDto
-                {
-                    Id = dc.Id,
-                    Name = dc.Name,
-                    IsClosed = dc.State == ProjectState.Closed,
-                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
-                    {
-                        Id = dc.NationalSociety.Id,
-                        Name = dc.NationalSociety.Name,
-                        CountryName = dc.NationalSociety.Country.Name
-                    }
-                })
-                .SingleAsync(p => p.Id == projectId);
-
-            return Success(project);
         }
 
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)

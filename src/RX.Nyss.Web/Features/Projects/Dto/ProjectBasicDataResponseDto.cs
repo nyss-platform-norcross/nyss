@@ -8,6 +8,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public NationalSocietyIdDto NationalSociety { get; set; }
         public bool IsClosed { get; set; }
+        public bool AllowMultipleOrganizations { get; set; }
 
         public class NationalSocietyIdDto
         {
