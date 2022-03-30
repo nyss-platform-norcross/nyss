@@ -9,7 +9,6 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
-import {go} from "connected-react-router";
 
 export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, canModify, rtl }) => {
   if (isListFetching) {
