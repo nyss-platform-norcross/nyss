@@ -15,6 +15,8 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
     return <Loading />;
   }
 
+  const showDefaultFlag = (row) => list.length > 1 && row.isDefaultOrganization === true
+
   return (
     <TableContainer sticky>
       <Table>
@@ -29,7 +31,7 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover={canModify} onClick={() => canModify && goToEdition(nationalSocietyId, row.id)} className={canModify ? styles.clickableRow : null}>
-              <TableCell>{row.name} {row.isDefaultOrganization && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
+              <TableCell>{row.name} {showDefaultFlag(row) && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
               <TableCell>{row.projects}</TableCell>
               <TableCell>{row.headManager}</TableCell>
               {canModify && (
