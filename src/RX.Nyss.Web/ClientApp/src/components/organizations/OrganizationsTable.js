@@ -9,21 +9,14 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import {go} from "connected-react-router";
 
 export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, canModify, rtl }) => {
   if (isListFetching) {
     return <Loading />;
   }
 
-  const isMultipleOrganization = (row) => {
-    // if row isdefaultorganisation and only organisation in list of rows
-    // then dont show the star
-    if (row){
-      return true
-    }
-
-  }
-
+  const showDefaultFlag = (row) => list.length > 1 && row.isDefaultOrganization === true
 
   return (
     <TableContainer sticky>
@@ -39,7 +32,7 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover={canModify} onClick={() => canModify && goToEdition(nationalSocietyId, row.id)} className={canModify ? styles.clickableRow : null}>
-              <TableCell>{row.name} {row.isDefaultOrganization && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
+              <TableCell>{row.name} {showDefaultFlag(row) && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
               <TableCell>{row.projects}</TableCell>
               <TableCell>{row.headManager}</TableCell>
               {canModify && (
