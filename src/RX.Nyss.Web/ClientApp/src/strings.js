@@ -89,7 +89,6 @@ export const stringKeys = {
       }
     },
     list: {
-      name: "nationalSociety.list.name",
       country: "nationalSociety.list.country",
       startDate: "nationalSociety.list.startDate",
       coordinator: "nationalSociety.list.coordinator",
@@ -171,7 +170,6 @@ export const stringKeys = {
     form: {
       creationTitle: "smsGateway.form.creationTitle",
       editionTitle: "smsGateway.form.editionTitle",
-      name: "smsGateway.form.name",
       apiKey: "smsGateway.form.apiKey",
       gatewayType: "smsGateway.form.gatewayType",
       emailAddress: "smsGateway.form.emailAddress",
@@ -193,7 +191,6 @@ export const stringKeys = {
       success: "smsGateway.delete.success"
     },
     list: {
-      name: "smsGateway.list.name",
       apiKey: "smsGateway.list.apiKey",
       gatewayType: "smsGateway.list.gatewayType",
       removalConfirmation: "smsGateway.list.removalConfirmation",
@@ -204,8 +201,7 @@ export const stringKeys = {
     title: "organization.title",
     form: {
       creationTitle: "organization.form.creationTitle",
-      editionTitle: "organization.form.editionTitle",
-      name: "organization.form.name"
+      editionTitle: "organization.form.editionTitle"
     },
     create: {
       success: "organization.create.success"
@@ -217,7 +213,6 @@ export const stringKeys = {
       success: "organization.delete.success"
     },
     list: {
-      name: "organization.list.name",
       projects: "organization.list.projects",
       headManager: "organization.list.headManager",
       removalConfirmation: "organization.list.removalConfirmation",
@@ -421,14 +416,12 @@ export const stringKeys = {
     form: {
       creationTitle: "globalCoordinator.form.creationTitle",
       editionTitle: "globalCoordinator.form.editionTitle",
-      name: "globalCoordinator.form.name",
       email: "globalCoordinator.form.email",
       phoneNumber: "globalCoordinator.form.phoneNumber",
       additionalPhoneNumber: "globalCoordinator.form.additionalPhoneNumber",
       organization: "globalCoordinator.form.organization"
     },
     list: {
-      name: "globalCoordinator.list.name",
       email: "globalCoordinator.list.email",
       phoneNumber: "globalCoordinator.list.phoneNumber",
       organization: "globalCoordinator.list.organization",
@@ -452,7 +445,6 @@ export const stringKeys = {
       addExistingTitle: "nationalSocietyUser.form.addExistingTitle",
       addExistingDescription: "nationalSocietyUser.form.addExistingDescription",
       editionTitle: "nationalSocietyUser.form.editionTitle",
-      name: "nationalSocietyUser.form.name",
       role: "nationalSocietyUser.form.role",
       decadeOfBirth: "nationalSocietyUser.form.decadeOfBirth",
       sex: "nationalSocietyUser.form.sex",
@@ -479,7 +471,6 @@ export const stringKeys = {
       success: "nationalSocietyUser.remove.success"
     },
     list: {
-      name: "nationalSocietyUser.list.name",
       phoneNumber: "nationalSocietyUser.list.phoneNumber",
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
@@ -493,7 +484,7 @@ export const stringKeys = {
       roleNotValid: "nationalSocietyUser.messages.roleNotValid"
     }
   },
-  dataCollector: {
+  dataCollectors: {
     title: "dataCollectors.title",
     exportExcel: "dataCollectors.exportExcel",
     exportCsv: "dataCollectors.exportCsv",
@@ -501,7 +492,6 @@ export const stringKeys = {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
       dataCollectorType: "dataCollectors.form.dataCollectorType",
-      name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
       phoneNumber: "dataCollectors.form.phoneNumber",
@@ -530,7 +520,6 @@ export const stringKeys = {
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
-      name: "dataCollectors.list.name",
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",
       sex: "dataCollectors.list.sex",
@@ -572,9 +561,6 @@ export const stringKeys = {
       deployedMode: "dataCollectors.filters.deployedMode",
       resetAll: "dataCollectors.filters.resetAll",
       name: "dataCollectors.filters.name"
-    },
-    performanceListFilters: {
-      name: "dataCollectors.performanceListFilters.name"
     },
     constants: {
       sex: {
@@ -992,7 +978,9 @@ export const stringKeys = {
     boolean: {
       true: "common.true",
       false: "common.false"
-    }
+    },
+    name: "common.name",
+    location: "common.location"
   },
   translations: {
     title: "translations.title",

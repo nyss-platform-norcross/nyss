@@ -7,7 +7,7 @@ export const dataCollectorsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/projects/:projectId/datacollectors",
-    title: () => strings(stringKeys.dataCollector.title),
+    title: () => strings(stringKeys.dataCollectors.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.dataCollectors.list,
     placeholderIndex: projectLeftMenuOrder.dataCollectors
@@ -15,7 +15,7 @@ export const dataCollectorsSiteMap = [
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/list",
-    title: () => strings(stringKeys.dataCollector.list.title),
+    title: () => strings(stringKeys.dataCollectors.list.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.dataCollectors.list,
     placeholderIndex: 1,
@@ -24,19 +24,19 @@ export const dataCollectorsSiteMap = [
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/add",
-    title: () => strings(stringKeys.dataCollector.form.creationTitle),
+    title: () => strings(stringKeys.dataCollectors.form.creationTitle),
     access: accessMap.dataCollectors.add
   },
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/:dataCollectorId/edit",
-    title: () => strings(stringKeys.dataCollector.form.editionTitle),
+    title: () => strings(stringKeys.dataCollectors.form.editionTitle),
     access: accessMap.dataCollectors.edit
   },
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/mapoverview",
-    title: () => strings(stringKeys.dataCollector.mapOverview.title),
+    title: () => strings(stringKeys.dataCollectors.mapOverview.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.dataCollectors.list,
     placeholderIndex: 2,
@@ -45,7 +45,7 @@ export const dataCollectorsSiteMap = [
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/performance",
-    title: () => strings(stringKeys.dataCollector.performanceList.title),
+    title: () => strings(stringKeys.dataCollectors.performanceList.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.dataCollectors.performanceList,
     placeholderIndex: 3,

@@ -160,33 +160,33 @@ const DataCollectorsCreatePageComponent = (props) => {
           <Grid item xs={12}>
             <RadioGroupField
               name="dataCollectorType"
-              label={strings(stringKeys.dataCollector.form.dataCollectorType)}
+              label={strings(stringKeys.dataCollectors.form.dataCollectorType)}
               boldLabel
               field={form.fields.dataCollectorType}
               horizontal >
               {Object.keys(dataCollectorType).map(type => (
-                <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollector.constants.dataCollectorType[dataCollectorType[type]])} value={dataCollectorType[type]} />
+                <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollectors.constants.dataCollectorType[dataCollectorType[type]])} value={dataCollectorType[type]} />
               ))}
             </RadioGroupField>
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>
+            <Typography variant="h6">{strings(stringKeys.dataCollectors.filters.deployedMode)}</Typography>
             <CheckboxField
               name="deployed"
-              label={strings(stringKeys.dataCollector.form.deployed)}
+              label={strings(stringKeys.dataCollectors.form.deployed)}
               field={form.fields.deployed}
               color="primary"
             />
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6">{strings(stringKeys.dataCollector.form.personalia)}</Typography>
+            <Typography variant="h6">{strings(stringKeys.dataCollectors.form.personalia)}</Typography>
           </Grid>
 
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
               fieldRef={form.fields.name.ref}
@@ -195,7 +195,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
           {type === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.displayName)}
+              label={strings(stringKeys.dataCollectors.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
               fieldRef={form.fields.displayName.ref}
@@ -206,14 +206,14 @@ const DataCollectorsCreatePageComponent = (props) => {
           {type === dataCollectorType.human && (
             <Grid item xs={12}>
               <SelectField
-                label={strings(stringKeys.dataCollector.form.sex)}
+                label={strings(stringKeys.dataCollectors.form.sex)}
                 name="sex"
                 field={form.fields.sex}
                 fieldRef={form.fields.sex.ref}
               >
                 {sexValues.map(type => (
                   <MenuItem key={`sex${type}`} value={type}>
-                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                    {strings(stringKeys.dataCollectors.constants.sex[type.toLowerCase()])}
                   </MenuItem>
                 ))}
               </SelectField>
@@ -222,7 +222,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
           {type === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
-              label={strings(stringKeys.dataCollector.form.birthYearGroup)}
+              label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
               name="birthGroupDecade"
               fieldRef={form.fields.birthGroupDecade.ref}
@@ -237,7 +237,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <PhoneInputField
-              label={strings(stringKeys.dataCollector.form.phoneNumber)}
+              label={strings(stringKeys.dataCollectors.form.phoneNumber)}
               name="phoneNumber"
               fieldRef={form.fields.phoneNumber.ref}
               field={form.fields.phoneNumber}
@@ -246,7 +246,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
           {type === dataCollectorType.human && (<Grid item xs={12}>
             <PhoneInputField
-              label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
+              label={strings(stringKeys.dataCollectors.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
               defaultCountry={props.countryCode}
@@ -257,7 +257,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           {!currentUserRoles.some(r => r === Supervisor) && (
             <Grid item xs={12}>
               <SelectField
-                label={strings(stringKeys.dataCollector.form.supervisor)}
+                label={strings(stringKeys.dataCollectors.form.supervisor)}
                 field={form.fields.supervisorId}
                 name="supervisorId"
                 fieldRef={form.fields.supervisorId.ref}
@@ -273,7 +273,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
         <Grid container spacing={2} className={styles.locationsContainer}>
           <Grid item xs={12}>
-            <Typography variant="h6">{strings(stringKeys.dataCollector.form.locationsHeader)}</Typography>
+            <Typography variant="h6">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
           </Grid>
 
           {locations.map((location, i) => (
@@ -296,7 +296,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           ))}
 
-          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
+          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
         </Grid>
 
         <FormActions className={formStyles.shrinked}>

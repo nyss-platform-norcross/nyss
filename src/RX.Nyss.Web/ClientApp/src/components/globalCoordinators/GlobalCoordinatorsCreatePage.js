@@ -74,7 +74,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.globalCoordinator.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
             />

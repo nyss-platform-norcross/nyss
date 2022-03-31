@@ -42,8 +42,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
     const isGlobalCoordinator = user.roles.some(r => r === Roles.GlobalCoordinator);
     const isCoordinator = user.roles.some(r => r === Roles.Coordinator);
 
-    const isEditingHeadManagerOrCoordinator = row.isHeadManager 
-    || row.isPendingHeadManager 
+    const isEditingHeadManagerOrCoordinator = row.isHeadManager
+    || row.isPendingHeadManager
     || row.role.toLowerCase() === Roles.Coordinator.toLowerCase();
 
     if (isGlobalCoordinator) {
@@ -63,7 +63,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{strings(stringKeys.nationalSocietyUser.list.name)}</TableCell>
+            <TableCell>{strings(stringKeys.common.name)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.form.email)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>

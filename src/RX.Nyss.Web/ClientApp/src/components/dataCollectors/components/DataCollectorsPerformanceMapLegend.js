@@ -12,7 +12,7 @@ export const DataCollectorsPerformanceMapLegend = ({ rtl }) => {
       <div className={`${mapIconStyles.marker} ${mapStyles[`marker_${status}`]} ${styles.icon} ${rtl ? styles.rtl : ''}`}>
         <Icon>{getIconFromStatus(status)}</Icon>
       </div>
-      <div className={styles.description}>{strings(stringKeys.dataCollector.mapOverview.legend[status])}</div>
+      <div className={styles.description}>{strings(stringKeys.dataCollectors.mapOverview.legend[status])}</div>
     </div>
   );
 

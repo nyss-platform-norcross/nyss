@@ -271,7 +271,7 @@ function* replaceSupervisor({ dataCollectorIds, supervisorId }) {
     yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId });
     yield call(getDataCollectors, { projectId, filters });
     yield put(actions.replaceSupervisor.success(dataCollectorIds));
-    yield put(appActions.showMessage(stringKeys.dataCollector.list.supervisorReplacedSuccessfully));
+    yield put(appActions.showMessage(stringKeys.dataCollectors.list.supervisorReplacedSuccessfully));
   } catch (error) {
     yield put(actions.replaceSupervisor.failure(dataCollectorIds, error));
   }

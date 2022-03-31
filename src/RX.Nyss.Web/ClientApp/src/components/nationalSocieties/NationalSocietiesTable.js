@@ -54,7 +54,7 @@ export const NationalSocietiesTable = ({ isListFetching, goToEdition, goToDashbo
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>{strings(stringKeys.nationalSociety.list.name)}</TableCell>
+              <TableCell>{strings(stringKeys.common.name)}</TableCell>
               <TableCell style={{ width: "16%", minWidth: 100 }}>{strings(stringKeys.nationalSociety.list.country)}</TableCell>
               <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.nationalSociety.list.startDate)}</TableCell>
               <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.coordinator)}</TableCell>

@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
          new List<string>
             {
                 strings["dataCollectors.export.dataCollectorType"],
-                strings["dataCollectors.export.name"],
+                strings["common.name"],
                 strings["dataCollectors.export.displayName"],
                 strings["dataCollectors.export.phoneNumber"],
                 strings["dataCollectors.export.additionalPhoneNumber"],

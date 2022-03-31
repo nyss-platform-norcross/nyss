@@ -45,13 +45,13 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
             roles={accessMap.dataCollectors.export}
             isFetching={props.isExportingToCsv}
           >
-            {strings(stringKeys.dataCollector.exportCsv)}
+            {strings(stringKeys.dataCollectors.exportCsv)}
           </TableActionsButton>
           <TableActionsButton  onClick={() => props.exportToExcel(projectId, props.filters)}
              variant="outlined"
              roles={accessMap.dataCollectors.export} isFetching={props.isExportingToExcel}
           >
-            {strings(stringKeys.dataCollector.exportExcel)}
+            {strings(stringKeys.dataCollectors.exportExcel)}
           </TableActionsButton>
           <TableActionsButton
             onClick={() => props.goToCreation(projectId)}

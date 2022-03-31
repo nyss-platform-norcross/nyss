@@ -62,7 +62,7 @@ const DataCollectorsPerformancePageComponent = ({ projectId, getDataCollectorPer
           isFetching={props.isExporting}
           variant={"outlined"}
         >
-          {strings(stringKeys.dataCollector.exportExcel)}
+          {strings(stringKeys.dataCollectors.exportExcel)}
         </TableActionsButton>
       </TableActions>
 

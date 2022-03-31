@@ -7,10 +7,10 @@ import { DataCollectorStatusIcon } from "../../common/icon/DataCollectorStatusIc
 export const DataCollectorsPerformanceTableLegend = ({ rtl }) => (
   <div className={styles.legend}>
     <DataCollectorStatusIcon status={performanceStatus.reportingCorrectly} icon={getIconFromStatus(performanceStatus.reportingCorrectly)} rtl={rtl} />
-    <span className={`${styles.label} ${rtl ? styles.rtl : ''}`}>{strings(stringKeys.dataCollector.performanceList.legend.ReportingCorrectly)}</span>
+    <span className={`${styles.label} ${rtl ? styles.rtl : ''}`}>{strings(stringKeys.dataCollectors.performanceList.legend.ReportingCorrectly)}</span>
     <DataCollectorStatusIcon status={performanceStatus.reportingWithErrors} icon={getIconFromStatus(performanceStatus.reportingWithErrors)} rtl={rtl} />
-    <span className={`${styles.label} ${rtl ? styles.rtl : ''}`}>{strings(stringKeys.dataCollector.performanceList.legend.ReportingWithErrors)}</span>
+    <span className={`${styles.label} ${rtl ? styles.rtl : ''}`}>{strings(stringKeys.dataCollectors.performanceList.legend.ReportingWithErrors)}</span>
     <DataCollectorStatusIcon status={performanceStatus.notReporting} icon={getIconFromStatus(performanceStatus.notReporting)} rtl={rtl} />
-    <span>{strings(stringKeys.dataCollector.performanceList.legend.NotReporting)}</span>
+    <span>{strings(stringKeys.dataCollectors.performanceList.legend.NotReporting)}</span>
   </div>
 );
