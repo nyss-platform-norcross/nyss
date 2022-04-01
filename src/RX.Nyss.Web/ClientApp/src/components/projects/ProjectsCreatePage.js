@@ -88,12 +88,15 @@ const ProjectsCreatePageComponent = (props) => {
   const onHealthRiskChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
-    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
+    } else if ((eventData.action === "remove-value" || eventData.action === "pop-value") && eventData.removedValue.data.healthRiskType !== 'Activity') {
       setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks(props.data.healthRisks.filter(hr => hr.healthRiskType === 'Activity' ));
     }
   }
+
+  const getSelectedHealthRiskValue = () => 
+    healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value))).sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);
 
   if (!props.data) {
     return null;
@@ -163,7 +166,7 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
-              value={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
+              value={getSelectedHealthRiskValue()}
               onBlur={e => setHealthRisksFieldTouched(true)}
               error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
               rtl={useRtlDirection}
