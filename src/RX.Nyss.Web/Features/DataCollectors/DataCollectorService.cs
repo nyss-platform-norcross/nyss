@@ -233,10 +233,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .SingleAsync();
 
+            var supervisors = await GetHeadSupervisors(projectId, currentUser, projectData.OrganizationId)
+                .Concat(GetSupervisors(projectId, currentUser, projectData.OrganizationId))
+                .ToListAsync();
+
             var filtersData = new DataCollectorFiltersReponseDto
             {
-                Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId)
-                    .ToListAsync(),
+                Supervisors = supervisors,
                 Locations = await _nationalSocietyStructureService.Get(projectData.NationalSocietyId)
             };
 
