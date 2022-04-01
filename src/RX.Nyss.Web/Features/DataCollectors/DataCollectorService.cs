@@ -30,8 +30,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
 
-        Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
-
         Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
 
         Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
@@ -47,6 +45,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
 
         Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId);
+        IQueryable<DataCollectorSupervisorResponseDto> GetAllSupervisors(int projectId, User currentUser, int? organizationId);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -216,34 +215,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         Longitude = DefaultLongitude
                     }
             });
-        }
-
-        public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
-        {
-            var currentUser = await _authorizationService.GetCurrentUser();
-            var projectData = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .Select(dc => new
-                {
-                    NationalSocietyId = dc.NationalSociety.Id,
-                    OrganizationId = dc.NationalSociety.NationalSocietyUsers
-                        .Where(nsu => nsu.User == currentUser)
-                        .Select(nsu => nsu.OrganizationId)
-                        .FirstOrDefault()
-                })
-                .SingleAsync();
-
-            var supervisors = await GetHeadSupervisors(projectId, currentUser, projectData.OrganizationId)
-                .Concat(GetSupervisors(projectId, currentUser, projectData.OrganizationId))
-                .ToListAsync();
-
-            var filtersData = new DataCollectorFiltersReponseDto
-            {
-                Supervisors = supervisors,
-                Locations = await _nationalSocietyStructureService.Get(projectData.NationalSocietyId)
-            };
-
-            return Success(filtersData);
         }
 
         public async Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
@@ -543,6 +514,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             return dataCollectorsQuery;
         }
+
+        public IQueryable<DataCollectorSupervisorResponseDto> GetAllSupervisors(int projectId, User currentUser, int? organizationId) =>
+            GetHeadSupervisors(projectId, currentUser, organizationId)
+                .Concat(GetSupervisors(projectId, currentUser, organizationId));
 
         private async Task Anonymize(int dataCollectorId)
         {
