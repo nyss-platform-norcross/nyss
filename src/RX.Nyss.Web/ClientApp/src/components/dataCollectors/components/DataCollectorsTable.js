@@ -115,7 +115,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell>{strings(stringKeys.dataCollectors.list.displayName)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollectors.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollectors.list.sex)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollectors.list.location)}</TableCell>
+            <TableCell>{strings(stringKeys.common.location)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollectors.list.trainingStatus)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollectors.list.supervisor)}</TableCell>
             <TableCell>

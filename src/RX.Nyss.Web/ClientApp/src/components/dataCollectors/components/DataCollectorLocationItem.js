@@ -163,7 +163,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
       <Card className={styles.requiredMapLocation} data-with-error={hasError()}>
         <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
           <Grid item xs={12} className={styles.locationHeader}>
-            <Typography variant='h6'>{strings(stringKeys.dataCollectors.form.location)}</Typography>
+            <Typography variant='h6'>{strings(stringKeys.common.location)}</Typography>
 
             <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton data-expanded={isExpanded} onClick={onToggleExpand}>
