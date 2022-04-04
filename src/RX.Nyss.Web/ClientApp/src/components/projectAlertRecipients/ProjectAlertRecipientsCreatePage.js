@@ -160,7 +160,7 @@ const ProjectAlertRecipientsCreatePageComponent = ({ formData, listData, project
 
                   <Grid item xs={12}>
                     <TextInputField
-                      label={strings(stringKeys.projectAlertRecipient.form.email)}
+                      label={strings(stringKeys.common.email)}
                       field={form.fields.email}
                       name="email"
                       inputMode={"email"}

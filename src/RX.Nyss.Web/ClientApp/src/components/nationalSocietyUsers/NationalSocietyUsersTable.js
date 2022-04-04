@@ -64,7 +64,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
         <TableHead>
           <TableRow>
             <TableCell>{strings(stringKeys.common.name)}</TableCell>
-            <TableCell>{strings(stringKeys.nationalSocietyUser.form.email)}</TableCell>
+            <TableCell>{strings(stringKeys.common.email)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.organization)}</TableCell>

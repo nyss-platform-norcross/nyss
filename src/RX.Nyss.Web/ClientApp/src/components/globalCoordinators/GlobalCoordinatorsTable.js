@@ -22,7 +22,7 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
         <TableHead>
           <TableRow>
             <TableCell>{strings(stringKeys.common.name)}</TableCell>
-            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.globalCoordinator.list.email)}</TableCell>
+            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.common.email)}</TableCell>
             <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.globalCoordinator.list.phoneNumber)}</TableCell>
             <TableCell style={{ width: "16%" }}>{strings(stringKeys.globalCoordinator.list.organization)}</TableCell>
             <TableCell style={{ width: "16%" }} />

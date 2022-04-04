@@ -17,7 +17,7 @@ const AlertNotificationRecipients = ({ recipients }) => {
           <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.role)}</TableCell>
           <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.organization)}</TableCell>
           <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.phoneNumber)}</TableCell>
-          <TableCell>{strings(stringKeys.alerts.assess.escalatedTo.email)}</TableCell>
+          <TableCell>{strings(stringKeys.common.email)}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

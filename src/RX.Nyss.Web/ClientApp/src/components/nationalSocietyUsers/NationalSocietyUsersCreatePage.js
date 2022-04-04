@@ -205,7 +205,7 @@ const NationalSocietyUsersCreatePageComponent = ({ nationalSocietyId, data, isSa
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.email)}
+              label={strings(stringKeys.common.email)}
               name="email"
               field={form.fields.email}
               autoFocus

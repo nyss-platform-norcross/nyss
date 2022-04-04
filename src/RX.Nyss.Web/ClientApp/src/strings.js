@@ -244,7 +244,6 @@ export const stringKeys = {
       role: "projectAlertRecipient.form.role",
       organization: "projectAlertRecipient.form.organization",
       projectOrganization: "projectAlertRecipient.form.projectOrganization",
-      email: "projectAlertRecipient.form.email",
       phoneNumber: "projectAlertRecipient.form.phoneNumber",
       supervisors: "projectAlertRecipient.form.supervisors",
       healthRisks: "projectAlertRecipient.form.healthRisks",
@@ -266,7 +265,6 @@ export const stringKeys = {
     list: {
       role: "projectAlertRecipient.list.role",
       organization: "projectAlertRecipient.list.organization",
-      email: "projectAlertRecipient.list.email",
       phoneNumber: "projectAlertRecipient.list.phoneNumber",
       removalConfirmation: "projectAlertRecipient.list.removalConfirmation",
       supervisors: "projectAlertRecipient.list.supervisors",
@@ -416,13 +414,11 @@ export const stringKeys = {
     form: {
       creationTitle: "globalCoordinator.form.creationTitle",
       editionTitle: "globalCoordinator.form.editionTitle",
-      email: "globalCoordinator.form.email",
       phoneNumber: "globalCoordinator.form.phoneNumber",
       additionalPhoneNumber: "globalCoordinator.form.additionalPhoneNumber",
       organization: "globalCoordinator.form.organization"
     },
     list: {
-      email: "globalCoordinator.list.email",
       phoneNumber: "globalCoordinator.list.phoneNumber",
       organization: "globalCoordinator.list.organization",
       removalConfirmation: "globalCoordinator.list.removalConfirmation"
@@ -448,7 +444,6 @@ export const stringKeys = {
       role: "nationalSocietyUser.form.role",
       decadeOfBirth: "nationalSocietyUser.form.decadeOfBirth",
       sex: "nationalSocietyUser.form.sex",
-      email: "nationalSocietyUser.form.email",
       project: "nationalSocietyUser.form.project",
       organization: "nationalSocietyUser.form.organization",
       phoneNumber: "nationalSocietyUser.form.phoneNumber",
@@ -512,7 +507,6 @@ export const stringKeys = {
       deployed: "dataCollectors.form.deployed",
       addLocation: "dataCollectors.form.addLocation",
       personalia: "dataCollectors.form.personalia",
-      location: "dataCollectors.form.location",
       removeLocation: "dataCollectors.form.removeLocation",
       locationsHeader: "dataCollectors.form.locationsHeader",
       showYourLocation: "dataCollectors.form.showYourLocation",
@@ -523,7 +517,6 @@ export const stringKeys = {
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",
       sex: "dataCollectors.list.sex",
-      location: "dataCollectors.list.location",
       status: "dataCollectors.list.status",
       removalConfirmation: "dataCollectors.list.removalConfirmation",
       title: "dataCollectors.list.title",
@@ -600,7 +593,6 @@ export const stringKeys = {
       region: "reports.list.region",
       district: "reports.list.district",
       village: "reports.list.village",
-      location: "reports.list.location",
       zone: "reports.list.zone",
       dataCollectorDisplayName: "reports.list.dataCollectorDisplayName",
       message: "reports.list.message",
@@ -636,7 +628,6 @@ export const stringKeys = {
       reportAge: "reports.form.reportAge",
       dataCollector: "reports.form.dataCollector",
       reportPartOfAlertLabel: "reports.form.reportPartOfAlertLabel",
-      dataCollectorLocations: "reports.form.dataCollectorLocations",
       selectDcFirst: "reports.form.selectDcFirst",
       selectDcAndLocationFirst: "reports.form.selectDcAndLocationFirst",
       date: "reports.form.date",
@@ -771,7 +762,6 @@ export const stringKeys = {
         role: "alerts.assess.escalatedTo.role",
         organization: "alerts.assess.escalatedTo.organization",
         phoneNumber: "alerts.assess.escalatedTo.phoneNumber",
-        email: "alerts.assess.escalatedTo.email"
       }
     },
     eventLog: {
@@ -864,7 +854,6 @@ export const stringKeys = {
   },
   filters: {
     area: {
-      title: "filters.area.title",
       all: "filters.area.all",
       unknown: "filters.area.unknown",
       selectAll: "filters.area.selectAll",
@@ -980,7 +969,8 @@ export const stringKeys = {
       false: "common.false"
     },
     name: "common.name",
-    location: "common.location"
+    location: "common.location",
+    email: "common.email"
   },
   translations: {
     title: "translations.title",
