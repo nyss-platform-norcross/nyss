@@ -56,8 +56,7 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
 };
 
 function MultiValue(props) {
-
-  const isActivityReport = props.data.data.healthRiskType === "Activity"
+  const isActivityReport = !!props.data.data && props.data.data.healthRiskType === "Activity"
 
   return (
     <Chip
