@@ -98,7 +98,7 @@ export const IncorrectReportsTable = ({
               <TableCell style={{ width: '30%' }}>{strings(stringKeys.reports.list.errorType)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: '23%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: '23%' }}>{strings(stringKeys.common.location)}</TableCell>
               <TableCell style={{ width: '13%' }}>{strings(stringKeys.reports.list.corrected)}</TableCell>
             </TableRow>
           </TableHead>

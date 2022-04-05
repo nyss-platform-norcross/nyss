@@ -65,7 +65,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.globalCoordinator.form.email)}
+              label={strings(stringKeys.common.email)}
               name="email"
               field={form.fields.email}
               autoFocus
@@ -74,7 +74,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.globalCoordinator.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
             />

@@ -284,7 +284,7 @@ export const ProjectsDashboardFilters = ({
               value.trainingStatus !== "Trained" && (
                 <Grid item>
                   <Chip
-                    label={strings(stringKeys.dataCollector.constants.trainingStatus.InTraining)}
+                    label={strings(stringKeys.dataCollectors.constants.trainingStatus.InTraining)}
                     onDelete={() =>
                       onChange(
                         updateValue({
@@ -464,7 +464,7 @@ export const ProjectsDashboardFilters = ({
                   <FormControlLabel
                     className={styles.radio}
                     label={strings(
-                      stringKeys.dataCollector.constants.trainingStatus.Trained
+                      stringKeys.dataCollectors.constants.trainingStatus.Trained
                     )}
                     value={"Trained"}
                     control={<Radio color="primary" />}
@@ -472,7 +472,7 @@ export const ProjectsDashboardFilters = ({
                   <FormControlLabel
                     className={styles.radio}
                     label={strings(
-                      stringKeys.dataCollector.constants.trainingStatus.InTraining
+                      stringKeys.dataCollectors.constants.trainingStatus.InTraining
                     )}
                     value={"InTraining"}
                     control={<Radio color="primary" />}

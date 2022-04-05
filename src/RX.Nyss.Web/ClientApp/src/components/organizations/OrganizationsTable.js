@@ -22,7 +22,7 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{strings(stringKeys.organization.list.name)}</TableCell>
+            <TableCell>{strings(stringKeys.common.name)}</TableCell>
             <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.projects)}</TableCell>
             <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.headManager)}</TableCell>
             {canModify && <TableCell style={{ width: "10%" }} />}

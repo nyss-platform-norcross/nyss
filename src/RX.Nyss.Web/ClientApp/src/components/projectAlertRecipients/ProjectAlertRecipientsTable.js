@@ -38,7 +38,7 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
           <TableRow>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.role)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.organization)}</TableCell>
-            <TableCell>{strings(stringKeys.projectAlertRecipient.list.email)}</TableCell>
+            <TableCell>{strings(stringKeys.common.email)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.healthRisks)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.supervisors)}</TableCell>

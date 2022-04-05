@@ -113,7 +113,7 @@ const LocationFilter = ({ value, filterLabel, locations, onChange, showUnknownLo
     <Fragment>
       <TextField
         className={styles.field}
-        label={strings(stringKeys.filters.area.title)}
+        label={strings(stringKeys.common.location)}
         InputProps={{
           readOnly: true,
           endAdornment: <ArrowDropDown className={styles.arrow} />

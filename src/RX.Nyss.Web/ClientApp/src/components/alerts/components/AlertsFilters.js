@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Grid, TextField, MenuItem, Card, CardContent } from '@material-ui/core';
 import LocationFilter from "../../common/filters/LocationFilter";
 import { strings, stringKeys } from "../../../strings";
-import {alertStatusFilters, dateFilter} from "../logic/alertsConstants";
+import {alertStatusFilters} from "../logic/alertsConstants";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 import {DatePicker} from "../../forms/DatePicker";
 import {convertToLocalDate, convertToUtc} from "../../../utils/date";

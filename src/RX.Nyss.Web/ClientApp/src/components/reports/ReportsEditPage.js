@@ -198,7 +198,7 @@ const ReportsEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectField
-              label={strings(stringKeys.reports.form.dataCollectorLocations)}
+              label={strings(stringKeys.common.location)}
               name='locationId'
               field={form.fields.locationId}
               disabled={props.data.reportStatus !== reportStatus.new || !selectedDataCollector}

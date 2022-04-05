@@ -69,7 +69,7 @@ export const NationalSocietyIncorrectReportsTable = ({ isListFetching, list, pag
             <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.message)}</TableCell>
             <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.project)}</TableCell>
             <TableCell style={{ width: '11%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: '14%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+            <TableCell style={{ width: '14%' }}>{strings(stringKeys.common.location)}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

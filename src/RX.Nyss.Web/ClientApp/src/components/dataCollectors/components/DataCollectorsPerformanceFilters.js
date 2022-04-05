@@ -81,7 +81,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
         <Grid container spacing={2}>
           <Grid item>
             <TextField
-              label={strings(stringKeys.dataCollector.performanceListFilters.name)}
+              label={strings(stringKeys.common.name)}
               onChange={handleNameChange}
               value={name.value}
               className={styles.filterItem}
@@ -102,13 +102,13 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
             <Grid item>
               <TextField
                 select
-                label={strings(stringKeys.dataCollector.filters.supervisors)}
+                label={strings(stringKeys.dataCollectors.filters.supervisors)}
                 onChange={handleSupervisorChange}
                 value={filters.supervisorId || 0}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
-                <MenuItem value={0}>{strings(stringKeys.dataCollector.filters.supervisorsAll)}</MenuItem>
+                <MenuItem value={0}>{strings(stringKeys.dataCollectors.filters.supervisorsAll)}</MenuItem>
 
                 {supervisors.map(supervisor => (
                   <MenuItem key={`filter_supervisor_${supervisor.id}`} value={supervisor.id}>
@@ -120,7 +120,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
           )}
 
           <Grid item>
-            <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
+            <InputLabel>{strings(stringKeys.dataCollectors.filters.trainingStatus)}</InputLabel>
             <RadioGroup
               value={filters.trainingStatus}
               onChange={handleTrainingStatusChange}
@@ -128,7 +128,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
               {trainingStatus
                 .filter(status => status !== trainingStatusAll)
                 .map(status => (
-                  <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.trainingStatus[status])} value={status} />
+                  <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollectors.constants.trainingStatus[status])} value={status} />
                 ))}
             </RadioGroup>
           </Grid>
@@ -136,7 +136,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
           {filterIsSet && (
             <Grid item className={styles.resetButton}>
               <Button onClick={resetFilters}>
-                {strings(stringKeys.dataCollector.filters.resetAll)}
+                {strings(stringKeys.dataCollectors.filters.resetAll)}
               </Button>
             </Grid>
           )}

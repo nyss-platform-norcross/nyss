@@ -163,7 +163,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
       <Card className={styles.requiredMapLocation} data-with-error={hasError()}>
         <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
           <Grid item xs={12} className={styles.locationHeader}>
-            <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
+            <Typography variant='h6'>{strings(stringKeys.common.location)}</Typography>
 
             <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton data-expanded={isExpanded} onClick={onToggleExpand}>
@@ -184,7 +184,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               <Grid item xs={12}>
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
-                  label={strings(stringKeys.dataCollector.form.region)}
+                  label={strings(stringKeys.dataCollectors.form.region)}
                   field={form.fields[`locations_${locationNumber}_regionId`]}
                   name='regionId'
                   onChange={onRegionChange}
@@ -201,7 +201,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               <Grid item xs={12}>
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
-                  label={strings(stringKeys.dataCollector.form.district)}
+                  label={strings(stringKeys.dataCollectors.form.district)}
                   field={form.fields[`locations_${locationNumber}_districtId`]}
                   name='districtId'
                   onChange={onDistrictChange}
@@ -218,7 +218,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               <Grid item xs={12}>
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
-                  label={strings(stringKeys.dataCollector.form.village)}
+                  label={strings(stringKeys.dataCollectors.form.village)}
                   field={form.fields[`locations_${locationNumber}_villageId`]}
                   name='villageId'
                   onChange={onVillageChange}
@@ -235,7 +235,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               <Grid item xs={12}>
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
-                  label={strings(stringKeys.dataCollector.form.zone)}
+                  label={strings(stringKeys.dataCollectors.form.zone)}
                   field={form.fields[`locations_${locationNumber}_zoneId`]}
                   name='zoneId'
                   fieldRef={getLocationCardRef}
@@ -253,7 +253,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               </Grid>
 
               <Grid item xs={12}>
-                <InputLabel className={styles.mapLabel}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
+                <InputLabel className={styles.mapLabel}>{strings(stringKeys.dataCollectors.form.selectLocation)}</InputLabel>
                 <DataCollectorMap
                   onChange={onLocationChange}
                   location={mapLocation}
@@ -265,7 +265,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
               <Grid item xs={12} className={styles.coordinateFieldsContainer}>
                 <Grid item xs={12} md={3} className={styles.latLngInput}>
                   <TextInputField
-                    label={strings(stringKeys.dataCollector.form.latitude)}
+                    label={strings(stringKeys.dataCollectors.form.latitude)}
                     name='latitude'
                     field={form.fields[`locations_${locationNumber}_latitude`]}
                     type='number'
@@ -275,7 +275,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 </Grid>
                 <Grid item xs={12} md={3} className={styles.latLngInput}>
                   <TextInputField
-                    label={strings(stringKeys.dataCollector.form.longitude)}
+                    label={strings(stringKeys.dataCollectors.form.longitude)}
                     name='longitude'
                     field={form.fields[`locations_${locationNumber}_longitude`]}
                     type='number'
@@ -285,7 +285,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 </Grid>
 
                 {!isOnlyLocation && (
-                  <Button color="primary" className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
+                  <Button color="primary" className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollectors.form.removeLocation)}</Button>
                 )}
               </Grid>
             </Grid>

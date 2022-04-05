@@ -141,7 +141,7 @@ const SmsGatewaysEditPageComponent = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.smsGateway.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
             />

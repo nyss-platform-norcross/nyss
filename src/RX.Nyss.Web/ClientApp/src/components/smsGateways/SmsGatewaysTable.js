@@ -24,7 +24,7 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{strings(stringKeys.smsGateway.list.name)}</TableCell>
+            <TableCell>{strings(stringKeys.common.name)}</TableCell>
             <TableCell style={{ width: "30%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
             <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
             <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.useIotHub)}</TableCell>

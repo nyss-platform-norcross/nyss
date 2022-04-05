@@ -117,7 +117,7 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, goToEdit
               </TableCell>
               <TableCell style={{ width: '6%' }}>{strings(stringKeys.reports.list.status)}</TableCell>
               <TableCell style={{ width: '12%' }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: '20%' }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: '20%' }}>{strings(stringKeys.common.location)}</TableCell>
               <TableCell style={{ width: '14%' }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
               <TableCell style={{ width: '7%' }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
               <TableCell style={{ width: '8%' }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>

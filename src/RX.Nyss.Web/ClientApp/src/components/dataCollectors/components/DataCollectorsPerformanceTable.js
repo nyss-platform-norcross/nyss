@@ -17,7 +17,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
   const handleTooltipClick = e => e.stopPropagation();
 
   const renderTooltipText = (completeness) => {
-    let text = strings(stringKeys.dataCollector.performanceList.completenessValueDescription);
+    let text = strings(stringKeys.dataCollectors.performanceList.completenessValueDescription);
 
     if (typeof (text) === 'string') { // only replace values when not in "strings editing" mode
       text = text.replace('{{active}}', completeness.activeDataCollectors);
@@ -46,14 +46,14 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell className={styles.nameColumn}>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
-            <TableCell className={styles.villageColumn}>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
-            <TableCell className={styles.daysColumn}>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
+            <TableCell className={styles.nameColumn}>{strings(stringKeys.dataCollectors.performanceList.name)}</TableCell>
+            <TableCell className={styles.villageColumn}>{strings(stringKeys.dataCollectors.performanceList.villageName)}</TableCell>
+            <TableCell className={styles.daysColumn}>{strings(stringKeys.dataCollectors.performanceList.daysSinceLastReport)}</TableCell>
 
             {epiDateRange.map(week => (
               <TableCell key={`filter_week_${week.epiWeek}`} className={styles.weekColumn}>
                 <div className={styles.filterHeader}>
-                  {`${strings(stringKeys.dataCollector.performanceList.epiWeek)} ${week.epiWeek}`}
+                  {`${strings(stringKeys.dataCollectors.performanceList.epiWeek)} ${week.epiWeek}`}
                 </div>
               </TableCell>
             ))}
@@ -64,8 +64,8 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, epiDateRang
             <TableRow hover>
               <TableCell className={styles.completenessBorderBottomColor}>
                 <span className={styles.completeness}>
-                  {strings(stringKeys.dataCollector.performanceList.completenessTitle)}
-                  <Tooltip title={strings(stringKeys.dataCollector.performanceList.completenessDescription)} onClick={handleTooltipClick} arrow>
+                  {strings(stringKeys.dataCollectors.performanceList.completenessTitle)}
+                  <Tooltip title={strings(stringKeys.dataCollectors.performanceList.completenessDescription)} onClick={handleTooltipClick} arrow>
                     <InfoIcon fontSize="small" className={styles.completenessTooltip} />
                   </Tooltip>
                 </span>

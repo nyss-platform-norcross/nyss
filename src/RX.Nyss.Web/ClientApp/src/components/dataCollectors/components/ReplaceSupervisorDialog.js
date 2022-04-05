@@ -56,7 +56,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
               <SelectField
                 name="supervisorId"
                 field={form.fields.supervisorId}
-                label={strings(stringKeys.dataCollector.form.newSupervisor)}>
+                label={strings(stringKeys.dataCollectors.form.newSupervisor)}>
 
                 {supervisors.map(sup => (
                   <MenuItem key={sup.id} value={sup.id.toString()}>{sup.name}</MenuItem>
@@ -66,7 +66,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
 
             <Grid item xs={10} style={{ alignSelf: 'center'}}>
               <Typography variant="body1">
-                {strings(stringKeys.dataCollector.form.replaceSupervisorWarning)}
+                {strings(stringKeys.dataCollectors.form.replaceSupervisorWarning)}
               </Typography>
             </Grid>
             <Grid item xs={2}>
@@ -87,7 +87,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
               {strings(stringKeys.form.cancel)}
             </CancelButton>
             <SubmitButton>
-              {strings(stringKeys.dataCollector.form.replaceSupervisor)}
+              {strings(stringKeys.dataCollectors.form.replaceSupervisor)}
             </SubmitButton>
           </FormActions>
         </Form>

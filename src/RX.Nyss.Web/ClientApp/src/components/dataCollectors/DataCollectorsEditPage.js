@@ -149,13 +149,13 @@ const DataCollectorsEditPageComponent = (props) => {
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid item xs={12}>
-          <Typography variant="h6">{strings(stringKeys.dataCollector.filters.deployedMode)}</Typography>
+          <Typography variant="h6">{strings(stringKeys.dataCollectors.filters.deployedMode)}</Typography>
         </Grid>
 
         <Grid item xs={12}>
           <CheckboxField
             name="deployed"
-            label={strings(stringKeys.dataCollector.form.deployed)}
+            label={strings(stringKeys.dataCollectors.form.deployed)}
             field={form.fields.deployed}
             color="primary"
           />
@@ -163,13 +163,13 @@ const DataCollectorsEditPageComponent = (props) => {
 
 
         <Grid item xs={12}>
-          <Typography variant="h6">{strings(stringKeys.dataCollector.form.personalia)}</Typography>
+          <Typography variant="h6">{strings(stringKeys.dataCollectors.form.personalia)}</Typography>
         </Grid>
 
         <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
               fieldRef={form.fields.name.ref}
@@ -178,7 +178,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.displayName)}
+              label={strings(stringKeys.dataCollectors.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
               fieldRef={form.fields.displayName.ref}
@@ -187,14 +187,14 @@ const DataCollectorsEditPageComponent = (props) => {
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
-              label={strings(stringKeys.dataCollector.form.sex)}
+              label={strings(stringKeys.dataCollectors.form.sex)}
               field={form.fields.sex}
               fieldRef={form.fields.sex.ref}
               name="sex"
             >
               {sexValues.map(type => (
                 <MenuItem key={`sex${type}`} value={type}>
-                  {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                  {strings(stringKeys.dataCollectors.constants.sex[type.toLowerCase()])}
                 </MenuItem>
               ))}
             </SelectField>
@@ -202,7 +202,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
-              label={strings(stringKeys.dataCollector.form.birthYearGroup)}
+              label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
               fieldRef={form.fields.birthGroupDecade.ref}
               name="birthGroupDecade"
@@ -217,7 +217,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <PhoneInputField
-              label={strings(stringKeys.dataCollector.form.phoneNumber)}
+              label={strings(stringKeys.dataCollectors.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
               defaultCountry={props.data.nationalSocietyCountryCode}
@@ -227,7 +227,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
           {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <PhoneInputField
-              label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
+              label={strings(stringKeys.dataCollectors.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
               defaultCountry={props.data.nationalSocietyCountryCode}
@@ -237,7 +237,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
           {!currentUserRoles.some(r => r === Supervisor) && (<Grid item xs={12}>
             <SelectField
-              label={strings(stringKeys.dataCollector.form.supervisor)}
+              label={strings(stringKeys.dataCollectors.form.supervisor)}
               field={form.fields.supervisorId}
               name="supervisorId"
               fieldRef={form.fields.supervisorId.ref}
@@ -272,7 +272,7 @@ const DataCollectorsEditPageComponent = (props) => {
             />
           ))}
 
-          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
+          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
         </Grid>
 
 

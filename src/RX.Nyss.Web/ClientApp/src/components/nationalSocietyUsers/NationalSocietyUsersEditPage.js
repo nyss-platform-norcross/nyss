@@ -117,7 +117,7 @@ const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSoci
 
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
             />
@@ -193,7 +193,7 @@ const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSoci
                 >
                   {sexValues.map(type => (
                     <MenuItem key={`sex${type}`} value={type}>
-                      {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                      {strings(stringKeys.dataCollectors.constants.sex[type.toLowerCase()])}
                     </MenuItem>
                   ))}
                 </SelectField>

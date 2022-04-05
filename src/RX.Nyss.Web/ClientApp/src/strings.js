@@ -89,7 +89,6 @@ export const stringKeys = {
       }
     },
     list: {
-      name: "nationalSociety.list.name",
       country: "nationalSociety.list.country",
       startDate: "nationalSociety.list.startDate",
       coordinator: "nationalSociety.list.coordinator",
@@ -171,7 +170,6 @@ export const stringKeys = {
     form: {
       creationTitle: "smsGateway.form.creationTitle",
       editionTitle: "smsGateway.form.editionTitle",
-      name: "smsGateway.form.name",
       apiKey: "smsGateway.form.apiKey",
       gatewayType: "smsGateway.form.gatewayType",
       emailAddress: "smsGateway.form.emailAddress",
@@ -193,7 +191,6 @@ export const stringKeys = {
       success: "smsGateway.delete.success"
     },
     list: {
-      name: "smsGateway.list.name",
       apiKey: "smsGateway.list.apiKey",
       gatewayType: "smsGateway.list.gatewayType",
       removalConfirmation: "smsGateway.list.removalConfirmation",
@@ -204,8 +201,7 @@ export const stringKeys = {
     title: "organization.title",
     form: {
       creationTitle: "organization.form.creationTitle",
-      editionTitle: "organization.form.editionTitle",
-      name: "organization.form.name"
+      editionTitle: "organization.form.editionTitle"
     },
     create: {
       success: "organization.create.success"
@@ -217,7 +213,6 @@ export const stringKeys = {
       success: "organization.delete.success"
     },
     list: {
-      name: "organization.list.name",
       projects: "organization.list.projects",
       headManager: "organization.list.headManager",
       removalConfirmation: "organization.list.removalConfirmation",
@@ -249,7 +244,6 @@ export const stringKeys = {
       role: "projectAlertRecipient.form.role",
       organization: "projectAlertRecipient.form.organization",
       projectOrganization: "projectAlertRecipient.form.projectOrganization",
-      email: "projectAlertRecipient.form.email",
       phoneNumber: "projectAlertRecipient.form.phoneNumber",
       supervisors: "projectAlertRecipient.form.supervisors",
       healthRisks: "projectAlertRecipient.form.healthRisks",
@@ -271,7 +265,6 @@ export const stringKeys = {
     list: {
       role: "projectAlertRecipient.list.role",
       organization: "projectAlertRecipient.list.organization",
-      email: "projectAlertRecipient.list.email",
       phoneNumber: "projectAlertRecipient.list.phoneNumber",
       removalConfirmation: "projectAlertRecipient.list.removalConfirmation",
       supervisors: "projectAlertRecipient.list.supervisors",
@@ -421,15 +414,11 @@ export const stringKeys = {
     form: {
       creationTitle: "globalCoordinator.form.creationTitle",
       editionTitle: "globalCoordinator.form.editionTitle",
-      name: "globalCoordinator.form.name",
-      email: "globalCoordinator.form.email",
       phoneNumber: "globalCoordinator.form.phoneNumber",
       additionalPhoneNumber: "globalCoordinator.form.additionalPhoneNumber",
       organization: "globalCoordinator.form.organization"
     },
     list: {
-      name: "globalCoordinator.list.name",
-      email: "globalCoordinator.list.email",
       phoneNumber: "globalCoordinator.list.phoneNumber",
       organization: "globalCoordinator.list.organization",
       removalConfirmation: "globalCoordinator.list.removalConfirmation"
@@ -452,11 +441,9 @@ export const stringKeys = {
       addExistingTitle: "nationalSocietyUser.form.addExistingTitle",
       addExistingDescription: "nationalSocietyUser.form.addExistingDescription",
       editionTitle: "nationalSocietyUser.form.editionTitle",
-      name: "nationalSocietyUser.form.name",
       role: "nationalSocietyUser.form.role",
       decadeOfBirth: "nationalSocietyUser.form.decadeOfBirth",
       sex: "nationalSocietyUser.form.sex",
-      email: "nationalSocietyUser.form.email",
       project: "nationalSocietyUser.form.project",
       organization: "nationalSocietyUser.form.organization",
       phoneNumber: "nationalSocietyUser.form.phoneNumber",
@@ -479,7 +466,6 @@ export const stringKeys = {
       success: "nationalSocietyUser.remove.success"
     },
     list: {
-      name: "nationalSocietyUser.list.name",
       phoneNumber: "nationalSocietyUser.list.phoneNumber",
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
@@ -493,7 +479,7 @@ export const stringKeys = {
       roleNotValid: "nationalSocietyUser.messages.roleNotValid"
     }
   },
-  dataCollector: {
+  dataCollectors: {
     title: "dataCollectors.title",
     exportExcel: "dataCollectors.exportExcel",
     exportCsv: "dataCollectors.exportCsv",
@@ -501,7 +487,6 @@ export const stringKeys = {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
       dataCollectorType: "dataCollectors.form.dataCollectorType",
-      name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
       phoneNumber: "dataCollectors.form.phoneNumber",
@@ -522,7 +507,6 @@ export const stringKeys = {
       deployed: "dataCollectors.form.deployed",
       addLocation: "dataCollectors.form.addLocation",
       personalia: "dataCollectors.form.personalia",
-      location: "dataCollectors.form.location",
       removeLocation: "dataCollectors.form.removeLocation",
       locationsHeader: "dataCollectors.form.locationsHeader",
       showYourLocation: "dataCollectors.form.showYourLocation",
@@ -530,11 +514,9 @@ export const stringKeys = {
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
-      name: "dataCollectors.list.name",
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",
       sex: "dataCollectors.list.sex",
-      location: "dataCollectors.list.location",
       status: "dataCollectors.list.status",
       removalConfirmation: "dataCollectors.list.removalConfirmation",
       title: "dataCollectors.list.title",
@@ -572,9 +554,6 @@ export const stringKeys = {
       deployedMode: "dataCollectors.filters.deployedMode",
       resetAll: "dataCollectors.filters.resetAll",
       name: "dataCollectors.filters.name"
-    },
-    performanceListFilters: {
-      name: "dataCollectors.performanceListFilters.name"
     },
     constants: {
       sex: {
@@ -614,7 +593,6 @@ export const stringKeys = {
       region: "reports.list.region",
       district: "reports.list.district",
       village: "reports.list.village",
-      location: "reports.list.location",
       zone: "reports.list.zone",
       dataCollectorDisplayName: "reports.list.dataCollectorDisplayName",
       message: "reports.list.message",
@@ -650,7 +628,6 @@ export const stringKeys = {
       reportAge: "reports.form.reportAge",
       dataCollector: "reports.form.dataCollector",
       reportPartOfAlertLabel: "reports.form.reportPartOfAlertLabel",
-      dataCollectorLocations: "reports.form.dataCollectorLocations",
       selectDcFirst: "reports.form.selectDcFirst",
       selectDcAndLocationFirst: "reports.form.selectDcAndLocationFirst",
       date: "reports.form.date",
@@ -785,7 +762,6 @@ export const stringKeys = {
         role: "alerts.assess.escalatedTo.role",
         organization: "alerts.assess.escalatedTo.organization",
         phoneNumber: "alerts.assess.escalatedTo.phoneNumber",
-        email: "alerts.assess.escalatedTo.email"
       }
     },
     eventLog: {
@@ -878,7 +854,6 @@ export const stringKeys = {
   },
   filters: {
     area: {
-      title: "filters.area.title",
       all: "filters.area.all",
       unknown: "filters.area.unknown",
       selectAll: "filters.area.selectAll",
@@ -992,7 +967,10 @@ export const stringKeys = {
     boolean: {
       true: "common.true",
       false: "common.false"
-    }
+    },
+    name: "common.name",
+    location: "common.location",
+    email: "common.email"
   },
   translations: {
     title: "translations.title",

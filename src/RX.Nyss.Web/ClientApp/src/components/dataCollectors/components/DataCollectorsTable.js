@@ -23,25 +23,25 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
 
   const getRowMenu = (row) => [
     {
-      title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+      title: strings(stringKeys.dataCollectors.list.takeOutOfTraining),
       action: () => setTrainingState([row.id], false),
       disabled: !row.isInTrainingMode,
       roles: accessMap.dataCollectors.list
     },
     {
-      title: strings(stringKeys.dataCollector.list.setToInTraining),
+      title: strings(stringKeys.dataCollectors.list.setToInTraining),
       action: () => setTrainingState([row.id], true),
       disabled: row.isInTrainingMode,
       roles: accessMap.dataCollectors.list
     },
     {
-      title: strings(stringKeys.dataCollector.list.setToDeployed),
+      title: strings(stringKeys.dataCollectors.list.setToDeployed),
       action: () => setDeployedState([row.id], true),
       disabled: row.isDeployed,
       roles: accessMap.dataCollectors.list
     },
     {
-      title: strings(stringKeys.dataCollector.list.setToNotDeployed),
+      title: strings(stringKeys.dataCollectors.list.setToNotDeployed),
       action: () => setDeployedState([row.id], false),
       disabled: !row.isDeployed,
       roles: accessMap.dataCollectors.list
@@ -57,27 +57,27 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
   const multipleSelectionMenu = useMemo(() =>
     [
       {
-        title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+        title: strings(stringKeys.dataCollectors.list.takeOutOfTraining),
         action: () => setTrainingState(getSelectedIds(), false),
         roles: accessMap.dataCollectors.list
       },
       {
-        title: strings(stringKeys.dataCollector.list.setToInTraining),
+        title: strings(stringKeys.dataCollectors.list.setToInTraining),
         action: () => setTrainingState(getSelectedIds(), true),
         roles: accessMap.dataCollectors.list
       },
       {
-        title: strings(stringKeys.dataCollector.list.replaceSupervisor),
+        title: strings(stringKeys.dataCollectors.list.replaceSupervisor),
         action: () => replaceSupervisor(getSelectedDataCollectors()),
         roles: accessMap.dataCollectors.replaceSupervisor
       },
       {
-        title: strings(stringKeys.dataCollector.list.setToDeployed),
+        title: strings(stringKeys.dataCollectors.list.setToDeployed),
         action: () => setDeployedState(getSelectedIds(), true),
         roles: accessMap.dataCollectors.list
       },
       {
-        title: strings(stringKeys.dataCollector.list.setToNotDeployed),
+        title: strings(stringKeys.dataCollectors.list.setToNotDeployed),
         action: () => setDeployedState(getSelectedIds(), false),
         roles: accessMap.dataCollectors.list
       }
@@ -110,14 +110,14 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell className={styles.checkCell}>
               <Checkbox onClick={handleSelectAll} checked={listSelectedAll} color="primary" />
             </TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.dataCollectorType)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.name)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.location)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
-            <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.dataCollectorType)}</TableCell>
+            <TableCell>{strings(stringKeys.common.name)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.displayName)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.phoneNumber)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.sex)}</TableCell>
+            <TableCell>{strings(stringKeys.common.location)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.trainingStatus)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollectors.list.supervisor)}</TableCell>
             <TableCell>
               {isSelected && (
                 <TableRowActions directionRtl={rtl} style={{ marginRight: 70 }}>
@@ -131,19 +131,19 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={tableStyles.clickableRow}>
               <TableCell className={styles.checkCell}><Checkbox checked={!!row.isSelected} onClick={e => handleSelect(e, row.id, !row.isSelected)} color="primary" /></TableCell>
-              <TableCell>{strings(stringKeys.dataCollector.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
+              <TableCell>{strings(stringKeys.dataCollectors.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.displayName}</TableCell>
               <TableCell className={rtl ? 'ltr-numerals' : ''}>{row.phoneNumber}</TableCell>
               <TableCell>{row.sex}</TableCell>
               <TableCell>{renderLocation(row.locations)}</TableCell>
-              <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusTrained])}</TableCell>
+              <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollectors.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollectors.constants.trainingStatus[trainingStatusTrained])}</TableCell>
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
                 <TableRowActions directionRtl={rtl}>
                   <TableRowMenu directionRtl={rtl} id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isUpdatingDataCollector[row.id]} />
                   <TableRowAction directionRtl={rtl} onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollectors.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>

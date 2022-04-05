@@ -82,7 +82,7 @@ export const DataCollectorsFilters = ({ supervisors, locations, onChange, callin
         <Grid container spacing={2}>
           <Grid item>
             <TextField
-              label={strings(stringKeys.dataCollector.filters.name)}
+              label={strings(stringKeys.dataCollectors.filters.name)}
               onChange={handleNameChange}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
@@ -103,13 +103,13 @@ export const DataCollectorsFilters = ({ supervisors, locations, onChange, callin
             <Grid item>
               <TextField
                 select
-                label={strings(stringKeys.dataCollector.filters.supervisors)}
+                label={strings(stringKeys.dataCollectors.filters.supervisors)}
                 onChange={handleSupervisorChange}
                 value={filter.value.supervisorId || 0}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
-                <MenuItem value={0}>{strings(stringKeys.dataCollector.filters.supervisorsAll)}</MenuItem>
+                <MenuItem value={0}>{strings(stringKeys.dataCollectors.filters.supervisorsAll)}</MenuItem>
 
                 {supervisors.map(supervisor => (
                   <MenuItem key={`filter_supervisor_${supervisor.id}`} value={supervisor.id}>
@@ -123,44 +123,44 @@ export const DataCollectorsFilters = ({ supervisors, locations, onChange, callin
           <Grid item>
             <TextField
               select
-              label={strings(stringKeys.dataCollector.filters.sex)}
+              label={strings(stringKeys.dataCollectors.filters.sex)}
               onChange={handleSexChange}
               value={filter.value.sex || "all"}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
               <MenuItem value="all">
-                {strings(stringKeys.dataCollector.filters.sexAll)}
+                {strings(stringKeys.dataCollectors.filters.sexAll)}
               </MenuItem>
 
               {sexValues.map(sex => (
                 <MenuItem key={`datacollector_filter_${sex}`} value={sex}>
-                  {strings(stringKeys.dataCollector.constants.sex[sex.toLowerCase()])}
+                  {strings(stringKeys.dataCollectors.constants.sex[sex.toLowerCase()])}
                 </MenuItem>
               ))}
             </TextField>
           </Grid>
 
           <Grid item>
-            <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
+            <InputLabel>{strings(stringKeys.dataCollectors.filters.trainingStatus)}</InputLabel>
             <RadioGroup
               value={filter.value.trainingStatus || 'All'}
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus.map(status => (
-                <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.trainingStatus[status])} value={status} />
+                <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollectors.constants.trainingStatus[status])} value={status} />
               ))}
             </RadioGroup>
           </Grid>
 
           <Grid item>
-            <InputLabel>{strings(stringKeys.dataCollector.filters.deployedMode)}</InputLabel>
+            <InputLabel>{strings(stringKeys.dataCollectors.filters.deployedMode)}</InputLabel>
             <RadioGroup
               value={filter.value.deployedMode}
               onChange={handleDeployedModeChange}
               className={styles.filterRadioGroup}>
               {deployedMode.map(status => (
-                <FormControlLabel key={`deployedMode_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.deployedMode[status])} value={status} />
+                <FormControlLabel key={`deployedMode_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollectors.constants.deployedMode[status])} value={status} />
               ))}
             </RadioGroup>
           </Grid>

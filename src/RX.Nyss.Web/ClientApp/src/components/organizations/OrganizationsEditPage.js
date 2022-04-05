@@ -69,7 +69,7 @@ const OrganizationsEditPageComponent = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.organization.form.name)}
+              label={strings(stringKeys.common.name)}
               name="name"
               field={form.fields.name}
             />
