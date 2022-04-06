@@ -53,9 +53,11 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
     onChange(updateValue({ status: event.target.value }));
   }
 
-  const handleDateFromChange = (date) => onChange(updateValue({ startDate: convertToUtc(date) }));
+  const handleDateFromChange = (date) => 
+    onChange(updateValue({ startDate: convertToUtc(date) }));
 
-  const handleDateToChange = (date) => onChange(updateValue({ endDate: convertToUtc(date) }));
+  const handleDateToChange = (date) => 
+    onChange(updateValue({ endDate: convertToUtc(date) }));
 
   if (!value || !healthRisks) {
     return null;
@@ -74,7 +76,6 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              ))}
             </DatePicker>
           </Grid>
           <Grid item>
@@ -86,7 +87,6 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              ))}
             </DatePicker>
           </Grid>
           <Grid item>
