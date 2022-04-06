@@ -40,7 +40,8 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
                 .Select(gs => new ProjectOrganizationListResponseDto
                 {
                     Id = gs.Id,
-                    Name = gs.Organization.Name
+                    Name = gs.Organization.Name,
+                    IsDefaultOrganization = gs.Organization.NationalSociety.DefaultOrganization == gs.Organization
                 })
                 .ToListAsync();
 
