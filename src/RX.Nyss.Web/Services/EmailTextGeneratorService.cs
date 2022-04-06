@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Services
         public async Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode)
         {
             var strings = await _stringsResourcesService.GetStrings(languageCode);
-            var roleName = strings.Get($"role.{role.ToString().ToCamelCase()}");
+            var roleName = strings.Get($"role.{role.ToString().ToLower()}");
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
             var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Services
         public async Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode)
         {
             var strings = await _stringsResourcesService.GetStrings(languageCode);
-            var roleName = strings.Get($"role.{role.ToString().ToCamelCase()}");
+            var roleName = strings.Get($"role.{role.ToString().ToLower()}");
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
             var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
