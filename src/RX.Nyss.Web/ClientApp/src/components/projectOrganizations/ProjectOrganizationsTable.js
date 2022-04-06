@@ -14,6 +14,8 @@ export const ProjectOrganizationsTable = ({ isListFetching, isRemoving, remove, 
     return <Loading />;
   }
 
+  const showDefaultFlag = (row) => list.length > 1 && row.isDefaultOrganization === true
+
   return (
     <TableContainer sticky>
       <Table>
@@ -26,7 +28,7 @@ export const ProjectOrganizationsTable = ({ isListFetching, isRemoving, remove, 
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover>
-              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.name} {showDefaultFlag(row) && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
               <TableCell>
                 {!isClosed &&
                   <TableRowActions directionRtl={rtl}>
