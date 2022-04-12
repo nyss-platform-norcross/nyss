@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             dataCollectors.Where(dc => !dc.DeletedAt.HasValue);
 
         public static IQueryable<DataCollector> FilterBySupervisor(this IQueryable<DataCollector> dataCollectors, int? supervisorId) =>
-            dataCollectors.Where(dc => !supervisorId.HasValue || dc.Supervisor.Id == supervisorId);
+            dataCollectors.Where(dc => dc.HeadSupervisor.Id == supervisorId || dc.Supervisor.Id == supervisorId );
 
         public static IQueryable<DataCollector> FilterBySex(this IQueryable<DataCollector> dataCollectors, SexDto? sexDto) =>
             sexDto switch
