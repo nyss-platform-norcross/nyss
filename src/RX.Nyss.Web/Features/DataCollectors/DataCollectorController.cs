@@ -36,8 +36,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpGet, Route("filters")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<DataCollectorFiltersReponseDto>> Filters(int projectId) =>
-            _dataCollectorService.GetFiltersData(projectId);
+        public async Task<Result<DataCollectorFiltersReponseDto>> Filters(int projectId) =>
+            await Sender.Send(new GetFiltersDataQuery(projectId));
 
         [HttpPost, Route("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
