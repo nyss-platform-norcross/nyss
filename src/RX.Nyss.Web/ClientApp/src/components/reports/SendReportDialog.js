@@ -136,7 +136,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
       dataCollector: null,
       gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
       message: '',
-      time: dayjs().format('HH:mm')
+      time: dayjs().format('HH:mm:ss')
     };
 
     const validation = {
