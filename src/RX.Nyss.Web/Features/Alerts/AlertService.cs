@@ -595,6 +595,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(a => a.Id == alertId
                     && (currentUser.Role == Role.Administrator
                         || a.AlertReports.Any(ar => currentUserOrgs.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value))
+                        || a.AlertReports.Any(ar => currentUserOrgs.Contains(ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties.Single().OrganizationId.Value))
                     )).AnyAsync();
 
             return organizationHasReportsInAlert;
