@@ -62,8 +62,6 @@ const ProjectsOverviewPageComponent = (props) => {
               </Grid>
             )}
           </Grid>
-        </Grid>
-      </Grid>
 
       {!props.isClosed && (
         <FormActions>
@@ -78,6 +76,8 @@ const ProjectsOverviewPageComponent = (props) => {
           )}
         </FormActions>
       )}
+        </Grid>
+      </Grid>
     </Fragment>
   );
 }
