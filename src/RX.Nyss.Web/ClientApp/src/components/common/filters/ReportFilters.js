@@ -163,7 +163,7 @@ export const ReportFilters = ({
                     <MenuItem
                       key={`filter_healthRisk_${healthRisk.id}`}
                       value={healthRisk.id}>
-                      <Checkbox checked={value.healthRisks.indexOf(healthRisk.id) > -1} />
+                      <Checkbox checked={value.healthRisks.indexOf(healthRisk.id) > -1} color={"primary"}/>
                       <span>{healthRisk.name}</span>
                     </MenuItem>
                   ))}
