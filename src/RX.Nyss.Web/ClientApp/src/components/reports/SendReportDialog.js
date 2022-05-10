@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 import SelectField from "../forms/SelectField";
-import { getUtcOffset } from "../../utils/date";
+import {getUtcOffset} from "../../utils/date";
 import * as http from "../../utils/http";
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 
@@ -38,7 +38,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
   const dataCollectorsOptions = dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id }));
 
   const handleDateChange = date => {
-    setDate(date.format('YYYY-MM-DD'));
+    setDate(dayjs(date).format('YYYY-MM-DD'));
   }
 
   function getReportStatus(timestamp, dataCollectorId) {
