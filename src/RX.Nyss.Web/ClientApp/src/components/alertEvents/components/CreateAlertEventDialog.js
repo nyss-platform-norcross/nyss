@@ -22,7 +22,7 @@ import TextInputField from "../../forms/TextInputField";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import FormActions from "../../forms/formActions/FormActions";
-import { getUtcOffset } from "../../../utils/date";
+import {getUtcOffset} from "../../../utils/date";
 import CancelButton from '../../common/buttons/cancelButton/CancelButton';
 
 
@@ -71,7 +71,7 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
   }
 
   const handleDateChange = date => {
-    setDate(date.format('YYYY-MM-DD'));
+    setDate(dayjs(date).format('YYYY-MM-DD'));
   }
 
   const handleSubmit = (event) => {
