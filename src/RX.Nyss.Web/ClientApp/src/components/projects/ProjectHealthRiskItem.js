@@ -115,26 +115,31 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk, rt
                   fieldRef={getHealthRiskItemRef}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              
+              {reportCountThreshold > 1 && (
+                <Grid item xs={12} sm={4}>
                 <TextInputField
                   label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
                   name={`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`}
                   field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]}
-                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
                   inputMode={"numeric"}
                   fieldRef={getHealthRiskItemRef}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextInputField
+              )}
+
+              {reportCountThreshold > 1 && (
+                <Grid item xs={12} sm={4}>
+                  <TextInputField
                   label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
                   name={`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`}
                   field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`]}
-                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
                   inputMode={"numeric"}
                   fieldRef={getHealthRiskItemRef}
-                />
+                  />
               </Grid>
+              )}
+
             </Grid>
           </Fragment>
         )}
