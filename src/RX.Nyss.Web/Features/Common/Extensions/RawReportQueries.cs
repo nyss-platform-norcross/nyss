@@ -85,7 +85,6 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                         || r.ErrorType == ReportErrorType.DataCollectorUsedCollectionPointFormat
                         || r.ErrorType == ReportErrorType.SingleReportNonHumanHealthRisk
                         || r.ErrorType == ReportErrorType.GenderAndAgeNonHumanHealthRisk),
-                ReportErrorFilterType.GatewayError => rawReports.Where(r => r.ErrorType == ReportErrorType.Gateway),
                 ReportErrorFilterType.Other => rawReports.Where(r => r.ErrorType == ReportErrorType.Other),
                 _ => rawReports
             };
