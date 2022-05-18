@@ -171,7 +171,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar =>
                     ar.ReportId == reportId
                     && (currentUser.Role == Role.Administrator
-                        || userOrganizations.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value)))
+                        || userOrganizations.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value)
+                        || userOrganizations.Contains(ar.Report.DataCollector.HeadSupervisor.UserNationalSocieties.Single().OrganizationId.Value)))
                 .AnyAsync();
             return canAssess;
         }
