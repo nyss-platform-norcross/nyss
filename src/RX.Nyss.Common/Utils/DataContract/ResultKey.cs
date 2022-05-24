@@ -294,6 +294,11 @@ public static class ResultKey
         public const string SetToDeployedSuccess = "dataCollector.setToDeployed.success";
         public const string SetToNotDeployedSuccess = "dataCollector.setToNotDeployed.success";
         public const string DuplicateLocation = "validation.dataCollector.duplicateLocation";
+
+        public static class ReplaceSupervisor
+        {
+            public const string RoleNotCompatible = "dataCollector.replaceSupervisor.roleNotCompatible";
+        }
     }
 
     public static class Geolocation
