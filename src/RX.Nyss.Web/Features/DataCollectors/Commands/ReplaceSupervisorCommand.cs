@@ -132,12 +132,13 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
             private async Task<ReplaceSupervisorNotificationData> ReplaceWithSupervisor(int supervisorId, List<ReplaceSupervisorData> dataCollectorsWithSupervisorData, CancellationToken cancellationToken)
             {
                 var supervisorData = await _nyssContext.Users
+                    .Where(u => u.Id == supervisorId)
                     .Select(u => new
                     {
                         Supervisor = (SupervisorUser)u,
                         NationalSociety = u.UserNationalSocieties.Select(uns => uns.NationalSociety).Single()
                     })
-                    .SingleAsync(u => u.Supervisor.Id == supervisorId, cancellationToken);
+                    .SingleAsync(cancellationToken);
 
                 foreach (var dc in dataCollectorsWithSupervisorData)
                 {
@@ -167,13 +168,15 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
 
             private async Task<ReplaceSupervisorNotificationData> ReplaceWithHeadSupervisor(int supervisorId, List<ReplaceSupervisorData> dataCollectorsWithSupervisorData, CancellationToken cancellationToken)
             {
+                var test = await _nyssContext.Users.Where(u => u.Id == supervisorId).FirstOrDefaultAsync();
                 var supervisorData = await _nyssContext.Users
+                    .Where(u => u.Id == supervisorId)
                     .Select(u => new
                     {
                         HeadSupervisor = (HeadSupervisorUser)u,
                         NationalSociety = u.UserNationalSocieties.Select(uns => uns.NationalSociety).Single()
                     })
-                    .SingleAsync(u => u.HeadSupervisor.Id == supervisorId, cancellationToken);
+                    .SingleAsync(cancellationToken);
 
                 foreach (var dc in dataCollectorsWithSupervisorData)
                 {
