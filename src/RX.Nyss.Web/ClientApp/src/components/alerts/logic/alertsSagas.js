@@ -43,7 +43,7 @@ function* openAlertsList({ projectId }) {
       {
         locations: null,
         healthRiskId: null,
-        startDate: endDate.add(-7, "day"),
+        startDate: endDate.add(-30, "day"),
         endDate: endDate,
         status: consts.alertStatusFilters.all,
         orderBy: consts.statusColumn,
