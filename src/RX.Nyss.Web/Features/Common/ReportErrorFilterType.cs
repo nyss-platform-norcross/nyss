@@ -5,7 +5,6 @@ namespace RX.Nyss.Web.Features.Common
         All,
         HealthRiskNotFound,
         WrongFormat,
-        GatewayError,
         Other
     }
 }
