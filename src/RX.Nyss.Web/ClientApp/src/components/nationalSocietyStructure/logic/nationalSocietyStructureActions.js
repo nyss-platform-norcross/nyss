@@ -35,7 +35,7 @@ export const editRegion = {
   invoke: (id, name) => ({ type: EDIT_REGION.INVOKE, id, name }),
   request: (id) => ({ type: EDIT_REGION.REQUEST, id }),
   success: (id, name) => ({ type: EDIT_REGION.SUCCESS, id, name }),
-  failure: (id, message) => ({ type: EDIT_REGION.FAILURE, id, message })
+  failure: (message) => ({ type: EDIT_REGION.FAILURE, message })
 };
 
 export const removeRegion = {
@@ -56,7 +56,7 @@ export const editDistrict = {
   invoke: (id, name) => ({ type: EDIT_DISTRICT.INVOKE, id, name }),
   request: (id) => ({ type: EDIT_DISTRICT.REQUEST, id }),
   success: (id, name) => ({ type: EDIT_DISTRICT.SUCCESS, id, name }),
-  failure: (id, message) => ({ type: EDIT_DISTRICT.FAILURE, id, message })
+  failure: (message) => ({ type: EDIT_DISTRICT.FAILURE, message })
 };
 
 export const removeDistrict = {
@@ -77,7 +77,7 @@ export const editVillage = {
   invoke: (id, name) => ({ type: EDIT_VILLAGE.INVOKE, id, name }),
   request: (id) => ({ type: EDIT_VILLAGE.REQUEST, id }),
   success: (id, name) => ({ type: EDIT_VILLAGE.SUCCESS, id, name }),
-  failure: (id, message) => ({ type: EDIT_VILLAGE.FAILURE, id, message })
+  failure: (message) => ({ type: EDIT_VILLAGE.FAILURE, message })
 };
 
 export const removeVillage = {
@@ -98,7 +98,7 @@ export const editZone = {
   invoke: (id, name) => ({ type: EDIT_ZONE.INVOKE, id, name }),
   request: (id) => ({ type: EDIT_ZONE.REQUEST, id }),
   success: (id, name) => ({ type: EDIT_ZONE.SUCCESS, id, name }),
-  failure: (id, message) => ({ type: EDIT_ZONE.FAILURE, id, message })
+  failure: (message) => ({ type: EDIT_ZONE.FAILURE, message })
 };
 
 export const removeZone = {
