@@ -52,11 +52,17 @@ namespace RX.Nyss.Web.Features.Users
                         ? "***"
                         : uns.User.PhoneNumber,
                     Role = uns.User.Role.ToString(),
-                    Project = uns.User is SupervisorUser
-                        ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
+                    Project = uns.User is SupervisorUser ? ((SupervisorUser)uns.User).CurrentProject != null
+                            ? ((SupervisorUser)uns.User).CurrentProject.Name
+                            : null
+                        : uns.User is HeadSupervisorUser ? ((HeadSupervisorUser)uns.User).CurrentProject != null
+                            ? ((HeadSupervisorUser)uns.User).CurrentProject.Name
+                            : null
                         : null,
                     OrganizationName = uns.Organization.Name,
-                    OrganizationId = uns.Organization != null ? uns.Organization.Id : 0,
+                    OrganizationId = uns.Organization != null
+                        ? uns.Organization.Id
+                        : 0,
                     IsHeadManager = uns.Organization.HeadManagerId.HasValue && uns.Organization.HeadManagerId == uns.User.Id,
                     IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id,
                     IsVerified = !uns.User.IsFirstLogin,
