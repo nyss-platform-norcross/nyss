@@ -35,8 +35,14 @@ export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRe
     dispatch({ type: ROUTE_CHANGED, url: computedMatch.url, path: computedMatch.path, params: computedMatch.params });
   }, [user, computedMatch, ignoreRedirection, roles, dispatch, history]);
 
+  const returnHome = () => {
+    setAuthError(null);
+    history.push('/');
+    dispatch({ type: ROUTE_CHANGED, url: '/', path: '/', params: {} });
+  }
+
   if (!!authError) {
-    return <BaseLayout authError={authError}></BaseLayout>
+    return <BaseLayout authError={authError} returnHome={returnHome}></BaseLayout>
   }
 
   return (
