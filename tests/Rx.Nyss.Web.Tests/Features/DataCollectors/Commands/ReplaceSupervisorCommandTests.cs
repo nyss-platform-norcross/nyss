@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
@@ -32,6 +33,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
         private const string DataCollectorName2 = "garfunkel";
 
         private const int SupervisorId = 1;
+        private const int Supervisor2Id = 2;
+        private const int HeadSupervisorId = 3;
 
         private readonly INyssContext _mockNyssContext;
 
@@ -72,7 +75,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
             var cmd = new ReplaceSupervisorCommand
             {
                 DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
-                SupervisorId = SupervisorId
+                SupervisorId = SupervisorId,
+                SupervisorRole = Role.Supervisor
             };
 
             // Act
@@ -83,6 +87,46 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
 
             await _mockSmsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test");
         }
+
+        [Fact]
+        public async Task WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
+        {
+            // Arrange
+            var cmd = new ReplaceSupervisorCommand
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                SupervisorId = Supervisor2Id,
+                SupervisorRole = Role.Supervisor
+            };
+
+            // Act
+            var res = await _handler.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            res.IsSuccess.ShouldBe(true);
+
+            await _mockEmailPublisherService.Received().SendSmsAsEmail(("test@example.com", "Test gateway"), Arg.Any<List<SendSmsRecipient>>(), "Test");
+        }
+
+        [Fact]
+        public async Task WhenReplacingSupervisorWithHeadSupervisor_ShouldReturnSuccess()
+        {
+            // Arrange
+            var cmd = new ReplaceSupervisorCommand
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                SupervisorId = HeadSupervisorId,
+                SupervisorRole = Role.HeadSupervisor
+            };
+
+            // Act
+            var test = await _mockNyssContext.Users.ToListAsync();
+            var res = await _handler.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            res.IsSuccess.ShouldBe(true);
+        }
+
 
         private static void SetupContext(INyssContext context)
         {
@@ -120,7 +164,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
                 {
                     NationalSociety = nationalSocieties[1],
                     EmailAddress = "test@example.com",
-                    Modems = new List<GatewayModem>()
+                    Modems = new List<GatewayModem>(),
+                    Name = "Test gateway"
                 }
             };
 
@@ -136,6 +181,12 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
                 {
                     Id = 2,
                     Role = Role.Supervisor,
+                    EmailAddress = SupervisorEmail
+                },
+                new HeadSupervisorUser
+                {
+                    Id = 3,
+                    Role = Role.HeadSupervisor,
                     EmailAddress = SupervisorEmail
                 }
             };
@@ -158,12 +209,22 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
                     NationalSocietyId = 2,
                     OrganizationId = 1,
                     Organization = new Organization()
+                },
+                new UserNationalSociety
+                {
+                    NationalSociety = nationalSocieties[0],
+                    User = users[2],
+                    UserId = HeadSupervisorId,
+                    NationalSocietyId = 1,
+                    OrganizationId = 1,
+                    Organization = new Organization()
                 }
             };
 
             nationalSocieties[0].NationalSocietyUsers = usersNationalSocieties;
             users[0].UserNationalSocieties = new List<UserNationalSociety> { usersNationalSocieties[0] };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { usersNationalSocieties[1] };
+            users[2].UserNationalSocieties = new List<UserNationalSociety> { usersNationalSocieties[2] };
 
             var projects = new List<Project>
             {
@@ -184,7 +245,16 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors.Commands
                     Project = projects[0]
                 }
             };
-            var headSupervisorUserProjects = new List<HeadSupervisorUserProject>();
+            var headSupervisorUserProjects = new List<HeadSupervisorUserProject>
+            {
+                new HeadSupervisorUserProject
+                {
+                    HeadSupervisorUserId = HeadSupervisorId,
+                    HeadSupervisorUser = (HeadSupervisorUser)users[2],
+                    ProjectId = 1,
+                    Project = projects[0]
+                }
+            };
             var regions = new List<Region>
             {
                 new Region

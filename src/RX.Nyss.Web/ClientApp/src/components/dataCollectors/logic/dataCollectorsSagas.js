@@ -263,12 +263,12 @@ function* getCsvExportData({ projectId, filters }) {
   }
 };
 
-function* replaceSupervisor({ dataCollectorIds, supervisorId }) {
+function* replaceSupervisor({ dataCollectorIds, supervisorId, supervisorRole }) {
   yield put(actions.replaceSupervisor.request(dataCollectorIds));
   try {
     const projectId = yield select(state => state.dataCollectors.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
-    yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId });
+    yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId, supervisorRole });
     yield call(getDataCollectors, { projectId, filters });
     yield put(actions.replaceSupervisor.success(dataCollectorIds));
     yield put(appActions.showMessage(stringKeys.dataCollectors.list.supervisorReplacedSuccessfully));

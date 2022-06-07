@@ -42,7 +42,8 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
       return;
     }
 
-    replaceSupervisor(dataCollectors.map(dc => dc.id), parseInt(form.fields.supervisorId.value));
+    const selectedSupervisor = supervisors.find(s => s.id === parseInt(form.fields.supervisorId.value));
+    replaceSupervisor(dataCollectors.map(dc => dc.id), parseInt(form.fields.supervisorId.value), selectedSupervisor.role);
     close();
   }
 

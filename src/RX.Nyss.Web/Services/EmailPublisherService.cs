@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
@@ -10,6 +12,7 @@ namespace RX.Nyss.Web.Services
     {
         Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false);
         Task SendEmailWithAttachment((string email, string name) to, string subject, string body, string filename);
+        Task SendSmsAsEmail((string email, string name) to, IEnumerable<SendSmsRecipient> recipients, string body);
     }
 
     public class EmailPublisherService : IEmailPublisherService
@@ -61,6 +64,26 @@ namespace RX.Nyss.Web.Services
 
             await _sender.SendMessageAsync(message);
         }
+
+        public async Task SendSmsAsEmail((string email, string name) to, IEnumerable<SendSmsRecipient> recipients, string body) =>
+            await Task.WhenAll(recipients.Select(recipient =>
+            {
+                var sendEmail = new SendEmailMessage
+                {
+                    To = new Contact
+                    {
+                        Email = to.email,
+                        Name = to.name
+                    },
+                    Body = body,
+                    Subject = recipient.PhoneNumber,
+                    SendAsTextOnly = true
+                };
+
+                var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Subject = "RX.Nyss.Web" };
+
+                return _sender.SendMessageAsync(message);
+            }));
     }
 
     public class SendEmailMessage

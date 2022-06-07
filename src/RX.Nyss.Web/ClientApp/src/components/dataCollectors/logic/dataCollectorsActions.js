@@ -131,7 +131,7 @@ export const exportToCsv = {
 };
 
 export const replaceSupervisor = {
-  invoke: (dataCollectorIds, supervisorId) => ({ type: REPLACE_SUPERVISOR.INVOKE, dataCollectorIds, supervisorId }),
+  invoke: (dataCollectorIds, supervisorId, supervisorRole) => ({ type: REPLACE_SUPERVISOR.INVOKE, dataCollectorIds, supervisorId, supervisorRole }),
   request: (dataCollectorIds) => ({ type: REPLACE_SUPERVISOR.REQUEST, dataCollectorIds }),
   success: (dataCollectorIds) => ({ type: REPLACE_SUPERVISOR.SUCCESS, dataCollectorIds }),
   failure: (dataCollectorIds, error) => ({ type: REPLACE_SUPERVISOR.FAILURE, error, dataCollectorIds })
