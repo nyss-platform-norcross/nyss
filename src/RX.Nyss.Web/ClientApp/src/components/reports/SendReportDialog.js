@@ -18,6 +18,7 @@ import SelectField from "../forms/SelectField";
 import {getUtcOffset} from "../../utils/date";
 import * as http from "../../utils/http";
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
+import TimePicker from "../forms/TimePicker";
 
 export const SendReportDialog = ({ close, showMessage }) => {
   const [form, setForm] = useState(null);
@@ -27,7 +28,9 @@ export const SendReportDialog = ({ close, showMessage }) => {
   const isFetching = useSelector(state => state.reports.formFetching);
   const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors);
   const formData = useSelector(state => state.reports.sendReport.formData);
-  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [date, setDate] = useState(dayjs());
+  const [time, setTime] = useState(dayjs().format('HH:mm'));
+  const [timeError, setTimeError] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [gatewayModemsDisabled, setGatewayModemsDisabled] = useState(false);
   const abortController = useRef(new AbortController());
@@ -37,9 +40,36 @@ export const SendReportDialog = ({ close, showMessage }) => {
   const canSelectModem = !!formData && formData.modems.length > 0;
   const dataCollectorsOptions = dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id }));
 
-  const handleDateChange = date => {
-    setDate(dayjs(date).format('YYYY-MM-DD'));
-  }
+  useEffect(() => {
+    if (!formData) {
+      return null;
+    }
+    
+    const fields = {
+      dataCollector: null,
+      gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
+      message: '',
+    };
+
+    const validation = {
+      dataCollector: [validators.required],
+      gatewayModemId: [],
+      message: [validators.required],
+    };
+
+    setForm(createForm(fields, validation));
+  }, [canSelectModem, formData]);
+
+
+  useEffect(() => {
+    if (!form) return;
+
+    dcFieldSubscription.current = form.fields.dataCollector.subscribe(onDataCollectorChange);
+
+    return () => {
+      dcFieldSubscription.current?.unsubscribe();
+    }
+  }, [form]);
 
   function getReportStatus(timestamp, dataCollectorId) {
     return new Promise((resolve, reject) => {
@@ -62,17 +92,19 @@ export const SendReportDialog = ({ close, showMessage }) => {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (!form.isValid()) {
+    if (!form.isValid() || !!timeError) {
       return;
     };
 
     const values = form.getValues();
     const dataCollector = dataCollectorsOptions.filter(dc => dc.title === values.dataCollector)[0];
+    const currentSeconds = dayjs().format('ss');
+    const timestamp = dayjs(`${date.format('YYYY-MM-DD')} ${time}:${currentSeconds}`).utc().format('YYYYMMDDHHmmss');
 
     const data = {
       dataCollectorId: dataCollector.id,
       text: values.message,
-      timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss'),
+      timestamp: timestamp,
       modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null,
       utcOffset: getUtcOffset()
     };
@@ -125,40 +157,23 @@ export const SendReportDialog = ({ close, showMessage }) => {
       form.fields.gatewayModemId.update("");
       setGatewayModemsDisabled(true);
     }
+  }  
+  
+  const onDateChange = date => {
+    const newDate = dayjs(date);
+    setDate(newDate);
+    setTimeError(validateTime(time, newDate));
   }
 
-  useEffect(() => {
-    if (!formData) {
-      return null;
-    }
+  const validateTime = (value, newDate = null) =>
+    dayjs(`${(!!newDate ? newDate : date).format('YYYY-MM-DD')} ${value}`) > dayjs() 
+      ? strings(stringKeys.validation.timeNotInFuture) 
+      : null;
 
-    const fields = {
-      dataCollector: null,
-      gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
-      message: '',
-      time: dayjs().format('HH:mm:ss')
-    };
-
-    const validation = {
-      dataCollector: [validators.required],
-      gatewayModemId: [],
-      message: [validators.required],
-      time: [validators.required, validators.time, validators.timeNotInFuture],
-    };
-
-    setForm(createForm(fields, validation));
-  }, [canSelectModem, formData]);
-
-
-  useEffect(() => {
-    if (!form) return;
-
-    dcFieldSubscription.current = form.fields.dataCollector.subscribe(onDataCollectorChange);
-
-    return () => {
-      dcFieldSubscription.current?.unsubscribe();
-    }
-  }, [form]);
+  const onTimeChange = time => {
+    setTimeError(validateTime(time));
+    setTime(time);
+  }
 
   return !!form && (
     <Fragment>
@@ -200,18 +215,19 @@ export const SendReportDialog = ({ close, showMessage }) => {
                 <DatePicker
                   label={strings(stringKeys.reports.sendReport.dateOfReport)}
                   fullWidth
-                  onChange={handleDateChange}
+                  onChange={onDateChange}
                   value={date}
                 />
               </Grid>
 
               <Grid item xs={6}>
-                <TextInputField
+                <TimePicker
                   label={strings(stringKeys.reports.sendReport.timeOfReport)}
                   type="time"
                   name="time"
-                  field={form.fields.time}
-                  pattern="[0-9]{2}:[0-9]{2}"
+                  value={time}
+                  error={timeError}
+                  onChange={onTimeChange}
                 />
               </Grid>
 
