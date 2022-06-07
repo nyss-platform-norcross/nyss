@@ -159,6 +159,7 @@ public static class ResultKey
         public static class Structure
         {
             public const string ItemAlreadyExists = "nationalSociety.structure.itemAlreadyExists";
+            public const string ItemDoesNotExist = "nationalSociety.structure.itemDoesNotExist";
             public const string CannotCreateItemInArchivedNationalSociety = "nationalSociety.structure.cannotCreateItemInArchivedNationalSociety";
             public const string VillageLinkedToDataCollector = "nationalSociety.structure.villageLinkedToDataCollector";
             public const string DistrictLinkedToDataCollector = "nationalSociety.structure.districtLinkedToDataCollector";

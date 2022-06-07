@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -101,13 +102,23 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             {
                 Id = entry.Entity.Id,
                 Name = name,
-                Districts = new StructureResponseDto.StructureDistrictDto[0]
+                Districts = Array.Empty<StructureResponseDto.StructureDistrictDto>()
             });
         }
 
         public async Task<Result> EditRegion(int regionId, string name)
         {
-            if (await _nyssContext.Regions.AnyAsync(r => r.Name == name && r.Id != regionId))
+            var region = await _nyssContext.Regions
+                .Include(r => r.NationalSociety)
+                .SingleOrDefaultAsync(r => r.Id == regionId);
+
+            if (region == null)
+            {
+                return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemDoesNotExist);
+            }
+
+            var duplicateRegionExists = await _nyssContext.Regions.AnyAsync(r => r.Name == name && r.Id != regionId && r.NationalSociety == region.NationalSociety);
+            if (duplicateRegionExists)
             {
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
@@ -167,7 +178,17 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> EditDistrict(int districtId, string name)
         {
-            if (await _nyssContext.Districts.AnyAsync(district => district.Name == name && district.Id != districtId))
+            var district = await _nyssContext.Districts
+                .Include(d => d.Region)
+                .SingleOrDefaultAsync(d => d.Id == districtId);
+
+            if (district == null)
+            {
+                return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemDoesNotExist);
+            }
+
+            var duplicateDistrictExists = await _nyssContext.Districts.AnyAsync(d => d.Name == name && d.Id != districtId && d.Region == district.Region);
+            if (duplicateDistrictExists)
             {
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
@@ -226,9 +247,19 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> EditVillage(int villageId, string name)
         {
-            if (await _nyssContext.Villages.AnyAsync(village => village.Name == name && village.Id != villageId))
+            var village = await _nyssContext.Villages
+                .Include(v => v.District)
+                .SingleOrDefaultAsync(v => v.Id == villageId);
+
+            if (village == null)
             {
-                return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
+                return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemDoesNotExist);
+            }
+
+            var duplicateVillageExists = await _nyssContext.Villages.AnyAsync(v => v.Name == name && v.Id != villageId && v.District == village.District);
+            if (duplicateVillageExists)
+            {
+                return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
 
             var entity = await _nyssContext.Villages
@@ -285,7 +316,17 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> EditZone(int zoneId, string name)
         {
-            if (await _nyssContext.Zones.AnyAsync(zone => zone.Name == name && zone.Id != zoneId))
+            var zone = await _nyssContext.Zones
+                .Include(z => z.Village)
+                .SingleOrDefaultAsync(zone => zone.Id == zoneId);
+
+            if (zone == null)
+            {
+                return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemDoesNotExist);
+            }
+
+            var duplicateZoneExists = await _nyssContext.Zones.AnyAsync(z => z.Name == name && z.Id != zoneId && z.Village == zone.Village);
+            if (duplicateZoneExists)
             {
                 return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
