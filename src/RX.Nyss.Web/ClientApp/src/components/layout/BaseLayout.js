@@ -12,7 +12,7 @@ import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFo
 import { useMount } from '../../utils/lifecycle';
 import { stringKeys, strings } from '../../strings';
 
-const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
+const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused, returnHome }) => {
   useEffect(() => {
     window.addEventListener("focus", handleWindowFocus);
     window.addEventListener("storage", handleWindowStorageChange); // IE fix
@@ -27,7 +27,6 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
       addMaximumScaleToMetaViewport();
     }
   });
-
 
   const handleWindowFocus = () => pageFocused();
   const handleWindowStorageChange = () => { };
@@ -50,7 +49,7 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
             {strings(moduleError)}
           </Typography>
           <br />
-          <Button variant="outlined" color="primary" onClick={() => push("/")}>
+          <Button variant="outlined" color="primary" onClick={returnHome}>
             {strings(stringKeys.error.errorPage.goHome)}
           </Button>
         </div>
@@ -64,7 +63,8 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
 const mapStateToProps = (state, ownProps) => ({
   appReady: state.appData.appReady,
   isDevelopment: state.appData.appReady,
-  moduleError: state.appData.moduleError || ownProps.authError
+  moduleError: state.appData.moduleError || ownProps.authError,
+  returnHome: ownProps.returnHome
 });
 
 const mapDispatchToProps = {
