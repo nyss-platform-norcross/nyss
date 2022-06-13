@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.Reports.Commands
                 RuleFor(x => x.Timestamp).NotNull().NotEmpty();
                 RuleFor(x => x.Text).NotNull().NotEmpty();
                 RuleFor(x => x.ModemId).NotEmpty().When(x => x.ModemId.HasValue);
-                RuleFor(x => x.UtcOffset).NotEmpty();
+                RuleFor(x => x.UtcOffset).InclusiveBetween(-12, 14);
             }
         }
     }
