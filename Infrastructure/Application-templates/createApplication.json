@@ -745,6 +745,28 @@
             "enablePartitioning": false,
             "enableExpress": false
           }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('recalculateAlertsQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
         }
       ]
     },
