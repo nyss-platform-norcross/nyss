@@ -114,6 +114,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     ModemNumber = modemNumber,
                     ApiKey = apiKey
                 };
+
+                var exists = await _nyssContext.RawReports.AnyAsync(r => r.IncomingMessageId == incomingMessageId && r.ApiKey == apiKey);
+                if (exists)
+                {
+                    return;
+                }
+
                 await _nyssContext.AddAsync(rawReport);
 
                 var reportValidationResult = await ParseAndValidateReport(rawReport, parsedQueryString);
