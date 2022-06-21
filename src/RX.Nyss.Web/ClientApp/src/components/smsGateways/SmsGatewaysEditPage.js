@@ -8,6 +8,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../common/buttons/submitButton/SubmitButton';
+import CancelButton from "../common/buttons/cancelButton/CancelButton";
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import { Loading } from '../common/loading/Loading';
@@ -262,7 +263,7 @@ const SmsGatewaysEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <CancelButton onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
