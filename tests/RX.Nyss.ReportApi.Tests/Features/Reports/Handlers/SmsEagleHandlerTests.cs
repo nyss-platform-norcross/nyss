@@ -113,5 +113,31 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
             // Assert
             Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateDataCollector(phoneNumber, gatewayNationalSocietyId));
         }
+
+        [Fact]
+        public async Task Handle_WhenDuplicateMessageIdExists_ShouldNotSaveReport()
+        {
+            // Arrange
+            var incomingMessageId = 1;
+            var apiKey = "apikeytest";
+            var rawReports = new List<RawReport>()
+            {
+                new RawReport
+                {
+                    IncomingMessageId = incomingMessageId,
+                    ApiKey = apiKey
+                }
+            };
+            var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsDbSet);
+
+            //Act
+            await _smsEagleHandler.Handle($"msgid={incomingMessageId}&&apikey={apiKey}");
+
+            //Assert
+            _nyssContextMock.RawReports.Count().ShouldBe(1);
+            var test = await _nyssContextMock.RawReports.AddAsync(Arg.Any<RawReport>());
+            test.Received(0);
+        }
     }
 }
