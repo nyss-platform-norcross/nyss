@@ -138,8 +138,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
 
             //Assert
             _nyssContextMock.RawReports.Count().ShouldBe(1);
-            var test = await _nyssContextMock.RawReports.AddAsync(Arg.Any<RawReport>());
-            test.Received(0);
+            await _nyssContextMock.RawReports.Received(0).AddAsync(Arg.Any<RawReport>());
         }
     }
 }
