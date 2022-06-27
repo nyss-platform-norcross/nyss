@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
@@ -112,6 +114,31 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
 
             // Assert
             Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateDataCollector(phoneNumber, gatewayNationalSocietyId));
+        }
+
+        [Fact]
+        public async Task Handle_WhenDuplicateMessageIdExists_ShouldNotSaveReport()
+        {
+            // Arrange
+            var incomingMessageId = 1;
+            var apiKey = "apikeytest";
+            var rawReports = new List<RawReport>()
+            {
+                new RawReport
+                {
+                    IncomingMessageId = incomingMessageId,
+                    ApiKey = apiKey
+                }
+            };
+            var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsDbSet);
+
+            //Act
+            await _smsEagleHandler.Handle($"msgid={incomingMessageId}&&apikey={apiKey}");
+
+            //Assert
+            _nyssContextMock.RawReports.Count().ShouldBe(1);
+            await _nyssContextMock.RawReports.Received(0).AddAsync(Arg.Any<RawReport>());
         }
     }
 }
