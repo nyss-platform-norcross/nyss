@@ -45,14 +45,20 @@ public class DeadLetterSmsService : IDeadLetterSmsService
 
         var messages = await _receiver.ReceiveMessagesAsync(_config.NumberOfMessagesToFetchForResending, maxTimeToWaitForMessage);
 
-        foreach(var message in messages)
+        foreach (var message in messages)
         {
             try
             {
+                if (!message.ApplicationProperties.TryGetValue("OriginalEnqueuedTime", out var originalEnqueuedTime))
+                {
+                    originalEnqueuedTime = message.EnqueuedTime.ToString("R");
+                }
+
                 var newMessage = new ServiceBusMessage
                 {
                     Body = message.Body,
-                    ContentType = message.ContentType
+                    ContentType = message.ContentType,
+                    ApplicationProperties = { { "OriginalEnqueuedTime", originalEnqueuedTime } }
                 };
 
                 await _sender.SendMessageAsync(newMessage);
