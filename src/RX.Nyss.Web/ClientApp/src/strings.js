@@ -21,10 +21,10 @@ export const stringKeys = {
     }
   },
   roles: {
-    "TechnicalAdvisor": "role.technicalAdvisor",
+    "TechnicalAdvisor": "role.technicaladvisor",
     "Administrator": "role.administrator",
-    "GlobalCoordinator": "role.globalCoordinator",
-    "DataConsumer": "role.dataConsumer",
+    "GlobalCoordinator": "role.globalcoordinator",
+    "DataConsumer": "role.dataconsumer",
     "Manager": "role.manager",
     "Supervisor": "role.supervisor",
     "Coordinator": "role.coordinator"
