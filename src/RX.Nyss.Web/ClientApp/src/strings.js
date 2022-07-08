@@ -27,7 +27,8 @@ export const stringKeys = {
     "DataConsumer": "role.dataconsumer",
     "Manager": "role.manager",
     "Supervisor": "role.supervisor",
-    "Coordinator": "role.coordinator"
+    "Coordinator": "role.coordinator",
+    "HeadSupervisor": "role.headsupervisor"
   },
   login: {
     title: "login.title",
