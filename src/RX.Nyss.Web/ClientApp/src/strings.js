@@ -451,6 +451,7 @@ export const stringKeys = {
       additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
       customOrganization: "nationalSocietyUser.form.customOrganization",
       projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
+      projectIsMissing: "nationalSocietyUser.form.projectIsMissing",
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
       confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText",
       headSupervisor: "nationalSocietyUser.form.headSupervisor",
