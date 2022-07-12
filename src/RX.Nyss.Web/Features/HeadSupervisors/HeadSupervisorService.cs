@@ -204,6 +204,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
                 var headSupervisorUserData = await GetHeadSupervisorUser(headSupervisorId);
 
                 await EnsureHeadSupervisorHasNoSupervisors(headSupervisorUserData.User, headSupervisorUserData.CurrentProjectReference.ProjectId);
+                await EnsureSupervisorHasNoDataCollectors(headSupervisorUserData.User);
 
                 RemoveExistingProjectReference(headSupervisorUserData.CurrentProjectReference);
                 RemoveAlertRecipientsReferences(headSupervisorUserData.User);
@@ -355,6 +356,30 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             if (hasSupervisors)
             {
                 throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadSupervisorHasSupervisors);
+            }
+        }
+
+        private async Task EnsureSupervisorHasNoDataCollectors(HeadSupervisorUser headSupervisorUser)
+        {
+            var dataCollectorInfo = await _nyssContext.DataCollectors
+                .Where(dc => dc.HeadSupervisor == headSupervisorUser)
+                .Select(dc => new
+                {
+                    dc,
+                    IsDeleted = dc.DeletedAt != null
+                })
+                .GroupBy(dc => dc.IsDeleted)
+                .Select(g => new
+                {
+                    IsDeleted = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var notDeletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => !dc.IsDeleted)?.Count;
+            if (notDeletedDataCollectorCount > 0)
+            {
+                throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
             }
         }
 
