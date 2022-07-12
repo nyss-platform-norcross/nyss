@@ -1,4 +1,4 @@
-import { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
 import { connect } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -24,6 +24,7 @@ import { getBirthDecades, parseBirthDecade } from '../../utils/birthYear';
 const NationalSocietyUsersCreatePageComponent = ({ nationalSocietyId, data, isSaving, error, callingUserRoles, directionRtl, openCreation, create, goToList }) => {
   const [birthDecades] = useState(getBirthDecades());
   const [selectedRole, setRole] = useState(null);
+  const [projects, setProjects] = useState([])
   const [confirmCoordinatorDialog, setConfirmCoordinatorDialog] = useState({
     isOpened: false,
     isConfirmed: false
@@ -144,6 +145,18 @@ const NationalSocietyUsersCreatePageComponent = ({ nationalSocietyId, data, isSa
   useEffect(() => {
     form && form.fields.modemId.setValidators([validators.requiredWhen(_ => canSelectModem)]);
   }, [form, canSelectModem]);
+
+  useEffect(()=> {
+    if (data == null){
+      return
+    }
+    if (data.projects.length > 0) {
+      setProjects(data.projects)
+    } else {
+      setProjects([{id: 0, name: strings(stringKeys.nationalSocietyUser.form.projectIsMissing)}])
+    }
+  }, [data])
+
 
   useEffect(() => {
     if (!form) {
@@ -318,8 +331,8 @@ const NationalSocietyUsersCreatePageComponent = ({ nationalSocietyId, data, isSa
                   field={form.fields.projectId}
                   name="projectId"
                 >
-                  {data.projects.map(project => (
-                    <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                  {projects.map(project => (
+                    <MenuItem key={`project_${project.id}`} value={project.id.toString()} disabled={project.id === 0}>
                       {project.name}
                     </MenuItem>
                   ))}
