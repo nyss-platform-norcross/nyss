@@ -48,7 +48,7 @@ const ZoomToCurrentLocation = ({ updateZoomLevel }) => {
       <div className="leaflet-control leaflet-bar">
         <div className={styles.myLocationButton}>
           {!isFetcingLocation && (
-            <Tooltip title={strings(stringKeys.dataCollectors.form.showYourLocation)} placement="right">
+            <Tooltip title={strings(stringKeys.dataCollectors.form.showYourLocation)} placement="right" arrow>
               <MyLocationIcon onClick={onRetrieveLocation} />
             </Tooltip>
           )}
