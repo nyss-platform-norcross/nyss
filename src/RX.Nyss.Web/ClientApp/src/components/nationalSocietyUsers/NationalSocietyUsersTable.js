@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from '@mate
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import GlassHourIcon from '@material-ui/icons/HourglassEmpty';
 import * as Roles from '../../authentication/roles';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
@@ -84,7 +84,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>{row.project}</TableCell>
               <TableCell>{
                 (row.isHeadManager && <CheckIcon fontSize="small" />) ||
-                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.nationalSocietyConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
+                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.nationalSocietyConsents.pendingHeadManager)} arrow><GlassHourIcon fontSize="small" /></Tooltip>)
               }
               </TableCell>
               <TableCell>

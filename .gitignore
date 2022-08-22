@@ -285,3 +285,9 @@ src/RX.Nyss.Web/RX.Nyss.Web.xml
 **/local.settings.json
 /scripts/tmp*
 serviceDependencies.local.json
+
+# Ignore local blob storage files
+__blobstorage__/
+
+# Ignore local azurite json config files
+__azurite_*
