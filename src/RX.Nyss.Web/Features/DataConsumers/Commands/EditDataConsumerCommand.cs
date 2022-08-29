@@ -26,6 +26,8 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
         {
             public string Name { get; set; }
 
+            public string Email { get; set; }
+
             public string PhoneNumber { get; set; }
 
             public string AdditionalPhoneNumber { get; set; }
@@ -58,6 +60,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
                     var user = await _nationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>(request.Id);
 
                     user.Name = request.Body.Name;
+                    user.EmailAddress = request.Body.Email;
                     user.PhoneNumber = request.Body.PhoneNumber;
                     user.Organization = request.Body.Organization;
                     user.AdditionalPhoneNumber = request.Body.AdditionalPhoneNumber;
@@ -79,6 +82,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
             public Validator()
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
+                RuleFor(m => m.Email).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(m => m.Organization).NotEmpty().MaximumLength(100);

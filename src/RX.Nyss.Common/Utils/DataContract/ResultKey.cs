@@ -50,6 +50,28 @@ public static class ResultKey
             public const string InvalidUserOrganization = "user.registration.invalidUserOrganization";
         }
 
+        public static class Edition
+        {
+            public const string Success = "user.registration.success";
+            public const string UserAlreadyExists = "user.registration.userAlreadyExists";
+            public const string UserAlreadyInRole = "user.registration.userAlreadyInRole";
+            public const string UserNotFound = "user.registration.userNotFound";
+            public const string PasswordTooWeak = "user.registration.passwordTooWeak";
+            public const string NationalSocietyDoesNotExist = "user.registration.nationalSocietyDoesNotExist";
+            public const string CannotCreateUsersInArchivedNationalSociety = "user.registration.cannotCreateUsersInArchivedNationalSociety";
+            public const string CannotAddExistingUsersToArchivedNationalSociety = "user.registration.cannotAddExistingUsersToArchivedNationalSociety";
+            public const string NoAssignableUserWithThisEmailFound = "user.registration.noAssignableUserWithThisEmailFound";
+            public const string TechnicalAdvisorsCanBeAttachedOnlyByManagers = "user.registration.technicalAdvisorsCanBeAttachedOnlyByManagers";
+            public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
+            public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
+            public const string UnknownError = "user.registration.unknownError";
+            public const string HeadManagerAlreadyExists = "user.registration.headManagerAlreadyExists";
+            public const string CoordinatorExists = "user.registration.coordinatorExists";
+            public const string CannotAssignUserToModemInDifferentNationalSociety = "user.registration.cannotAssignUserToModemInDifferentNationalSociety";
+            public const string OrganizationDoesNotExists = "user.registration.organizationDoesNotExist";
+            public const string InvalidUserOrganization = "user.registration.invalidUserOrganization";
+        }
+
         public static class Supervisor
         {
             public const string ProjectDoesNotExistOrNoAccess = "user.registration.projectDoesNotExistOrSupervisorDoesntHaveAccess";

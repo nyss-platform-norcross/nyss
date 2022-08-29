@@ -146,44 +146,61 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             return new Result<GetHeadSupervisorResponseDto>(headSupervisor, true);
         }
 
-        public async Task<Result> Edit(int headSupervisorId, EditHeadSupervisorRequestDto editHeadSupervisorRequestDto)
+        public async Task<Result> Edit(int headSupervisorId, EditHeadSupervisorRequestDto editDto)
         {
             try
             {
                 var supervisorUserData = await GetHeadSupervisorUser(headSupervisorId);
-
-                var headSupervisorUser = supervisorUserData.User;
-
-                headSupervisorUser.Name = editHeadSupervisorRequestDto.Name;
-                headSupervisorUser.Sex = editHeadSupervisorRequestDto.Sex;
-                headSupervisorUser.DecadeOfBirth = editHeadSupervisorRequestDto.DecadeOfBirth;
-                headSupervisorUser.PhoneNumber = editHeadSupervisorRequestDto.PhoneNumber;
-                headSupervisorUser.AdditionalPhoneNumber = editHeadSupervisorRequestDto.AdditionalPhoneNumber;
-                headSupervisorUser.Organization = editHeadSupervisorRequestDto.Organization;
-
-                await UpdateHeadSupervisorProjectReferences(headSupervisorUser, supervisorUserData.CurrentProjectReference, editHeadSupervisorRequestDto.ProjectId);
-                await UpdateModem(headSupervisorUser, editHeadSupervisorRequestDto.ModemId, editHeadSupervisorRequestDto.NationalSocietyId);
-
-                if (editHeadSupervisorRequestDto.OrganizationId.HasValue)
+                var oldEmail = supervisorUserData.User.EmailAddress;
+                if (supervisorUserData.User == null)
                 {
-                    var userLink = await _nyssContext.UserNationalSocieties
-                        .Where(un => un.UserId == headSupervisorId && un.NationalSocietyId == editHeadSupervisorRequestDto.NationalSocietyId)
-                        .SingleOrDefaultAsync();
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+                else
+                {
+                    var headSupervisorUser = supervisorUserData.User;
+                    headSupervisorUser.Name = editDto.Name;
+                    headSupervisorUser.EmailAddress = editDto.Email;
+                    headSupervisorUser.Sex = editDto.Sex;
+                    headSupervisorUser.DecadeOfBirth = editDto.DecadeOfBirth;
+                    headSupervisorUser.PhoneNumber = editDto.PhoneNumber;
+                    headSupervisorUser.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+                    headSupervisorUser.IsFirstLogin = oldEmail != editDto.Email ? true : false;
+                    headSupervisorUser.Organization = editDto.Organization;
 
-                    if (editHeadSupervisorRequestDto.OrganizationId.Value != userLink.OrganizationId)
+                    await UpdateHeadSupervisorProjectReferences(headSupervisorUser, supervisorUserData.CurrentProjectReference, editDto.ProjectId);
+                    await UpdateModem(headSupervisorUser, editDto.ModemId, editDto.NationalSocietyId);
+
+                    if (editDto.OrganizationId.HasValue)
                     {
-                        var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
+                        var userLink = await _nyssContext.UserNationalSocieties
+                            .Where(un => un.UserId == headSupervisorId && un.NationalSocietyId == editDto.NationalSocietyId)
+                            .SingleOrDefaultAsync();
 
-                        if (!validationResult.IsSuccess)
+                        if (editDto.OrganizationId.Value != userLink.OrganizationId)
                         {
-                            return validationResult;
-                        }
+                            var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
 
-                        userLink.Organization = await _nyssContext.Organizations.FindAsync(editHeadSupervisorRequestDto.OrganizationId.Value);
+                            if (!validationResult.IsSuccess)
+                            {
+                                return validationResult;
+                            }
+
+                            userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                        }
                     }
+
+                    await _nyssContext.SaveChangesAsync();
                 }
 
-                await _nyssContext.SaveChangesAsync();
+                if (oldEmail != editDto.Email)
+                {
+                    var identityUser = await _identityUserRegistrationService.EditIdentityUser(oldEmail, editDto.Email);
+                    string securityStamp;
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                    await _verificationEmailService.SendVerificationEmail(supervisorUserData.User, securityStamp);
+                }
+
                 return Success();
             }
             catch (ResultException e)
@@ -314,7 +331,6 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             user.Modem = modem;
         }
 
-
         private async Task AddNewHeadSupervisorToProject(HeadSupervisorUser user, int? projectId, int nationalSocietyId)
         {
             if (projectId.HasValue)
@@ -434,6 +450,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
                 _nyssContext.HeadSupervisorUserProjects.Remove(existingProjectReference);
             }
         }
+
         private void AnonymizeHeadSupervisor(HeadSupervisorUser headSupervisorUser)
         {
             headSupervisorUser.Name = Anonymization.Text;

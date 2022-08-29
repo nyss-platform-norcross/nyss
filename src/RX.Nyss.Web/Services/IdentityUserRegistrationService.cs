@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Services
     public interface IIdentityUserRegistrationService
     {
         Task<IdentityUser> CreateIdentityUser(string email, Role role);
+        Task<IdentityUser> EditIdentityUser(string oldEmail, string newEmail);
         Task<string> GenerateEmailVerification(string email);
         Task DeleteIdentityUser(string identityUserId);
         Task<Result> VerifyEmail(string email, string verificationToken);
@@ -49,6 +50,43 @@ namespace RX.Nyss.Web.Services
         {
             var identityUser = await AddIdentityUser(email);
             await AssignRole(email, role.ToString());
+
+            return identityUser;
+        }
+
+        public async Task<IdentityUser> EditIdentityUser(string oldEmail , string newEmail)
+        {
+            var identityUser = await _userManager.FindByEmailAsync(oldEmail);
+
+            if (identityUser == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.UserNotFound);
+            }
+            else
+            {
+                identityUser.UserName = newEmail;
+                identityUser.NormalizedUserName = newEmail.ToUpper();
+                identityUser.Email = newEmail;
+                identityUser.NormalizedEmail = newEmail.ToUpper();
+                identityUser.EmailConfirmed = false;
+                identityUser.PasswordHash = null;
+
+                var userEditionResult = await _userManager.UpdateAsync(identityUser);
+
+                if (!userEditionResult.Succeeded)
+                {
+                    var isPasswordTooWeak = userEditionResult.Errors.Any(x => x.IsPasswordTooWeak());
+                    if (isPasswordTooWeak)
+                    {
+                        throw new ResultException(ResultKey.User.Registration.PasswordTooWeak);
+                    }
+
+                    var errorMessages = string.Join(",", userEditionResult.Errors.Select(x => x.Description));
+                    _loggerAdapter.Debug($"A user {oldEmail} could not be edited. {errorMessages}");
+
+                    throw new ResultException(ResultKey.User.Registration.UnknownError);
+                }
+            }
 
             return identityUser;
         }

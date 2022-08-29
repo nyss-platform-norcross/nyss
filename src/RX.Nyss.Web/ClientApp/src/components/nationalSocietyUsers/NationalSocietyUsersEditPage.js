@@ -50,6 +50,7 @@ const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSoci
       id: data.id,
       nationalSocietyId: parseInt(nationalSocietyId),
       role: data.role,
+      email: data.email,
       name: data.name,
       phoneNumber: data.phoneNumber,
       additionalPhoneNumber: data.additionalPhoneNumber,
@@ -63,6 +64,7 @@ const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSoci
     };
 
     const validation = {
+      email: [validators.required, validators.email, validators.maxLength(100)],
       name: [validators.required, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
@@ -114,6 +116,14 @@ const NationalSocietyUsersEditPageComponent = ({ nationalSocietyId, nationalSoci
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.common.email)}
+              name="email"
+              field={form.fields.email}
+            />
+          </Grid>
 
           <Grid item xs={12}>
             <TextInputField
