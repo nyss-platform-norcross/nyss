@@ -43,11 +43,19 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
 
             private readonly ILoggerAdapter _loggerAdapter;
 
+            private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
+
+            private readonly IVerificationEmailService _verificationEmailService;
+
             public Handler(
+                IVerificationEmailService verificationEmailService,
+                IIdentityUserRegistrationService identityUserRegistrationService,
                 INyssContext dataContext,
                 INationalSocietyUserService nationalSocietyUserService,
                 ILoggerAdapter loggerAdapter)
             {
+                _verificationEmailService = verificationEmailService;
+                _identityUserRegistrationService = identityUserRegistrationService;
                 _dataContext = dataContext;
                 _nationalSocietyUserService = nationalSocietyUserService;
                 _loggerAdapter = loggerAdapter;
@@ -58,14 +66,31 @@ namespace RX.Nyss.Web.Features.DataConsumers.Commands
                 try
                 {
                     var user = await _nationalSocietyUserService.GetNationalSocietyUser<DataConsumerUser>(request.Id);
+                    var oldEmail = user.EmailAddress;
 
-                    user.Name = request.Body.Name;
-                    user.EmailAddress = request.Body.Email;
-                    user.PhoneNumber = request.Body.PhoneNumber;
-                    user.Organization = request.Body.Organization;
-                    user.AdditionalPhoneNumber = request.Body.AdditionalPhoneNumber;
+                    if (user == null)
+                    {
+                        throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                    }
+                    else
+                    {
+                        user.Name = request.Body.Name;
+                        user.EmailAddress = request.Body.Email;
+                        user.PhoneNumber = request.Body.PhoneNumber;
+                        user.Organization = request.Body.Organization;
+                        user.AdditionalPhoneNumber = request.Body.AdditionalPhoneNumber;
 
-                    await _dataContext.SaveChangesAsync(cancellationToken);
+                        await _dataContext.SaveChangesAsync(cancellationToken);
+
+                    }
+
+                    if (oldEmail != request.Body.Email)
+                    {
+                        var identityUser = await _identityUserRegistrationService.EditIdentityUser(oldEmail, request.Body.Email);
+                        string securityStamp;
+                        securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                        await _verificationEmailService.SendVerificationForDataConsumersEmail(user, user.Organization, securityStamp);
+                    }
 
                     return Result.Success();
                 }
