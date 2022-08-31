@@ -15,16 +15,16 @@ namespace RX.Nyss.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApiBaseUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TrackerProgramId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    LocationDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    DateOfOnsetDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    PhoneNumberDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    SuspectedDiseaseDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    EventTypeDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    GenderDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: true),
+                    Username = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApiBaseUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TrackerProgramId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    LocationDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    DateOfOnsetDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    PhoneNumberDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    SuspectedDiseaseDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    EventTypeDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    GenderDataElementId = table.Column<string>(type: "nvarchar(256)", nullable: false),
                     NationalSocietyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
