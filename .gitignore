@@ -285,8 +285,3 @@ src/RX.Nyss.Web/RX.Nyss.Web.xml
 **/local.settings.json
 /scripts/tmp*
 serviceDependencies.local.json
-
-# Azurite and local blob storage
-__queuestorage__/
-__blobstorage__/
-__azurite_db*
