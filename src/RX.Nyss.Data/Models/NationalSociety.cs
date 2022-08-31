@@ -25,6 +25,8 @@ namespace RX.Nyss.Data.Models
 
         public DayOfWeek EpiWeekStartDay { get; set; }
 
+        public bool EnableEidsrIntegration { get; set; }
+
         public virtual ContentLanguage ContentLanguage { get; set; }
 
         public virtual Country Country { get; set; }

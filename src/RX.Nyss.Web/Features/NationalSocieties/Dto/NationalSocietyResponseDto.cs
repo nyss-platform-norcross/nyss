@@ -23,5 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public bool HasCoordinator { get; set; }
 
         public DayOfWeek EpiWeekStartDay { get; set; }
+
+        public bool EnableEidsrIntegration { get; set; }
     }
 }

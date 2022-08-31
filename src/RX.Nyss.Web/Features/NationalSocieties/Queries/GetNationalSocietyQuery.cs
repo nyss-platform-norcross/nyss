@@ -50,6 +50,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Queries
                         IsArchived = n.IsArchived,
                         HasCoordinator = n.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator),
                         EpiWeekStartDay = n.EpiWeekStartDay,
+                        EnableEidsrIntegration = n.EnableEidsrIntegration,
                     })
                     .FirstOrDefaultAsync(n => n.Id == request.Id, cancellationToken);
 
