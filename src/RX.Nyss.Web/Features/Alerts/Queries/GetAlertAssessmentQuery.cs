@@ -67,6 +67,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                         Reports = a.AlertReports.Select(ar => new
                         {
                             Id = ar.Report.Id,
+                            PhoneNumber = ar.Report.PhoneNumber,
                             DataCollector = ar.Report.DataCollector.DisplayName,
                             OrganizationId = ar.Report.DataCollector.Supervisor != null
                                 ? ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId
@@ -83,7 +84,6 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                                 ? ar.Report.DataCollector.Supervisor.PhoneNumber
                                 : ar.Report.DataCollector.HeadSupervisor.PhoneNumber,
                             ReceivedAt = ar.Report.ReceivedAt,
-                            PhoneNumber = ar.Report.PhoneNumber,
                             Village = ar.Report.RawReport.Village.Name,
                             District = ar.Report.RawReport.Village.District.Name,
                             Region = ar.Report.RawReport.Village.District.Region.Name,
@@ -150,7 +150,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                     EscalatedOutcome = alert.EscalatedOutcome,
                     RecipientsNotified = alert.RecipientsNotifiedAt.HasValue,
                     EscalatedTo = escalatedTo,
-                    Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
+                     Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                         ? new AlertAssessmentResponseDto.ReportDto
                         {
                             Id = ar.Id,
