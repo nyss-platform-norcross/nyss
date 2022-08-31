@@ -96,9 +96,10 @@ namespace RX.Nyss.Data
 
         public DbSet<ProjectErrorMessage> ProjectErrorMessages { get; set; }
 
+        public DbSet<EidsrConfiguration> EidsrConfiguration { get; set; }
+
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
