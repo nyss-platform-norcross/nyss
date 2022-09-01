@@ -2,7 +2,7 @@ import styles from '../common/table/Table.module.scss';
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
 import dayjs from "dayjs"
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ArchiveIcon from '@material-ui/icons/Archive';
 import WarningIcon from '@material-ui/icons/Warning';
 import * as roles from '../../authentication/roles';
 import { Loading } from '../common/loading/Loading';
@@ -12,6 +12,7 @@ import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { Typography, Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+
 
 export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSocietyId, close, isClosing, callingUserRoles, isHeadManager, rtl }) => {
   const [closeConfirmationDialog, setRemoveConfirmationDialog] = useState({ isOpen: false, projectId: null });
@@ -67,10 +68,10 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
                 <TableCell>{project.escalatedAlertCount}</TableCell>
                 <TableCell>
                   <TableRowActions directionRtl={rtl}>
-                    <TableRowMenu 
-                      id={project.id} 
-                      items={getRowMenu(project)} 
-                      icon={<MoreVertIcon />} 
+                    <TableRowMenu
+                      id={project.id}
+                      items={getRowMenu(project)}
+                      icon={<ArchiveIcon />}
                       isFetching={isClosing[project.id]}
                       directionRtl={rtl}
                     />
