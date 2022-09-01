@@ -70,7 +70,8 @@ export const stringKeys = {
           label: "nationalSociety.form.epiWeekStandard.monday.label",
           description: "nationalSociety.form.epiWeekStandard.monday.description"
         }
-      }
+      },
+      enableEidsrIntegration: "nationalSociety.form.enableEidsrIntegration",
     },
     messages: {
       create: {

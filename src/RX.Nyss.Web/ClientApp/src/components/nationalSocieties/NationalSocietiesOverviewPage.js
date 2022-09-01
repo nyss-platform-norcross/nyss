@@ -63,6 +63,16 @@ const NationalSocietiesOverviewPageComponent = (props) => {
               <span style={{ fontSize: 12 }}>({strings(stringKeys.nationalSociety.form.epiWeekStandard[props.data.epiWeekStartDay].description)})</span>
             </Typography>
           </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings(stringKeys.nationalSociety.form.enableEidsrIntegration)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              { props.data.enableEidsrIntegration ? strings(stringKeys.common.boolean.true) : strings(stringKeys.common.boolean.false) }
+            </Typography>
+          </Grid>
+
         </Grid>
 
         <FormActions>

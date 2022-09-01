@@ -24,6 +24,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
 
         public DayOfWeek EpiWeekStartDay { get; set; }
 
+        public bool EnableEidsrIntegration { get; set; }
+
         public class Handler : IRequestHandler<CreateNationalSocietyCommand, Result>
         {
             private readonly INyssContext _nyssContext;
@@ -49,6 +51,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
                     IsArchived = false,
                     StartDate = DateTime.UtcNow,
                     EpiWeekStartDay = request.EpiWeekStartDay,
+                    EnableEidsrIntegration = request.EnableEidsrIntegration,
                 };
 
                 await _nyssContext.AddAsync(nationalSociety, cancellationToken);
