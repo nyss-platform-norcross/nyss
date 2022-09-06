@@ -67,6 +67,8 @@ import { AlertEventsLogPage } from "../alertEvents/AlertEventsLogPage";
 import { ProjectErrorMessagesPage } from "../projects/ProjectErrorMessagesPage";
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { EidsrIntegrationPage } from "../eidsrIntegration/EidsrIntegrationPage";
+import { EidsrIntegrationEditPage } from "../eidsrIntegration/EidsrIntegrationEditPage";
 
 export const App = ({ history }) => {
   const direction = useSelector(state => state.appData.direction);
@@ -102,6 +104,9 @@ export const App = ({ history }) => {
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
+
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/eidsrintegration' component={EidsrIntegrationPage} roles={accessMap.eidsrIntegration.get} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/eidsrintegration/edit' component={EidsrIntegrationEditPage} roles={accessMap.eidsrIntegration.edit} />
 
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations' component={OrganizationsListPage} roles={accessMap.organizations.list} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/add' component={OrganizationsCreatePage} roles={accessMap.organizations.add} />

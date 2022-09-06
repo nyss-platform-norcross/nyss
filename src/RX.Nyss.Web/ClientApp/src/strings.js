@@ -1,5 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
+import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -182,6 +183,40 @@ export const stringKeys = {
       useDualModem: "smsGateway.form.useDualModem",
       modemOneName: "smsGateway.form.modemOneName",
       modemTwoName: "smsGateway.form.modemTwoName"
+    },
+    create: {
+      success: "smsGateway.create.success"
+    },
+    edit: {
+      success: "smsGateway.edit.success"
+    },
+    delete: {
+      success: "smsGateway.delete.success"
+    },
+    list: {
+      apiKey: "smsGateway.list.apiKey",
+      gatewayType: "smsGateway.list.gatewayType",
+      removalConfirmation: "smsGateway.list.removalConfirmation",
+      useIotHub: "smsGateway.list.useIotHub"
+    },
+  },
+  eidsrIntegration: {
+    title: "eidsrIntegration.title",
+    form: {
+      editionTitle: "eidsrIntegration.form.editionTitle",
+      userName: "eidsrIntegration.form.userName",
+      password: "eidsrIntegration.form.password",
+      apiBaseUrl: "eidsrIntegration.form.apiBaseUrl",
+      trackerProgramId: "eidsrIntegration.form.trackerProgramId",
+      locationDataElementId: "eidsrIntegration.form.locationDataElementId",
+      dateOfOnsetDataElementId: "eidsrIntegration.form.dateOfOnsetDataElementId",
+      phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
+      suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
+      eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
+      genderDataElementId: "veidsrIntegration.form.genderDataElementId",
+
+      dataNotSet: "eidsrIntegration.from.dataNotSet",
+      dataElements: "eidsrIntegration.from.dataElements",
     },
     create: {
       success: "smsGateway.create.success"

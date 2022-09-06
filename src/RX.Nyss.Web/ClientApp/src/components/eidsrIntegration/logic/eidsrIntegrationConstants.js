@@ -1,0 +1,4 @@
+import { action } from "../../../utils/actions";
+
+export const GET_EIDSR_INTEGRATION = action("GET_EIDSR_INTEGRATION");
+export const EDIT_EIDSR_INTEGRATION = action("EDIT_EIDSR_INTEGRATION");
