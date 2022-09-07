@@ -85,6 +85,8 @@ export const initialState = {
   },
   eidsrIntegration: {
     isFetching: true,
+    formSaving: false,
+    formError: null,
     data:
       {
         id: null,

@@ -14,7 +14,7 @@ export const get = {
 };
 
 export const edit = {
-  invoke: (data) => ({ type: EDIT_EIDSR_INTEGRATION.INVOKE, data }),
+  invoke: (id, data) => ({ type: EDIT_EIDSR_INTEGRATION.INVOKE, id, data }),
   request: () => ({ type: EDIT_EIDSR_INTEGRATION.REQUEST }),
   success: () => ({ type: EDIT_EIDSR_INTEGRATION.SUCCESS }),
   failure: (error) => ({ type: EDIT_EIDSR_INTEGRATION.FAILURE, error, suppressPopup: true })

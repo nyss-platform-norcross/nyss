@@ -219,19 +219,10 @@ export const stringKeys = {
       dataElements: "eidsrIntegration.from.dataElements",
     },
     create: {
-      success: "smsGateway.create.success"
+      success: "eidsrIntegration.create.success"
     },
     edit: {
-      success: "smsGateway.edit.success"
-    },
-    delete: {
-      success: "smsGateway.delete.success"
-    },
-    list: {
-      apiKey: "smsGateway.list.apiKey",
-      gatewayType: "smsGateway.list.gatewayType",
-      removalConfirmation: "smsGateway.list.removalConfirmation",
-      useIotHub: "smsGateway.list.useIotHub"
+      success: "eidsrIntegration.edit.success"
     },
   },
   organization: {

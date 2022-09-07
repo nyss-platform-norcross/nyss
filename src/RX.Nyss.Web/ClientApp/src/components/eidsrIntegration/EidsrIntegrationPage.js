@@ -22,7 +22,7 @@ const EidsrIntegrationPageComponent = (props) => {
     props.getEidsrIntegration(props.nationalSocietyId);
   });
 
-  if (props.isFetching) {
+  if (props.isFetching || !props.data) {
     return <Loading />;
   }
 
@@ -37,16 +37,17 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.userName)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.userName ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.username ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
+          {/* TODO: make it look like a password */}
           <Grid item xs={12}>
             <Typography variant="h6">
               {strings(stringKeys.eidsrIntegration.form.password)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.password ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.password ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -55,7 +56,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.apiBaseUrl)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.apiBaseUrl ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.apiBaseUrl ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -64,10 +65,11 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.trackerProgramId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.trackerProgramId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.trackerProgramId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
+          {/* TODO: style this to match mockups */}
           <Grid item xs={12}>
             <hr className={styles.divider} />
             <Typography variant="h5">
@@ -80,7 +82,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.locationDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.locationDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.locationDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -89,7 +91,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.dateOfOnsetDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.dateOfOnsetDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.dateOfOnsetDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -98,7 +100,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.phoneNumberDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.phoneNumberDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.phoneNumberDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -107,7 +109,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.suspectedDiseaseDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.suspectedDiseaseDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.suspectedDiseaseDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -116,7 +118,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.eventTypeDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.eventTypeDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.eventTypeDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -125,7 +127,7 @@ const EidsrIntegrationPageComponent = (props) => {
               {strings(stringKeys.eidsrIntegration.form.genderDataElementId)}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              { props.eidsrIntegration.genderDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+              { props.data.genderDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
 
@@ -150,7 +152,7 @@ const EidsrIntegrationPageComponent = (props) => {
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
 
-  eidsrIntegration: state.eidsrIntegration.data,
+  data: state.eidsrIntegration.data,
   isFetching: state.eidsrIntegration.isFetching,
 
   callingUserRoles: state.appData.user.roles,
