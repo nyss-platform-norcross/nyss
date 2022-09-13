@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.EidsrConfiguration.Commands;
 using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 using RX.Nyss.Web.Features.EidsrConfiguration.Queries;
-using RX.Nyss.Web.Features.NationalSocieties.Commands;
-using RX.Nyss.Web.Features.NationalSocieties.Dto;
-using RX.Nyss.Web.Features.NationalSocieties.Queries;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration;

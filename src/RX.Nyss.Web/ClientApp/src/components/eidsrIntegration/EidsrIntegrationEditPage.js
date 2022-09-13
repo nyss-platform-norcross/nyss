@@ -1,14 +1,10 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import * as eidsrIntegrationActions from './logic/eidsrIntegrationActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { accessMap } from '../../authentication/accessMap';
-import * as roles from '../../authentication/roles';
 import FormActions from "../forms/formActions/FormActions";
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 import SubmitButton from "../common/buttons/submitButton/SubmitButton";
@@ -18,10 +14,8 @@ import {createForm, validators} from "../../utils/forms";
 import {ValidationMessage} from "../forms/ValidationMessage";
 import {Grid, MenuItem, Typography} from "@material-ui/core";
 import TextInputField from "../forms/TextInputField";
-import SelectField from "../forms/SelectField";
-import {EpiWeekStandards} from "../nationalSocieties/logic/nationalSocietiesConstants";
-import CheckboxField from "../forms/CheckboxField";
 import styles from "../common/filters/LocationFilter.module.scss";
+import {EidsrIntegrationNotEnabled} from "./EidsrIntegrationNotEnabled";
 
 const EidsrIntegrationEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -89,6 +83,10 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
   if (props.isFetching || !form) {
     return <Loading />;
+  }
+
+  if(!props.isEnabled){
+    return <EidsrIntegrationNotEnabled/>;
   }
 
   return (
@@ -199,6 +197,7 @@ const mapStateToProps = (state, ownProps) => ({
   formError: state.eidsrIntegration.formError,
   formSaving: state.eidsrIntegration.formSaving,
 
+  isEnabled: state.appData.siteMap.parameters.nationalSocietyEnableEidsrIntegration,
   callingUserRoles: state.appData.user.roles,
   nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
   nationalSocietyHasCoordinator: state.appData.siteMap.parameters.nationalSocietyHasCoordinator

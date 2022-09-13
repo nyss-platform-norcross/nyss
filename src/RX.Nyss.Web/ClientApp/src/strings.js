@@ -202,6 +202,7 @@ export const stringKeys = {
   },
   eidsrIntegration: {
     title: "eidsrIntegration.title",
+    disabled: "eidsrIntegration.disabled",
     form: {
       editionTitle: "eidsrIntegration.form.editionTitle",
       userName: "eidsrIntegration.form.userName",

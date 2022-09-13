@@ -173,6 +173,7 @@ public static class ResultKey
         {
             public const string Success = "EidsrIntegration.edit.success";
             public const string ErrorNationalSocietyDoesNotExists = "EidsrIntegration.edit.ErrorNationalSocietyDoesNotExists";
+            public const string ErrorEidsrIntegrationDisabled = "EidsrIntegration.edit.ErrorEidsrIntegrationDisabled";
         }
     }
 

@@ -52,6 +52,7 @@ function* getNationalSocietyBaseInfo(nationalSocietyId) {
     nationalSocietyName: nationalSociety.value.name,
     nationalSocietyCountry: nationalSociety.value.countryName,
     nationalSocietyIsArchived: nationalSociety.value.isArchived,
-    nationalSocietyHasCoordinator: nationalSociety.value.hasCoordinator
+    nationalSocietyHasCoordinator: nationalSociety.value.hasCoordinator,
+    nationalSocietyEnableEidsrIntegration: nationalSociety.value.enableEidsrIntegration,
   }));
 };

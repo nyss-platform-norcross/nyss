@@ -1,21 +1,18 @@
-import React, { Fragment } from 'react';
-import PropTypes from "prop-types";
-import { connect, useSelector } from "react-redux";
+import React, {Fragment} from 'react';
+import {connect} from "react-redux";
 import * as eidsrIntegrationActions from './logic/eidsrIntegrationActions';
-import { withLayout } from '../../utils/layout';
+import {withLayout} from '../../utils/layout';
 import Layout from '../layout/Layout';
-import TableActions from '../common/tableActions/TableActions';
-import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
-import { accessMap } from '../../authentication/accessMap';
-import * as roles from '../../authentication/roles';
+import {useMount} from '../../utils/lifecycle';
+import {stringKeys, strings} from '../../strings';
+import {accessMap} from '../../authentication/accessMap';
 import FormActions from "../forms/formActions/FormActions";
 import {TableActionsButton} from "../common/buttons/tableActionsButton/TableActionsButton";
-import {goToEidsrIntegrationEdition} from "./logic/eidsrIntegrationActions";
 import Form from "../forms/form/Form";
-import {Divider, Grid, Typography} from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import styles from "../common/filters/LocationFilter.module.scss";
 import {Loading} from "../common/loading/Loading";
+import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
 
 const EidsrIntegrationPageComponent = (props) => {
   useMount(() => {
@@ -24,6 +21,10 @@ const EidsrIntegrationPageComponent = (props) => {
 
   if (props.isFetching || !props.data) {
     return <Loading />;
+  }
+
+  if(!props.isEnabled){
+    return <EidsrIntegrationNotEnabled/>;
   }
 
   return (
@@ -155,6 +156,7 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.eidsrIntegration.data,
   isFetching: state.eidsrIntegration.isFetching,
 
+  isEnabled: state.appData.siteMap.parameters.nationalSocietyEnableEidsrIntegration,
   callingUserRoles: state.appData.user.roles,
   nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
   nationalSocietyHasCoordinator: state.appData.siteMap.parameters.nationalSocietyHasCoordinator
