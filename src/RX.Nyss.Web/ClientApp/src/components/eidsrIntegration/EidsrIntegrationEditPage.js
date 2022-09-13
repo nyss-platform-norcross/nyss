@@ -16,6 +16,7 @@ import {Grid, MenuItem, Typography} from "@material-ui/core";
 import TextInputField from "../forms/TextInputField";
 import styles from "../common/filters/LocationFilter.module.scss";
 import {EidsrIntegrationNotEnabled} from "./EidsrIntegrationNotEnabled";
+import PasswordInputField from "../forms/PasswordInputField";
 
 const EidsrIntegrationEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -104,8 +105,8 @@ const EidsrIntegrationEditPageComponent = (props) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextInputField
-                label={strings(stringKeys.eidsrIntegration.form.password)}
+              <PasswordInputField
+                label={strings(stringKeys.login.password)}
                 name="password"
                 field={form.fields.password}
               />

@@ -13,6 +13,7 @@ import {Grid, Typography} from "@material-ui/core";
 import styles from "../common/filters/LocationFilter.module.scss";
 import {Loading} from "../common/loading/Loading";
 import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
+import PasswordDisplayField from "../forms/PasswordDisplayField";
 
 const EidsrIntegrationPageComponent = (props) => {
   useMount(() => {
@@ -42,14 +43,22 @@ const EidsrIntegrationPageComponent = (props) => {
             </Typography>
           </Grid>
 
-          {/* TODO: make it look like a password */}
           <Grid item xs={12}>
-            <Typography variant="h6">
-              {strings(stringKeys.eidsrIntegration.form.password)}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              { props.data.password ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
-            </Typography>
+            {props.data.password ?
+              <PasswordDisplayField
+                label={strings(stringKeys.login.password)}
+                value={props.data.password}
+              />
+              :
+              <>
+                <Typography variant="h6">
+                  {strings(stringKeys.eidsrIntegration.form.password)}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {props.data.password ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+                </Typography>
+              </>
+            }
           </Grid>
 
           <Grid item xs={12}>
