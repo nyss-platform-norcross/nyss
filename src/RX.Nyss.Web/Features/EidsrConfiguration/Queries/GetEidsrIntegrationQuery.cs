@@ -1,5 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.EidsrConfiguration.Queries;
-
+﻿using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +6,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
+
+namespace RX.Nyss.Web.Features.EidsrConfiguration.Queries;
 
 public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponseDto>>
 {
@@ -20,10 +21,12 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
     public class Handler : IRequestHandler<GetEidsrIntegrationQuery, Result<EidsrIntegrationResponseDto>>
     {
         private readonly INyssContext _nyssContext;
+        private readonly ICryptographyService _cryptographyService;
 
-        public Handler(INyssContext nyssContext)
+        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService)
         {
             _nyssContext = nyssContext;
+            _cryptographyService = cryptographyService;
         }
 
         public async Task<Result<EidsrIntegrationResponseDto>> Handle(GetEidsrIntegrationQuery request, CancellationToken cancellationToken)
@@ -32,11 +35,13 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
                 .FirstOrDefaultAsync(x =>
                     x.NationalSocietyId == request.Id, cancellationToken: cancellationToken);
 
+            var password = eidsrConfiguration?.PasswordHash == default ? default : _cryptographyService.Decrypt(eidsrConfiguration?.PasswordHash);
+
             var eidsrConfigurationDto = new EidsrIntegrationResponseDto
             {
                 Id = eidsrConfiguration?.Id,
                 Username = eidsrConfiguration?.Username,
-                Password = eidsrConfiguration?.PasswordHash, //TODO: implement hashing algorithm
+                Password = password,
                 ApiBaseUrl = eidsrConfiguration?.ApiBaseUrl,
                 TrackerProgramId = eidsrConfiguration?.TrackerProgramId,
                 LocationDataElementId = eidsrConfiguration?.LocationDataElementId,

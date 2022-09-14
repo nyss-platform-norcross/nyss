@@ -20,6 +20,10 @@ namespace RX.Nyss.Web.Configuration
 
         string FeedbackReceiverEmail { get; set; }
 
+        string Key { get; set; }
+
+        string SupplementaryKey { get; set; }
+
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
 
         ConfigSingleton.ExportOptions Export { get; set; }
@@ -66,6 +70,10 @@ namespace RX.Nyss.Web.Configuration
         public string SmsContentResourcesBlobObjectName { get; set; }
 
         public string FeedbackReceiverEmail { get; set; }
+
+        public string Key { get; set; }
+
+        public string SupplementaryKey { get; set; }
 
         public LoggingOptions Logging { get; set; }
 

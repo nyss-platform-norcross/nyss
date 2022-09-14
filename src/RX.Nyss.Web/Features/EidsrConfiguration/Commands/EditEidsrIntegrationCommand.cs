@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration.Commands;
 
@@ -23,10 +24,12 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
     public class Handler : IRequestHandler<EditEidsrIntegrationCommand, Result>
     {
         private readonly INyssContext _nyssContext;
+        private readonly ICryptographyService _cryptographyService;
 
-        public Handler(INyssContext nyssContext)
+        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService)
         {
             _nyssContext = nyssContext;
+            _cryptographyService = cryptographyService;
         }
 
         public async Task<Result> Handle(EditEidsrIntegrationCommand request, CancellationToken cancellationToken)
@@ -51,14 +54,15 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
                 .FirstOrDefaultAsync(x =>
                     x.NationalSocietyId == request.Id, cancellationToken: cancellationToken);
 
+            var passwordHash = _cryptographyService.Encrypt(request.Body.Password);
+
             // if EIDSR configuration does not exists, create one
             if (eidsrConfiguration == default)
             {
                 var newEidsrConfiguration = new Nyss.Data.Models.EidsrConfiguration
-
                 {
                     Username = request.Body.Username,
-                    PasswordHash = request.Body.Password, // TODO: it doesn't look like hash, you know?
+                    PasswordHash = passwordHash,
                     ApiBaseUrl = request.Body.ApiBaseUrl,
                     TrackerProgramId = request.Body.TrackerProgramId,
                     LocationDataElementId = request.Body.LocationDataElementId,
@@ -82,7 +86,7 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
             else
             {
                 eidsrConfiguration.Username = request.Body.Username;
-                eidsrConfiguration.PasswordHash = request.Body.Password;
+                eidsrConfiguration.PasswordHash = passwordHash;
                 eidsrConfiguration.ApiBaseUrl = request.Body.ApiBaseUrl;
                 eidsrConfiguration.TrackerProgramId = request.Body.TrackerProgramId;
                 eidsrConfiguration.LocationDataElementId = request.Body.LocationDataElementId;
