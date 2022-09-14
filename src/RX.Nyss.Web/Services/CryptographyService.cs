@@ -27,38 +27,55 @@ public class CryptographyService : ICryptographyService
 
     private string EncryptStringAES(string plainText, string key128)
     {
-        var iv = new byte[16];
+        byte[] iv = new byte[16];
+        byte[] array;
 
-        using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(key128);
-        aes.IV = iv;
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = Encoding.UTF8.GetBytes(key128);
+            aes.IV = iv;
 
-        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-        using var memoryStream = new MemoryStream();
-        using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-        using var streamWriter = new StreamWriter(cryptoStream);
-        streamWriter.Write(plainText);
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                    {
+                        streamWriter.Write(plainText);
+                    }
 
-        var array = memoryStream.ToArray();
+                    array = memoryStream.ToArray();
+                }
+            }
+        }
 
         return WebEncoders.Base64UrlEncode(array);
     }
 
     private string DecryptStringAES(string cipherText, string key128)
     {
-        var iv = new byte[16];
-        var buffer = WebEncoders.Base64UrlDecode(cipherText);
+        byte[] iv = new byte[16];
+        byte[] buffer = WebEncoders.Base64UrlDecode(cipherText);
 
-        using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(key128);
-        aes.IV = iv;
-        var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = Encoding.UTF8.GetBytes(key128);
+            aes.IV = iv;
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-        using var memoryStream = new MemoryStream(buffer);
-        using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-        using var streamReader = new StreamReader(cryptoStream);
-        return streamReader.ReadToEnd();
+            using (MemoryStream memoryStream = new MemoryStream(buffer))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                {
+                    using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                    {
+                        return streamReader.ReadToEnd();
+                    }
+                }
+            }
+        }
     }
 
     private string Get128KeyWithSalt()

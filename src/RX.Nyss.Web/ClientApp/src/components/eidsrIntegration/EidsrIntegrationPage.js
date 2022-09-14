@@ -10,7 +10,7 @@ import FormActions from "../forms/formActions/FormActions";
 import {TableActionsButton} from "../common/buttons/tableActionsButton/TableActionsButton";
 import Form from "../forms/form/Form";
 import {Grid, Typography} from "@material-ui/core";
-import styles from "../common/filters/LocationFilter.module.scss";
+import styles from "./EidsrIntegration.module.scss";
 import {Loading} from "../common/loading/Loading";
 import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
 import PasswordDisplayField from "../forms/PasswordDisplayField";
@@ -79,12 +79,11 @@ const EidsrIntegrationPageComponent = (props) => {
             </Typography>
           </Grid>
 
-          {/* TODO: style this to match mockups */}
           <Grid item xs={12}>
             <hr className={styles.divider} />
-            <Typography variant="h5">
+            <div className={styles.header}>
               {strings(stringKeys.eidsrIntegration.form.dataElements)}
-            </Typography>
+            </div>
           </Grid>
 
           <Grid item xs={12}>

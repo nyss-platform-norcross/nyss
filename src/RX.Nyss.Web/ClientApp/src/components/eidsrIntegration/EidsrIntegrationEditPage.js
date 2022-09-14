@@ -14,7 +14,7 @@ import {createForm, validators} from "../../utils/forms";
 import {ValidationMessage} from "../forms/ValidationMessage";
 import {Grid, MenuItem, Typography} from "@material-ui/core";
 import TextInputField from "../forms/TextInputField";
-import styles from "../common/filters/LocationFilter.module.scss";
+import styles from "./EidsrIntegration.module.scss";
 import {EidsrIntegrationNotEnabled} from "./EidsrIntegrationNotEnabled";
 import PasswordInputField from "../forms/PasswordInputField";
 
@@ -32,7 +32,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
     const fields = {
       username: props.data.username ?? "",
-      password: props.data.password ?? "", // TODO: it doesn't look like hash, you know?
+      password: props.data.password ?? "",
       apiBaseUrl: props.data.apiBaseUrl ?? "",
       trackerProgramId: props.data.trackerProgramId ?? "",
       locationDataElementId: props.data.locationDataElementId ?? "",
@@ -70,7 +70,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
     props.editEidsrIntegration(props.nationalSocietyId, {
       username: values.username,
-      password: values.password, // TODO: it doesn't look like hash, you know?
+      password: values.password,
       apiBaseUrl: values.apiBaseUrl,
       trackerProgramId: values.trackerProgramId,
       locationDataElementId: values.locationDataElementId,
@@ -126,12 +126,11 @@ const EidsrIntegrationEditPageComponent = (props) => {
               />
             </Grid>
 
-            {/* TODO: style this to match mockups */}
             <Grid item xs={12}>
               <hr className={styles.divider} />
-              <Typography variant="h5">
+              <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.dataElements)}
-              </Typography>
+              </div>
             </Grid>
 
             <Grid item xs={12}>
