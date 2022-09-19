@@ -44,6 +44,10 @@ namespace RX.Nyss.Data
 
         public DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
 
+        public DbSet<SuspectedDisease> SuspectedDiseases { get; set; }
+
+        public DbSet<SuspectedDiseaseLanguageContent> SuspectedDiseaseLanguageContents { get; set; }
+
         public DbSet<Localization> Localizations { get; set; }
 
         public DbSet<LocalizedTemplate> LocalizedTemplates { get; set; }
@@ -63,6 +67,8 @@ namespace RX.Nyss.Data
         public DbSet<SupervisorUserAlertRecipient> SupervisorUserAlertRecipients { get; set; }
 
         public DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
+
+        public DbSet<HealthRiskSuspectedDisease> HealthRiskSuspectedDiseases { get; set; }
 
         public DbSet<ProjectHealthRiskAlertRecipient> ProjectHealthRiskAlertRecipients { get; set; }
 

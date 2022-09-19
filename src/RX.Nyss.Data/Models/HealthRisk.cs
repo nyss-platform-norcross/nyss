@@ -14,5 +14,7 @@ namespace RX.Nyss.Data.Models
         public virtual AlertRule AlertRule { get; set; }
 
         public virtual ICollection<HealthRiskLanguageContent> LanguageContents { get; set; }
+
+        public virtual ICollection<SuspectedDisease> SuspectedDiseases { get; set; }
     }
 }

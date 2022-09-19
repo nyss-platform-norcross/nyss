@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as healthRisksActions from './logic/healthRisksActions';
@@ -17,8 +17,14 @@ import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys, stringsFormat } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const HealthRisksEditPageComponent = (props) => {
+  const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
+  const [selectedSuspectedDiseases, setSelectedSuspectedDiseases] = useState([]);
+  const [suspectedDiseasesFieldTouched, setSuspectedDiseasesFieldTouched] = useState(false);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   const [form, setForm] = useState(null);
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [reportCountThreshold, setReportCountThreshold] = useState(null);
@@ -110,6 +116,17 @@ const HealthRisksEditPageComponent = (props) => {
     return <Loading />;
   }
 
+  const onSuspectedDiseasesChange = (value, eventData) => {
+    if (eventData.action === "select-option") {
+      setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
+    } else if ((eventData.action === "remove-value" || eventData.action === "pop-value")) {
+      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
+    }
+  }
+
+  const getSelectedSuspectedDiseaseValue = () =>
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.healthRiskId === sd.value))).sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);
+
   return (
     <Fragment>
       {props.formError && <ValidationMessage message={props.formError.message} />}
@@ -133,6 +150,19 @@ const HealthRisksEditPageComponent = (props) => {
                 <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSection)}</Typography>
+              <MultiSelect
+                label={strings(stringKeys.healthRisk.form.suspectedDiseases)}
+                options={suspectedDiseasesDataSource}
+                onChange={onSuspectedDiseasesChange}
+                value={getSelectedSuspectedDiseaseValue()}
+                onBlur={e => setSuspectedDiseasesFieldTouched(true)}
+                error={(suspectedDiseasesFieldTouched && selectedSuspectedDiseases.length < 2) ? `${strings(stringKeys.validation.noSuspectedDiseaseSelected)}` : null}
+                rtl={useRtlDirection}
+              />
           </Grid>
 
           {props.contentLanguages.map(lang => (

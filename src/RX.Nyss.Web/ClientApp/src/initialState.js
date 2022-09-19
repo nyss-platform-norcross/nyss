@@ -173,6 +173,15 @@ export const initialState = {
     formError: null,
     formData: null
   },
+  suspectedDiseases: {
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formError: null,
+    formData: null
+  },
   nationalSocietyUsers: {
     listFetching: false,
     listRemoving: {},

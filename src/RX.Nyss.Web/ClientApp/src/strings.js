@@ -166,6 +166,32 @@ export const stringKeys = {
       }
     }
   },
+
+  suspectedDisease: {
+    title: "suspectedDisease.title",
+    form: {
+      creationTitle: "suspectedDisease.form.creationTitle",
+      editionTitle: "suspectedDisease.form.editionTitle",
+      suspectedDiseaseCode: "suspectedDisease.form.suspectedDiseaseCode",
+      contentLanguageName: "suspectedDisease.form.contentLanguageName",
+      translationsSection: "suspectedDisease.form.translationsSection",
+    },
+    list: {
+      suspectedDiseaseCode: "suspectedDisease.list.suspectedDiseaseCode",
+      suspectedDiseaseName: "suspectedDisease.list.suspectedDiseaseName",
+      removalConfirmation: "suspectedDisease.list.removalConfirmation"
+    },
+    create: {
+      success: "suspectedDisease.create.success"
+    },
+    edit: {
+      success: "suspectedDisease.edit.success"
+    },
+    delete: {
+      success: "suspectedDisease.delete.success"
+    }
+  },
+
   smsGateway: {
     title: "smsGateway.title",
     apiKeyCopied: "smsGateway.apiKeyCopied",

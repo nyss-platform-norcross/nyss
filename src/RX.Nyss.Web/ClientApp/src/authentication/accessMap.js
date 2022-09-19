@@ -53,6 +53,12 @@ export const accessMap = {
     edit: [Administrator, GlobalCoordinator],
     delete: [Administrator, GlobalCoordinator]
   },
+  suspectedDiseases: {
+    list: [Administrator, GlobalCoordinator],
+    add: [Administrator, GlobalCoordinator],
+    edit: [Administrator, GlobalCoordinator],
+    delete: [Administrator, GlobalCoordinator]
+  },
   dataCollectors: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
     performanceList: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],

@@ -30,7 +30,7 @@ export const edit = {
 export const openEdition = {
   invoke: ({ path, params }) => ({ type: OPEN_EDITION_HEALTH_RISK.INVOKE, path, params }),
   request: () => ({ type: OPEN_EDITION_HEALTH_RISK.REQUEST }),
-  success: (data) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data }),
+  success: (data, suspectedDiseases) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data, suspectedDiseases }),
   failure: (message) => ({ type: OPEN_EDITION_HEALTH_RISK.FAILURE, message })
 };
 

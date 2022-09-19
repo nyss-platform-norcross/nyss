@@ -10,6 +10,13 @@ export const healthRisksSiteMap = [
     access: accessMap.healthRisks.list
   },
   {
+    path: "/healthrisks",
+    title: () => strings(stringKeys.healthRisk.title),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.healthRisks.list,
+    placeholderIndex: 1
+  },
+  {
     parentPath: "/healthrisks",
     path: "/healthrisks/add",
     title: () => strings(stringKeys.healthRisk.form.creationTitle),

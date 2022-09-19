@@ -114,6 +114,11 @@ namespace RX.Nyss.Web.Features.HealthRisks
                     CaseDefinition = lc.CaseDefinition,
                     ContentLanguage = contentLanguages[lc.LanguageId]
                 }).ToList(),
+                /*SuspectedDiseases = healthRiskRequestDto.SuspectedDisease.Select(sd => new HealthRiskSuspectedDiseaseDto
+                {
+                  SuspectedDiseaseId = sd.SuspectedDiseaseId,
+                  SuspectedDiseaseName = sd.SuspectedDiseaseName
+                }),*/
                 AlertRule = healthRiskRequestDto.AlertRuleCountThreshold.HasValue
                     ? new AlertRule
                     {
@@ -233,5 +238,19 @@ namespace RX.Nyss.Web.Features.HealthRisks
 
             return newLanguageContent;
         }
+
+        public async Task<IEnumerable<HealthRiskSuspectedDiseaseDto>> GetSuspectedDiseaseNames(int healthRiskId) =>
+            await _nyssContext.HealthRiskSuspectedDiseases
+                .Where(hs => hs.HealthRisk.Id == healthRiskId)
+                .Select(hs => new HealthRiskSuspectedDiseaseDto
+                {
+                    SuspectedDiseaseId = hs.SuspectedDiseaseId,
+                    SuspectedDiseaseName = hs.SuspectedDisease.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == hs.HealthRisk.Id)
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
     }
+
 }

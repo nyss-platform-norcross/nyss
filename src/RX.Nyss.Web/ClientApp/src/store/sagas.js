@@ -7,6 +7,7 @@ import { smsGatewaysSagas } from "../components/smsGateways/logic/smsGatewaysSag
 import { projectsSagas } from "../components/projects/logic/projectsSagas";
 import { globalCoordinatorsSagas } from "../components/globalCoordinators/logic/globalCoordinatorsSagas";
 import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSagas";
+import { suspectedDiseaseSagas } from "../components/suspectedDiseases/logic/suspectedDiseaseSagas";
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { agreementsSagas } from "../components/agreements/logic/agreementsSagas";
@@ -38,6 +39,7 @@ function* rootSaga() {
     ...projectAlertRecipientsSagas(),
     ...globalCoordinatorsSagas(),
     ...healthRisksSagas(),
+    ...suspectedDiseaseSagas(),
     ...nationalSocietyUsersSagas(),
     ...dataCollectorsSagas(),
     ...agreementsSagas(),
