@@ -1,5 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
+import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -197,6 +198,32 @@ export const stringKeys = {
       gatewayType: "smsGateway.list.gatewayType",
       removalConfirmation: "smsGateway.list.removalConfirmation",
       useIotHub: "smsGateway.list.useIotHub"
+    },
+  },
+  eidsrIntegration: {
+    title: "eidsrIntegration.title",
+    disabled: "eidsrIntegration.disabled",
+    form: {
+      editionTitle: "eidsrIntegration.form.editionTitle",
+      userName: "eidsrIntegration.form.userName",
+      password: "eidsrIntegration.form.password",
+      apiBaseUrl: "eidsrIntegration.form.apiBaseUrl",
+      trackerProgramId: "eidsrIntegration.form.trackerProgramId",
+      locationDataElementId: "eidsrIntegration.form.locationDataElementId",
+      dateOfOnsetDataElementId: "eidsrIntegration.form.dateOfOnsetDataElementId",
+      phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
+      suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
+      eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
+      genderDataElementId: "veidsrIntegration.form.genderDataElementId",
+
+      dataNotSet: "eidsrIntegration.from.dataNotSet",
+      dataElements: "eidsrIntegration.from.dataElements",
+    },
+    create: {
+      success: "eidsrIntegration.create.success"
+    },
+    edit: {
+      success: "eidsrIntegration.edit.success"
     },
   },
   organization: {

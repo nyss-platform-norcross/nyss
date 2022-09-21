@@ -21,7 +21,7 @@ export const initialState = {
       isSending: false,
       result: "",
     },
-    direction: 'ltr' 
+    direction: 'ltr'
   },
   requests: {
     isFetching: false,
@@ -82,6 +82,25 @@ export const initialState = {
     formData: null,
     pinging: {},
     availableIoTDevices: []
+  },
+  eidsrIntegration: {
+    isFetching: true,
+    formSaving: false,
+    formError: null,
+    data:
+      {
+        id: null,
+        userName: null,
+        apiBaseUrl: null,
+        password: null,
+        trackerProgramId: null,
+        locationDataElementId: null,
+        dateOfOnsetDataElementId: null,
+        phoneNumberDataElementId: null,
+        suspectedDiseaseDataElementId: null,
+        eventTypeDataElementId: null,
+        genderDataElementId: null,
+      }
   },
   organizations: {
     listNationalSocietyId: null,

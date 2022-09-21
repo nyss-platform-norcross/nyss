@@ -167,6 +167,16 @@ public static class ResultKey
         }
     }
 
+    public static class EidsrIntegration
+    {
+        public static class Edit
+        {
+            public const string Success = "EidsrIntegration.edit.success";
+            public const string ErrorNationalSocietyDoesNotExists = "EidsrIntegration.edit.ErrorNationalSocietyDoesNotExists";
+            public const string ErrorEidsrIntegrationDisabled = "EidsrIntegration.edit.ErrorEidsrIntegrationDisabled";
+        }
+    }
+
     public static class HealthRisk
     {
         public const string HealthRiskNotFound = "healthRisk.notFound";

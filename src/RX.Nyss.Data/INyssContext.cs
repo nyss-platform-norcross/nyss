@@ -96,6 +96,8 @@ namespace RX.Nyss.Data
 
         public DbSet<ProjectErrorMessage> ProjectErrorMessages { get; }
 
+        public DbSet<EidsrConfiguration> EidsrConfiguration { get; set; }
+
         int SaveChanges();
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
