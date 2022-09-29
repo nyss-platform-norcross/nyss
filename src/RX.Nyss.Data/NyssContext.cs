@@ -98,6 +98,8 @@ namespace RX.Nyss.Data
 
         public DbSet<EidsrConfiguration> EidsrConfiguration { get; set; }
 
+        public DbSet<EidsrOrganisationUnits> EidsrOrganisationUnits { get; set; }
+
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);
 
