@@ -100,7 +100,9 @@ export const initialState = {
         suspectedDiseaseDataElementId: null,
         eventTypeDataElementId: null,
         genderDataElementId: null,
-      }
+      },
+    organisationUnits: [],
+    organisationUnitsIsFetching: true,
   },
   organizations: {
     listNationalSocietyId: null,

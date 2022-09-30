@@ -177,6 +177,11 @@ public static class ResultKey
         }
     }
 
+    public static class Eidsr
+    {
+        public const string ApiError = "Eidsr.get.apiError";
+    }
+
     public static class HealthRisk
     {
         public const string HealthRiskNotFound = "healthRisk.notFound";

@@ -30,7 +30,8 @@ public class EidsrConfigurationController : BaseController
     /// <param name="body"></param>
     /// <returns></returns>
     [HttpPost("{nationalSocietyId}/edit")]
-    [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+    [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator),
+     NeedsPolicy(Policy.NationalSocietyAccess)]
     public async Task<Result> Edit(int nationalSocietyId, [FromBody] EditEidsrIntegrationCommand.RequestBody body) =>
         await Sender.Send(new EditEidsrIntegrationCommand(nationalSocietyId, body));
 }

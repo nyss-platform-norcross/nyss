@@ -56,5 +56,3 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
         }
     }
 }
-
-

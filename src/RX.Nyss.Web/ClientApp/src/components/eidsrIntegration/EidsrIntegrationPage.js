@@ -14,6 +14,7 @@ import styles from "./EidsrIntegration.module.scss";
 import {Loading} from "../common/loading/Loading";
 import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
 import PasswordDisplayField from "../forms/PasswordDisplayField";
+import {EidsrIntegrationEditPageDistrictsComponent} from "./EidsrIntegratonEditPageDistricts";
 
 const EidsrIntegrationPageComponent = (props) => {
   useMount(() => {

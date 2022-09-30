@@ -9,6 +9,7 @@ import {stringKeys} from "../../../strings";
 export const eidsrIntegrationSagas = () => [
   takeEvery(consts.GET_EIDSR_INTEGRATION.INVOKE, getEidsrIntegration),
   takeEvery(consts.EDIT_EIDSR_INTEGRATION.INVOKE, editEidsrIntegration),
+  takeEvery(consts.GET_EIDSR_ORGANISATION_UNITS.INVOKE, getEidsrOrganisationUnits),
 ];
 
 function* getEidsrIntegration({ nationalSocietyId }) {
@@ -49,4 +50,15 @@ function* getNationalSocietyBaseInfo(nationalSocietyId) {
     nationalSocietyHasCoordinator: nationalSociety.value.hasCoordinator,
     nationalSocietyEnableEidsrIntegration: nationalSociety.value.enableEidsrIntegration,
   }));
+};
+
+function* getEidsrOrganisationUnits({ eidsrApiProperties, programId }) {
+  yield put(actions.getOrganisationUnits.request());
+  try {
+    const eidsrConfigurationResponse = yield call(http.post, `/api/eidsr/organisationUnits`, { eidsrApiProperties, programId});
+    yield put(actions.getOrganisationUnits.success(eidsrConfigurationResponse.value.organisationUnits));
+
+  } catch (error) {
+    yield put(actions.getOrganisationUnits.failure(error.message));
+  }
 };

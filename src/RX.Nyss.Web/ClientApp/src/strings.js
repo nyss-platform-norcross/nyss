@@ -214,7 +214,8 @@ export const stringKeys = {
       phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
       suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
       eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
-      genderDataElementId: "veidsrIntegration.form.genderDataElementId",
+      genderDataElementId: "eidsrIntegration.form.genderDataElementId",
+      districts: "eidsrIntegration.form.districts",
 
       dataNotSet: "eidsrIntegration.from.dataNotSet",
       dataElements: "eidsrIntegration.from.dataElements",

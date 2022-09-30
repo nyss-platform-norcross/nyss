@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Services.EidsrClient;
 
 public interface IEidsrClient
 {
-    Task<Result<List<EidsrOrganizationUnit>>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId);
+    Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId);
 }
 
 public class EidsrClient : IEidsrClient
@@ -36,13 +36,13 @@ public class EidsrClient : IEidsrClient
         _inMemoryCache = inMemoryCache;
     }
 
-    public async Task<Result<List<EidsrOrganizationUnit>>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId) =>
+    public async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId) =>
         await _inMemoryCache.GetCachedResult(
             key: $"Eidsr_OrganizationUnits_{programId}",
             validFor: TimeSpan.FromMinutes(10),
             value: () => GetOrganizationUnitsFromApi(apiProperties, programId));
 
-    private async Task<Result<List<EidsrOrganizationUnit>>> GetOrganizationUnitsFromApi(
+    private async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnitsFromApi(
         EidsrApiProperties apiProperties,
         string programId
         )
@@ -57,9 +57,15 @@ public class EidsrClient : IEidsrClient
 
         var res = await httpClient.SendAsync(req);
 
-        await using var responseStream = await res.Content.ReadAsStreamAsync();
-        var response = await JsonSerializer.DeserializeAsync<EidsrOrganisationUnitsResponse>(responseStream);
-        return Success(response?.OrganisationUnits);
+        if (res.IsSuccessStatusCode)
+        {
+            await using var responseStream = await res.Content.ReadAsStreamAsync();
+            var response = await JsonSerializer.DeserializeAsync<EidsrOrganisationUnitsResponse>(responseStream);
+            return Success(response);
+        }
+
+        _loggerAdapter.Error(res.ReasonPhrase);
+        return Error<EidsrOrganisationUnitsResponse>(ResultKey.Eidsr.ApiError);
     }
 
     private static void ConfigureClient(EidsrApiProperties apiProperties, HttpClient httpClient)
