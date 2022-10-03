@@ -1,6 +1,9 @@
 import { push } from "connected-react-router";
 import {
-  GET_EIDSR_INTEGRATION, EDIT_EIDSR_INTEGRATION, GET_EIDSR_ORGANISATIONUNITS, GET_EIDSR_ORGANISATION_UNITS
+  GET_EIDSR_INTEGRATION,
+  EDIT_EIDSR_INTEGRATION,
+  GET_EIDSR_ORGANISATION_UNITS,
+  GET_EIDSR_PROGRAM
 } from "./eidsrIntegrationConstants";
 
 export const goToEidsrIntegration = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/eidsrintegration`);
@@ -25,4 +28,11 @@ export const getOrganisationUnits = {
   request: () => ({ type: GET_EIDSR_ORGANISATION_UNITS.REQUEST }),
   success: (organisationUnits) => ({ type: GET_EIDSR_ORGANISATION_UNITS.SUCCESS, organisationUnits }),
   failure: (message) => ({ type: GET_EIDSR_ORGANISATION_UNITS.FAILURE, message })
+};
+
+export const getProgram = {
+  invoke: (eidsrApiProperties, programId ) => ({ type: GET_EIDSR_PROGRAM.INVOKE, eidsrApiProperties, programId }),
+  request: () => ({ type: GET_EIDSR_PROGRAM.REQUEST }),
+  success: (program) => ({ type: GET_EIDSR_PROGRAM.SUCCESS, program }),
+  failure: (message) => ({ type: GET_EIDSR_PROGRAM.FAILURE, message })
 };

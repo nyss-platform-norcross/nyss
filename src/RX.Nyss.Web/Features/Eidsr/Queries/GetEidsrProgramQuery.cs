@@ -8,16 +8,16 @@ using RX.Nyss.Web.Services.EidsrClient.Dto;
 
 namespace RX.Nyss.Web.Features.Eidsr.Queries;
 
-public class GetEidsrOrganisationUnitsQuery : IRequest<Result<EidsrOrganisationUnitsResponse>>
+public class GetEidsrProgramQuery : IRequest<Result<EidsrProgramResponse>>
 {
-    public GetEidsrOrganisationUnitsQuery(EidsrRequestDto requestDto)
+    public GetEidsrProgramQuery(EidsrRequestDto requestDto)
     {
         RequestDto = requestDto;
     }
 
     public EidsrRequestDto RequestDto { get; }
 
-    public class Handler : IRequestHandler<GetEidsrOrganisationUnitsQuery, Result<EidsrOrganisationUnitsResponse>>
+    public class Handler : IRequestHandler<GetEidsrProgramQuery, Result<EidsrProgramResponse>>
     {
         private readonly IEidsrClient _eidsrClient;
 
@@ -26,9 +26,9 @@ public class GetEidsrOrganisationUnitsQuery : IRequest<Result<EidsrOrganisationU
             _eidsrClient = eidsrClient;
         }
 
-        public async Task<Result<EidsrOrganisationUnitsResponse>> Handle(GetEidsrOrganisationUnitsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<EidsrProgramResponse>> Handle(GetEidsrProgramQuery request, CancellationToken cancellationToken)
         {
-            return await _eidsrClient.GetOrganizationUnits(request.RequestDto.EidsrApiProperties, request.RequestDto.ProgramId);
+            return await _eidsrClient.GetProgramFromApi(request.RequestDto.EidsrApiProperties, request.RequestDto.ProgramId);
         }
     }
 }

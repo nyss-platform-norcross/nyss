@@ -10,6 +10,7 @@ export const eidsrIntegrationSagas = () => [
   takeEvery(consts.GET_EIDSR_INTEGRATION.INVOKE, getEidsrIntegration),
   takeEvery(consts.EDIT_EIDSR_INTEGRATION.INVOKE, editEidsrIntegration),
   takeEvery(consts.GET_EIDSR_ORGANISATION_UNITS.INVOKE, getEidsrOrganisationUnits),
+  takeEvery(consts.GET_EIDSR_PROGRAM.INVOKE, getEidsrProgram),
 ];
 
 function* getEidsrIntegration({ nationalSocietyId }) {
@@ -57,8 +58,17 @@ function* getEidsrOrganisationUnits({ eidsrApiProperties, programId }) {
   try {
     const eidsrConfigurationResponse = yield call(http.post, `/api/eidsr/organisationUnits`, { eidsrApiProperties, programId});
     yield put(actions.getOrganisationUnits.success(eidsrConfigurationResponse.value.organisationUnits));
-
   } catch (error) {
     yield put(actions.getOrganisationUnits.failure(error.message));
+  }
+};
+
+function* getEidsrProgram({ eidsrApiProperties, programId }) {
+  yield put(actions.getProgram.request());
+  try {
+    const programResponse = yield call(http.post, `/api/eidsr/program`, { eidsrApiProperties, programId});
+    yield put(actions.getProgram.success(programResponse.value));
+  } catch (error) {
+    yield put(actions.getProgram.failure(error.message));
   }
 };

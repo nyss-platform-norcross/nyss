@@ -102,7 +102,9 @@ export const initialState = {
         genderDataElementId: null,
       },
     organisationUnits: [],
-    organisationUnitsIsFetching: true,
+    organisationUnitsIsFetching: false,
+    program: null,
+    programIsFetching: false,
   },
   organizations: {
     listNationalSocietyId: null,

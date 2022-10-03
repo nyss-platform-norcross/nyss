@@ -42,6 +42,16 @@ export function eidsrIntegrationReducer(state = initialState.eidsrIntegration, a
     case actions.GET_EIDSR_ORGANISATION_UNITS.FAILURE:
       return { ...state, organisationUnitsIsFetching: false, formError: action.error };
 
+
+    case actions.GET_EIDSR_PROGRAM.REQUEST:
+      return { ...state, programIsFetching: true };
+
+    case actions.GET_EIDSR_PROGRAM.SUCCESS:
+      return { ...state, program: action.program, programIsFetching: false };
+
+    case actions.GET_EIDSR_PROGRAM.FAILURE:
+      return { ...state, programIsFetching: false, formError: action.error };
+
     default:
       return state;
   }

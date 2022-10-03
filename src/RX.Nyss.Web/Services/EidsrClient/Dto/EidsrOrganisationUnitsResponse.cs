@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using RX.Nyss.Web.Services.EidsrClient.Dto;
 
-namespace RX.Nyss.Web.Services.EidsrClient;
+namespace RX.Nyss.Web.Services.EidsrClient.Dto;
 
 public class EidsrOrganisationUnitsResponse
 {

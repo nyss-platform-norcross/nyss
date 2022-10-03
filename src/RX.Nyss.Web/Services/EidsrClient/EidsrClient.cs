@@ -15,6 +15,9 @@ namespace RX.Nyss.Web.Services.EidsrClient;
 public interface IEidsrClient
 {
     Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId);
+
+    Task<Result<EidsrProgramResponse>> GetProgramFromApi(EidsrApiProperties apiProperties, string programId);
+
 }
 
 public class EidsrClient : IEidsrClient
@@ -36,11 +39,44 @@ public class EidsrClient : IEidsrClient
         _inMemoryCache = inMemoryCache;
     }
 
-    public async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId) =>
-        await _inMemoryCache.GetCachedResult(
+    public async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId)
+    {
+        _inMemoryCache.Remove($"Eidsr_OrganizationUnits_{programId}");
+        return await _inMemoryCache.GetCachedResult(
             key: $"Eidsr_OrganizationUnits_{programId}",
-            validFor: TimeSpan.FromMinutes(10),
+            validFor: TimeSpan.FromSeconds(2),
             value: () => GetOrganizationUnitsFromApi(apiProperties, programId));
+    }
+
+    public async Task<Result<EidsrProgramResponse>> GetProgramFromApi(
+        EidsrApiProperties apiProperties,
+        string programId
+    )
+    {
+        try
+        {
+            using var httpClient = _httpClientFactory.CreateClient();
+            ConfigureClient(apiProperties, httpClient);
+
+            var req = new HttpRequestMessage(HttpMethod.Get, $"api/programs/{programId}?" +
+                $"fields=id,name");
+
+            var res = await httpClient.SendAsync(req);
+
+            if (res.IsSuccessStatusCode)
+            {
+                await using var responseStream = await res.Content.ReadAsStreamAsync();
+                var response = await JsonSerializer.DeserializeAsync<EidsrProgramResponse>(responseStream);
+                return Success(response);
+            }
+        }
+        catch
+        {
+            // this method is meant to be executed with wrong params
+        }
+
+        return Success(new EidsrProgramResponse());
+    }
 
     private async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnitsFromApi(
         EidsrApiProperties apiProperties,

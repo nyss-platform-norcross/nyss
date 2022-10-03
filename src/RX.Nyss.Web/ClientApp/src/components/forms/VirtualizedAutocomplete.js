@@ -4,9 +4,10 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
-import {Typography} from "@material-ui/core";
+import {CircularProgress, Typography} from "@material-ui/core";
+import styles from './VirtualizedAutocomplete.module.scss';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -64,7 +65,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) 
   const gridRef = useResetCache(itemCount);
 
   return (
-    <div ref={ref} style={{border : "2px solid #ddd"}}>
+    <div ref={ref}>
       <OuterElementContext.Provider value={other}>
         <VariableSizeList
           itemData={itemData}
@@ -95,20 +96,58 @@ const renderGroup = (params) => [
   params.children,
 ];
 
+const cleanUpOptions = (array) => {
+  // trim whitespaces
+  for (let i = 0; i < array.length; i++) {
+    array[i].display = array[i].display.trim();
+  }
+
+  // sort by first character
+  array.sort(function(a, b) {
+    let textA = a.display.toUpperCase();
+    let textB = b.display.toUpperCase();
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+  });
+}
+
 // options prop is an array of objects {id, display}
-export const Virtualize = ({id, label, options, handleChangeValue}) => {
+export const VirtualizedAutocomplete = ({id, label, options, optionsLoading, handleChangeValue}) => {
   let value = "";
+
+  cleanUpOptions(options);
+
   return (
     <Autocomplete
       id={id}
+      classes={{
+        popper: styles.customPopper,
+      }}
       disableListWrap
       ListboxComponent={ListboxComponent}
       renderGroup={renderGroup}
       options={options}
+      loading={optionsLoading}
+      loadingText = {"Loading..."}
+      noOptionsText = {"No options"}
       getOptionLabel={(option) => `${option.display} (${option.id})` }
       groupBy={(option) => option.display[0].toUpperCase()}
       size="small"
-      renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label={label}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {optionsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
       onChange={(event, value) => handleChangeValue(value)}
       renderOption={(option) => <span>
         <Typography>{option.display} ({option.id}) </Typography>

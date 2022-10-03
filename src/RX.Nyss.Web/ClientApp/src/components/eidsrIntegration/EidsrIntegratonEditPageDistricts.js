@@ -1,15 +1,18 @@
-﻿import {Virtualize} from "./Virtualize";
-import TextInputField from "../forms/TextInputField";
-import {stringKeys, strings} from "../../strings";
-import React from "react";
+﻿import React from "react";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import {DistrictAccordion, DistrictAccordionDetails, DistrictAccordionSummary} from "./components/DistrictAccordion";
 import {Button, Grid} from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import {VirtualizedAutocomplete} from "../forms/VirtualizedAutocomplete";
 
-export const EidsrIntegrationEditPageDistrictsComponent = ({districtsWithOrganizationUnits, organisationUnits}) => {
+export const EidsrIntegrationEditPageDistrictsComponent = ({
+     districtsWithOrganizationUnits,
+     integrationEditingDisabled,
+     organisationUnits,
+     organisationUnitsIsFetching}
+  ) => {
 
   const [districtAccordionExpanded, setDistrictAccordionExpanded] = React.useState('');
   const [districtDropdownsValues, setDistrictDropdownsValues] = React.useState({});
@@ -26,12 +29,9 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({districtsWithOrganiz
   }
 
   const applyOrganisationUnit = (index) => {
-    console.log(districtsWithOrganizationUnitsState);
-
     let newState = districtsWithOrganizationUnitsState;
 
     const newValue = districtDropdownsValues[index];
-    console.log(newValue);
     const idx = newState
       .findIndex(x => x.districtId === index);
 
@@ -60,10 +60,13 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({districtsWithOrganiz
         <DistrictAccordion
           key={item.districtId}
           square
+          style={{ opacity: integrationEditingDisabled ? 0.6 : 1}}
           expanded={districtAccordionExpanded === item.districtId}
           onChange={districtAccordionChange(item.districtId)}>
           <DistrictAccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={
+              integrationEditingDisabled ? "": <ExpandMoreIcon />
+            }
             aria-controls={`panel${item.districtId}-content`}
             id={`panel${item.districtId}-header`}>
             <Grid container spacing={2}>
@@ -82,21 +85,26 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({districtsWithOrganiz
               </Grid>
             </Grid>
           </DistrictAccordionSummary>
-          <DistrictAccordionDetails>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={10}>
-                <Virtualize
-                  id={item.districtId.toString()} l
-                  label={"Chose organisation unit"}
-                  options={organisationUnitsOptions}
-                  handleChangeValue={(value) => updateDistrictDropdownsValues(item.districtId, value)}
-                />
+          {
+            !integrationEditingDisabled &&
+            <DistrictAccordionDetails>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={10}>
+                  <VirtualizedAutocomplete
+                    id={item.districtId.toString()} l
+                    label={"Chose organisation unit"}
+                    options={organisationUnitsOptions}
+                    handleChangeValue={(value) => updateDistrictDropdownsValues(item.districtId, value)}
+                    optionsLoading={organisationUnitsIsFetching}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <Button color="primary" variant="contained" size={"small"} onClick={() => { applyOrganisationUnit(item.districtId) }}>Save</Button>
+                </Grid>
               </Grid>
-              <Grid item xs={2}>
-                <Button color="primary" variant="contained" size={"small"} onClick={() => { applyOrganisationUnit(item.districtId) }}>Save</Button>
-              </Grid>
-            </Grid>
-          </DistrictAccordionDetails>
+            </DistrictAccordionDetails>
+          }
+
         </DistrictAccordion>
       )}
 

@@ -12,34 +12,23 @@ import Form from "../forms/form/Form";
 import {Loading} from "../common/loading/Loading";
 import {createForm, validators} from "../../utils/forms";
 import {ValidationMessage} from "../forms/ValidationMessage";
-import {Grid, MenuItem, Typography} from "@material-ui/core";
+import {Button, CircularProgress, Grid, MenuItem, Tooltip, Typography} from "@material-ui/core";
 import TextInputField from "../forms/TextInputField";
 import styles from "./EidsrIntegration.module.scss";
 import {EidsrIntegrationNotEnabled} from "./EidsrIntegrationNotEnabled";
 import PasswordInputField from "../forms/PasswordInputField";
 import {EidsrIntegrationEditPageDistrictsComponent} from "./EidsrIntegratonEditPageDistricts";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import WarningIcon from "@material-ui/icons/Warning";
+import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 
 const EidsrIntegrationEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
+  const [integrationEditingDisabled, setIntegrationEditingDisabled] = useState(true);
 
   useMount(() => {
     props.getEidsrIntegration(props.nationalSocietyId);
-
-    props.getOrganisationUnits(
-      {
-        "Url": "",
-        "UserName": "",
-        "Password": "",
-      },
-      "iaN1DovM5em")
   });
-
-  useEffect(() => {
-    console.log(props.organisationUnits)
-  }, [props.organisationUnits]);
-  useEffect(() => {
-    console.log(props.organisationUnitsIsFetching)
-  }, [props.organisationUnitsIsFetching]);
 
   useEffect(() => {
     if (!props.data) {
@@ -77,6 +66,36 @@ const EidsrIntegrationEditPageComponent = (props) => {
     setForm(createForm(fields, validation));
   }, [props.data]);
 
+  useEffect(() => {
+    enableIntegrationEditing();
+  }, [props.program]);
+
+  const enableIntegrationEditing = () => {
+    if (props?.program?.name != null && props?.program?.name !== "") {
+      setIntegrationEditingDisabled(false);
+      let formApiProperties = getFormApiProperties();
+      props.getOrganisationUnits(formApiProperties, formApiProperties.ProgramId)
+    }else{
+      setIntegrationEditingDisabled(true);
+    }
+  }
+
+  const testConnection = () => {
+    let formApiProperties = getFormApiProperties();
+    props.getProgram(formApiProperties, formApiProperties.ProgramId)
+  }
+
+  const getFormApiProperties = () => {
+    const values = form.getValues();
+
+    return {
+      "Url": values?.apiBaseUrl,
+      "UserName": values?.username,
+      "Password": values?.password,
+      "ProgramId": values?.trackerProgramId,
+    };
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -85,7 +104,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
     if (!form.isValid()) {
       return;
-    };
+    }
 
     const values = form.getValues();
 
@@ -107,7 +126,6 @@ const EidsrIntegrationEditPageComponent = (props) => {
     })
 
     props.editEidsrIntegration(props.nationalSocietyId, fieldsObject);
-
   };
 
   if (props.isFetching || !form) {
@@ -124,12 +142,17 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
         <Form fullWidth onSubmit={handleSubmit}>
           <Grid container spacing={2} direction="column">
+
+
+
+
             <Grid item xs={4}>
               <TextInputField
                 label={strings(stringKeys.eidsrIntegration.form.userName)}
                 name="username"
                 field={form.fields.username}
                 autoFocus
+                subscribeOnChange = {(e, val) => setIntegrationEditingDisabled(true)}
               />
             </Grid>
             <Grid item xs={4}>
@@ -137,6 +160,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 label={strings(stringKeys.login.password)}
                 name="password"
                 field={form.fields.password}
+                subscribeOnChange = {(e, val) => setIntegrationEditingDisabled(true)}
               />
             </Grid>
             <Grid item xs={4}>
@@ -144,6 +168,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 label={strings(stringKeys.eidsrIntegration.form.apiBaseUrl)}
                 name="apiBaseUrl"
                 field={form.fields.apiBaseUrl}
+                subscribeOnChange = {(e, val) => setIntegrationEditingDisabled(true)}
               />
             </Grid>
             <Grid item xs={4}>
@@ -151,18 +176,48 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 label={strings(stringKeys.eidsrIntegration.form.trackerProgramId)}
                 name="trackerProgramId"
                 field={form.fields.trackerProgramId}
+                subscribeOnChange = {(e, val) => setIntegrationEditingDisabled(true)}
               />
             </Grid>
+
+            <Grid item container xs={4}>
+              <Grid item xs={5}>
+                <Button color="primary" variant="contained" size={"small"} onClick={() => testConnection()}>
+                  Test connection
+                </Button>
+              </Grid>
+              <Grid item xs={7}>
+                { props.programIsFetching &&
+                  <CircularProgress color="inherit" size={20} />
+                }
+                { (!props.programIsFetching && integrationEditingDisabled) &&
+                  <Typography> Connection not tested <WarningIcon fontSize="small" color={"error"}/></Typography>
+                }
+                { (!props.programIsFetching && !integrationEditingDisabled) &&
+                  <Typography>
+                    {props?.program?.name} <CheckCircleIcon style={{color: 'green', fontSize: 'inherit'}}/>
+                  </Typography>
+                }
+
+              </Grid>
+            </Grid>
+
 
             <Grid item xs={6}>
               <hr className={styles.divider} />
               <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.dataElements)}
+                { integrationEditingDisabled &&
+                  <Tooltip title="Test connection to continue editing">
+                    <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
+                  </Tooltip>
+                }
               </div>
             </Grid>
 
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.locationDataElementId)}
                 name="locationDataElementId"
                 field={form.fields.locationDataElementId}
@@ -170,6 +225,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.dateOfOnsetDataElementId)}
                 name="dateOfOnsetDataElementId"
                 field={form.fields.dateOfOnsetDataElementId}
@@ -177,6 +233,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.phoneNumberDataElementId)}
                 name="phoneNumberDataElementId"
                 field={form.fields.phoneNumberDataElementId}
@@ -184,6 +241,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.suspectedDiseaseDataElementId)}
                 name="suspectedDiseaseDataElementId"
                 field={form.fields.suspectedDiseaseDataElementId}
@@ -191,6 +249,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.eventTypeDataElementId)}
                 name="eventTypeDataElementId"
                 field={form.fields.eventTypeDataElementId}
@@ -198,23 +257,35 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
             <Grid item xs={4}>
               <TextInputField
+                disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.genderDataElementId)}
                 name="genderDataElementId"
                 field={form.fields.genderDataElementId}
               />
             </Grid>
 
+
+
+
             <Grid item xs={6}>
               <hr className={styles.divider} />
               <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.districts)}
+                { integrationEditingDisabled &&
+                  <Tooltip title="Test connection to continue editing">
+                    <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
+                  </Tooltip>
+                }
               </div>
             </Grid>
 
             <Grid item md={6} xs={10}>
               <EidsrIntegrationEditPageDistrictsComponent
                 districtsWithOrganizationUnits={form.fields.districtsWithOrganizationUnits.value}
-                organisationUnits={props.organisationUnits} />
+                integrationEditingDisabled={integrationEditingDisabled}
+                organisationUnits={props.organisationUnits}
+                organisationUnitsIsFetching={props.organisationUnitsIsFetching}
+              />
             </Grid>
 
           </Grid>
@@ -245,6 +316,9 @@ const mapStateToProps = (state, ownProps) => ({
 
   organisationUnits: state.eidsrIntegration.organisationUnits,
   organisationUnitsIsFetching: state.eidsrIntegration.organisationUnitsIsFetching,
+
+  program: state.eidsrIntegration.program,
+  programIsFetching: state.eidsrIntegration.programIsFetching,
 });
 
 const mapDispatchToProps = {
@@ -253,6 +327,7 @@ const mapDispatchToProps = {
   editEidsrIntegration: eidsrIntegrationActions.edit.invoke,
 
   getOrganisationUnits: eidsrIntegrationActions.getOrganisationUnits.invoke,
+  getProgram: eidsrIntegrationActions.getProgram.invoke,
 };
 
 export const EidsrIntegrationEditPage = withLayout(
