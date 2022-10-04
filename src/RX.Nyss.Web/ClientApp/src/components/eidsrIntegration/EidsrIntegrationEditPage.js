@@ -21,7 +21,7 @@ import {EidsrIntegrationEditPageDistrictsComponent} from "./components/EidsrInte
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningIcon from "@material-ui/icons/Warning";
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
-import {districtValidator} from "./components/dsitrictValidator";
+import {districtValidator} from "./components/districtValidator";
 
 const EidsrIntegrationEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
