@@ -12,9 +12,8 @@ import Form from "../forms/form/Form";
 import {Grid, Typography} from "@material-ui/core";
 import styles from "./EidsrIntegration.module.scss";
 import {Loading} from "../common/loading/Loading";
-import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
+import { EidsrIntegrationNotEnabled } from "./components/EidsrIntegrationNotEnabled";
 import PasswordDisplayField from "../forms/PasswordDisplayField";
-import {EidsrIntegrationEditPageDistrictsComponent} from "./EidsrIntegratonEditPageDistricts";
 
 const EidsrIntegrationPageComponent = (props) => {
   useMount(() => {

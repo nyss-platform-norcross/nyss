@@ -15,9 +15,9 @@ import {ValidationMessage} from "../forms/ValidationMessage";
 import {Button, CircularProgress, Grid, MenuItem, Tooltip, Typography} from "@material-ui/core";
 import TextInputField from "../forms/TextInputField";
 import styles from "./EidsrIntegration.module.scss";
-import {EidsrIntegrationNotEnabled} from "./EidsrIntegrationNotEnabled";
+import {EidsrIntegrationNotEnabled} from "./components/EidsrIntegrationNotEnabled";
 import PasswordInputField from "../forms/PasswordInputField";
-import {EidsrIntegrationEditPageDistrictsComponent} from "./EidsrIntegratonEditPageDistricts";
+import {EidsrIntegrationEditPageDistrictsComponent} from "./components/EidsrIntegratonEditPageDistricts";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningIcon from "@material-ui/icons/Warning";
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
@@ -48,6 +48,9 @@ const EidsrIntegrationEditPageComponent = (props) => {
       genderDataElementId: props.data.genderDataElementId ?? "",
       districtsWithOrganizationUnits: props.data.districtsWithOrganizationUnits ?? [{ districtId:'1', districtName:'Jabłonowo Pomorskie', organisationUnitId:'ou481291', organisationUnitName:'Jabłonowo'},{ districtId:'2', districtName:'Oslo', organisationUnitId:'', organisationUnitName:''}],
     };
+    const val = {
+      req: [() => "Districts without org unit", (value) => false],
+    }
 
     const validation = {
       username: [validators.required],
@@ -60,7 +63,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
       suspectedDiseaseDataElementId: [validators.required],
       eventTypeDataElementId: [validators.required],
       genderDataElementId: [validators.required],
-      districtsWithOrganizationUnits: [validators.required], // TODO, make it more than required
+      districtsWithOrganizationUnits: [val.req],
     };
 
     setForm(createForm(fields, validation));
@@ -71,7 +74,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
   }, [props.program]);
 
   const enableIntegrationEditing = () => {
-    if (props?.program?.name != null && props?.program?.name !== "") {
+    if (form != null && props?.program?.name != null && props?.program?.name !== "") {
       setIntegrationEditingDisabled(false);
       let formApiProperties = getFormApiProperties();
       props.getOrganisationUnits(formApiProperties, formApiProperties.ProgramId)
@@ -85,22 +88,26 @@ const EidsrIntegrationEditPageComponent = (props) => {
     props.getProgram(formApiProperties, formApiProperties.ProgramId)
   }
 
+  const updateDistrictsField = (newValue) => {
+    if(form == null)
+      return;
+
+    form.fields.districtsWithOrganizationUnits.value = newValue;
+  }
+
   const getFormApiProperties = () => {
     const values = form.getValues();
 
     return {
-      "Url": values?.apiBaseUrl,
-      "UserName": values?.username,
-      "Password": values?.password,
-      "ProgramId": values?.trackerProgramId,
+      Url: values?.apiBaseUrl,
+      UserName: values?.username,
+      Password: values?.password,
+      ProgramId: values?.trackerProgramId,
     };
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    //TODO
-    const districts = [1,2,3];
 
     if (!form.isValid()) {
       return;
@@ -108,7 +115,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
     const values = form.getValues();
 
-    let fieldsObject = {
+    props.editEidsrIntegration(props.nationalSocietyId, {
       username: values.username,
       password: values.password,
       apiBaseUrl: values.apiBaseUrl,
@@ -119,13 +126,9 @@ const EidsrIntegrationEditPageComponent = (props) => {
       suspectedDiseaseDataElementId: values.suspectedDiseaseDataElementId,
       eventTypeDataElementId: values.eventTypeDataElementId,
       genderDataElementId: values.genderDataElementId,
-    };
+      districtsWithOrganizationUnits: values.districtsWithOrganizationUnits,
+    });
 
-    districts.forEach( district => {
-      fieldsObject = {...fieldsObject, "": values.district}
-    })
-
-    props.editEidsrIntegration(props.nationalSocietyId, fieldsObject);
   };
 
   if (props.isFetching || !form) {
@@ -280,19 +283,31 @@ const EidsrIntegrationEditPageComponent = (props) => {
             </Grid>
 
             <Grid item md={6} xs={10}>
-              <EidsrIntegrationEditPageDistrictsComponent
-                districtsWithOrganizationUnits={form.fields.districtsWithOrganizationUnits.value}
-                integrationEditingDisabled={integrationEditingDisabled}
-                organisationUnits={props.organisationUnits}
-                organisationUnitsIsFetching={props.organisationUnitsIsFetching}
-              />
+              <div>
+                <EidsrIntegrationEditPageDistrictsComponent
+                  districtsWithOrganizationUnits={form.fields.districtsWithOrganizationUnits.value}
+                  integrationEditingDisabled={integrationEditingDisabled}
+                  organisationUnits={props.organisationUnits}
+                  organisationUnitsIsFetching={props.organisationUnitsIsFetching}
+                  onChange={(newValue)=>{updateDistrictsField(newValue)}}
+                />
+              </div>
+
+              <div className={styles.districtInput}>
+                <TextInputField
+                  disabled = {integrationEditingDisabled}
+                  label={strings(stringKeys.eidsrIntegration.form.districtsWithOrganizationUnits)}
+                  name="districtsWithOrganizationUnits"
+                  field={form.fields.districtsWithOrganizationUnits}
+                />
+              </div>
             </Grid>
 
           </Grid>
 
           <FormActions>
             <CancelButton onClick={() => props.goToEidsrIntegration(props.nationalSocietyId)}>{ strings(stringKeys.form.cancel) }</CancelButton>
-            <SubmitButton isFetching={props.formSaving}> { strings(stringKeys.common.buttons.update) } </SubmitButton>
+            <SubmitButton isFetching={props.formSaving} disabled={integrationEditingDisabled}> { strings(stringKeys.common.buttons.update) } </SubmitButton>
           </FormActions>
 
         </Form>

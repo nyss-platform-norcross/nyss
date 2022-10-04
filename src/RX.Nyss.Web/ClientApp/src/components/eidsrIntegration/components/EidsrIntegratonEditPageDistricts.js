@@ -1,17 +1,18 @@
-﻿import React from "react";
+﻿import React, {useEffect} from "react";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import {DistrictAccordion, DistrictAccordionDetails, DistrictAccordionSummary} from "./components/DistrictAccordion";
+import {DistrictAccordion, DistrictAccordionDetails, DistrictAccordionSummary} from "./DistrictAccordion";
 import {Button, Grid} from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import {VirtualizedAutocomplete} from "../forms/VirtualizedAutocomplete";
+import {VirtualizedAutocomplete} from "../../forms/VirtualizedAutocomplete";
 
 export const EidsrIntegrationEditPageDistrictsComponent = ({
      districtsWithOrganizationUnits,
      integrationEditingDisabled,
      organisationUnits,
-     organisationUnitsIsFetching}
+     organisationUnitsIsFetching,
+     onChange}
   ) => {
 
   const [districtAccordionExpanded, setDistrictAccordionExpanded] = React.useState('');
@@ -27,6 +28,10 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({
     newTab[index] = value;
     setDistrictDropdownsValues(newTab);
   }
+
+  useEffect( () => {
+    onChange(districtsWithOrganizationUnitsState);
+  }, [JSON.stringify(districtsWithOrganizationUnitsState)])
 
   const applyOrganisationUnit = (index) => {
     let newState = districtsWithOrganizationUnitsState;
@@ -107,11 +112,6 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({
 
         </DistrictAccordion>
       )}
-
-      {/*TODO*/}
-      <p>test:</p>
-      <p>test:</p>
-      {JSON.stringify(districtsWithOrganizationUnitsState)}
     </>
   )
 }
