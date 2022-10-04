@@ -21,6 +21,7 @@ import {EidsrIntegrationEditPageDistrictsComponent} from "./components/EidsrInte
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningIcon from "@material-ui/icons/Warning";
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
+import {districtValidator} from "./components/dsitrictValidator";
 
 const EidsrIntegrationEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -48,9 +49,6 @@ const EidsrIntegrationEditPageComponent = (props) => {
       genderDataElementId: props.data.genderDataElementId ?? "",
       districtsWithOrganizationUnits: props.data.districtsWithOrganizationUnits ?? [{ districtId:'1', districtName:'Jabłonowo Pomorskie', organisationUnitId:'ou481291', organisationUnitName:'Jabłonowo'},{ districtId:'2', districtName:'Oslo', organisationUnitId:'', organisationUnitName:''}],
     };
-    const val = {
-      req: [() => "Districts without org unit", (value) => false],
-    }
 
     const validation = {
       username: [validators.required],
@@ -63,7 +61,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
       suspectedDiseaseDataElementId: [validators.required],
       eventTypeDataElementId: [validators.required],
       genderDataElementId: [validators.required],
-      districtsWithOrganizationUnits: [val.req],
+      districtsWithOrganizationUnits: [districtValidator.allOrganisationUnits],
     };
 
     setForm(createForm(fields, validation));
