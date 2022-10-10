@@ -8,7 +8,7 @@ namespace RX.Nyss.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+              migrationBuilder.AlterColumn<string>(
                 name: "Username",
                 schema: "nyss",
                 table: "EidsrConfiguration",
@@ -94,8 +94,8 @@ namespace RX.Nyss.Data.Migrations
                 columns: table => new
                 {
                     DistrictId = table.Column<int>(type: "int", nullable: false),
-                    OrganisationUnitId = table.Column<int>(type: "int", nullable: false),
-                    OrganisationUnitName = table.Column<int>(type: "int", nullable: false)
+                    OrganisationUnitId = table.Column<string>(type: "varchar(256)", nullable: true),
+                    OrganisationUnitName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,7 +116,7 @@ namespace RX.Nyss.Data.Migrations
                 name: "EidsrOrganisationUnits",
                 schema: "nyss");
 
-            migrationBuilder.AlterColumn<string>(
+              migrationBuilder.AlterColumn<string>(
                 name: "Username",
                 schema: "nyss",
                 table: "EidsrConfiguration",

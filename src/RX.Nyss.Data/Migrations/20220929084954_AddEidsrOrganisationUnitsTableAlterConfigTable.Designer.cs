@@ -2222,11 +2222,11 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("DistrictId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrganisationUnitId")
-                        .HasColumnType("int");
+                    b.Property<string>("OrganisationUnitId")
+                        .HasColumnType("varchar(256)");
 
-                    b.Property<int>("OrganisationUnitName")
-                        .HasColumnType("int");
+                    b.Property<string>("OrganisationUnitName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DistrictId");
 
