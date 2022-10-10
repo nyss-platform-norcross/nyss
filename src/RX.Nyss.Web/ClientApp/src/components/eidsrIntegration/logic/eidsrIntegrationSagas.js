@@ -56,7 +56,7 @@ function* getNationalSocietyBaseInfo(nationalSocietyId) {
 function* getEidsrOrganisationUnits({ eidsrApiProperties, programId }) {
   yield put(actions.getOrganisationUnits.request());
   try {
-    const eidsrConfigurationResponse = yield call(http.post, `/api/eidsr/organisationUnits`, { eidsrApiProperties, programId});
+    const eidsrConfigurationResponse = yield call(http.post, "/api/eidsr/organisationUnits", { eidsrApiProperties, programId});
     yield put(actions.getOrganisationUnits.success(eidsrConfigurationResponse.value.organisationUnits));
   } catch (error) {
     yield put(actions.getOrganisationUnits.failure(error.message));
@@ -66,7 +66,7 @@ function* getEidsrOrganisationUnits({ eidsrApiProperties, programId }) {
 function* getEidsrProgram({ eidsrApiProperties, programId }) {
   yield put(actions.getProgram.request());
   try {
-    const programResponse = yield call(http.post, `/api/eidsr/program`, { eidsrApiProperties, programId});
+    const programResponse = yield call(http.post, "/api/eidsr/program", { eidsrApiProperties, programId});
     yield put(actions.getProgram.success(programResponse.value));
   } catch (error) {
     yield put(actions.getProgram.failure(error.message));

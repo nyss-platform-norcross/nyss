@@ -11,7 +11,8 @@ public class EidsrOrganisationUnits
 
     public virtual District District { get; set; }
 
-    public int OrganisationUnitId { get; set; }
+    [Column(TypeName = "varchar(256)")]
+    public string OrganisationUnitId { get; set; }
 
-    public int OrganisationUnitName { get; set; }
+    public string OrganisationUnitName { get; set; }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -56,7 +55,12 @@ public class EidsrClient : IEidsrClient
         try
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            ConfigureClient(apiProperties, httpClient);
+            var configureResult = ConfigureClient(apiProperties, httpClient);
+
+            if (!configureResult)
+            {
+                return Error<EidsrProgramResponse>(ResultKey.EidsrIntegration.EidsrApi.ConnectionError);
+            }
 
             var req = new HttpRequestMessage(HttpMethod.Get, $"api/programs/{programId}?" +
                 $"fields=id,name");
@@ -70,12 +74,9 @@ public class EidsrClient : IEidsrClient
                 return Success(response);
             }
         }
-        catch
-        {
-            // this method is meant to be executed with wrong params
-        }
+        catch { }
 
-        return Success(new EidsrProgramResponse());
+        return Error<EidsrProgramResponse>(ResultKey.EidsrIntegration.EidsrApi.ConnectionError);
     }
 
     private async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnitsFromApi(
@@ -101,14 +102,23 @@ public class EidsrClient : IEidsrClient
         }
 
         _loggerAdapter.Error(res.ReasonPhrase);
-        return Error<EidsrOrganisationUnitsResponse>(ResultKey.Eidsr.ApiError);
+        return Error<EidsrOrganisationUnitsResponse>(ResultKey.EidsrIntegration.EidsrApi.ConnectionError);
     }
 
-    private static void ConfigureClient(EidsrApiProperties apiProperties, HttpClient httpClient)
+    private static bool ConfigureClient(EidsrApiProperties apiProperties, HttpClient httpClient)
     {
-        httpClient.BaseAddress = new Uri(apiProperties.Url);
+        Uri.TryCreate(apiProperties.Url, UriKind.Absolute, out var validatedUri);
+
+        if (validatedUri == default)
+        {
+            return false;
+        }
+
+        httpClient.BaseAddress = validatedUri;
 
         httpClient.DefaultRequestHeaders.Authorization =
             new BasicAuthenticationHeaderValue($"{apiProperties.UserName}:{apiProperties.Password}");
+
+        return true;
     }
 }

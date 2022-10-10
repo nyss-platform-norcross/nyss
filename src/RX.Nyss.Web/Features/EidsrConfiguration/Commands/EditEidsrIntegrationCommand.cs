@@ -1,11 +1,16 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.EidsrClient.Dto;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration.Commands;
 
@@ -25,11 +30,13 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
     {
         private readonly INyssContext _nyssContext;
         private readonly ICryptographyService _cryptographyService;
+        private readonly IDistrictsOrgUnitsService _districtsOrgUnitsService;
 
-        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService)
+        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService, IDistrictsOrgUnitsService districtsOrgUnitsService)
         {
             _nyssContext = nyssContext;
             _cryptographyService = cryptographyService;
+            _districtsOrgUnitsService = districtsOrgUnitsService;
         }
 
         public async Task<Result> Handle(EditEidsrIntegrationCommand request, CancellationToken cancellationToken)
@@ -56,50 +63,101 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
 
             var passwordHash = _cryptographyService.Encrypt(request.Body.Password);
 
-            // if EIDSR configuration does not exists, create one
             if (eidsrConfiguration == default)
             {
-                var newEidsrConfiguration = new Nyss.Data.Models.EidsrConfiguration
-                {
-                    Username = request.Body.Username,
-                    PasswordHash = passwordHash,
-                    ApiBaseUrl = request.Body.ApiBaseUrl,
-                    TrackerProgramId = request.Body.TrackerProgramId,
-                    LocationDataElementId = request.Body.LocationDataElementId,
-                    DateOfOnsetDataElementId = request.Body.DateOfOnsetDataElementId,
-                    PhoneNumberDataElementId = request.Body.PhoneNumberDataElementId,
-                    SuspectedDiseaseDataElementId = request.Body.SuspectedDiseaseDataElementId,
-                    EventTypeDataElementId = request.Body.EventTypeDataElementId,
-                    GenderDataElementId = request.Body.GenderDataElementId,
-                    NationalSocietyId = request.Id,
-                };
-
-                await _nyssContext.AddAsync(newEidsrConfiguration, cancellationToken);
-
-                var result = await _nyssContext.SaveChangesAsync(cancellationToken);
-
-                return result <= 0
-                    ? Result.Error(ResultKey.SqlExceptions.GeneralError)
-                    : Result.SuccessMessage(ResultKey.EidsrIntegration.Edit.Success);
+                return await CreateNewEidsrConfiguration(request: request, cancellationToken: cancellationToken, passwordHash: passwordHash);
             }
-            // if EIDSR configuration exists, update it
             else
             {
-                eidsrConfiguration.Username = request.Body.Username;
-                eidsrConfiguration.PasswordHash = passwordHash;
-                eidsrConfiguration.ApiBaseUrl = request.Body.ApiBaseUrl;
-                eidsrConfiguration.TrackerProgramId = request.Body.TrackerProgramId;
-                eidsrConfiguration.LocationDataElementId = request.Body.LocationDataElementId;
-                eidsrConfiguration.DateOfOnsetDataElementId = request.Body.DateOfOnsetDataElementId;
-                eidsrConfiguration.PhoneNumberDataElementId = request.Body.PhoneNumberDataElementId;
-                eidsrConfiguration.SuspectedDiseaseDataElementId = request.Body.SuspectedDiseaseDataElementId;
-                eidsrConfiguration.EventTypeDataElementId = request.Body.EventTypeDataElementId;
-                eidsrConfiguration.GenderDataElementId = request.Body.GenderDataElementId;
-
-                await _nyssContext.SaveChangesAsync(cancellationToken);
+                await UpdateEidsrConfiguration(request: request, cancellationToken: cancellationToken, eidsrConfiguration: eidsrConfiguration, passwordHash: passwordHash);
             }
 
             return Result.SuccessMessage(ResultKey.EidsrIntegration.Edit.Success);
+        }
+
+        private async Task<Result> CreateNewEidsrConfiguration(EditEidsrIntegrationCommand request, CancellationToken cancellationToken, string passwordHash)
+        {
+            var newEidsrConfiguration = new Nyss.Data.Models.EidsrConfiguration
+            {
+                Username = request.Body.Username,
+                PasswordHash = passwordHash,
+                ApiBaseUrl = request.Body.ApiBaseUrl,
+                TrackerProgramId = request.Body.TrackerProgramId,
+                LocationDataElementId = request.Body.LocationDataElementId,
+                DateOfOnsetDataElementId = request.Body.DateOfOnsetDataElementId,
+                PhoneNumberDataElementId = request.Body.PhoneNumberDataElementId,
+                SuspectedDiseaseDataElementId = request.Body.SuspectedDiseaseDataElementId,
+                EventTypeDataElementId = request.Body.EventTypeDataElementId,
+                GenderDataElementId = request.Body.GenderDataElementId,
+                NationalSocietyId = request.Id,
+            };
+
+            await _nyssContext.AddAsync(newEidsrConfiguration, cancellationToken);
+
+            await UpdateEidsrOrganisationUnits(request.Id, request.Body.DistrictsWithOrganizationUnits, cancellationToken);
+
+            var result = await _nyssContext.SaveChangesAsync(cancellationToken);
+
+            return result <= 0
+                ? Result.Error(ResultKey.SqlExceptions.GeneralError)
+                : Result.SuccessMessage(ResultKey.EidsrIntegration.Edit.Success);
+        }
+
+        private async Task UpdateEidsrConfiguration(EditEidsrIntegrationCommand request, CancellationToken cancellationToken, Nyss.Data.Models.EidsrConfiguration eidsrConfiguration, string passwordHash)
+        {
+            eidsrConfiguration.Username = request.Body.Username;
+            eidsrConfiguration.PasswordHash = passwordHash;
+            eidsrConfiguration.ApiBaseUrl = request.Body.ApiBaseUrl;
+            eidsrConfiguration.TrackerProgramId = request.Body.TrackerProgramId;
+            eidsrConfiguration.LocationDataElementId = request.Body.LocationDataElementId;
+            eidsrConfiguration.DateOfOnsetDataElementId = request.Body.DateOfOnsetDataElementId;
+            eidsrConfiguration.PhoneNumberDataElementId = request.Body.PhoneNumberDataElementId;
+            eidsrConfiguration.SuspectedDiseaseDataElementId = request.Body.SuspectedDiseaseDataElementId;
+            eidsrConfiguration.EventTypeDataElementId = request.Body.EventTypeDataElementId;
+            eidsrConfiguration.GenderDataElementId = request.Body.GenderDataElementId;
+
+            await UpdateEidsrOrganisationUnits(request.Id, request.Body.DistrictsWithOrganizationUnits, cancellationToken);
+
+            await _nyssContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task UpdateEidsrOrganisationUnits(
+            int nationalSocietyId,
+            List<DistrictsWithOrganizationUnits> newDistrictsWithOrganizationUnits,
+            CancellationToken cancellationToken)
+        {
+            var nationalSocietyDistricts = await _districtsOrgUnitsService.GetNationalSocietyDistricts(nationalSocietyId);
+
+            var dbEidsrOrganisationUnits = await _nyssContext.EidsrOrganisationUnits.Where(eidsrOrganisationUnit =>
+                nationalSocietyDistricts.Select(x=>x.Id).Contains(eidsrOrganisationUnit.DistrictId)
+            ).ToListAsync(cancellationToken: cancellationToken);
+
+            foreach (var nationalSocietyDistrict in nationalSocietyDistricts)
+            {
+                var reqEidsrOrganisationUnit = newDistrictsWithOrganizationUnits
+                    .FirstOrDefault(x => x.DistrictId == nationalSocietyDistrict.Id);
+
+                if(reqEidsrOrganisationUnit == default)
+                    continue;
+
+                var dbEidsrOrganisationUnit = dbEidsrOrganisationUnits
+                    .FirstOrDefault(x => x.DistrictId == nationalSocietyDistrict.Id);
+
+                if (dbEidsrOrganisationUnit == default)
+                {
+                    await _nyssContext.AddAsync(new EidsrOrganisationUnits
+                    {
+                        DistrictId = nationalSocietyDistrict.Id,
+                        OrganisationUnitId = reqEidsrOrganisationUnit.OrganisationUnitId,
+                        OrganisationUnitName = reqEidsrOrganisationUnit.OrganisationUnitName,
+                    }, cancellationToken);
+                }
+                else
+                {
+                    dbEidsrOrganisationUnit.OrganisationUnitId = reqEidsrOrganisationUnit.OrganisationUnitId;
+                    dbEidsrOrganisationUnit.OrganisationUnitName = reqEidsrOrganisationUnit.OrganisationUnitName;
+                }
+            }
         }
     }
 
@@ -124,6 +182,8 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
         public string EventTypeDataElementId { get; set; }
 
         public string GenderDataElementId { get; set; }
+
+        public List<DistrictsWithOrganizationUnits> DistrictsWithOrganizationUnits { get; set; }
     }
 
     public class Validator : AbstractValidator<RequestBody>
@@ -140,6 +200,19 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
             RuleFor(r => r.SuspectedDiseaseDataElementId).NotEmpty();
             RuleFor(r => r.EventTypeDataElementId).NotEmpty();
             RuleFor(r => r.GenderDataElementId).NotEmpty();
+            RuleFor(r => r.DistrictsWithOrganizationUnits).Must(districtsWithOrganizationUnits =>
+            {
+                foreach (var districtWithOrganizationUnit in districtsWithOrganizationUnits)
+                {
+                    if (string.IsNullOrEmpty(districtWithOrganizationUnit.DistrictName))
+                        return false;
+
+                    if (string.IsNullOrEmpty(districtWithOrganizationUnit.OrganisationUnitName))
+                        return false;
+                }
+
+                return true;
+            });
         }
     }
 }

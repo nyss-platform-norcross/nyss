@@ -47,7 +47,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
       suspectedDiseaseDataElementId: props.data.suspectedDiseaseDataElementId ?? "",
       eventTypeDataElementId: props.data.eventTypeDataElementId ?? "",
       genderDataElementId: props.data.genderDataElementId ?? "",
-      districtsWithOrganizationUnits: props.data.districtsWithOrganizationUnits ?? [{ districtId:'1', districtName:'Jabłonowo Pomorskie', organisationUnitId:'ou481291', organisationUnitName:'Jabłonowo'},{ districtId:'2', districtName:'Oslo', organisationUnitId:'', organisationUnitName:''}],
+      districtsWithOrganizationUnits: props.data.districtsWithOrganizationUnits ?? [],
     };
 
     const validation = {
@@ -181,10 +181,10 @@ const EidsrIntegrationEditPageComponent = (props) => {
               />
             </Grid>
 
-            <Grid item container xs={4}>
+            <Grid item container xs={4} spacing={2}>
               <Grid item xs={5}>
                 <Button color="primary" variant="contained" size={"small"} onClick={() => testConnection()}>
-                  Test connection
+                  {strings(stringKeys.eidsrIntegration.form.testConn)}
                 </Button>
               </Grid>
               <Grid item xs={7}>
@@ -192,7 +192,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
                   <CircularProgress color="inherit" size={20} />
                 }
                 { (!props.programIsFetching && integrationEditingDisabled) &&
-                  <Typography> Connection not tested <WarningIcon fontSize="small" color={"error"}/></Typography>
+                  <Typography> {strings(stringKeys.eidsrIntegration.form.connNotTested)} <WarningIcon fontSize="small" color={"error"}/></Typography>
                 }
                 { (!props.programIsFetching && !integrationEditingDisabled) &&
                   <Typography>
@@ -209,7 +209,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
               <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.dataElements)}
                 { integrationEditingDisabled &&
-                  <Tooltip title="Test connection to continue editing">
+                  <Tooltip title={strings(stringKeys.eidsrIntegration.form.testConnToContinue)}>
                     <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
                   </Tooltip>
                 }
@@ -273,7 +273,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
               <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.districts)}
                 { integrationEditingDisabled &&
-                  <Tooltip title="Test connection to continue editing">
+                  <Tooltip title={strings(stringKeys.eidsrIntegration.form.testConnToContinue)}>
                     <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
                   </Tooltip>
                 }
@@ -306,6 +306,11 @@ const EidsrIntegrationEditPageComponent = (props) => {
           <FormActions>
             <CancelButton onClick={() => props.goToEidsrIntegration(props.nationalSocietyId)}>{ strings(stringKeys.form.cancel) }</CancelButton>
             <SubmitButton isFetching={props.formSaving} disabled={integrationEditingDisabled}> { strings(stringKeys.common.buttons.update) } </SubmitButton>
+            { integrationEditingDisabled &&
+              <Tooltip title={strings(stringKeys.eidsrIntegration.form.testConnToContinue)}>
+                <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
+              </Tooltip>
+            }
           </FormActions>
 
         </Form>

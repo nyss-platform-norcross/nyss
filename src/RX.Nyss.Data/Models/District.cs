@@ -11,5 +11,7 @@ namespace RX.Nyss.Data.Models
         public virtual Region Region { get; set; }
 
         public virtual ICollection<Village> Villages { get; set; }
+
+        public virtual EidsrOrganisationUnits EidsrOrganisationUnits { get; set; }
     }
 }

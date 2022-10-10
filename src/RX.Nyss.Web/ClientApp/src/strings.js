@@ -216,6 +216,14 @@ export const stringKeys = {
       eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
       genderDataElementId: "eidsrIntegration.form.genderDataElementId",
       districts: "eidsrIntegration.form.districts",
+      organisationUnits: "eidsrIntegration.form.organisationUnits",
+      choseOrganisationUnit: "eidsrIntegration.form.choseOrganisationUnit",
+      noDistricts: "eidsrIntegration.form.noDistricts",
+      loading: "eidsrIntegration.form.loading",
+      noOptions: "eidsrIntegration.form.noOptions",
+      connNotTested: "eidsrIntegration.form.connNotTested",
+      testConn: "eidsrIntegration.form.testConn",
+      testConnToContinue: "eidsrIntegration.form.testConnToContinue",
 
       dataNotSet: "eidsrIntegration.from.dataNotSet",
       dataElements: "eidsrIntegration.from.dataElements",
@@ -226,6 +234,9 @@ export const stringKeys = {
     edit: {
       success: "eidsrIntegration.edit.success"
     },
+    eidsrApi: {
+      ConnectionError: "eidsrIntegration.EidsrApi.ConnectionError"
+    }
   },
   organization: {
     title: "organization.title",

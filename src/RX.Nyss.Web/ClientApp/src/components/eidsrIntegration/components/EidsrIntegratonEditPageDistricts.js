@@ -6,6 +6,7 @@ import {Button, Grid} from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import {VirtualizedAutocomplete} from "../../forms/VirtualizedAutocomplete";
+import {stringKeys, strings} from "../../../strings";
 
 export const EidsrIntegrationEditPageDistrictsComponent = ({
      districtsWithOrganizationUnits,
@@ -76,14 +77,14 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({
             id={`panel${item.districtId}-header`}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Typography variant="caption">District</Typography>
+                <Typography variant="caption"> {strings(stringKeys.eidsrIntegration.form.districts)} </Typography>
                 <Typography>{item.districtName}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="caption">Organisation Unit</Typography>
+                <Typography variant="caption"> {strings(stringKeys.eidsrIntegration.form.organisationUnits)} </Typography>
                   { item.organisationUnitId ?
                     <Typography>
-                      {item.organisationUnitId} <CheckCircleIcon style={{color: 'green', fontSize: 'inherit'}}/>
+                      {item.organisationUnitName} <CheckCircleIcon style={{color: 'green', fontSize: 'inherit'}}/>
                     </Typography>:
                     <Typography> <WarningIcon fontSize="small" color={"error"}/></Typography>
                   }
@@ -97,10 +98,12 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({
                 <Grid item xs={10}>
                   <VirtualizedAutocomplete
                     id={item.districtId.toString()} l
-                    label={"Chose organisation unit"}
+                    label={ strings(stringKeys.eidsrIntegration.form.choseOrganisationUnit) }
                     options={organisationUnitsOptions}
                     handleChangeValue={(value) => updateDistrictDropdownsValues(item.districtId, value)}
                     optionsLoading={organisationUnitsIsFetching}
+                    loadingText={ strings(stringKeys.eidsrIntegration.form.loading) }
+                    noOptionsText={ strings(stringKeys.eidsrIntegration.form.noOptions) }
                   />
                 </Grid>
                 <Grid item xs={2}>
@@ -112,6 +115,7 @@ export const EidsrIntegrationEditPageDistrictsComponent = ({
 
         </DistrictAccordion>
       )}
+      { districtsWithOrganizationUnitsState.length === 0 && <p> {strings(stringKeys.eidsrIntegration.form.noDistricts)} </p>}
     </>
   )
 }

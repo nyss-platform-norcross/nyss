@@ -14,8 +14,6 @@ export const districtValidator = {
           return false;
         }
       }
-    }else{
-      return false;
     }
 
     return true;

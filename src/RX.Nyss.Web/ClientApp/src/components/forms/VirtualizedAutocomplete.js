@@ -111,7 +111,7 @@ const cleanUpOptions = (array) => {
 }
 
 // options prop is an array of objects {id, display}
-export const VirtualizedAutocomplete = ({id, label, options, optionsLoading, handleChangeValue}) => {
+export const VirtualizedAutocomplete = ({id, label, options, optionsLoading, loadingText, noOptionsText, handleChangeValue}) => {
   let value = "";
 
   cleanUpOptions(options);
@@ -127,8 +127,8 @@ export const VirtualizedAutocomplete = ({id, label, options, optionsLoading, han
       renderGroup={renderGroup}
       options={options}
       loading={optionsLoading}
-      loadingText = {"Loading..."}
-      noOptionsText = {"No options"}
+      loadingText = {loadingText}
+      noOptionsText = {noOptionsText}
       getOptionLabel={(option) => `${option.display} (${option.id})` }
       groupBy={(option) => option.display[0].toUpperCase()}
       size="small"
