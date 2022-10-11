@@ -224,7 +224,7 @@ export const stringKeys = {
       connNotTested: "eidsrIntegration.form.connNotTested",
       testConn: "eidsrIntegration.form.testConn",
       testConnToContinue: "eidsrIntegration.form.testConnToContinue",
-
+      allDistrictsShouldOrgUnit: "eidsrIntegration.form.allDistrictsShouldOrgUnit",
       dataNotSet: "eidsrIntegration.from.dataNotSet",
       dataElements: "eidsrIntegration.from.dataElements",
     },

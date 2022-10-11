@@ -1,7 +1,7 @@
 import {stringKeys, strings, stringsFormat} from "../../../strings";
 
 export const districtValidator = {
-  allOrganisationUnits: [() => "All districts need to have organisation unit", (value) => {
+  allOrganisationUnits: [() => strings(stringKeys.eidsrIntegration.form.allDistrictsShouldOrgUnit), (value) => {
     if(value && value.length > 0){
       for (let i = 0; i < value.length; i++) {
         let districtItem = value[i];
