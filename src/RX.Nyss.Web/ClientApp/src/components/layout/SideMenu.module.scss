@@ -34,13 +34,17 @@
   }
 }
 
-.list {
+.list, .sublist {
   .active {
     span {
       color: #424242;
     }
 
     background: rgba(0, 0, 0, 0.08);
+  }
+  .withSubList {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

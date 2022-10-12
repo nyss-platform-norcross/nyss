@@ -38,7 +38,8 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.settingsRootTitle),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.showOverview,
-    placeholderIndex: projectLeftMenuOrder.settings
+    placeholderIndex: projectLeftMenuOrder.settings,
+    isSubmenuItem: true,
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",

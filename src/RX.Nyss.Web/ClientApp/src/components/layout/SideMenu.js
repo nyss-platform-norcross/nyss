@@ -45,18 +45,50 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
 
           {sideMenu.length !== 0 && (
             <List component="nav" className={styles.list}>
-              {sideMenu.map((item, index) => (
-                <ListItem key={`sideMenuItem_${index}`} className={item.isActive ? styles.active : ""} button onClick={() => handleItemClick(item)}>
-                  <ListItemText primary={item.title} />
-                </ListItem>
-              ))}
+              {sideMenu.map((item, index) => {
+                const hasSubmenu = item.submenu && item.submenu.length > 0;
+
+                return (
+                  <ListItem
+                    key={`sideMenuItem_${index}`}
+                    className={`${hasSubmenu ? styles.withSubList : ""} ${
+                      item.isActive ? styles.active : ""
+                    }`}
+                    button
+                    onClick={() => handleItemClick(item)}
+                  >
+                    <ListItemText primary={item.title} />
+                    {hasSubmenu ? <SubMenu submenu={item.submenu} handleItemClick={handleItemClick} /> : null}
+                  </ListItem>
+                );
+              })}
             </List>
           )}
         </div>
       </Drawer>
     </div>
   );
-}
+};
+
+const SubMenu = ({submenu, handleItemClick}) => {
+  return (
+    <List component="nav" className={styles.sublist}>
+      {submenu.map((subItem, index) => (
+        <ListItem
+          key={`sideMenuItem_${index}__subItem_${index}`}
+          className={subItem.isActive ? styles.active : ""}
+          button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleItemClick(subItem);
+          }}
+        >
+          <ListItemText primary={subItem.title} />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 
 SideMenuComponent.propTypes = {
   appReady: PropTypes.bool,
