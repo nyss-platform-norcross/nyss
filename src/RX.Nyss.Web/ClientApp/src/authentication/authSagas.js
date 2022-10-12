@@ -8,6 +8,7 @@ import * as auth from "./auth";
 import { stringKeys, stringKey } from "../strings";
 import { reloadPage } from "../utils/page";
 import * as localStorage from "../utils/localStorage";
+import { apiUrl } from "../utils/variables";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
@@ -21,7 +22,7 @@ export const authSagas = () => [
 function* login({ userName, password, redirectUrl }) {
   yield put(authActions.login.request());
   try {
-    const data = yield call(http.post, "/api/authentication/login", { userName, password }, true);
+    const data = yield call(http.post, `${apiUrl}/api/authentication/login`, { userName, password }, true);
 
     if (!data.isSuccess) {
       throw new Error(stringKey(data.message.key));
@@ -29,8 +30,7 @@ function* login({ userName, password, redirectUrl }) {
 
     yield put(authActions.login.success());
 
-    const agreementStatusResponse = yield call(http.get, "/api/agreement/listPending");
-
+    const agreementStatusResponse = yield call(http.get, `${apiUrl}/api/agreement/listPending`);
     if (agreementStatusResponse.value.pendingSocieties.length > 0 || agreementStatusResponse.value.staleSocieties.length > 0) {
       auth.redirectTo("/agreements");
     } else {
@@ -44,7 +44,7 @@ function* login({ userName, password, redirectUrl }) {
 function* logout() {
   yield put(authActions.logout.request());
   try {
-    yield call(http.post, "/api/authentication/logout");
+    yield call(http.post, `${apiUrl}/api/authentication/logout`);
     localStorage.remove(consts.localStorageUserIdKey);
     yield put(authActions.logout.success());
     auth.redirectToLogin();
@@ -56,7 +56,7 @@ function* logout() {
 function* verifyEmail({ password, email, token }) {
   yield put(authActions.verifyEmail.request());
   try {
-    yield call(http.post, "/api/userverification/verifyEmailAndAddPassword", { password, email, token }, true);
+    yield call(http.post, `${apiUrl}/api/userverification/verifyEmailAndAddPassword`, { password, email, token }, true);
     yield put(authActions.verifyEmail.success());
     yield put(authActions.login.invoke(email, password));
   } catch (error) {
@@ -67,7 +67,7 @@ function* verifyEmail({ password, email, token }) {
 function* resetPassword({ email }) {
   yield put(authActions.resetPassword.request());
   try {
-    yield call(http.post, "/api/userverification/resetPassword", { email }, true);
+    yield call(http.post, `${apiUrl}/api/userverification/resetPassword`, { email }, true);
     yield put(authActions.resetPassword.success());
     yield put(appActions.showMessage(stringKeys.user.resetPassword.emailSent));
   } catch (error) {
@@ -78,7 +78,7 @@ function* resetPassword({ email }) {
 function* resetPasswordCallback({ password, email, token }) {
   yield put(authActions.resetPasswordCallback.request());
   try {
-    yield call(http.post, "/api/userverification/resetPasswordCallback", { password, email, token }, true);
+    yield call(http.post, `${apiUrl}/api/userverification/resetPasswordCallback`, { password, email, token }, true);
     yield put(authActions.resetPasswordCallback.success());
     yield put(authActions.login.invoke(email, password));
   } catch (error) {

@@ -10,6 +10,7 @@ import { ReportErrorFilterType, DataCollectorType } from '../../common/filters/l
 import { DateColumnName } from './reportsConstants'
 import { formatDate, getUtcOffset } from "../../../utils/date";
 import { trackTrace } from "../../../utils/tracking";
+import { apiUrl } from "../../../utils/variables";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_CORRECT_REPORTS_LIST.INVOKE, openCorrectReportsList),
@@ -35,7 +36,7 @@ function* openCorrectReportsList({ projectId }) {
   try {
     yield openReportsModule(projectId);
 
-    const filtersData = yield call(http.get, `/api/report/filters?projectId=${projectId}`);
+    const filtersData = yield call(http.get, `${apiUrl}/api/report/filters?projectId=${projectId}`);
 
     if (listStale) {
       yield call(getCorrectReports, { projectId });
@@ -93,7 +94,7 @@ function* getCorrectReports({ projectId, pageNumber, filters, sorting }) {
 
   yield put(actions.getCorrectList.request());
   try {
-    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
+    const response = yield call(http.post, `${apiUrl}/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
     yield put(actions.getCorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
     yield put(actions.getCorrectList.failure(error.message));
@@ -127,7 +128,7 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
 
   yield put(actions.getIncorrectList.request());
   try {
-    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
+    const response = yield call(http.post, `${apiUrl}/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
     yield put(actions.getIncorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
     yield put(actions.getIncorrectList.failure(error.message));
@@ -137,8 +138,8 @@ function* getIncorrectReports({ projectId, pageNumber, filters, sorting }) {
 function* openReportEdition({ projectId, reportId }) {
   yield put(actions.openEdition.request());
   try {
-    const humanHealthRisksforProject = yield call(http.get, `/api/report/humanHealthRisksForProject/${projectId}/get`);
-    const response = yield call(http.get, `/api/report/${reportId}/get`);
+    const humanHealthRisksforProject = yield call(http.get, `${apiUrl}/api/report/humanHealthRisksForProject/${projectId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/report/${reportId}/get`);
     const filters = {
       area: null,
       sex: null,
@@ -147,7 +148,7 @@ function* openReportEdition({ projectId, reportId }) {
       name: null,
       dataCollectorType: response.value.dataCollectorType
     };
-    const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
+    const dataCollectors = yield call(http.post, `${apiUrl}/api/dataCollector/listAll?projectId=${projectId}`, filters);
     yield openReportsModule(projectId);
     yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks, dataCollectors.value));
   } catch (error) {
@@ -158,7 +159,7 @@ function* openReportEdition({ projectId, reportId }) {
 function* editReport({ projectId, reportId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/report/${reportId}/edit?projectId=${projectId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/report/${reportId}/edit?projectId=${projectId}`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.reports.list.editedSuccesfully));
@@ -173,7 +174,7 @@ function* getCsvExportData({ projectId, filters, sorting }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/report/exportToCsv?projectId=${projectId}`,
+      url: `${apiUrl}/api/report/exportToCsv?projectId=${projectId}`,
       fileName: `reports_${formatDate(date)}.csv`,
       data: { ...filters, ...sorting }
     });
@@ -189,7 +190,7 @@ function* getExcelExportData({ projectId, filters, sorting }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/report/exportToExcel?projectId=${projectId}`,
+      url: `${apiUrl}/api/report/exportToExcel?projectId=${projectId}`,
       fileName: `reports_${formatDate(date)}.xlsx`,
       data: { ...filters, ...sorting }
     });
@@ -202,7 +203,7 @@ function* getExcelExportData({ projectId, filters, sorting }) {
 
 function* openReportsModule(projectId) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 
@@ -227,8 +228,8 @@ function* openSendReport({ projectId }) {
       name: null
     };
     const nationalSocietyId = yield select(state => state.appData.siteMap.parameters.nationalSocietyId);
-    const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
-    const formData = yield call(http.get, `/api/report/formData?nationalSocietyId=${nationalSocietyId}`);
+    const dataCollectors = yield call(http.post, `${apiUrl}/api/dataCollector/listAll?projectId=${projectId}`, filters);
+    const formData = yield call(http.get, `${apiUrl}/api/report/formData?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.openSendReport.success(dataCollectors.value, formData.value));
   } catch (error) {
     yield put(actions.openSendReport.failure(error.message));
@@ -239,7 +240,7 @@ function* acceptReport({ reportId }) {
   yield put(actions.acceptReport.request());
   try {
     const projectId = yield select(state => state.reports.listProjectId);
-    yield call(http.post, `/api/report/${reportId}/accept`);
+    yield call(http.post, `${apiUrl}/api/report/${reportId}/accept`);
     yield put(actions.acceptReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.acceptReportSuccess));
     yield getCorrectReports({projectId});
@@ -253,7 +254,7 @@ function* dismissReport({ reportId }) {
   yield put(actions.dismissReport.request());
   try {
     const projectId = yield select(state => state.reports.listProjectId);
-    yield call(http.post, `/api/report/${reportId}/dismiss`);
+    yield call(http.post, `${apiUrl}/api/report/${reportId}/dismiss`);
     yield put(actions.dismissReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.dismissReportSuccess));
     yield getCorrectReports({projectId});
@@ -265,26 +266,26 @@ function* dismissReport({ reportId }) {
 
 function* markAsCorrected({ reportId }) {
   yield put(actions.markAsCorrected.request());
-  
+
   try {
-    yield call(http.post, `/api/report/${reportId}/markAsCorrected`);
+    yield call(http.post, `${apiUrl}/api/report/${reportId}/markAsCorrected`);
     yield put(actions.markAsCorrected.success(reportId));
   } catch (error) {
     yield put(actions.markAsCorrected.failure());
     yield put(appActions.showMessage(error.message));
-  }  
+  }
 }
 
 function* markAsNotCorrected({ reportId }) {
   yield put(actions.markAsNotCorrected.request());
-  
+
   try {
-    yield call(http.deleteHttp, `/api/report/${reportId}/markAsCorrected`);
+    yield call(http.deleteHttp, `${apiUrl}/api/report/${reportId}/markAsCorrected`);
     yield put(actions.markAsNotCorrected.success(reportId));
   } catch (error) {
     yield put(actions.markAsNotCorrected.failure());
     yield put(appActions.showMessage(error.message));
-  }  
+  }
 }
 
 function* trackReportExport({ page, fileType, projectId }) {

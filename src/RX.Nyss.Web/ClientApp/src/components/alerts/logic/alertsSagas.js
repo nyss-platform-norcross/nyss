@@ -8,6 +8,7 @@ import { strings, stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
 import { formatDate, getUtcOffset } from "../../../utils/date";
+import { apiUrl } from "../../../utils/variables";
 
 export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
@@ -36,7 +37,7 @@ function* openAlertsList({ projectId }) {
     endDate = endDate.set('minute', 0);
     endDate = endDate.set('second', 0);
     const filtersData = listProjectId !== projectId
-      ? (yield call(http.get, `/api/alert/getFiltersData?projectId=${projectId}`)).value
+      ? (yield call(http.get, `${apiUrl}/api/alert/getFiltersData?projectId=${projectId}`)).value
       : yield select(state => state.alerts.filtersData);
 
     const filters = (yield select(state => state.alerts.filters)) ||
@@ -63,7 +64,7 @@ function* openAlertsList({ projectId }) {
 function* getAlerts({ projectId, pageNumber, filters }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.post, `/api/alert/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/alert/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filters);
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -73,7 +74,7 @@ function* getAlerts({ projectId, pageNumber, filters }) {
 function* fetchRecipients({ alertId }) {
   yield put(actions.fetchRecipients.request());
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/alertRecipients`);
+    const response = yield call(http.get, `${apiUrl}/api/alert/${alertId}/alertRecipients`);
     yield put(actions.fetchRecipients.success(response.value))
   } catch (error) {
     yield put(actions.fetchRecipients.failure(error.message));
@@ -83,7 +84,7 @@ function* fetchRecipients({ alertId }) {
 function* openAlertsAssessment({ projectId, alertId }) {
   yield put(actions.openAssessment.request());
   try {
-    const data = yield call(http.get, `/api/alert/${alertId}/get?utcOffset=${getUtcOffset()}`);
+    const data = yield call(http.get, `${apiUrl}/api/alert/${alertId}/get?utcOffset=${getUtcOffset()}`);
 
     const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
 
@@ -99,7 +100,7 @@ function* acceptReport({ alertId, reportId }) {
 
   yield put(actions.acceptReport.request(reportId));
   try {
-    const response = yield call(http.post, `/api/alert/${alertId}/acceptReport?reportId=${reportId}`);
+    const response = yield call(http.post, `${apiUrl}/api/alert/${alertId}/acceptReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.acceptReport.success(reportId, newAssessmentStatus));
 
@@ -117,7 +118,7 @@ function* dismissReport({ alertId, reportId }) {
 
   yield put(actions.dismissReport.request(reportId));
   try {
-    const response = yield call(http.post, `/api/alert/${alertId}/dismissReport?reportId=${reportId}`);
+    const response = yield call(http.post, `${apiUrl}/api/alert/${alertId}/dismissReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.dismissReport.success(reportId, newAssessmentStatus));
 
@@ -132,7 +133,7 @@ function* dismissReport({ alertId, reportId }) {
 function* resetReport({ alertId, reportId }) {
   yield put(actions.resetReport.request(reportId));
   try {
-    const response = yield call(http.post, `/api/alert/${alertId}/resetReport?reportId=${reportId}`);
+    const response = yield call(http.post, `${apiUrl}/api/alert/${alertId}/resetReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.resetReport.success(reportId, newAssessmentStatus));
   } catch (error) {
@@ -145,7 +146,7 @@ function* escalateAlert({ alertId, sendNotification }) {
 
   yield put(actions.escalateAlert.request());
   try {
-    const response = yield call(http.post, `/api/alert/${alertId}/escalate`, { sendNotification });
+    const response = yield call(http.post, `${apiUrl}/api/alert/${alertId}/escalate`, { sendNotification });
     yield put(actions.escalateAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(response.value));
@@ -160,7 +161,7 @@ function* dismissAlert({ alertId }) {
 
   yield put(actions.dismissAlert.request());
   try {
-    yield call(http.post, `/api/alert/${alertId}/dismiss`);
+    yield call(http.post, `${apiUrl}/api/alert/${alertId}/dismiss`);
     yield put(actions.dismissAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(stringKeys.alerts.assess.alert.dismissedSuccessfully));
@@ -175,7 +176,7 @@ function* closeAlert({ alertId }) {
 
   yield put(actions.closeAlert.request());
   try {
-    yield call(http.post, `/api/alert/${alertId}/close`);
+    yield call(http.post, `${apiUrl}/api/alert/${alertId}/close`);
     yield put(actions.closeAlert.success());
     yield put(actions.goToEventLog(projectId, alertId));
     yield put(appActions.showMessage(stringKeys.alerts.assess.alert.closedSuccessfully));
@@ -191,7 +192,7 @@ function* exportAlerts({ projectId, filters }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/alert/export?projectId=${projectId}`,
+      url: `${apiUrl}/api/alert/export?projectId=${projectId}`,
       fileName: `alerts_${formatDate(date)}.xlsx`,
       data: { ...filters }
     });
@@ -204,7 +205,7 @@ function* exportAlerts({ projectId, filters }) {
 
 function* openAlertsModule(projectId, title) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 

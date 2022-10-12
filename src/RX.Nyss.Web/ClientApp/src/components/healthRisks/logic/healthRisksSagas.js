@@ -4,6 +4,7 @@ import * as actions from "./healthRisksActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const healthRisksSagas = () => [
   takeEvery(consts.GET_HEALTH_RISKS.INVOKE, getHealthRisks),
@@ -22,7 +23,7 @@ function* getHealthRisks(force) {
 
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, "/api/healthrisk/list");
+    const response = yield call(http.get, `${apiUrl}/api/healthrisk/list`);
 
     yield put(actions.getList.success(response.value));
   } catch (error) {
@@ -33,7 +34,7 @@ function* getHealthRisks(force) {
 function* openHealthRiskEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/healthRisk/${params.healthRiskId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/healthRisk/${params.healthRiskId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       healthRiskCode: response.value.healthRiskCode
@@ -48,7 +49,7 @@ function* openHealthRiskEdition({ path, params }) {
 function* createHealthRisk({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, "/api/healthrisk/create", data);
+    const response = yield call(http.post, `${apiUrl}/api/healthrisk/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.create.success));
@@ -60,7 +61,7 @@ function* createHealthRisk({ data }) {
 function* editHealthRisk({ id, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/healthrisk/${id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/healthrisk/${id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.edit.success));
@@ -72,7 +73,7 @@ function* editHealthRisk({ id, data }) {
 function* removeHealthRisk({ id }) {
   yield put(actions.remove.request(id));
   try {
-    yield call(http.post, `/api/healthrisk/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/healthrisk/${id}/delete`);
     yield put(actions.remove.success(id));
     yield call(getHealthRisks, true);
     yield put(appActions.showMessage(stringKeys.healthRisk.delete.success));

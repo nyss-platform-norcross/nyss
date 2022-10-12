@@ -16,6 +16,7 @@ import * as http from "../../utils/http";
 import { openErrorMessages } from "./logic/projectsActions";
 import styles from "./ProjectErrorMessagesPage.module.scss";
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
+import { apiUrl } from "../../utils/variables";
 
 const MESSAGE_MAX_LEN = 320;
 const MESSAGE_WARNING_LEN = 160;
@@ -27,7 +28,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
 
   async function fetchData() {
     props.openErrorMessages(props.projectId);
-    setErrorMessages(await http.get(`/api/project/${props.projectId}/errorMessages`));
+    setErrorMessages(await http.get(`${apiUrl}/api/project/${props.projectId}/errorMessages`));
   }
 
   function edit() {
@@ -53,7 +54,7 @@ const ProjectErrorMessagesPageComponent = (props) => {
       return;
     }
 
-    const url = `/api/project/${props.projectId}/errorMessages`;
+    const url = `${apiUrl}/api/project/${props.projectId}/errorMessages`;
     const data = {};
 
     errorMessages.forEach((itm) => {

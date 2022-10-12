@@ -6,6 +6,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { push } from "connected-react-router";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
@@ -26,7 +27,7 @@ function* getNationalSocieties(force) {
 
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, "/api/nationalSociety/list");
+    const response = yield call(http.get, `${apiUrl}/api/nationalSociety/list`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -36,7 +37,7 @@ function* getNationalSocieties(force) {
 function* openNationalSocietyEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       nationalSocietyCountry: response.value.countryName,
@@ -53,7 +54,7 @@ function* openNationalSocietyEdition({ path, params }) {
 function* openNationalSocietyOverview({ path, params }) {
   yield put(actions.openOverview.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       nationalSocietyCountry: response.value.countryName,
@@ -72,7 +73,7 @@ function* openNationalSocietyOverview({ path, params }) {
 function* createNationalSociety({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, "/api/nationalSociety/create", data);
+    const response = yield call(http.post, `${apiUrl}/api/nationalSociety/create`, data);
     yield put(actions.create.success(response.value));
     yield put(push(`/nationalsocieties/${response.value}`));
     yield put(appActions.showMessage(stringKeys.nationalSociety.messages.create.success));
@@ -84,7 +85,7 @@ function* createNationalSociety({ data }) {
 function* editNationalSociety({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${data.id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/nationalSociety/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(data.id)));
     yield put(push(`/nationalsocieties/${data.id}/overview`));
@@ -97,7 +98,7 @@ function* editNationalSociety({ data }) {
 function* archiveNationalSociety({ id }) {
   yield put(actions.archive.request(id));
   try {
-    yield call(http.post, `/api/nationalSociety/${id}/archive`);
+    yield call(http.post, `${apiUrl}/api/nationalSociety/${id}/archive`);
     yield put(actions.archive.success(id));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);
@@ -110,7 +111,7 @@ function* archiveNationalSociety({ id }) {
 function* reopenNationalSociety({ id }) {
   yield put(actions.reopen.request(id));
   try {
-    yield call(http.post, `/api/nationalSociety/${id}/reopen`);
+    yield call(http.post, `${apiUrl}/api/nationalSociety/${id}/reopen`);
     yield put(actions.reopen.success(id));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);

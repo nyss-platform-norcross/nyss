@@ -7,6 +7,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 import { DataCollectorType, ReportErrorFilterType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './nationalSocietyReportsConstants'
 import { getUtcOffset } from "../../../utils/date";
+import { apiUrl } from "../../../utils/variables";
 
 export const nationalSocietyReportsSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_CORRECT_REPORTS_LIST.INVOKE, openNationalSocietyCorrectReportsList),
@@ -22,7 +23,7 @@ function* openNationalSocietyCorrectReportsList({ nationalSocietyId }) {
   try {
     yield openNationalSocietyReportsModule(nationalSocietyId);
 
-    const filtersData = yield call(http.get, `/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
+    const filtersData = yield call(http.get, `${apiUrl}/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
     const filters = (yield select(state => state.nationalSocietyReports.correctReportsFilters)) ||
     {
       dataCollectorType: DataCollectorType.human,
@@ -86,7 +87,7 @@ function* openNationalSocietyIncorrectReportsList({ nationalSocietyId }) {
 function* getNationalSocietyCorrectReports({ nationalSocietyId, pageNumber, filters, sorting }) {
   yield put(actions.getCorrectList.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
     yield put(actions.getCorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
   } catch (error) {
     yield put(actions.getCorrectList.failure(error.message));
@@ -96,7 +97,7 @@ function* getNationalSocietyCorrectReports({ nationalSocietyId, pageNumber, filt
 function* getNationalSocietyIncorrectReports({ nationalSocietyId, pageNumber, filters, sorting }) {
   yield put(actions.getIncorrectList.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
     yield put(actions.getIncorrectList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
   } catch (error) {
     yield put(actions.getIncorrectList.failure(error.message));
@@ -105,7 +106,7 @@ function* getNationalSocietyIncorrectReports({ nationalSocietyId, pageNumber, fi
 
 function* openNationalSocietyReportsModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

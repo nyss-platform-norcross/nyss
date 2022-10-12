@@ -4,6 +4,7 @@ import * as actions from "./nationalSocietyStructureActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { apiUrl } from "../../../utils/variables";
 
 export const nationalSocietyStructureSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_STRUCTURE.INVOKE, openNationalSocietyStructure),
@@ -29,7 +30,7 @@ function* openNationalSocietyStructure({ nationalSocietyId }) {
   yield put(actions.openStructure.request());
   try {
     yield call(openNationalSocietyModule, nationalSocietyId);
-    const response = yield call(http.get, `/api/nationalSocietyStructure/get?nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, `${apiUrl}/api/nationalSocietyStructure/get?nationalSocietyId=${nationalSocietyId}`);
 
     let regions = [];
     let districts = [];
@@ -58,7 +59,7 @@ function* openNationalSocietyStructure({ nationalSocietyId }) {
 function* createRegion({ nationalSocietyId, name }) {
   yield put(actions.createRegion.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyStructure/region/create?nationalSocietyId=${nationalSocietyId}`, { name });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/region/create?nationalSocietyId=${nationalSocietyId}`, { name });
     yield put(actions.createRegion.success(response.value));
   } catch (error) {
     yield put(actions.createRegion.failure(error.message));
@@ -68,7 +69,7 @@ function* createRegion({ nationalSocietyId, name }) {
 function* editRegion({ id, name }) {
   yield put(actions.editRegion.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/region/${id}/edit`, { name });
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/region/${id}/edit`, { name });
     yield put(actions.editRegion.success(id, name));
   } catch (error) {
     yield put(actions.editRegion.failure(error.message));
@@ -78,7 +79,7 @@ function* editRegion({ id, name }) {
 function* removeRegion({ id }) {
   yield put(actions.removeRegion.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/region/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/region/${id}/delete`);
     yield put(actions.removeRegion.success(id));
   } catch (error) {
     yield put(actions.removeRegion.failure(id, error.message));
@@ -88,7 +89,7 @@ function* removeRegion({ id }) {
 function* createDistrict({ regionId, name }) {
   yield put(actions.createDistrict.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyStructure/region/${regionId}/district/create`, { name });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/region/${regionId}/district/create`, { name });
     yield put(actions.createDistrict.success(regionId, response.value));
   } catch (error) {
     yield put(actions.createDistrict.failure(error.message));
@@ -98,7 +99,7 @@ function* createDistrict({ regionId, name }) {
 function* editDistrict({ id, name }) {
   yield put(actions.editDistrict.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/district/${id}/edit`, { name });
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/district/${id}/edit`, { name });
     yield put(actions.editDistrict.success(id, name));
   } catch (error) {
     yield put(actions.editDistrict.failure(error.message));
@@ -108,7 +109,7 @@ function* editDistrict({ id, name }) {
 function* removeDistrict({ id }) {
   yield put(actions.removeDistrict.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/district/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/district/${id}/delete`);
     yield put(actions.removeDistrict.success(id));
   } catch (error) {
     yield put(actions.removeDistrict.failure(id, error.message));
@@ -118,7 +119,7 @@ function* removeDistrict({ id }) {
 function* createVillage({ districtId, name }) {
   yield put(actions.createVillage.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyStructure/district/${districtId}/village/create`, { name });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/district/${districtId}/village/create`, { name });
     yield put(actions.createVillage.success(response.value));
   } catch (error) {
     yield put(actions.createVillage.failure(error.message));
@@ -128,7 +129,7 @@ function* createVillage({ districtId, name }) {
 function* editVillage({ id, name }) {
   yield put(actions.editVillage.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/village/${id}/edit`, { name });
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/village/${id}/edit`, { name });
     yield put(actions.editVillage.success(id, name));
   } catch (error) {
     yield put(actions.editVillage.failure(error.message));
@@ -138,7 +139,7 @@ function* editVillage({ id, name }) {
 function* removeVillage({ id }) {
   yield put(actions.removeVillage.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/village/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/village/${id}/delete`);
     yield put(actions.removeVillage.success(id));
   } catch (error) {
     yield put(actions.removeVillage.failure(id, error.message));
@@ -148,7 +149,7 @@ function* removeVillage({ id }) {
 function* createZone({ villageId, name }) {
   yield put(actions.createZone.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyStructure/zone/create?villageId=${villageId}`, { name });
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/zone/create?villageId=${villageId}`, { name });
     yield put(actions.createZone.success(response.value));
   } catch (error) {
     yield put(actions.createZone.failure(error.message));
@@ -158,7 +159,7 @@ function* createZone({ villageId, name }) {
 function* editZone({ id, name }) {
   yield put(actions.editZone.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/edit`, { name });
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/zone/${id}/edit`, { name });
     yield put(actions.editZone.success(id, name));
   } catch (error) {
     yield put(actions.editZone.failure(error.message));
@@ -168,7 +169,7 @@ function* editZone({ id, name }) {
 function* removeZone({ id }) {
   yield put(actions.removeZone.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/nationalSocietyStructure/zone/${id}/delete`);
     yield put(actions.removeZone.success(id));
   } catch (error) {
     yield put(actions.removeZone.failure(id, error.message));
@@ -177,7 +178,7 @@ function* removeZone({ id }) {
 
 function* openNationalSocietyModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

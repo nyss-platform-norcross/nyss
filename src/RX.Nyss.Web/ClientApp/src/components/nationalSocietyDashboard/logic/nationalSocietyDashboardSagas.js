@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
+import { apiUrl } from "../../../utils/variables";
 dayjs.extend(utc);
 
 export const nationalSocietyDashboardSagas = () => [
@@ -18,7 +19,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
   yield put(actions.openDashboard.request());
   try {
     yield call(openNationalSocietyDashboardModule, nationalSocietyId);
-    const filtersData = yield call(http.get, `/api/nationalSocietyDashboard/filters?nationalSocietyId=${nationalSocietyId}`);
+    const filtersData = yield call(http.get, `${apiUrl}/api/nationalSocietyDashboard/filters?nationalSocietyId=${nationalSocietyId}`);
     const localDate = dayjs();
     const utcOffset = Math.floor(localDate.utcOffset() / 60);
     let endDate = localDate.add(-utcOffset, 'hour');
@@ -53,7 +54,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
 function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyDashboard/data?nationalSocietyId=${nationalSocietyId}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyDashboard/data?nationalSocietyId=${nationalSocietyId}`, filters);
     yield put(actions.getDashboardData.success(
       filters,
       response.value.summary,
@@ -69,7 +70,7 @@ function* getNationalSocietyDashboardReportHealthRisks({ nationalSocietyId, lati
   yield put(actions.getReportHealthRisks.request());
   try {
     const filters = yield select(state => state.nationalSocietyDashboard.filters);
-    const response = yield call(http.post, `/api/nationalSocietyDashboard/reportHealthRisks?nationalSocietyId=${nationalSocietyId}&latitude=${latitude}&longitude=${longitude}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/nationalSocietyDashboard/reportHealthRisks?nationalSocietyId=${nationalSocietyId}&latitude=${latitude}&longitude=${longitude}`, filters);
     yield put(actions.getReportHealthRisks.success(response.value));
   } catch (error) {
     yield put(actions.getReportHealthRisks.failure(error.message));
@@ -78,7 +79,7 @@ function* getNationalSocietyDashboardReportHealthRisks({ nationalSocietyId, lati
 
 function* openNationalSocietyDashboardModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

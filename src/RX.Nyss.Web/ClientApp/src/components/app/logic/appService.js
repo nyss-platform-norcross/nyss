@@ -1,8 +1,9 @@
 import * as http from '../../../utils/http';
+import { apiUrl } from '../../../utils/variables';
 import * as appActions from './appActions';
 
 export const runApplication = (dispatch) =>
-  http.get("/api/authentication/status")
+  http.get(`${apiUrl}/api/authentication/status`)
     .then(status => {
       const user = status.value.isAuthenticated
         ? status.value.userData

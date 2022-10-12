@@ -4,6 +4,7 @@ import * as consts from "./agreementsConstants";
 import * as actions from "./agreementsActions";
 import * as http from "../../../utils/http";
 import * as auth from "../../../authentication/auth";
+import { apiUrl } from "../../../utils/variables";
 
 export const agreementsSagas = () => [
   takeEvery(consts.OPEN_AGREEMENT_PAGE.INVOKE, getPendingAgreementDocuments),
@@ -13,7 +14,7 @@ export const agreementsSagas = () => [
 function* getPendingAgreementDocuments() {
   yield put(actions.openAgreementPage.request());
   try {
-    const response = yield call(http.get, "/api/agreement/pendingAgreementDocuments");
+    const response = yield call(http.get, `${apiUrl}/api/agreement/pendingAgreementDocuments`);
 
     yield put(actions.openAgreementPage.success(response.value));
   } catch (error) {
@@ -24,7 +25,7 @@ function* getPendingAgreementDocuments() {
 function* acceptAgreement({ selectedLanguage }) {
   yield put(actions.acceptAgreement.request());
   try {
-    yield call(http.post, `/api/agreement/accept?languageCode=${selectedLanguage}`);
+    yield call(http.post, `${apiUrl}/api/agreement/accept?languageCode=${selectedLanguage}`);
     yield put(actions.acceptAgreement.success());
     auth.redirectToRoot();
   } catch (error) {
