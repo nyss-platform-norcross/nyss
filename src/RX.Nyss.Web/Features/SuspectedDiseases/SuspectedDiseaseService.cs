@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
                 .Select(sd => new SuspectedDiseaseListItemResponseDto
                 {
                     Id = sd.Id,
-                    Name = sd.LanguageContents
+                    SuspectedDiseaseName = sd.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
                         .Select(lc => lc.Name)
                         .FirstOrDefault(),

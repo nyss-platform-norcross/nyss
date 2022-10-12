@@ -5,7 +5,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases.Dto
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string SuspectedDiseaseName { get; set; }
 
         public int SuspectedDiseaseCode { get; set; }
     }

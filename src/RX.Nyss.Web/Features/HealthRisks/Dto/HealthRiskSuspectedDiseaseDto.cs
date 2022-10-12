@@ -2,18 +2,17 @@
 
 namespace RX.Nyss.Web.Features.HealthRisks.Dto
 {
-    public class HealthRiskSuspectedDiseaseDto
+    public class HealthRiskSuspectedDiseaseRequestDto
     {
+        public int? Id { get; set; }
+
         public int SuspectedDiseaseId { get; set; }
 
-        public string SuspectedDiseaseName { get; set; }
-
-        public class Validator : AbstractValidator<HealthRiskSuspectedDiseaseDto>
+        public class Validator : AbstractValidator<HealthRiskSuspectedDiseaseRequestDto>
         {
             public Validator()
             {
                 RuleFor(s => s.SuspectedDiseaseId ).GreaterThan(0);
-                RuleFor(s => s.SuspectedDiseaseName).NotEmpty().MaximumLength(500);
             }
         }
         

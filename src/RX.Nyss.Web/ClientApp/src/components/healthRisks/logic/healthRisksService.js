@@ -1,4 +1,4 @@
-export const getSaveFormModel = (values, contentLanguages) =>
+export const getSaveFormModel = (values, contentLanguages, suspectedDiseases) =>
   ({
     healthRiskCode: parseInt(values.healthRiskCode),
     healthRiskType: values.healthRiskType,
@@ -6,18 +6,20 @@ export const getSaveFormModel = (values, contentLanguages) =>
     alertRuleDaysThreshold: parseInt(values.alertRuleDaysThreshold),
     alertRuleKilometersThreshold: parseInt(values.alertRuleKilometersThreshold),
     suspectedDiseases: suspectedDiseases.map(suspectedDisease => ({
-      id: values[`suspectedDisease.${suspectedDisease.suspectedDiseaseId}.projectSuspectedDiseaseId`],
-      suspectedDiseaseId: suspectedDisease.suspectedDiseaseId
-      //feedbackMessage: values[`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`],
-      //caseDefinition: values[`healthRisk.${healthRisk.healthRiskId}.caseDefinition`],
-      //alertRuleCountThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]),
-      //alertRuleDaysThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]),
-      //alertRuleKilometersThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`])
-    })),
+    //id: values[`suspectedDisease.${suspectedDisease.suspectedDiseaseCode}.healthRiskSuspectedDiseaseId`],
+    //SuspectedDiseaseName: sd.SuspectedDiseaseName
+      //suspectedDiseaseCode: suspectedDisease.suspectedDiseaseCode
+      suspectedDiseaseId: suspectedDisease.id
+      /*langlanguageContents: contentLanguages.map(lang => ({
+        languageId: lang.id,
+        name: values[`contentLanguage_${lang.id}_name`]
+      }))*/
+  })),
     languageContent: contentLanguages.map(lang => ({
       languageId: lang.id,
       name: values[`contentLanguage_${lang.id}_name`],
       caseDefinition: values[`contentLanguage_${lang.id}_caseDefinition`],
       feedbackMessage: values[`contentLanguage_${lang.id}_feedbackMessage`]
     }))
-  });
+});
+

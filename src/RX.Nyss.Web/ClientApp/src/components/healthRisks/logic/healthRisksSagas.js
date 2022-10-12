@@ -8,6 +8,7 @@ import { stringKeys } from "../../../strings";
 export const healthRisksSagas = () => [
   takeEvery(consts.GET_HEALTH_RISKS.INVOKE, getHealthRisks),
   takeEvery(consts.OPEN_EDITION_HEALTH_RISK.INVOKE, openHealthRiskEdition),
+  takeEvery(consts.OPEN_CREATION_HEALTH_RISK.INVOKE, openHealthRiskCreation),
   takeEvery(consts.EDIT_HEALTH_RISK.INVOKE, editHealthRisk),
   takeEvery(consts.CREATE_HEALTH_RISK.INVOKE, createHealthRisk),
   takeEvery(consts.REMOVE_HEALTH_RISK.INVOKE, removeHealthRisk)
@@ -27,6 +28,17 @@ function* getHealthRisks(force) {
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* openHealthRiskCreation() {
+  
+  yield put(actions.openCreation.request());
+  try {
+    const formData = yield call(http.get, "/api/suspecteddisease/list");
+    yield put(actions.openCreation.success(formData.value));
+  } catch (error) {
+    yield put(actions.openCreation.failure(error));
   }
 };
 

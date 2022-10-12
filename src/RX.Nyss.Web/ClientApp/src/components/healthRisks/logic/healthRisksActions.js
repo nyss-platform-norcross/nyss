@@ -1,5 +1,5 @@
 import { push } from "connected-react-router";
-import { GET_HEALTH_RISKS, CREATE_HEALTH_RISK, REMOVE_HEALTH_RISK } from "./healthRisksConstants";
+import { GET_HEALTH_RISKS, CREATE_HEALTH_RISK, REMOVE_HEALTH_RISK, OPEN_CREATION_HEALTH_RISK } from "./healthRisksConstants";
 import { OPEN_EDITION_HEALTH_RISK, EDIT_HEALTH_RISK } from "./healthRisksConstants";
 
 export const goToCreation = () => push("/healthrisks/add");
@@ -11,6 +11,13 @@ export const getList = {
   request: () => ({ type: GET_HEALTH_RISKS.REQUEST }),
   success: (list) => ({ type: GET_HEALTH_RISKS.SUCCESS, list }),
   failure: (message) => ({ type: GET_HEALTH_RISKS.FAILURE, message })
+};
+
+export const openCreation = {
+  invoke: (data) => ({ type: OPEN_CREATION_HEALTH_RISK.INVOKE, data }),
+  request: () => ({ type: OPEN_CREATION_HEALTH_RISK.REQUEST }),
+  success: (data) => ({ type: OPEN_CREATION_HEALTH_RISK.SUCCESS, data }),
+  failure: (message) => ({ type: OPEN_CREATION_HEALTH_RISK.FAILURE, message })
 };
 
 export const create = {
@@ -30,7 +37,7 @@ export const edit = {
 export const openEdition = {
   invoke: ({ path, params }) => ({ type: OPEN_EDITION_HEALTH_RISK.INVOKE, path, params }),
   request: () => ({ type: OPEN_EDITION_HEALTH_RISK.REQUEST }),
-  success: (data, suspectedDiseases) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data, suspectedDiseases }),
+  success: (data) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_EDITION_HEALTH_RISK.FAILURE, message })
 };
 

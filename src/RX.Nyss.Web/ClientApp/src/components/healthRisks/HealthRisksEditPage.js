@@ -34,12 +34,13 @@ const HealthRisksEditPageComponent = (props) => {
   });
 
   useEffect(() => {
+    props.suspectedDiseases && setSuspectedDiseasesDataSource(props.suspectedDiseases.map(sd => ({ label: sd.suspectedDiseaseName, value: sd.suspectedDiseaseCode, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
       form.fields.alertRuleKilometersThreshold.update("");
     }
     return;
-  }, [form, reportCountThreshold])
+  }, [form, reportCountThreshold, props.suspectedDiseases])
 
   useEffect(() => {
     if (!props.data) {
@@ -54,7 +55,8 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskType: props.data.healthRiskType,
       alertRuleCountThreshold: props.data.alertRuleCountThreshold,
       alertRuleDaysThreshold: props.data.alertRuleDaysThreshold,
-      alertRuleKilometersThreshold: props.data.alertRuleKilometersThreshold
+      alertRuleKilometersThreshold: props.data.alertRuleKilometersThreshold,
+      healthRiskSuspectedDuseases: props.data.healthRiskSuspectedDuseases
     };
 
     let validation = {
@@ -116,16 +118,17 @@ const HealthRisksEditPageComponent = (props) => {
     return <Loading />;
   }
 
-  const onSuspectedDiseasesChange = (value, eventData) => {
+  /*const onSuspectedDiseasesChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
     } else if ((eventData.action === "remove-value" || eventData.action === "pop-value")) {
       setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
     }
-  }
+  }*/
 
-  const getSelectedSuspectedDiseaseValue = () =>
-    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.healthRiskId === sd.value))).sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);
+  /*const getSelectedSuspectedDiseaseValue = () =>
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.healthRiskId === sd.value))).sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);*/
+
 
   return (
     <Fragment>
@@ -153,14 +156,14 @@ const HealthRisksEditPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSection)}</Typography>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.suspectedDiseaseTitle)}</Typography>
               <MultiSelect
-                label={strings(stringKeys.healthRisk.form.suspectedDiseases)}
+              label={strings(stringKeys.healthRisk.form.suspectedDiseaseList)} ////========> form.fields.healthRiskSuspectedDuseases
                 options={suspectedDiseasesDataSource}
-                onChange={onSuspectedDiseasesChange}
-                value={getSelectedSuspectedDiseaseValue()}
-                onBlur={e => setSuspectedDiseasesFieldTouched(true)}
-                error={(suspectedDiseasesFieldTouched && selectedSuspectedDiseases.length < 2) ? `${strings(stringKeys.validation.noSuspectedDiseaseSelected)}` : null}
+                //onChange={onSuspectedDiseasesChange}
+                //value={getSelectedSuspectedDiseaseValue()}
+                //onBlur={e => setSuspectedDiseasesFieldTouched(true)}
+                //error={(suspectedDiseasesFieldTouched && selectedSuspectedDiseases.length < 2) ? `${strings(stringKeys.validation.noSuspectedDiseaseSelected)}` : null}
                 rtl={useRtlDirection}
               />
           </Grid>
@@ -262,6 +265,7 @@ HealthRisksEditPageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
+  suspectedDiseases: state.healthRisks.formSuspectedDiseases,
   isFetching: state.healthRisks.formFetching,
   isSaving: state.healthRisks.formSaving,
   formError: state.healthRisks.formError,

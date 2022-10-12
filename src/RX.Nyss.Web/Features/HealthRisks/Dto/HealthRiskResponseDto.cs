@@ -18,5 +18,7 @@ namespace RX.Nyss.Web.Features.HealthRisks.Dto
         public int? AlertRuleKilometersThreshold { get; set; }
 
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
+
+        public IEnumerable<HealthRiskSuspectedDiseaseResponseDto> HealthRiskSuspectedDuseases { get; set; }
     }
 }

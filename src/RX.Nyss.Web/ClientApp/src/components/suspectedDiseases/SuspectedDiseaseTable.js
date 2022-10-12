@@ -30,7 +30,7 @@ export const SuspectedDiseaseTable = ({ isListFetching, isRemoving, goToEdition,
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
               <TableCell>{row.suspectedDiseaseCode}</TableCell>
-              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.suspectedDiseaseName}</TableCell>
               <TableCell>
                 <TableRowActions directionRtl={rtl}>
                   <TableRowAction directionRtl={rtl} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />

@@ -29,6 +29,18 @@ export function healthRisksReducer(state = initialState.healthRisks, action) {
     case actions.OPEN_EDITION_HEALTH_RISK.FAILURE:
       return { ...state, formFetching: false };
 
+    case actions.OPEN_CREATION_HEALTH_RISK.INVOKE:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.REQUEST:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.SUCCESS:
+      return { ...state, formFetching: false, formData: action.data };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.FAILURE:
+      return { ...state, formFetching: false, formError: action.error };
+
     case actions.CREATE_HEALTH_RISK.REQUEST:
       return { ...state, formSaving: true };
 
