@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.EidsrConfiguration.Dto;
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 
 public class EidsrIntegrationResponseDto
 {
@@ -23,4 +25,6 @@ public class EidsrIntegrationResponseDto
     public string EventTypeDataElementId { get; set; }
 
     public string GenderDataElementId { get; set; }
+
+    public List<DistrictsWithOrganizationUnits> DistrictsWithOrganizationUnits { get; set; }
 }

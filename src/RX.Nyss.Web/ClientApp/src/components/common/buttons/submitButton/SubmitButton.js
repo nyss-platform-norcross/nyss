@@ -3,12 +3,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, CircularProgress } from "@material-ui/core";
 
-export const SubmitButton = ({ onClick, regular, isFetching, children, wide }) => {
+export const SubmitButton = ({ onClick, regular, isFetching, children, wide, disabled }) => {
   return (
     <Button
       color="primary"
       variant={regular ? undefined : "contained"}
-      onClick={onClick} disabled={isFetching}
+      onClick={onClick} disabled={isFetching || disabled}
       type="submit"
       className={wide ? styles.wide : null}
     >

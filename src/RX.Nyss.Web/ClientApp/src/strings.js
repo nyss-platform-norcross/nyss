@@ -214,8 +214,17 @@ export const stringKeys = {
       phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
       suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
       eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
-      genderDataElementId: "veidsrIntegration.form.genderDataElementId",
-
+      genderDataElementId: "eidsrIntegration.form.genderDataElementId",
+      districts: "eidsrIntegration.form.districts",
+      organisationUnits: "eidsrIntegration.form.organisationUnits",
+      choseOrganisationUnit: "eidsrIntegration.form.choseOrganisationUnit",
+      noDistricts: "eidsrIntegration.form.noDistricts",
+      loading: "eidsrIntegration.form.loading",
+      noOptions: "eidsrIntegration.form.noOptions",
+      connNotTested: "eidsrIntegration.form.connNotTested",
+      testConn: "eidsrIntegration.form.testConn",
+      testConnToContinue: "eidsrIntegration.form.testConnToContinue",
+      allDistrictsShouldOrgUnit: "eidsrIntegration.form.allDistrictsShouldOrgUnit",
       dataNotSet: "eidsrIntegration.from.dataNotSet",
       dataElements: "eidsrIntegration.from.dataElements",
     },
@@ -225,6 +234,9 @@ export const stringKeys = {
     edit: {
       success: "eidsrIntegration.edit.success"
     },
+    eidsrApi: {
+      ConnectionError: "eidsrIntegration.EidsrApi.ConnectionError"
+    }
   },
   organization: {
     title: "organization.title",

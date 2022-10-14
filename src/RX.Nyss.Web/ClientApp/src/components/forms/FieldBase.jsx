@@ -31,6 +31,10 @@ class FieldBase extends PureComponent {
     this.props.field._customError = null;
     this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
     this.props.field.touched = true;
+
+    if(this?.props?.subscribeOnChange !=null){
+      this.props.subscribeOnChange(e, value);
+    }
   }
 
   getValue = (type, e, val) => {

@@ -12,7 +12,7 @@ import Form from "../forms/form/Form";
 import {Grid, Typography} from "@material-ui/core";
 import styles from "./EidsrIntegration.module.scss";
 import {Loading} from "../common/loading/Loading";
-import { EidsrIntegrationNotEnabled } from "./EidsrIntegrationNotEnabled";
+import { EidsrIntegrationNotEnabled } from "./components/EidsrIntegrationNotEnabled";
 import PasswordDisplayField from "../forms/PasswordDisplayField";
 
 const EidsrIntegrationPageComponent = (props) => {
@@ -138,6 +138,33 @@ const EidsrIntegrationPageComponent = (props) => {
             <Typography variant="body1" gutterBottom>
               { props.data.genderDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <hr className={styles.divider} />
+            <div className={styles.header}>
+              {strings(stringKeys.eidsrIntegration.form.districts)}
+            </div>
+          </Grid>
+
+          <Grid item xs={12}>
+            {
+              props.data.districtsWithOrganizationUnits?.map((item,index) =>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    <Typography variant="caption">District</Typography>
+                    <Typography>{item.districtName}</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="caption">Organisation Unit</Typography>
+                    <Typography>
+                      { item.organisationUnitName ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )
+            }
+            { props.data.districtsWithOrganizationUnits.length === 0 && <p> {strings(stringKeys.eidsrIntegration.form.noDistricts)} </p>}
           </Grid>
 
         </Grid>

@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import {Grid, Typography} from "@material-ui/core";
 import WarningIcon from "@material-ui/icons/Warning";
-import {stringKeys, strings} from "../../strings";
+import {stringKeys, strings} from "../../../strings";
 
 export class EidsrIntegrationNotEnabled extends React.Component {
   render() {

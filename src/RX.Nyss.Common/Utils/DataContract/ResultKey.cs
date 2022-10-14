@@ -175,6 +175,11 @@ public static class ResultKey
             public const string ErrorNationalSocietyDoesNotExists = "EidsrIntegration.edit.ErrorNationalSocietyDoesNotExists";
             public const string ErrorEidsrIntegrationDisabled = "EidsrIntegration.edit.ErrorEidsrIntegrationDisabled";
         }
+
+        public static class EidsrApi
+        {
+            public const string ConnectionError = "EidsrIntegration.EidsrApi.ConnectionError";
+        }
     }
 
     public static class HealthRisk
