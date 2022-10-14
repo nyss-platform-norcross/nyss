@@ -7,6 +7,7 @@ import * as consts from "../../alertEvents/logic/alertEventsConstants";
 import { getUtcOffset } from "../../../utils/date";
 import dayjs from "dayjs";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { apiUrl } from "../../../utils/variables";
 
 export const alertEventsSagas = () => {
   return [
@@ -22,7 +23,7 @@ export const alertEventsSagas = () => {
 function* openEventLog ({ projectId, alertId }) {
     yield put(actions.openEventLog.request());
   try {
-    const response = yield call(http.get, `/api/alertEvents/${alertId}/eventLog?utcOffset=${getUtcOffset()}`);
+    const response = yield call(http.get, `${apiUrl}/api/alertEvents/${alertId}/eventLog?utcOffset=${getUtcOffset()}`);
     const data = response.value;
 
     const title = `${strings(stringKeys.alerts.eventLog.title, true)} - ${data.healthRisk} ${dayjs(data.date).format('YYYY-MM-DD HH:mm')}`;
@@ -38,7 +39,7 @@ function* openEventLog ({ projectId, alertId }) {
 function* getEventLog ({alertId}) {
   yield put(actions.getEventLog.request());
   try {
-    const response = yield call(http.get, `/api/alertEvents/${alertId}/eventLog?utcOffset=${getUtcOffset()}`);
+    const response = yield call(http.get, `${apiUrl}/api/alertEvents/${alertId}/eventLog?utcOffset=${getUtcOffset()}`);
     const data = response.value;
 
     yield put(actions.getEventLog.success(data));
@@ -50,7 +51,7 @@ function* getEventLog ({alertId}) {
 function* openAlertEventCreation() {
   yield put(actions.openCreation.request());
   try {
-    const response = yield call(http.get, `/api/alertEvents/eventLog/formData`);
+    const response = yield call(http.get, `${apiUrl}/api/alertEvents/eventLog/formData`);
 
     yield put(actions.openCreation.success(response.value.eventTypes, response.value.eventSubtypes));
   } catch (error) {
@@ -61,7 +62,7 @@ function* openAlertEventCreation() {
 function* createAlertEvent({ alertId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/add`, data);
+    const response = yield call(http.post, `${apiUrl}/api/alertEvents/${alertId}/eventLog/add`, data);
     yield call(getEventLog, {alertId})
     yield put(actions.create.success(response.value));
     yield put(appActions.showMessage(response.message.key));
@@ -74,7 +75,7 @@ function* createAlertEvent({ alertId, data }) {
 function* editAlertEvent({ alertId, alertEventLogId, text }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/edit/${alertEventLogId}`,
+    const response = yield call(http.post, `${apiUrl}/api/alertEvents/${alertId}/eventLog/edit/${alertEventLogId}`,
       {alertEventLogId, text});
     yield call(getEventLog, {alertId})
     yield put(actions.edit.success(response.value));
@@ -88,7 +89,7 @@ function* editAlertEvent({ alertId, alertEventLogId, text }) {
 function* deleteAlertEvent({ alertId, alertEventLogId }) {
   yield put(actions.remove.request(alertEventLogId));
   try {
-    const response = yield call(http.post, `/api/alertEvents/${alertId}/eventLog/delete/${alertEventLogId}`,
+    const response = yield call(http.post, `${apiUrl}/api/alertEvents/${alertId}/eventLog/delete/${alertEventLogId}`,
       {alertId, alertEventLogId});
     yield put(actions.remove.success(alertEventLogId));
 
@@ -103,7 +104,7 @@ function* deleteAlertEvent({ alertId, alertEventLogId }) {
 
 function* openAlertEventsModule(projectId, title) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 

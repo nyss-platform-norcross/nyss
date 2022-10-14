@@ -9,6 +9,7 @@ import utc from "dayjs/plugin/utc";
 import { stringsFormat, stringKeys } from "../../../strings";
 import { generatePdfDocument } from "../../../utils/pdf";
 import { trackTrace } from "../../../utils/tracking";
+import { apiUrl } from "../../../utils/variables";
 
 dayjs.extend(utc);
 
@@ -23,7 +24,7 @@ function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashboard.request());
   try {
     yield call(openProjectDashboardModule, projectId);
-    const filtersData = yield call(http.get, `/api/projectDashboard/filters?projectId=${projectId}`);
+    const filtersData = yield call(http.get, `${apiUrl}/api/projectDashboard/filters?projectId=${projectId}`);
     const localDate = dayjs();
     const utcOffset = Math.floor(localDate.utcOffset() / 60);
     let endDate = localDate.add(-utcOffset, 'hour');
@@ -58,7 +59,7 @@ function* openProjectDashboard({ projectId }) {
 function* getProjectDashboardData({ projectId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
-    const response = yield call(http.post, `/api/projectDashboard/data?projectId=${projectId}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/projectDashboard/data?projectId=${projectId}`, filters);
     yield put(actions.getDashboardData.success(
       filters,
       response.value.summary,
@@ -78,7 +79,7 @@ function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude 
   yield put(actions.getReportHealthRisks.request());
   try {
     const filters = yield select(state => state.projectDashboard.filters);
-    const response = yield call(http.post, `/api/projectDashboard/reportHealthRisks?projectId=${projectId}&latitude=${latitude}&longitude=${longitude}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/projectDashboard/reportHealthRisks?projectId=${projectId}&latitude=${latitude}&longitude=${longitude}`, filters);
     yield put(actions.getReportHealthRisks.success(response.value));
   } catch (error) {
     yield put(actions.getReportHealthRisks.failure(error.message));
@@ -115,7 +116,7 @@ function* generatePdf({ containerElement }) {
 
 function* openProjectDashboardModule(projectId) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 

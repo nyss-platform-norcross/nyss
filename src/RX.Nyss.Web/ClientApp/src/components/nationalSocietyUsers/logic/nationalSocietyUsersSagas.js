@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import * as roles from "../../../authentication/roles";
 import { stringKeys, stringKey } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USERS_LIST.INVOKE, openNationalSocietyUsersList),
@@ -41,7 +42,7 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const formData = yield call(http.get, `/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
+    const formData = yield call(http.get, `${apiUrl}/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.openCreation.success(formData.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error));
@@ -52,7 +53,7 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
   yield put(actions.openAddExisting.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const formData = yield call(http.get, `/api/user/addExistingFormData?nationalSocietyId=${nationalSocietyId}`);
+    const formData = yield call(http.get, `${apiUrl}/api/user/addExistingFormData?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.openAddExisting.success(formData));
   } catch (error) {
     yield put(actions.openAddExisting.failure(error));
@@ -63,7 +64,7 @@ function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
-    const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
+    const formData = yield call(http.get, `${apiUrl}/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
     const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role, nationalSocietyId));
     yield openNationalSocietyUsersModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value, formData.value.organizations, formData.value.modems, formData.value.countryCode));
@@ -87,7 +88,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
 function* addExistingNationalSocietyUser({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, "/api/user/addExisting", data);
+    const response = yield call(http.post, `${apiUrl}/api/user/addExisting`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(data.nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.create.success));
@@ -122,7 +123,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
 function* getNationalSocietyUsers(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/user/list?nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, `${apiUrl}/api/user/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
     yield put(actions.getList.failure(error));
@@ -132,7 +133,7 @@ function* getNationalSocietyUsers(nationalSocietyId) {
 function* setAsHeadManagerInOrganization({ organizationId, nationalSocietyUserId }) {
   yield put(actions.setAsHeadManager.request(nationalSocietyUserId));
   try {
-    yield call(http.post, `/api/organization/${organizationId}/setHeadManager`, { userId: nationalSocietyUserId });
+    yield call(http.post, `${apiUrl}/api/organization/${organizationId}/setHeadManager`, { userId: nationalSocietyUserId });
     yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyConsents.setSuccessfully));
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
@@ -145,17 +146,17 @@ function* setAsHeadManagerInOrganization({ organizationId, nationalSocietyUserId
 function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/technicalAdvisor/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/manager/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/dataConsumer/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
-      return `/api/coordinator/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/coordinator/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.HeadSupervisor:
-      return `/api/headSupervisor/create?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/headSupervisor/create?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -164,17 +165,17 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
 function getSpecificRoleUserEditionUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/edit`;
+      return `${apiUrl}/api/technicalAdvisor/${userId}/edit`;
     case roles.Manager:
-      return `/api/manager/${userId}/edit`;
+      return `${apiUrl}/api/manager/${userId}/edit`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/edit`;
+      return `${apiUrl}/api/dataConsumer/${userId}/edit`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/edit`;
+      return `${apiUrl}/api/supervisor/${userId}/edit`;
     case roles.Coordinator:
-      return `/api/coordinator/${userId}/edit`;
+      return `${apiUrl}/api/coordinator/${userId}/edit`;
     case roles.HeadSupervisor:
-      return `/api/headSupervisor/${userId}/edit`;
+      return `${apiUrl}/api/headSupervisor/${userId}/edit`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -183,17 +184,17 @@ function getSpecificRoleUserEditionUrl(userId, role) {
 function getSpecificRoleUserRetrievalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/technicalAdvisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/manager/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/dataConsumer/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/supervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
-      return `/api/coordinator/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/coordinator/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.HeadSupervisor:
-      return `/api/headSupervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/headSupervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -202,17 +203,17 @@ function getSpecificRoleUserRetrievalUrl(userId, role, nationalSocietyId) {
 function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/technicalAdvisor/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/${userId}/delete`;
+      return `${apiUrl}/api/manager/${userId}/delete`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
+      return `${apiUrl}/api/dataConsumer/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/delete`;
+      return `${apiUrl}/api/supervisor/${userId}/delete`;
     case roles.Coordinator:
-      return `/api/coordinator/${userId}/delete`;
+      return `${apiUrl}/api/coordinator/${userId}/delete`;
     case roles.HeadSupervisor:
-      return `/api/headSupervisor/${userId}/delete`;
+      return `${apiUrl}/api/headSupervisor/${userId}/delete`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -220,7 +221,7 @@ function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
 
 function* openNationalSocietyUsersModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

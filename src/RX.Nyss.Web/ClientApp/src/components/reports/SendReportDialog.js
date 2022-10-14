@@ -19,6 +19,7 @@ import {getUtcOffset} from "../../utils/date";
 import * as http from "../../utils/http";
 import CancelButton from "../common/buttons/cancelButton/CancelButton";
 import TimePicker from "../forms/TimePicker";
+import { apiUrl } from "../../utils/variables";
 
 export const SendReportDialog = ({ close, showMessage }) => {
   const [form, setForm] = useState(null);
@@ -44,7 +45,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
     if (!formData) {
       return null;
     }
-    
+
     const fields = {
       dataCollector: null,
       gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
@@ -74,7 +75,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
   function getReportStatus(timestamp, dataCollectorId) {
     return new Promise((resolve, reject) => {
       intervalHandler.current = setInterval(() => {
-        http.get(`/api/report/status?timestamp=${timestamp}&dataCollectorId=${dataCollectorId}`, false, abortController.current.signal)
+        http.get(`${apiUrl}/api/report/status?timestamp=${timestamp}&dataCollectorId=${dataCollectorId}`, false, abortController.current.signal)
         .then(status => {
           if (!status) return;
 
@@ -111,7 +112,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
 
     try {
       setIsSending(true);
-      await http.post("/api/report/sendReport", data, false, abortController.current.signal);
+      await http.post(`${apiUrl}/api/report/sendReport`, data, false, abortController.current.signal);
       const status = await getReportStatus(data.timestamp, data.dataCollectorId);
 
       showMessage(status.feedbackMessage ? status.feedbackMessage : stringKeys.reports.sendReport.success);
@@ -157,8 +158,8 @@ export const SendReportDialog = ({ close, showMessage }) => {
       form.fields.gatewayModemId.update("");
       setGatewayModemsDisabled(true);
     }
-  }  
-  
+  }
+
   const onDateChange = date => {
     const newDate = dayjs(date);
     setDate(newDate);
@@ -166,8 +167,8 @@ export const SendReportDialog = ({ close, showMessage }) => {
   }
 
   const validateTime = (value, newDate = null) =>
-    dayjs(`${(!!newDate ? newDate : date).format('YYYY-MM-DD')} ${value}`) > dayjs() 
-      ? strings(stringKeys.validation.timeNotInFuture) 
+    dayjs(`${(!!newDate ? newDate : date).format('YYYY-MM-DD')} ${value}`) > dayjs()
+      ? strings(stringKeys.validation.timeNotInFuture)
       : null;
 
   const onTimeChange = time => {

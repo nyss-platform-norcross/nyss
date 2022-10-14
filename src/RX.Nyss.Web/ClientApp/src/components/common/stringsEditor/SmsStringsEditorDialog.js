@@ -8,6 +8,7 @@ import { Loading } from '../loading/Loading';
 import { useDispatch } from 'react-redux';
 import {smsStringsDeleted, smsStringsUpdated} from '../../app/logic/appActions';
 import TextInputWithCharacterCountField from '../../forms/TextInputWithCharacterCountField';
+import { apiUrl } from '../../../utils/variables';
 
 export const SmsStringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
@@ -17,7 +18,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
   const currentLanguageCode = "en";
 
   useMount(() => {
-    get(`/api/resources/getSmsString/${encodeURI(stringKey)}`)
+    get(`${apiUrl}/api/resources/getSmsString/${encodeURI(stringKey)}`)
       .then(response => {
         const translations = response.value.translations;
 
@@ -52,7 +53,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
       }))
     };
 
-    post('/api/resources/saveSmsString', dto)
+    post(`${apiUrl}/api/resources/saveSmsString`, dto)
       .then(() => {
         dispatch(smsStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
@@ -70,7 +71,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
       key: values.key
     };
 
-    post('/api/resources/deleteSmsString', dto)
+    post(`${apiUrl}/api/resources/deleteSmsString`, dto)
       .then(() => {
         dispatch(smsStringsDeleted(dto.key));
         close();

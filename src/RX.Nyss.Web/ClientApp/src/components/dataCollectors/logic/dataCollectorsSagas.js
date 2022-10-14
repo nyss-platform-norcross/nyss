@@ -8,6 +8,7 @@ import { stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
 import { convertToUtc, formatDate } from "../../../utils/date";
+import { apiUrl } from "../../../utils/variables";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -40,7 +41,7 @@ function* openDataCollectorsList({ projectId }) {
     yield openDataCollectorsModule(projectId);
 
     const filtersData = listProjectId !== projectId || filtersStale
-      ? (yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`)).value
+      ? (yield call(http.get, `${apiUrl}/api/dataCollector/filters?projectId=${projectId}`)).value
       : yield select(state => state.dataCollectors.filtersData);
 
     const filters = yield select(state => state.dataCollectors.filters);
@@ -60,7 +61,7 @@ function* openDataCollectorCreation({ projectId }) {
   try {
     yield openDataCollectorsModule(projectId);
 
-    const response = yield call(http.get, `/api/dataCollector/formData?projectId=${projectId}`);
+    const response = yield call(http.get, `${apiUrl}/api/dataCollector/formData?projectId=${projectId}`);
 
     yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId, response.value.countryCode));
   } catch (error) {
@@ -93,7 +94,7 @@ function* openDataCollectorMapOverview({ projectId }) {
 function* getDataCollectorMapOverview({ projectId, filters }) {
   yield put(actions.getMapOverview.request());
   try {
-    const response = yield call(http.get, `/api/dataCollector/mapOverview?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}`);
+    const response = yield call(http.get, `${apiUrl}/api/dataCollector/mapOverview?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}`);
     yield put(actions.getMapOverview.success(filters, response.value.dataCollectorLocations, response.value.centerLocation));
   } catch (error) {
     yield put(actions.getMapOverview.failure(error.message));
@@ -103,7 +104,7 @@ function* getDataCollectorMapOverview({ projectId, filters }) {
 function* openDataCollectorEdition({ dataCollectorId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/dataCollector/${dataCollectorId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/dataCollector/${dataCollectorId}/get`);
     yield openDataCollectorsModule(response.value.projectId);
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
@@ -114,7 +115,7 @@ function* openDataCollectorEdition({ dataCollectorId }) {
 function* createDataCollector({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/dataCollector/create`, data);
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(data.projectId));
     yield put(appActions.showMessage(response.value));
@@ -126,7 +127,7 @@ function* createDataCollector({ data }) {
 function* editDataCollector({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/dataCollector/${data.id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(data.projectId));
     yield put(appActions.showMessage(response.value));
@@ -138,7 +139,7 @@ function* editDataCollector({ data }) {
 function* removeDataCollector({ dataCollectorId }) {
   yield put(actions.remove.request(dataCollectorId));
   try {
-    const response = yield call(http.post, `/api/dataCollector/${dataCollectorId}/delete`);
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/${dataCollectorId}/delete`);
     yield put(actions.remove.success(dataCollectorId));
     const projectId = yield select(state => state.appData.route.params.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
@@ -153,7 +154,7 @@ function* getMapDetails({ projectId, lat, lng }) {
   yield put(actions.getMapDetails.request());
   try {
     const filters = yield select(state => state.dataCollectors.mapOverviewFilters);
-    const response = yield call(http.get, `/api/dataCollector/mapOverviewDetails?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
+    const response = yield call(http.get, `${apiUrl}/api/dataCollector/mapOverviewDetails?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
     yield put(actions.getMapDetails.success(response.value));
   } catch (error) {
     yield put(actions.getMapDetails.failure(error.message));
@@ -163,7 +164,7 @@ function* getMapDetails({ projectId, lat, lng }) {
 function* getDataCollectors({ projectId, filters }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.post, `/api/dataCollector/list?projectId=${projectId}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/list?projectId=${projectId}`, filters);
     yield put(actions.getList.success(response.value, filters));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -172,7 +173,7 @@ function* getDataCollectors({ projectId, filters }) {
 
 function* openDataCollectorsModule(projectId) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 
@@ -189,7 +190,7 @@ function* openDataCollectorsModule(projectId) {
 function* setTrainingState({ dataCollectorIds, inTraining }) {
   yield put(actions.setTrainingState.request(dataCollectorIds));
   try {
-    const response = yield call(http.post, "/api/dataCollector/setTrainingState", { dataCollectorIds, inTraining });
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/setTrainingState`, { dataCollectorIds, inTraining });
     yield put(actions.setTrainingState.success(dataCollectorIds, inTraining));
     yield put(appActions.showMessage(response.message.key));
     const projectId = yield select(state => state.dataCollectors.projectId);
@@ -210,7 +211,7 @@ function* openDataCollectorsPerformanceList({ projectId }) {
     let filtersData = yield select(state => state.dataCollectors.filtersData);
 
     if (filtersData.nationalSocietyId == null) {
-      const fetchedFiltersData = yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`);
+      const fetchedFiltersData = yield call(http.get, `${apiUrl}/api/dataCollector/filters?projectId=${projectId}`);
       filtersData = fetchedFiltersData.value;
     }
 
@@ -224,7 +225,7 @@ function* openDataCollectorsPerformanceList({ projectId }) {
 function* getDataCollectorsPerformance({ projectId, filters }) {
   yield put(actions.getDataCollectorsPerformanceList.request());
   try {
-    const response = yield call(http.post, `/api/dataCollector/performance?projectId=${projectId}`, filters);
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/performance?projectId=${projectId}`, filters);
     yield put(actions.getDataCollectorsPerformanceList.success(response.value.performance, response.value.completeness, response.value.epiDateRange));
   } catch (error) {
     yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
@@ -236,7 +237,7 @@ function* getExcelExportData({ projectId, filters }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/dataCollector/exportToExcel?projectId=${projectId}`,
+      url: `${apiUrl}/api/dataCollector/exportToExcel?projectId=${projectId}`,
       fileName: `dataCollectors_${formatDate(date)}.xlsx`,
       data: filters
     });
@@ -252,7 +253,7 @@ function* getCsvExportData({ projectId, filters }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/dataCollector/exportToCsv?projectId=${projectId}`,
+      url: `${apiUrl}/api/dataCollector/exportToCsv?projectId=${projectId}`,
       fileName: `dataCollectors_${formatDate(date)}.csv`,
       data: filters
     });
@@ -268,7 +269,7 @@ function* replaceSupervisor({ dataCollectorIds, supervisorId, supervisorRole }) 
   try {
     const projectId = yield select(state => state.dataCollectors.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
-    yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId, supervisorRole });
+    yield call(http.post, `${apiUrl}/api/dataCollector/replaceSupervisor`, { dataCollectorIds, supervisorId, supervisorRole });
     yield call(getDataCollectors, { projectId, filters });
     yield put(actions.replaceSupervisor.success(dataCollectorIds));
     yield put(appActions.showMessage(stringKeys.dataCollectors.list.supervisorReplacedSuccessfully));
@@ -282,7 +283,7 @@ function* setDeployedState({ dataCollectorIds, deployed }) {
   try {
     const projectId = yield select(state => state.dataCollectors.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
-    const response = yield call(http.post, '/api/dataCollector/setDeployedState', { dataCollectorIds, deployed });
+    const response = yield call(http.post, `${apiUrl}/api/dataCollector/setDeployedState`, { dataCollectorIds, deployed });
     yield call(getDataCollectors, { projectId, filters });
     yield put(actions.setDeployedState.success(dataCollectorIds));
     yield put(appActions.showMessage(response.message.key));
@@ -296,7 +297,7 @@ function* exportDataCollectorPerformance({ projectId, filters }) {
   try {
     const date = new Date(Date.now());
     yield downloadFile({
-      url: `/api/dataCollector/exportPerformance?projectId=${projectId}`,
+      url: `${apiUrl}/api/dataCollector/exportPerformance?projectId=${projectId}`,
       fileName: `dataCollectorPerformance_${formatDate(date)}.xlsx`,
       data: filters
     });

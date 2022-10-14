@@ -4,6 +4,7 @@ import * as actions from "./projectAlertNotHandledRecipientsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { apiUrl } from "../../../utils/variables";
 
 export const projectAlertNotHandledRecipientsSagas = () => [
   takeEvery(consts.OPEN_ALERT_NOT_HANDLED_RECIPIENTS.INVOKE, openProjectAlertNotHandledRecipients),
@@ -28,7 +29,7 @@ function* openProjectAlertNotHandledRecipients({ projectId }) {
 function* createAlertNotHandledRecipient({ projectId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/projectAlertNotHandledRecipient/create?projectId=${projectId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/projectAlertNotHandledRecipient/create?projectId=${projectId}`, data);
     yield put(actions.create.success(response.value));
     yield put(appActions.showMessage(response.message.key));
     yield call(getProjectAlertNotHandledRecipients, projectId);
@@ -40,7 +41,7 @@ function* createAlertNotHandledRecipient({ projectId, data }) {
 function* editAlertNotHandledRecipient({ projectId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/projectAlertNotHandledRecipient/edit?projectId=${projectId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/projectAlertNotHandledRecipient/edit?projectId=${projectId}`, data);
     yield put(actions.edit.success(response.value));
     yield put(appActions.showMessage(response.message.key));
     yield call(getProjectAlertNotHandledRecipients, projectId);
@@ -52,7 +53,7 @@ function* editAlertNotHandledRecipient({ projectId, data }) {
 function* getProjectAlertNotHandledRecipients(projectId) {
   yield put(actions.getRecipients.request());
   try {
-    const response = yield call(http.get, `/api/projectAlertNotHandledRecipient/list?projectId=${projectId}`);
+    const response = yield call(http.get, `${apiUrl}/api/projectAlertNotHandledRecipient/list?projectId=${projectId}`);
     yield put(actions.getRecipients.success(response.value));
   } catch (error) {
     yield put(actions.getRecipients.failure(error.message));
@@ -63,7 +64,7 @@ function* getProjectAlertNotHandledRecipientsFormData({ projectId }) {
   yield put(actions.getFormData.request());
   try {
     const response = yield call(http.getCached, {
-      path: `/api/projectAlertNotHandledRecipient/formData?projectId=${projectId}`,
+      path: `${apiUrl}/api/projectAlertNotHandledRecipient/formData?projectId=${projectId}`,
       dependencies: entityTypes.project(projectId)
     });
     yield put(actions.getFormData.success(response.value));

@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const smsGatewaysSagas = () => [
   takeEvery(consts.OPEN_SMS_GATEWAYS_LIST.INVOKE, openSmsGatewaysList),
@@ -45,7 +46,7 @@ function* openSmsGatewayCreation({ nationalSocietyId }) {
 function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/smsGateway/${smsGatewayId}/get`);
     yield openSmsGatewaysModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
@@ -56,7 +57,7 @@ function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
 function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/smsGateway/create?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/smsGateway/create?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.smsGateway.create.success));
@@ -68,7 +69,7 @@ function* createSmsGateway({ nationalSocietyId, data }) {
 function* editSmsGateway({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/smsGateway/${data.id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/smsGateway/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(data.nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.smsGateway.edit.success));
@@ -80,7 +81,7 @@ function* editSmsGateway({ data }) {
 function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
-    yield call(http.post, `/api/smsGateway/${smsGatewayId}/delete`);
+    yield call(http.post, `${apiUrl}/api/smsGateway/${smsGatewayId}/delete`);
     yield put(actions.remove.success(smsGatewayId));
     yield call(getSmsGateways, nationalSocietyId);
     yield put(appActions.showMessage(stringKeys.smsGateway.delete.success));
@@ -92,7 +93,7 @@ function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
 function* getSmsGateways(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/smsGateway/list?nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, `${apiUrl}/api/smsGateway/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -112,7 +113,7 @@ function* pingIotDevice({ iotDeviceId }) {
 function* listAvailableIotDevices(){
   yield put(actions.listAvailableIotDevices.request());
   try{
-    const availableGateways = yield call(http.get, `/api/smsGateway/iotDevices/list`);
+    const availableGateways = yield call(http.get, `${apiUrl}/api/smsGateway/iotDevices/list`);
     yield put(actions.listAvailableIotDevices.success(availableGateways.value));
   }catch (error) {
     yield put(actions.listAvailableIotDevices.failure(error.message));
@@ -121,7 +122,7 @@ function* listAvailableIotDevices(){
 
 function* openSmsGatewaysModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

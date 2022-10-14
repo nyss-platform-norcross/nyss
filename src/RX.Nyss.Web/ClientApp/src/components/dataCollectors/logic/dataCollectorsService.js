@@ -1,5 +1,6 @@
 import { dataCollectorType, performanceStatus } from "./dataCollectorsConstants";
 import * as http from '../../../utils/http';
+import { apiUrl } from "../../../utils/variables";
 
 export const getIconFromStatus = (status) => {
   switch (status) {
@@ -36,13 +37,13 @@ export const getSaveFormModel = (projectId, values, type, locations) =>
   });
 
 export const getFormDistricts = (regionId, callback) =>
-  http.get(`/api/nationalSocietyStructure/district/list?regionId=${regionId}`)
+  http.get(`${apiUrl}/api/nationalSocietyStructure/district/list?regionId=${regionId}`)
     .then(response => callback(response.value));
 
 export const getFormVillages = (districtId, callback) =>
-  http.get(`/api/nationalSocietyStructure/village/list?districtId=${districtId}`)
+  http.get(`${apiUrl}/api/nationalSocietyStructure/village/list?districtId=${districtId}`)
     .then(response => callback(response.value));
 
 export const getFormZones = (villageId, callback) =>
-  http.get(`/api/nationalSocietyStructure/zone/list?villageId=${villageId}`)
+  http.get(`${apiUrl}/api/nationalSocietyStructure/zone/list?villageId=${villageId}`)
     .then(response => callback(response.value));

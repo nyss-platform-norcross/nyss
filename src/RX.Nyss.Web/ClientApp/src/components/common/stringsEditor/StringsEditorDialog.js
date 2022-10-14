@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
 import { stringsDeleted } from '../../app/logic/appActions';
 import CheckboxField from '../../forms/CheckboxField';
+import { apiUrl } from '../../../utils/variables';
 
 export const StringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
@@ -19,7 +20,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
   const currentLanguageCode = "en";
 
   useMount(() => {
-    get(`/api/resources/getString/${encodeURI(stringKey)}`)
+    get(`${apiUrl}/api/resources/getString/${encodeURI(stringKey)}`)
       .then(response => {
         const translations = response.value.translations;
 
@@ -56,7 +57,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
       }))
     };
 
-    post('/api/resources/saveString', dto)
+    post(`${apiUrl}/api/resources/saveString`, dto)
       .then(() => {
         updateStrings({
           [values.key]: {
@@ -81,7 +82,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
       key: values.key
     };
 
-    post('/api/resources/deleteString', dto)
+    post(`${apiUrl}/api/resources/deleteString`, dto)
       .then(() => {
         dispatch(stringsDeleted(dto.key));
         close();

@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import {push} from "connected-react-router";
 import {stringKeys} from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const eidsrIntegrationSagas = () => [
   takeEvery(consts.GET_EIDSR_INTEGRATION.INVOKE, getEidsrIntegration),
@@ -18,7 +19,7 @@ function* getEidsrIntegration({ nationalSocietyId }) {
   try {
 
     yield getNationalSocietyBaseInfo(nationalSocietyId);
-    const eidsrConfigurationResponse = yield call(http.get, `/api/eidsrconfiguration/${nationalSocietyId}/get`);
+    const eidsrConfigurationResponse = yield call(http.get, `${apiUrl}/api/eidsrconfiguration/${nationalSocietyId}/get`);
     yield put(actions.get.success(eidsrConfigurationResponse.value));
 
   } catch (error) {
@@ -29,7 +30,7 @@ function* getEidsrIntegration({ nationalSocietyId }) {
 function* editEidsrIntegration({ id, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/eidsrconfiguration/${id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/eidsrconfiguration/${id}/edit`, data);
     yield put(actions.edit.success(response.value));
 
     yield put(push(`/nationalsocieties/${id}/eidsrintegration`));
@@ -41,7 +42,7 @@ function* editEidsrIntegration({ id, data }) {
 
 // gets national society data to feed breadcrumb
 function* getNationalSocietyBaseInfo(nationalSocietyId) {
-  const nationalSociety = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/get`);
+  const nationalSociety = yield call(http.get, `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`);
 
   yield put(appActions.openModule.invoke(null, {
     nationalSocietyId: nationalSociety.value.id,

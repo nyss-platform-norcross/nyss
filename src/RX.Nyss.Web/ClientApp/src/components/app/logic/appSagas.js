@@ -10,6 +10,7 @@ import * as cache from "../../../utils/cache";
 import { reloadPage } from "../../../utils/page";
 import * as localStorage from "../../../utils/localStorage";
 import { initTracking } from "../../../utils/tracking";
+import { apiUrl } from "../../../utils/variables";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
@@ -96,7 +97,7 @@ function* openModule({ path, params }) {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    const appData = yield call(http.get, "/api/appData/getAppData", true);
+    const appData = yield call(http.get, `${apiUrl}/api/appData/getAppData`, true);
     yield put(actions.getAppData.success(
       appData.value.contentLanguages,
       appData.value.countries,
@@ -113,7 +114,7 @@ function* getAppData() {
 function* getStrings(languageCode) {
   yield put(actions.getStrings.invoke());
   try {
-    const response = yield call(http.get, `/api/appData/getStrings/${languageCode}`, true);
+    const response = yield call(http.get, `${apiUrl}/api/appData/getStrings/${languageCode}`, true);
     updateStrings(response.value);
     yield put(actions.getStrings.success());
   } catch (error) {
@@ -128,7 +129,7 @@ function entityUpdated({ entities }) {
 function* sendFeedback({ message }) {
   yield put(actions.sendFeedback.request());
   try {
-    yield call(http.post, `/api/feedback`, message);
+    yield call(http.post, `${apiUrl}/api/feedback`, message);
     yield put(actions.sendFeedback.success());
   } catch (error) {
     yield put(actions.sendFeedback.failure(error.message));

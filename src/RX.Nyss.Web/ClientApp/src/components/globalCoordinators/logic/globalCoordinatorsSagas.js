@@ -4,6 +4,7 @@ import * as actions from "./globalCoordinatorsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const globalCoordinatorsSagas = () => [
   takeEvery(consts.GET_GLOBAL_COORDINATORS.INVOKE, getGlobalCoordinators),
@@ -22,7 +23,7 @@ function* getGlobalCoordinators(force) {
 
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, "/api/globalcoordinator/list");
+    const response = yield call(http.get, `${apiUrl}/api/globalcoordinator/list`);
 
     yield put(actions.getList.success(response.value));
   } catch (error) {
@@ -33,7 +34,7 @@ function* getGlobalCoordinators(force) {
 function* openGlobalCoordinatorEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/globalCoordinator/${params.globalCoordinatorId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/globalCoordinator/${params.globalCoordinatorId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       globalCoordinatorName: response.value.name,
@@ -49,7 +50,7 @@ function* openGlobalCoordinatorEdition({ path, params }) {
 function* createGlobalCoordinator({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, "/api/globalcoordinator/create", data);
+    const response = yield call(http.post, `${apiUrl}/api/globalcoordinator/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.globalCoordinator.create.success));
@@ -61,7 +62,7 @@ function* createGlobalCoordinator({ data }) {
 function* editGlobalCoordinator({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/globalcoordinator/${data.id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/globalcoordinator/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.globalCoordinator.edit.success));
@@ -73,7 +74,7 @@ function* editGlobalCoordinator({ data }) {
 function* removeGlobalCoordinator({ id }) {
   yield put(actions.remove.request(id));
   try {
-    yield call(http.post, `/api/globalcoordinator/${id}/delete`);
+    yield call(http.post, `${apiUrl}/api/globalcoordinator/${id}/delete`);
     yield put(actions.remove.success(id));
     yield call(getGlobalCoordinators, true);
     yield put(appActions.showMessage(stringKeys.globalCoordinator.delete.success));

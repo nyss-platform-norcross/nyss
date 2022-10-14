@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const organizationsSagas = () => [
   takeEvery(consts.OPEN_ORGANIZATIONS_LIST.INVOKE, openOrganizationsList),
@@ -43,7 +44,7 @@ function* openOrganizationCreation({ nationalSocietyId }) {
 function* openOrganizationEdition({ nationalSocietyId, organizationId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/organization/${organizationId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/organization/${organizationId}/get`);
     yield openOrganizationsModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
@@ -54,7 +55,7 @@ function* openOrganizationEdition({ nationalSocietyId, organizationId }) {
 function* createOrganization({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/organization/create?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/organization/create?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.organization.create.success));
@@ -66,7 +67,7 @@ function* createOrganization({ nationalSocietyId, data }) {
 function* editOrganization({ nationalSocietyId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/organization/${data.id}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/organization/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.organization.edit.success));
@@ -78,7 +79,7 @@ function* editOrganization({ nationalSocietyId, data }) {
 function* removeOrganization({ nationalSocietyId, organizationId }) {
   yield put(actions.remove.request(organizationId));
   try {
-    yield call(http.post, `/api/organization/${organizationId}/delete`);
+    yield call(http.post, `${apiUrl}/api/organization/${organizationId}/delete`);
     yield put(actions.remove.success(organizationId));
     yield call(getOrganizations, nationalSocietyId);
     yield put(appActions.showMessage(stringKeys.organization.delete.success));
@@ -90,7 +91,7 @@ function* removeOrganization({ nationalSocietyId, organizationId }) {
 function* getOrganizations(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/organization/list?nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, `${apiUrl}/api/organization/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error));
@@ -99,7 +100,7 @@ function* getOrganizations(nationalSocietyId) {
 
 function* openOrganizationsModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

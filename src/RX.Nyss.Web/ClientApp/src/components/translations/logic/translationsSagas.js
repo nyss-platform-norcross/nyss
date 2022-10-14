@@ -4,6 +4,7 @@ import * as actions from "./translationsActions";
 import * as http from "../../../utils/http";
 import * as appActions from "../../app/logic/appActions";
 import { strings, stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const translationsSagas = () => [
   takeEvery(consts.OPEN_TRANSLATIONS_LIST.INVOKE, openTranslationsList),
@@ -28,7 +29,7 @@ function* openTranslationsList({ path }) {
 function* getTranslations({ needsImprovementOnly }) {
   yield put(actions.getTranslationsList.request());
   try {
-    const response = yield call(http.get, `/api/resources/listStringsTranslations?needsImprovementOnly=${needsImprovementOnly}`);
+    const response = yield call(http.get, `${apiUrl}/api/resources/listStringsTranslations?needsImprovementOnly=${needsImprovementOnly}`);
     yield put(actions.getTranslationsList.success(response.value));
   } catch (error) {
     yield put(actions.getTranslationsList.failure(error.message));
@@ -49,7 +50,7 @@ function* openEmailTranslationsList({ path }) {
 function* getEmailTranslations({ needsImprovementOnly }) {
   yield put(actions.getEmailTranslationsList.request());
   try {
-    const response = yield call(http.get, `/api/resources/listEmailTranslations?needsImprovementOnly=${needsImprovementOnly}`);
+    const response = yield call(http.get, `${apiUrl}/api/resources/listEmailTranslations?needsImprovementOnly=${needsImprovementOnly}`);
     yield put(actions.getEmailTranslationsList.success(response.value));
   } catch (error) {
     yield put(actions.getEmailTranslationsList.failure(error.message));
@@ -70,7 +71,7 @@ function* openSmsTranslationsList({ path }) {
 function* getSmsTranslations({ needsImprovementOnly }) {
   yield put(actions.getSmsTranslationsList.request());
   try {
-    const response = yield call(http.get, `/api/resources/listSmsTranslations?needsImprovementOnly=${needsImprovementOnly}`);
+    const response = yield call(http.get, `${apiUrl}/api/resources/listSmsTranslations?needsImprovementOnly=${needsImprovementOnly}`);
     yield put(actions.getSmsTranslationsList.success(response.value));
   } catch (error) {
     yield put(actions.getSmsTranslationsList.failure(error.message));

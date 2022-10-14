@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
+import { apiUrl } from "../../../utils/variables";
 
 export const projectOrganizationsSagas = () => [
   takeEvery(consts.OPEN_PROJECT_ORGANIZATIONS_LIST.INVOKE, openProjectOrganizationsList),
@@ -31,7 +32,7 @@ function* openProjectOrganizationsList({ projectId }) {
 function* openProjectOrganizationCreation({ projectId }) {
   yield put(actions.openCreation.request());
   try {
-    const createData = yield call(http.get, `/api/projectOrganization/getCreateData?projectId=${projectId}`)
+    const createData = yield call(http.get, `${apiUrl}/api/projectOrganization/getCreateData?projectId=${projectId}`)
     yield openProjectOrganizationsModule(projectId);
     yield put(actions.openCreation.success(createData.value));
   } catch (error) {
@@ -42,7 +43,7 @@ function* openProjectOrganizationCreation({ projectId }) {
 function* createProjectOrganization({ projectId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/projectOrganization/create?projectId=${projectId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/projectOrganization/create?projectId=${projectId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.projectOrganization.create.success));
@@ -54,7 +55,7 @@ function* createProjectOrganization({ projectId, data }) {
 function* removeProjectOrganization({ projectId, projectOrganizationId }) {
   yield put(actions.remove.request(projectOrganizationId));
   try {
-    yield call(http.post, `/api/projectOrganization/${projectOrganizationId}/delete`);
+    yield call(http.post, `${apiUrl}/api/projectOrganization/${projectOrganizationId}/delete`);
     yield put(actions.remove.success(projectOrganizationId));
     yield call(getProjectOrganizations, projectId);
     yield put(appActions.showMessage(stringKeys.projectOrganization.delete.success));
@@ -66,7 +67,7 @@ function* removeProjectOrganization({ projectId, projectOrganizationId }) {
 function* getProjectOrganizations(projectId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/projectOrganization/list?projectId=${projectId}`);
+    const response = yield call(http.get, `${apiUrl}/api/projectOrganization/list?projectId=${projectId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -75,7 +76,7 @@ function* getProjectOrganizations(projectId) {
 
 function* openProjectOrganizationsModule(projectId) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 

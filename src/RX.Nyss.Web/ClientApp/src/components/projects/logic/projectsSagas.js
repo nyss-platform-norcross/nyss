@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
 import { getUtcOffset } from "../../../utils/date";
+import { apiUrl } from "../../../utils/variables";
 
 export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECTS_LIST.INVOKE, openProjectsList),
@@ -36,7 +37,7 @@ function* openProjectsList({ nationalSocietyId }) {
 function* openProjectCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
-    const formData = yield call(http.get, `/api/project/getFormData?nationalSocietyId=${nationalSocietyId}`);
+    const formData = yield call(http.get, `${apiUrl}/api/project/getFormData?nationalSocietyId=${nationalSocietyId}`);
     yield openProjectsModule(nationalSocietyId);
     yield put(actions.openCreation.success(formData.value));
   } catch (error) {
@@ -47,7 +48,7 @@ function* openProjectCreation({ nationalSocietyId }) {
 function* openProjectEdition({ nationalSocietyId, projectId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/project/${projectId}/get`);
     yield call(openProjectDashboardModule, projectId);
     yield put(actions.openEdition.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
   } catch (error) {
@@ -58,7 +59,7 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
 function* openProjectOverview({ projectId }) {
   yield put(actions.openOverview.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/get`);
+    const response = yield call(http.get, `${apiUrl}/api/project/${projectId}/get`);
     yield call(openProjectDashboardModule, projectId);
     yield put(actions.openOverview.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
   } catch (error) {
@@ -69,7 +70,7 @@ function* openProjectOverview({ projectId }) {
 function* createProject({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/project/create?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `${apiUrl}/api/project/create?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.project.messages.create.success));
@@ -81,7 +82,7 @@ function* createProject({ nationalSocietyId, data }) {
 function* editProject({ nationalSocietyId, projectId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/project/${projectId}/edit`, data);
+    const response = yield call(http.post, `${apiUrl}/api/project/${projectId}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(appActions.entityUpdated(entityTypes.project(projectId)));
     yield put(actions.goToOverview(nationalSocietyId, projectId));
@@ -94,7 +95,7 @@ function* editProject({ nationalSocietyId, projectId, data }) {
 function* closeProject({ nationalSocietyId, projectId }) {
   yield put(actions.close.request(projectId));
   try {
-    yield call(http.post, `/api/project/${projectId}/close?nationalSocietyId=${nationalSocietyId}`);
+    yield call(http.post, `${apiUrl}/api/project/${projectId}/close?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.close.success(projectId));
     yield call(getProjects, nationalSocietyId);
     yield put(appActions.entityUpdated(entityTypes.project(projectId)));
@@ -107,7 +108,7 @@ function* closeProject({ nationalSocietyId, projectId }) {
 function* getProjects(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/project/list?nationalSocietyId=${nationalSocietyId}&utcOffset=${getUtcOffset()}`);
+    const response = yield call(http.get, `${apiUrl}/api/project/list?nationalSocietyId=${nationalSocietyId}&utcOffset=${getUtcOffset()}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -116,7 +117,7 @@ function* getProjects(nationalSocietyId) {
 
 function* openProjectsModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    path: `${apiUrl}/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 
@@ -131,7 +132,7 @@ function* openProjectsModule(nationalSocietyId) {
 
 function* openProjectDashboardModule(projectId) {
   const project = yield call(http.getCached, {
-    path: `/api/project/${projectId}/basicData`,
+    path: `${apiUrl}/api/project/${projectId}/basicData`,
     dependencies: [entityTypes.project(projectId)]
   });
 

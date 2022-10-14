@@ -20,6 +20,7 @@ import {
   useMediaQuery,
   Grid,
 } from '@material-ui/core';
+import { apiUrl } from '../../../utils/variables';
 
 export const EmailStringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
@@ -31,7 +32,7 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
   const currentLanguageCode = "en";
 
   useMount(() => {
-    get(`/api/resources/getEmailString/${encodeURI(stringKey)}`)
+    get(`${apiUrl}/api/resources/getEmailString/${encodeURI(stringKey)}`)
       .then(response => {
         const translations = response.value.translations;
 
@@ -66,7 +67,7 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
       }))
     };
 
-    post('/api/resources/saveEmailString', dto)
+    post(`${apiUrl}/api/resources/saveEmailString`, dto)
       .then(() => {
         dispatch(emailStringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
@@ -84,7 +85,7 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
       key: values.key
     };
 
-    post('/api/resources/deleteEmailString', dto)
+    post(`${apiUrl}/api/resources/deleteEmailString`, dto)
       .then(() => {
         dispatch(emailStringsDeleted(dto.key));
         close();
