@@ -116,10 +116,9 @@ public class EidsrReportHandler : IEidsrReportHandler
 
             var request = EidsrRegisterEventRequest.CreateEidsrRegisterEventRequest(template, data);
 
-            // TODO: make a request
-            // _eidsrClient.RegisterEvent(request);
+            var result = await _eidsrClient.RegisterEvent(request);
 
-            return true;
+            return result.IsSuccess;
         }
         catch (Exception e)
         {

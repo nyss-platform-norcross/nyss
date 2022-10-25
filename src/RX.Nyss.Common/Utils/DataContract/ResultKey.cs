@@ -179,6 +179,7 @@ public static class ResultKey
         public static class EidsrApi
         {
             public const string ConnectionError = "EidsrIntegration.EidsrApi.ConnectionError";
+            public const string RegisterEventError = "EidsrIntegration.EidsrApi.RegisterEventError";
         }
     }
 

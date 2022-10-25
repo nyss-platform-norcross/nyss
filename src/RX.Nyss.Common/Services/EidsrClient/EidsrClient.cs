@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.EidsrClient.Dto;
@@ -15,6 +16,8 @@ public interface IEidsrClient
     Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId);
 
     Task<Result<EidsrProgramResponse>> GetProgram(EidsrApiProperties apiProperties, string programId);
+
+    Task<Result> RegisterEvent(EidsrRegisterEventRequest eidsrRegisterEventRequest);
 }
 
 public class EidsrClient : IEidsrClient
@@ -85,6 +88,27 @@ public class EidsrClient : IEidsrClient
 
         _loggerAdapter.Error(res.ReasonPhrase);
         return Error<EidsrOrganisationUnitsResponse>(ResultKey.EidsrIntegration.EidsrApi.ConnectionError);
+    }
+
+    public async Task<Result> RegisterEvent(
+        EidsrRegisterEventRequest eidsrRegisterEventRequest)
+    {
+        using var httpClient = _httpClientFactory.CreateClient();
+        ConfigureClient(eidsrRegisterEventRequest.EidsrApiProperties, httpClient);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/events");
+        request.Content = new StringContent(
+            JsonSerializer.Serialize(eidsrRegisterEventRequest.EidsrRegisterEventRequestBody), Encoding.UTF8, "application/json");
+
+        var res = await httpClient.SendAsync(request);
+
+        if (res.IsSuccessStatusCode)
+        {
+            return Success();
+        }
+
+        _loggerAdapter.Error(res.ReasonPhrase);
+        return Error<bool>(ResultKey.EidsrIntegration.EidsrApi.RegisterEventError);
     }
 
     private static bool ConfigureClient(EidsrApiProperties apiProperties, HttpClient httpClient)

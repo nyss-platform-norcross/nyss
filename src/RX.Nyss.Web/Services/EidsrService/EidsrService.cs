@@ -46,7 +46,6 @@ public class EidsrService : IEidsrService
         _queueService = queueService;
         _loggerAdapter = loggerAdapter;
         _config = config;
-
     }
 
     public async Task<Result<EidsrOrganisationUnitsResponse>> GetOrganizationUnits(EidsrApiProperties apiProperties, string programId)
