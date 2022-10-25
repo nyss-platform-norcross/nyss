@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.EidsrClient.Dto;
@@ -31,12 +33,18 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
         private readonly INyssContext _nyssContext;
         private readonly ICryptographyService _cryptographyService;
         private readonly IDistrictsOrgUnitsService _districtsOrgUnitsService;
+        private readonly INyssWebConfig _nyssWebConfig;
 
-        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService, IDistrictsOrgUnitsService districtsOrgUnitsService)
+        public Handler(
+            INyssContext nyssContext,
+            ICryptographyService cryptographyService,
+            IDistrictsOrgUnitsService districtsOrgUnitsService,
+            INyssWebConfig nyssWebConfig)
         {
             _nyssContext = nyssContext;
             _cryptographyService = cryptographyService;
             _districtsOrgUnitsService = districtsOrgUnitsService;
+            _nyssWebConfig = nyssWebConfig;
         }
 
         public async Task<Result> Handle(EditEidsrIntegrationCommand request, CancellationToken cancellationToken)
@@ -61,7 +69,10 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
                 .FirstOrDefaultAsync(x =>
                     x.NationalSocietyId == request.Id, cancellationToken: cancellationToken);
 
-            var passwordHash = _cryptographyService.Encrypt(request.Body.Password);
+            var passwordHash = _cryptographyService.Encrypt(
+                request.Body.Password,
+                _nyssWebConfig.Key,
+                _nyssWebConfig.SupplementaryKey);
 
             if (eidsrConfiguration == default)
             {

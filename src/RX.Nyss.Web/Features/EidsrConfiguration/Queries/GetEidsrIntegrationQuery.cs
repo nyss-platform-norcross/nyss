@@ -6,9 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration.Queries;
 
@@ -26,12 +28,18 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
         private readonly INyssContext _nyssContext;
         private readonly ICryptographyService _cryptographyService;
         private readonly IDistrictsOrgUnitsService _districtsOrgUnitsService;
+        private readonly INyssWebConfig _nyssWebConfig;
 
-        public Handler(INyssContext nyssContext, ICryptographyService cryptographyService, IDistrictsOrgUnitsService districtsOrgUnitsService)
+        public Handler(
+            INyssContext nyssContext,
+            ICryptographyService cryptographyService,
+            IDistrictsOrgUnitsService districtsOrgUnitsService,
+            INyssWebConfig nyssWebConfig)
         {
             _nyssContext = nyssContext;
             _cryptographyService = cryptographyService;
             _districtsOrgUnitsService = districtsOrgUnitsService;
+            _nyssWebConfig = nyssWebConfig;
         }
 
         public async Task<Result<EidsrIntegrationResponseDto>> Handle(GetEidsrIntegrationQuery request, CancellationToken cancellationToken)
@@ -40,7 +48,11 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
                 .FirstOrDefaultAsync(x =>
                     x.NationalSocietyId == request.Id, cancellationToken: cancellationToken);
 
-            var password = eidsrConfiguration?.PasswordHash == default ? default : _cryptographyService.Decrypt(eidsrConfiguration?.PasswordHash);
+            var password = eidsrConfiguration?.PasswordHash == default ? default : _cryptographyService.Decrypt(
+                eidsrConfiguration?.PasswordHash,
+                _nyssWebConfig.Key,
+                _nyssWebConfig.SupplementaryKey
+                );
 
             var eidsrConfigurationDto = new EidsrIntegrationResponseDto
             {

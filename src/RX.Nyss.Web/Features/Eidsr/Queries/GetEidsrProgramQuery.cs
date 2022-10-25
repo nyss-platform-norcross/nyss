@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using MediatR;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Features.Eidsr.Dto;
-using RX.Nyss.Web.Services.EidsrClient;
 using RX.Nyss.Web.Services.EidsrClient.Dto;
+using RX.Nyss.Web.Services.EidsrService;
 
 namespace RX.Nyss.Web.Features.Eidsr.Queries;
 
@@ -19,16 +19,16 @@ public class GetEidsrProgramQuery : IRequest<Result<EidsrProgramResponse>>
 
     public class Handler : IRequestHandler<GetEidsrProgramQuery, Result<EidsrProgramResponse>>
     {
-        private readonly IEidsrClient _eidsrClient;
+        private readonly IEidsrService _eidsrService;
 
-        public Handler(IEidsrClient eidsrClient)
+        public Handler(IEidsrService eidsrService)
         {
-            _eidsrClient = eidsrClient;
+            _eidsrService = eidsrService;
         }
 
         public async Task<Result<EidsrProgramResponse>> Handle(GetEidsrProgramQuery request, CancellationToken cancellationToken)
         {
-            return await _eidsrClient.GetProgramFromApi(request.RequestDto.EidsrApiProperties, request.RequestDto.ProgramId);
+            return await _eidsrService.GetProgram(request.RequestDto.EidsrApiProperties, request.RequestDto.ProgramId);
         }
     }
 }

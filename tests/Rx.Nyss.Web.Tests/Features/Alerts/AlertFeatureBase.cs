@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -58,6 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             Config = Substitute.For<INyssWebConfig>();
             Config.PaginationRowsPerPage.Returns(5);
+            Config.ServiceBusQueues.Returns(new ServiceBusQueuesOptions());
 
             LoggerAdapter = Substitute.For<ILoggerAdapter>();
             EmailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();

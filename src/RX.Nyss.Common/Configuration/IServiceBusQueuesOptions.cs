@@ -8,14 +8,18 @@ public interface IServiceBusQueuesOptions
     string CheckAlertQueue { get; set; }
     string RecalculateAlertsQueue { get; set; }
     string SendSmsQueue { get; set; }
+    string EidsrReportQueue { get; set; }
 }
 
 public class ServiceBusQueuesOptions : IServiceBusQueuesOptions
 {
     public string SendEmailQueue { get; set; }
     public string ReportDismissalQueue { get; set; }
+
     public string ReportResetQueue { get; set; }
     public string CheckAlertQueue { get; set; }
     public string RecalculateAlertsQueue { get; set; }
     public string SendSmsQueue { get; set; }
+
+    public string EidsrReportQueue { get; set; }
 }

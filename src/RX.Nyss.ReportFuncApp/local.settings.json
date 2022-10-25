@@ -8,6 +8,7 @@
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
     "SERVICEBUS_RECALCULATEALERTSQUEUE": "nrx-cbs-nyss-bus-recalculate-alerts-queue-dev",
     "SERVICEBUS_CHECKALERTQUEUE": "nrx-cbs-nyss-bus-check-alert-queue-dev",
+    "SERVICEBUS_EIDSRREPORTQUEUE": "nrx-cbs-nyss-bus-eidsr-report-queue-dev",
     "ReportApiBaseUrl": "https://localhost:5003/"
   },
   "Host": {

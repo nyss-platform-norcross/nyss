@@ -10,8 +10,10 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
+using RX.Nyss.Web.Services.EidsrService;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Alerts.Commands;
@@ -38,6 +40,8 @@ public class EscalateCommand : IRequest<Result>
         private readonly ISmsPublisherService _smsPublisherService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly INyssWebConfig _config;
+        private readonly IEidsrService _eidsrService;
 
         public Handler(
             INyssContext nyssContext,
@@ -48,7 +52,9 @@ public class EscalateCommand : IRequest<Result>
             IEmailTextGeneratorService emailTextGeneratorService,
             ISmsPublisherService smsPublisherService,
             ISmsTextGeneratorService smsTextGeneratorService,
-            ILoggerAdapter loggerAdapter
+            ILoggerAdapter loggerAdapter,
+            INyssWebConfig config,
+            IEidsrService eidsrService
         )
         {
             _nyssContext = nyssContext;
@@ -60,6 +66,8 @@ public class EscalateCommand : IRequest<Result>
             _smsPublisherService = smsPublisherService;
             _smsTextGeneratorService = smsTextGeneratorService;
             _loggerAdapter = loggerAdapter;
+            _config = config;
+            _eidsrService = eidsrService;
         }
 
         public async Task<Result> Handle(EscalateCommand request, CancellationToken cancellationToken)
@@ -87,7 +95,7 @@ public class EscalateCommand : IRequest<Result>
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
-                    AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
+                    AcceptedReportIds = alert.AlertReports.Where(r => r.Report.Status == ReportStatus.Accepted).Select(x => x.ReportId),
                     NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
                 })
                 .SingleAsync();
@@ -97,7 +105,7 @@ public class EscalateCommand : IRequest<Result>
                 return Error(ResultKey.Alert.EscalateAlert.WrongStatus);
             }
 
-            if (alertData.AcceptedReportCount < alertData.CountThreshold)
+            if (alertData.AcceptedReportIds.Count() < alertData.CountThreshold)
             {
                 return Error(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
             }
@@ -108,9 +116,16 @@ public class EscalateCommand : IRequest<Result>
 
             await _nyssContext.SaveChangesAsync();
 
+            var nonEssentialSubProcessesErrors = new List<string>();
+
+            await SendReportsToEidsr(
+                alertData.AcceptedReportIds.ToList(),
+                nonEssentialSubProcessesErrors,
+                alertData.NationalSocietyId);
+
             if (!sendNotification)
             {
-                return Success(ResultKey.Alert.EscalateAlert.Success);
+                return Success(GetProcessResultCode(nonEssentialSubProcessesErrors));
             }
 
             var notificationRecipients = await _alertService.GetAlertRecipients(alertId);
@@ -149,16 +164,50 @@ public class EscalateCommand : IRequest<Result>
                 alertData.Alert.RecipientsNotifiedAt = _dateTimeProvider.UtcNow;
 
                 await _nyssContext.SaveChangesAsync();
-
-                return Success(ResultKey.Alert.EscalateAlert.Success);
             }
             catch (ResultException exception)
             {
-                return Success(exception.Result.Message.Key);
+                nonEssentialSubProcessesErrors.Add(exception.Result.Message.Key);
+            }
+
+            return Success(GetProcessResultCode(nonEssentialSubProcessesErrors));
+        }
+
+        private string GetProcessResultCode(IReadOnlyCollection<string> nonEssentialSubProcessesErrors)
+        {
+            if (nonEssentialSubProcessesErrors != null && nonEssentialSubProcessesErrors.Any())
+            {
+                return nonEssentialSubProcessesErrors.First();
+            }
+
+            return ResultKey.Alert.EscalateAlert.Success;
+        }
+
+        private async Task SendReportsToEidsr(
+            List<int> reportsId,
+            List<string> nonEssentialSubProcessesErrors,
+            int nationalSocietyId)
+        {
+            try
+            {
+                var ns = await _nyssContext.NationalSocieties
+                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+
+                if (ns != null && !ns.EnableEidsrIntegration)
+                {
+                    return;
+                }
+
+                await _eidsrService.SendReportsToEidsr(reportsId);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Error(e, $"Failed to send reports to queue {_config.ServiceBusQueues.EidsrReportQueue}.");
+                nonEssentialSubProcessesErrors.Add(ResultKey.Alert.EscalateAlert.EidsrReportFailed);
             }
         }
 
-        public async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, IEnumerable<string> reportLocations)
+        private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, IEnumerable<string> reportLocations)
         {
             try
             {
@@ -182,7 +231,7 @@ public class EscalateCommand : IRequest<Result>
             }
         }
 
-        public async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<SendSmsRecipient> notificationRecipients, string project, string healthRisk,
+        private async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<SendSmsRecipient> notificationRecipients, string project, string healthRisk,
             string lastReportLocation)
         {
             try
