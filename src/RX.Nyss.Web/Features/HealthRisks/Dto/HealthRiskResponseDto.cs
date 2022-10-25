@@ -19,6 +19,6 @@ namespace RX.Nyss.Web.Features.HealthRisks.Dto
 
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
 
-        public IEnumerable<HealthRiskSuspectedDiseaseResponseDto> HealthRiskSuspectedDuseases { get; set; }
+        public IEnumerable<HealthRiskSuspectedDiseaseResponseDto> HealthRiskSuspectedDuseasesResponse { get; set; }
     }
 }

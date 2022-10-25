@@ -3,12 +3,6 @@ import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
 
 export const suspectedDiseaseSiteMap = [
-  /*{
-    path: "/suspecteddiseases",
-    title: () => strings(stringKeys.suspectedDisease.title),
-    placeholder: placeholders.topMenu,
-    access: accessMap.suspectedDiseases.list
-  },*/
   {
     path: "/suspecteddiseases",
     title: () => strings(stringKeys.suspectedDisease.title),

@@ -4,7 +4,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases.Dto
 {
     public class SuspectedDiseaseResponseDto
     {
-        public int Id { get; set; }
+        public int SuspectedDiseaseId { get; set; }
 
         public int SuspectedDiseaseCode { get; set; }
 

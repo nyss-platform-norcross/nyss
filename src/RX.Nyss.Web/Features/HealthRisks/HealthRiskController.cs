@@ -65,15 +65,5 @@ namespace RX.Nyss.Web.Features.HealthRisks
         public async Task<Result> Delete(int id) =>
             await _healthRiskService.Delete(id);
 
-
-        /// <summary>
-        /// Get the data required to build a "create new health risk" form
-        /// </summary>
-        /// <param name="healthRiskId">The id of the health risk</param>
-        /// <returns>An object containing a list of suspected diseases</returns>
-        /*[HttpGet, Route("getFormData")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator)]
-        public async Task<Result<HealthRiskFormDataResponseDto>> GetFormData(int healthRiskId) =>
-            await _healthRiskService.GetFormData(healthRiskId);*/
     }
 }

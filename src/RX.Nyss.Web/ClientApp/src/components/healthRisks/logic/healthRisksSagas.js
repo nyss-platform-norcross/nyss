@@ -45,7 +45,7 @@ function* openHealthRiskCreation() {
 function* openHealthRiskEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/healthRisk/${params.healthRiskId}/get`);
+    const response = yield call(http.get, `/api/healthrisk/${params.healthRiskId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       healthRiskCode: response.value.healthRiskCode

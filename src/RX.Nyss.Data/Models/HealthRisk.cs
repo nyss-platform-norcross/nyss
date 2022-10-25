@@ -15,6 +15,6 @@ namespace RX.Nyss.Data.Models
 
         public virtual ICollection<HealthRiskLanguageContent> LanguageContents { get; set; }
 
-        public virtual ICollection<HealthRiskSuspectedDisease> SuspectedDiseases { get; set; }
+        public virtual ICollection<HealthRiskSuspectedDisease> HealthRiskSuspectedDiseases { get; set; }
     }
 }

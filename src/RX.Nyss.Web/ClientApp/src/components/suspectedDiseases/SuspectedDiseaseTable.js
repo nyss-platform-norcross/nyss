@@ -28,13 +28,13 @@ export const SuspectedDiseaseTable = ({ isListFetching, isRemoving, goToEdition,
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
+            <TableRow key={row.suspectedDiseaseId} hover onClick={() => goToEdition(row.suspectedDiseaseId)} className={styles.clickableRow}>
               <TableCell>{row.suspectedDiseaseCode}</TableCell>
               <TableCell>{row.suspectedDiseaseName}</TableCell>
               <TableCell>
                 <TableRowActions directionRtl={rtl}>
-                  <TableRowAction directionRtl={rtl} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.suspectedDisease.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  <TableRowAction directionRtl={rtl} onClick={() => goToEdition(row.suspectedDiseaseId)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction directionRtl={rtl} onClick={() => remove(row.suspectedDiseaseId)} confirmationText={strings(stringKeys.suspectedDisease.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.suspectedDiseaseId]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>

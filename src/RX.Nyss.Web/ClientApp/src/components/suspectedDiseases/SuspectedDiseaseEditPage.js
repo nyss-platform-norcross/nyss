@@ -29,10 +29,12 @@ const SuspectedDiseaseEditPageComponent = (props) => {
     }
 
     let fields = {
-      suspectedDiseaseCode: props.data.suspectedDiseaseCode.toString()
+      suspectedDiseaseId: props.data.suspectedDiseaseId.toString(),
+      suspectedDiseaseCode: props.data.suspectedDiseaseCode.toString(),
     };
 
     let validation = {
+      suspectedDiseaseId: [validators.required, validators.nonNegativeNumber],
       suspectedDiseaseCode: [validators.required, validators.nonNegativeNumber]
     };
 
@@ -61,7 +63,7 @@ const SuspectedDiseaseEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages));
+    props.edit(props.data.suspectedDiseaseId, getSaveFormModel(form.getValues(), props.contentLanguages));
   };
 
   useCustomErrors(form, props.formError);

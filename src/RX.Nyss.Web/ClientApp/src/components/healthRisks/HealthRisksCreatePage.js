@@ -23,10 +23,7 @@ import { MultiSelect } from '../forms/MultiSelect';
 const HealthRisksCreatePageComponent = (props) => {
   const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
   const [selectedSuspectedDiseases, setSelectedSuspectedDiseases] = useState([]);
-  const [suspectedDiseasesFieldTouched, setSuspectedDiseasesFieldTouched] = useState(false);
   const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
-
-  
 
   const [reportCountThreshold, setReportCountThreshold] = useState(0);
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
@@ -105,9 +102,7 @@ const HealthRisksCreatePageComponent = (props) => {
     console.log('selected SD');
     console.log(selectedSuspectedDiseases);
 
-
     props.create(getSaveFormModel(form.getValues(), props.contentLanguages, selectedSuspectedDiseases));
-    //props.create(getSaveFormModel(form.getValues(), props.contentLanguages));
   };
 
   const onSuspectedDiseaseChange = (value, eventData) => {
@@ -121,7 +116,7 @@ const HealthRisksCreatePageComponent = (props) => {
   }
 
   const getSelectedSuspectedDiseaseValue = () =>
-    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseCode === sd.value)));//.sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseCode === sd.value)));
 
 
   return (
@@ -158,8 +153,6 @@ const HealthRisksCreatePageComponent = (props) => {
               options={suspectedDiseasesDataSource}
               onChange={onSuspectedDiseaseChange}
               value={getSelectedSuspectedDiseaseValue()}
-              //onBlur={e => setHealthRisksFieldTouched(true)}
-              //error={(healthRisksFieldTouched && selectedHealthRisks.length < 2) ? `${strings(stringKeys.validation.noHealthRiskSelected)}` : null}
               rtl={useRtlDirection}
             />
           </Grid>
@@ -257,10 +250,6 @@ const HealthRisksCreatePageComponent = (props) => {
 }
 
 HealthRisksCreatePageComponent.propTypes = {
-  /*getHealthRisks: PropTypes.func,
-  openModule: PropTypes.func,
-  openCreation: PropTypes.func,
-  list: PropTypes.array*/
   data: PropTypes.array
 };
 

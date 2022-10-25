@@ -19,8 +19,6 @@ namespace RX.Nyss.Web.Features.HealthRisks
         Task<Result> Create(HealthRiskRequestDto healthRiskRequestDto);
         Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto);
         Task<Result> Delete(int id);
-       // Task<Result<HealthRiskFormDataResponseDto>> GetFormData(int healthRiskId);
-       // Task<IEnumerable<HealthRiskSuspectedDiseaseDto>> GetSuspectedDiseaseNames(int healthRiskId);
     }
 
     public class HealthRiskService : IHealthRiskService
@@ -69,16 +67,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
                     Id = healthRisk.Id,
                     HealthRiskCode = healthRisk.HealthRiskCode,
                     HealthRiskType = healthRisk.HealthRiskType,
-                    HealthRiskSuspectedDuseases = healthRisk.SuspectedDiseases.OrderBy(hsd => hsd.SuspectedDiseaseId)
-                        .Select(hsdr => new HealthRiskSuspectedDiseaseResponseDto
-                        {
-                            SuspectedDiseaseId = hsdr.Id
-                            /*SuspectedDiseaseCode = hsdr.SuspectedDiseaseCode,
-                            SuspectedDiseaseName = hsdr.LanguageContents
-                                .Where(lc => lc.ContentLanguage.Id == 1)
-                                .Select(lc => lc.Name)
-                                .FirstOrDefault()*/
-                        }),
+                    
                     AlertRuleCountThreshold = healthRisk.AlertRule != null
                         ? healthRisk.AlertRule.CountThreshold
                         : (int?)null,
@@ -107,49 +96,36 @@ namespace RX.Nyss.Web.Features.HealthRisks
 
         public async Task<Result> Create(HealthRiskRequestDto dto)
         {
-            try
+            if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.HealthRiskCode == dto.HealthRiskCode))
             {
-                if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.HealthRiskCode == dto.HealthRiskCode))
-                {
-                    return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists);
-                }
-
-                var languageContentIds = dto.LanguageContent.Select(lc => lc.LanguageId).ToArray();
-                var contentLanguages = await _nyssContext.ContentLanguages.Where(cl => languageContentIds.Contains(cl.Id)).ToDictionaryAsync(cl => cl.Id, cl => cl);
-
-                var healthRisk = new HealthRisk
-                {
-                    HealthRiskType = dto.HealthRiskType,
-                    HealthRiskCode = dto.HealthRiskCode,
-                    LanguageContents = dto.LanguageContent.Select(lc => new HealthRiskLanguageContent
-                    {
-                        Name = lc.Name,
-                        FeedbackMessage = lc.FeedbackMessage,
-                        CaseDefinition = lc.CaseDefinition,
-                        ContentLanguage = contentLanguages[lc.LanguageId]
-                    }).ToList(),
-                    SuspectedDiseases = dto.HealthRiskSuspectedDiseases.Select(hrsd => new HealthRiskSuspectedDisease
-                    {
-                        SuspectedDiseaseId = hrsd.SuspectedDiseaseId
-                    }).ToList(),
-                    AlertRule = dto.AlertRuleCountThreshold.HasValue
-                        ? new AlertRule
-                        {
-                            CountThreshold = dto.AlertRuleCountThreshold.Value,
-                            DaysThreshold = dto.AlertRuleDaysThreshold,
-                            KilometersThreshold = dto.AlertRuleKilometersThreshold
-                        }
-                        : null
-                };
-
-                await _nyssContext.AddAsync(healthRisk);
-                await _nyssContext.SaveChangesAsync();
-
-                return SuccessMessage(ResultKey.HealthRisk.Create.CreationSuccess);
+                return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists);
             }
-            catch {
-                return SuccessMessage("Error CREATE HEALTH RISK!");
-            }
+            var languageContentIds = dto.LanguageContent.Select(lc => lc.LanguageId).ToArray();
+            var contentLanguages = await _nyssContext.ContentLanguages.Where(cl => languageContentIds.Contains(cl.Id)).ToDictionaryAsync(cl => cl.Id, cl => cl);
+            var healthRisk = new HealthRisk
+            {
+                HealthRiskType = dto.HealthRiskType,
+                HealthRiskCode = dto.HealthRiskCode,
+                LanguageContents = dto.LanguageContent.Select(lc => new HealthRiskLanguageContent
+                {
+                    Name = lc.Name,
+                    FeedbackMessage = lc.FeedbackMessage,
+                    CaseDefinition = lc.CaseDefinition,
+                    ContentLanguage = contentLanguages[lc.LanguageId]
+                }).ToList(),
+                AlertRule = dto.AlertRuleCountThreshold.HasValue
+                    ? new AlertRule
+                    {
+                        CountThreshold = dto.AlertRuleCountThreshold.Value,
+                        DaysThreshold = dto.AlertRuleDaysThreshold,
+                        KilometersThreshold = dto.AlertRuleKilometersThreshold
+                    } : null
+            };
+
+            await _nyssContext.AddAsync(healthRisk);
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(ResultKey.HealthRisk.Create.CreationSuccess);
         }
 
         public async Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto)
@@ -232,13 +208,6 @@ namespace RX.Nyss.Web.Features.HealthRisks
 
             return SuccessMessage(ResultKey.HealthRisk.Remove.RemoveSuccess);
         }
-
-        private static bool CodeOrNameWasChanged(HealthRiskRequestDto healthRiskRequestDto, HealthRisk healthRisk) =>
-            healthRiskRequestDto.HealthRiskCode != healthRisk.HealthRiskCode ||
-            healthRiskRequestDto.LanguageContent.Any(lcDto =>
-                healthRisk.LanguageContents.Any(lc =>
-                    lc.ContentLanguage.Id == lcDto.LanguageId && !string.IsNullOrEmpty(lc.Name)) &&
-                lcDto.Name != healthRisk.LanguageContents.Single(lc => lc.ContentLanguage.Id == lcDto.LanguageId).Name);
 
         private async Task<bool> HealthRiskContainsReports(int healthRiskId) =>
             await _nyssContext.ProjectHealthRisks.AnyAsync(phr => phr.HealthRiskId == healthRiskId && phr.Reports.Any(r => !r.IsTraining));

@@ -21,8 +21,6 @@ import { MultiSelect } from '../forms/MultiSelect';
 
 const HealthRisksEditPageComponent = (props) => {
   const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
-  const [selectedSuspectedDiseases, setSelectedSuspectedDiseases] = useState([]);
-  const [suspectedDiseasesFieldTouched, setSuspectedDiseasesFieldTouched] = useState(false);
   const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
   const [form, setForm] = useState(null);
@@ -118,18 +116,6 @@ const HealthRisksEditPageComponent = (props) => {
     return <Loading />;
   }
 
-  /*const onSuspectedDiseasesChange = (value, eventData) => {
-    if (eventData.action === "select-option") {
-      setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
-    } else if ((eventData.action === "remove-value" || eventData.action === "pop-value")) {
-      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
-    }
-  }*/
-
-  /*const getSelectedSuspectedDiseaseValue = () =>
-    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.healthRiskId === sd.value))).sort((a, b) => a.data.healthRiskType === 'Activity' ? -1 : 1);*/
-
-
   return (
     <Fragment>
       {props.formError && <ValidationMessage message={props.formError.message} />}
@@ -160,10 +146,6 @@ const HealthRisksEditPageComponent = (props) => {
               <MultiSelect
               label={strings(stringKeys.healthRisk.form.suspectedDiseaseList)} ////========> form.fields.healthRiskSuspectedDuseases
                 options={suspectedDiseasesDataSource}
-                //onChange={onSuspectedDiseasesChange}
-                //value={getSelectedSuspectedDiseaseValue()}
-                //onBlur={e => setSuspectedDiseasesFieldTouched(true)}
-                //error={(suspectedDiseasesFieldTouched && selectedSuspectedDiseases.length < 2) ? `${strings(stringKeys.validation.noSuspectedDiseaseSelected)}` : null}
                 rtl={useRtlDirection}
               />
           </Grid>

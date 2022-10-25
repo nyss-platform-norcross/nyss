@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using FluentValidation;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Features.HealthRisks.Dto
 {
@@ -17,7 +16,7 @@ namespace RX.Nyss.Web.Features.HealthRisks.Dto
 
         public int? AlertRuleKilometersThreshold { get; set; }
 
-        public IEnumerable<HealthRiskSuspectedDiseaseRequestDto> HealthRiskSuspectedDiseases { get; set; }
+        public IEnumerable<HealthRiskSuspectedDiseaseRequestDto> HealthRiskSuspectedDiseasesRequest { get; set; }
 
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
 

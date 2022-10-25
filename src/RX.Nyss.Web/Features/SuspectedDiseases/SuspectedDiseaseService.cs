@@ -41,17 +41,17 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleOrDefaultAsync() ?? "en";
 
-            var suspectedDisease = await _nyssContext.SuspectedDiseases
+            var suspectedDisease = await _nyssContext.SuspectedDisease
                 .Select(sd => new SuspectedDiseaseListItemResponseDto
                 {
-                    Id = sd.Id,
+                    SuspectedDiseaseId = sd.Id,
                     SuspectedDiseaseName = sd.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
                         .Select(lc => lc.Name)
                         .FirstOrDefault(),
                     SuspectedDiseaseCode = sd.SuspectedDiseaseCode
                 })
-                .OrderBy(sd => sd.SuspectedDiseaseCode)
+                .OrderBy(sd => sd.SuspectedDiseaseId)
                 .ToListAsync();
 
             return Success<IEnumerable<SuspectedDiseaseListItemResponseDto>>(suspectedDisease);
@@ -59,11 +59,11 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
 
         public async Task<Result<SuspectedDiseaseResponseDto>> Get(int id)
         {
-            var suspectedDiseaseResponse = await _nyssContext.SuspectedDiseases
+            var suspectedDiseaseResponse = await _nyssContext.SuspectedDisease
                 .Where(suspectedDisease => suspectedDisease.Id == id)
                 .Select(suspectedDisease => new SuspectedDiseaseResponseDto
                 {
-                    Id = suspectedDisease.Id,
+                    SuspectedDiseaseId = suspectedDisease.Id,
                     SuspectedDiseaseCode = suspectedDisease.SuspectedDiseaseCode,
                     LanguageContent = suspectedDisease.LanguageContents.Select(lc => new SuspectedDiseaseLanguageContentDto
                     {
@@ -82,7 +82,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
 
         public async Task<Result> Create(SuspectedDiseaseRequestDto suspectedDiseaseRequestDto)
         {
-            if (await _nyssContext.SuspectedDiseases.AnyAsync(sd => sd.SuspectedDiseaseCode == suspectedDiseaseRequestDto.SuspectedDiseaseCode))
+            if (await _nyssContext.SuspectedDisease.AnyAsync(sd => sd.SuspectedDiseaseCode == suspectedDiseaseRequestDto.SuspectedDiseaseCode))
             {
                 return Error(ResultKey.SuspectedDisease.SuspectedDiseaseNumberAlreadyExists);
             }
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
 
         public async Task<Result> Edit(int id, SuspectedDiseaseRequestDto suspectedDiseaseRequestDto)
         {
-            var suspectedDisease = await _nyssContext.SuspectedDiseases
+            var suspectedDisease = await _nyssContext.SuspectedDisease
                 .Include(sd => sd.LanguageContents)
                 .ThenInclude(lc => lc.ContentLanguage)
                 .SingleOrDefaultAsync(sd => sd.Id == id);
@@ -118,7 +118,7 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
                 return Error(ResultKey.SuspectedDisease.SuspectedDiseaseNotFound);
             }
 
-            if (await _nyssContext.SuspectedDiseases.AnyAsync(sd => sd.Id != id && sd.SuspectedDiseaseCode == suspectedDiseaseRequestDto.SuspectedDiseaseCode))
+            if (await _nyssContext.SuspectedDisease.AnyAsync(sd => sd.Id != id && sd.SuspectedDiseaseCode == suspectedDiseaseRequestDto.SuspectedDiseaseCode))
             {
                 return Error(ResultKey.SuspectedDisease.SuspectedDiseaseNumberAlreadyExists);
             }
@@ -134,13 +134,12 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
             }
 
             await _nyssContext.SaveChangesAsync();
-
             return SuccessMessage(ResultKey.SuspectedDisease.Edit.EditSuccess);
         }
 
         public async Task<Result> Delete(int id)
         {
-            var suspectedDisease = await _nyssContext.SuspectedDiseases
+            var suspectedDisease = await _nyssContext.SuspectedDisease
                 .Include(sd => sd.LanguageContents)
                 .SingleOrDefaultAsync(sd => sd.Id == id);
 
@@ -148,24 +147,11 @@ namespace RX.Nyss.Web.Features.SuspectedDiseases
             {
                 return Error(ResultKey.SuspectedDisease.SuspectedDiseaseNotFound);
             }
-
-            /*if (await SuspectedDiseaseContainsReports(id))
-            {
-                return Error(ResultKey.SuspectedDisease.SuspectedDiseaseContainsReports);
-            }*/
-
-            _nyssContext.SuspectedDiseases.Remove(suspectedDisease);
+            _nyssContext.SuspectedDisease.Remove(suspectedDisease);
             await _nyssContext.SaveChangesAsync();
 
             return SuccessMessage(ResultKey.SuspectedDisease.Remove.RemoveSuccess);
         }
-
-        /*private static bool CodeOrNameWasChanged(SuspectedDiseaseRequestDto suspectedDiseaseRequestDto, SuspectedDisease suspectedDisease) =>
-            suspectedDiseaseRequestDto.SuspectedDiseaseCode != suspectedDisease.SuspectedDiseaseCode ||
-            suspectedDiseaseRequestDto.LanguageContent.Any(lcDto =>
-                suspectedDisease.LanguageContents.Any(lc =>
-                    lc.ContentLanguage.Id == lcDto.LanguageId && !string.IsNullOrEmpty(lc.Name)) &&
-                lcDto.Name != suspectedDisease.LanguageContents.Single(lc => lc.ContentLanguage.Id == lcDto.LanguageId).Name);*/
 
         private SuspectedDiseaseLanguageContent CreateNewLanguageContent(SuspectedDisease suspectedDisease, int languageId)
         {

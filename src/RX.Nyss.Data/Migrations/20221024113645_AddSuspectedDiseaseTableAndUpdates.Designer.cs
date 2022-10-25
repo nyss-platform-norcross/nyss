@@ -13,33 +13,18 @@ using RX.Nyss.Data;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20220912092316_AddSuspectedDisease")]
-    partial class AddSuspectedDisease
+    [Migration("20221024113645_AddSuspectedDiseaseTableAndUpdates")]
+    partial class AddSuspectedDiseaseTableAndUpdates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("nyss")
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("HealthRiskSuspectedDisease", b =>
-                {
-                    b.Property<int>("HealthRisksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SuspectedDiseasesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("HealthRisksId", "SuspectedDiseasesId");
-
-                    b.HasIndex("SuspectedDiseasesId");
-
-                    b.ToTable("HealthRiskSuspectedDisease", "nyss");
-                });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Alert", b =>
                 {
@@ -2398,6 +2383,21 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("HealthRiskLanguageContents", "nyss");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskSuspectedDisease", b =>
+                {
+                    b.Property<int>("SuspectedDiseaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HealthRiskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SuspectedDiseaseId");
+
+                    b.HasIndex("HealthRiskId");
+
+                    b.ToTable("HealthRiskSuspectedDisease", "nyss");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
                 {
                     b.Property<int>("ApplicationLanguageId")
@@ -3005,7 +3005,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SuspectedDiseases", "nyss");
+                    b.ToTable("SuspectedDisease", "nyss");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SuspectedDiseaseLanguageContent", b =>
@@ -3020,9 +3020,11 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("SuspectedDiseaseId")
+                    b.Property<int>("SuspectedDiseaseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -3031,7 +3033,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("SuspectedDiseaseId");
 
-                    b.ToTable("SuspectedDiseaseLanguageContents", "nyss");
+                    b.ToTable("SuspectedDiseaseLanguageContent", "nyss");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.TechnicalAdvisorUserGatewayModem", b =>
@@ -3303,21 +3305,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasBaseType("RX.Nyss.Data.Models.User");
 
                     b.HasDiscriminator().HasValue("TechnicalAdvisor");
-                });
-
-            modelBuilder.Entity("HealthRiskSuspectedDisease", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.HealthRisk", null)
-                        .WithMany()
-                        .HasForeignKey("HealthRisksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.SuspectedDisease", null)
-                        .WithMany()
-                        .HasForeignKey("SuspectedDiseasesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Alert", b =>
@@ -3627,6 +3614,25 @@ namespace RX.Nyss.Data.Migrations
                     b.Navigation("ContentLanguage");
 
                     b.Navigation("HealthRisk");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskSuspectedDisease", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.HealthRisk", "HealthRisk")
+                        .WithMany("HealthRiskSuspectedDiseases")
+                        .HasForeignKey("HealthRiskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.SuspectedDisease", "SuspectedDisease")
+                        .WithMany("HealthRiskSuspectedDiseases")
+                        .HasForeignKey("SuspectedDiseaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HealthRisk");
+
+                    b.Navigation("SuspectedDisease");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
@@ -3977,12 +3983,14 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
                         .WithMany()
                         .HasForeignKey("ContentLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.SuspectedDisease", "SuspectedDisease")
                         .WithMany("LanguageContents")
-                        .HasForeignKey("SuspectedDiseaseId");
+                        .HasForeignKey("SuspectedDiseaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ContentLanguage");
 
@@ -4166,6 +4174,8 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
                 {
+                    b.Navigation("HealthRiskSuspectedDiseases");
+
                     b.Navigation("LanguageContents");
                 });
 
@@ -4225,6 +4235,8 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SuspectedDisease", b =>
                 {
+                    b.Navigation("HealthRiskSuspectedDiseases");
+
                     b.Navigation("LanguageContents");
                 });
 
