@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace RX.Nyss.Common.Services.EidsrClient.Dto;
+namespace RX.Nyss.Data.Repositories;
 
-public class EidsrRegisterEventRequestData
+public class EidsrReportData
 {
     public string OrgUnit { get; set; }
 
