@@ -5,7 +5,7 @@ import { LOCATION_CHANGE } from 'connected-react-router'
 
 export function healthRisksReducer(state = initialState.healthRisks, action) {
   switch (action.type) {
-    case LOCATION_CHANGE: // cleanup
+    case LOCATION_CHANGE: 
       return { ...state, formData: null, formError: null }
 
     case actions.GET_HEALTH_RISKS.REQUEST:
@@ -28,6 +28,18 @@ export function healthRisksReducer(state = initialState.healthRisks, action) {
 
     case actions.OPEN_EDITION_HEALTH_RISK.FAILURE:
       return { ...state, formFetching: false };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.INVOKE:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.REQUEST:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.SUCCESS:
+      return { ...state, formFetching: false, formData: action.data };
+
+    case actions.OPEN_CREATION_HEALTH_RISK.FAILURE:
+      return { ...state, formFetching: false, formError: action.error };
 
     case actions.CREATE_HEALTH_RISK.REQUEST:
       return { ...state, formSaving: true };

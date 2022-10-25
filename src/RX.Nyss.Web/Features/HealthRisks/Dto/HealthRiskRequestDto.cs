@@ -16,6 +16,8 @@ namespace RX.Nyss.Web.Features.HealthRisks.Dto
 
         public int? AlertRuleKilometersThreshold { get; set; }
 
+        public IEnumerable<HealthRiskSuspectedDiseaseRequestDto> HealthRiskSuspectedDiseasesRequest { get; set; }
+
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
 
         public class Validator : AbstractValidator<HealthRiskRequestDto>

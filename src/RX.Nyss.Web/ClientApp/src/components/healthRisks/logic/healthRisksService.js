@@ -1,4 +1,4 @@
-export const getSaveFormModel = (values, contentLanguages) =>
+export const getSaveFormModel = (values, contentLanguages, selectedSuspectedDiseases) =>
   ({
     healthRiskCode: parseInt(values.healthRiskCode),
     healthRiskType: values.healthRiskType,
@@ -11,4 +11,5 @@ export const getSaveFormModel = (values, contentLanguages) =>
       caseDefinition: values[`contentLanguage_${lang.id}_caseDefinition`],
       feedbackMessage: values[`contentLanguage_${lang.id}_feedbackMessage`]
     }))
-  });
+});
+

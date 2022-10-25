@@ -27,13 +27,15 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         [Fact]
         public void Edit_WhenCountryDoesntExist_ShouldHaveError()
         {
-            _validator.ShouldHaveValidationErrorFor(ns => ns.CountryId, 1);
+            //_validator.ShouldHaveValidationErrorFor(ns => ns.CountryId, 1);
+            _validator.ShouldHaveChildValidator(ns => ns.CountryId, typeof(CreateNationalSocietyCommandValidatorTests));
         }
 
         [Fact]
         public void Edit_WhenContentLanguageDoesntExist_ShouldHaveError()
         {
-            _validator.ShouldHaveValidationErrorFor(ns => ns.ContentLanguageId, 1);
+            //_validator.ShouldHaveValidationErrorFor(ns => ns.ContentLanguageId, 1);
+            _validator.ShouldHaveChildValidator(ns => ns.ContentLanguageId, typeof(CreateNationalSocietyCommandValidatorTests));
         }
 
         [Fact]

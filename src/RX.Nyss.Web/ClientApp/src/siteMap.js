@@ -3,6 +3,7 @@ import { smsGatewaysSiteMap } from "./components/smsGateways/logic/smsGatewaysSi
 import { projectsSiteMap } from "./components/projects/logic/projectsSiteMap";
 import { globalCoordinatorsSiteMap } from "./components/globalCoordinators/logic/globalCoordinatorsSiteMap";
 import { healthRisksSiteMap } from "./components/healthRisks/logic/healthRisksSiteMap";
+import { suspectedDiseaseSiteMap } from "./components/suspectedDiseases/logic/suspectedDiseaseSiteMap";
 import { nationalSocietyUsersSiteMap } from "./components/nationalSocietyUsers/logic/nationalSocietyUsersSiteMap";
 import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCollectorsSiteMap";
 import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
@@ -26,6 +27,7 @@ export const siteMap = [
   ...smsGatewaysSiteMap,
   ...organizationsSiteMap,
   ...healthRisksSiteMap,
+  ...suspectedDiseaseSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,
   ...projectDashboardSiteMap,

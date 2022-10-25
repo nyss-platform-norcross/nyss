@@ -71,7 +71,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
             }
         }
 
-        public class Validator : AbstractValidator<CreateNationalSocietyCommand>
+        /*public class Validator : AbstractValidator<CreateNationalSocietyCommand>
         {
             public Validator(INationalSocietyValidationService nationalSocietyValidationService)
             {
@@ -89,6 +89,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
                     .WithMessageKey(ResultKey.NationalSociety.Creation.CountryNotFound);
                 RuleFor(r => r.InitialOrganizationName).NotEmpty().MaximumLength(100);
             }
-        }
+        }*/
     }
 }

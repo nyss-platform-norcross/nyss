@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as healthRisksActions from './logic/healthRisksActions';
@@ -17,8 +17,12 @@ import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys, stringsFormat } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const HealthRisksEditPageComponent = (props) => {
+  const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   const [form, setForm] = useState(null);
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [reportCountThreshold, setReportCountThreshold] = useState(null);
@@ -28,12 +32,13 @@ const HealthRisksEditPageComponent = (props) => {
   });
 
   useEffect(() => {
+    props.suspectedDiseases && setSuspectedDiseasesDataSource(props.suspectedDiseases.map(sd => ({ label: sd.suspectedDiseaseName, value: sd.suspectedDiseaseCode, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
       form.fields.alertRuleKilometersThreshold.update("");
     }
     return;
-  }, [form, reportCountThreshold])
+  }, [form, reportCountThreshold, props.suspectedDiseases])
 
   useEffect(() => {
     if (!props.data) {
@@ -48,7 +53,8 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskType: props.data.healthRiskType,
       alertRuleCountThreshold: props.data.alertRuleCountThreshold,
       alertRuleDaysThreshold: props.data.alertRuleDaysThreshold,
-      alertRuleKilometersThreshold: props.data.alertRuleKilometersThreshold
+      alertRuleKilometersThreshold: props.data.alertRuleKilometersThreshold,
+      healthRiskSuspectedDuseases: props.data.healthRiskSuspectedDuseases
     };
 
     let validation = {
@@ -133,6 +139,15 @@ const HealthRisksEditPageComponent = (props) => {
                 <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.suspectedDiseaseTitle)}</Typography>
+              <MultiSelect
+              label={strings(stringKeys.healthRisk.form.suspectedDiseaseList)} ////========> form.fields.healthRiskSuspectedDuseases
+                options={suspectedDiseasesDataSource}
+                rtl={useRtlDirection}
+              />
           </Grid>
 
           {props.contentLanguages.map(lang => (
@@ -232,6 +247,7 @@ HealthRisksEditPageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
+  suspectedDiseases: state.healthRisks.formSuspectedDiseases,
   isFetching: state.healthRisks.formFetching,
   isSaving: state.healthRisks.formSaving,
   formError: state.healthRisks.formError,

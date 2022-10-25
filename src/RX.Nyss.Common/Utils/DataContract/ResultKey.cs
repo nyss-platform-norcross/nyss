@@ -204,6 +204,28 @@ public static class ResultKey
         }
     }
 
+    public static class SuspectedDisease
+    {
+        public const string SuspectedDiseaseNotFound = "suspectedDisease.notFound";
+        public const string SuspectedDiseaseNumberAlreadyExists = "suspectedDisease.suspectedDiseaseNumberAlreadyExists";
+        public const string SuspectedDiseaseContainsReports = "suspectedDisease.suspectedDiseaseContainsReports";
+
+        public static class Create
+        {
+            public const string CreationSuccess = "SuspectedDisease.create.success";
+        }
+
+        public static class Edit
+        {
+            public const string EditSuccess = "SuspectedDisease.edit.success";
+        }
+
+        public static class Remove
+        {
+            public const string RemoveSuccess = "SuspectedDisease.remove.success";
+        }
+    }
+
     public static class Report
     {
         public const string ReportNotFound = "report.reportNotFound";
