@@ -57,13 +57,13 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
       return { ...state, formSaving: false, formError: action.error };
 
     case actions.ARCHIVE_NATIONAL_SOCIETY.REQUEST:
-      return { ...state, listArchiving: setProperty(state.listArchiving, action.id, true) };  
+      return { ...state, listArchiving: setProperty(state.listArchiving, action.id, true) };
     case actions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
     case actions.ARCHIVE_NATIONAL_SOCIETY.FAILURE:
       return { ...state, listArchiving: setProperty(state.listArchiving, action.id, undefined) };
 
     case actions.REOPEN_NATIONAL_SOCIETY.REQUEST:
-      return { ...state, listReopening: setProperty(state.listReopening, action.id, true) };  
+      return { ...state, listReopening: setProperty(state.listReopening, action.id, true) };
     case actions.REOPEN_NATIONAL_SOCIETY.SUCCESS:
     case actions.REOPEN_NATIONAL_SOCIETY.FAILURE:
       return { ...state, listReopening: setProperty(state.listReopening, action.id, undefined) };

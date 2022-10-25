@@ -25,6 +25,7 @@ import { projectAlertRecipientsReducer } from "../components/projectAlertRecipie
 import { projectAlertNotHandledRecipientsReducer } from "../components/projectAlertNotHandledRecipient/logic/projectAlertNotHandledRecipientsReducer";
 import { alertEventsReducer } from "../components/alertEvents/logic/alertEventsReducer";
 import { trackingReducer } from "../utils/tracking";
+import {eidsrIntegrationReducer} from "../components/eidsrIntegration/logic/eidsrIntegrationReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -34,6 +35,7 @@ export const createRootReducer = (history) => combineReducers({
   nationalSocieties: nationalSocietiesReducer,
   nationalSocietyStructure: nationalSocietyStructureReducer,
   smsGateways: smsGatewaysReducer,
+  eidsrIntegration: eidsrIntegrationReducer,
   organizations: organizationsReducer,
   projects: projectsReducer,
   projectDashboard: projectDashboardReducer,

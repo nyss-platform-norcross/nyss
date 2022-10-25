@@ -1,5 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
+import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -226,6 +227,44 @@ export const stringKeys = {
       removalConfirmation: "smsGateway.list.removalConfirmation",
       useIotHub: "smsGateway.list.useIotHub"
     },
+  },
+  eidsrIntegration: {
+    title: "eidsrIntegration.title",
+    disabled: "eidsrIntegration.disabled",
+    form: {
+      editionTitle: "eidsrIntegration.form.editionTitle",
+      userName: "eidsrIntegration.form.userName",
+      password: "eidsrIntegration.form.password",
+      apiBaseUrl: "eidsrIntegration.form.apiBaseUrl",
+      trackerProgramId: "eidsrIntegration.form.trackerProgramId",
+      locationDataElementId: "eidsrIntegration.form.locationDataElementId",
+      dateOfOnsetDataElementId: "eidsrIntegration.form.dateOfOnsetDataElementId",
+      phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
+      suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
+      eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
+      genderDataElementId: "eidsrIntegration.form.genderDataElementId",
+      districts: "eidsrIntegration.form.districts",
+      organisationUnits: "eidsrIntegration.form.organisationUnits",
+      choseOrganisationUnit: "eidsrIntegration.form.choseOrganisationUnit",
+      noDistricts: "eidsrIntegration.form.noDistricts",
+      loading: "eidsrIntegration.form.loading",
+      noOptions: "eidsrIntegration.form.noOptions",
+      connNotTested: "eidsrIntegration.form.connNotTested",
+      testConn: "eidsrIntegration.form.testConn",
+      testConnToContinue: "eidsrIntegration.form.testConnToContinue",
+      allDistrictsShouldOrgUnit: "eidsrIntegration.form.allDistrictsShouldOrgUnit",
+      dataNotSet: "eidsrIntegration.from.dataNotSet",
+      dataElements: "eidsrIntegration.from.dataElements",
+    },
+    create: {
+      success: "eidsrIntegration.create.success"
+    },
+    edit: {
+      success: "eidsrIntegration.edit.success"
+    },
+    eidsrApi: {
+      ConnectionError: "eidsrIntegration.EidsrApi.ConnectionError"
+    }
   },
   organization: {
     title: "organization.title",
