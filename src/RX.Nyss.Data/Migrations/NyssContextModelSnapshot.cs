@@ -2191,8 +2191,6 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<string>("LocationDataElementId")
                         .HasColumnType("nvarchar(max)");
 
-                        .HasColumnType("varchar(256)");
-
                     b.Property<string>("EventTypeDataElementId")
                         .HasColumnType("varchar(256)");
 
@@ -2221,8 +2219,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
-
-                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("SuspectedDiseaseDataElementId")
                         .HasColumnType("varchar(256)");
