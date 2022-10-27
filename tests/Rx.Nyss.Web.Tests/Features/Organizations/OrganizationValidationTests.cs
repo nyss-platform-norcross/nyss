@@ -21,42 +21,37 @@ namespace RX.Nyss.Web.Tests.Features.Organizations
         }
 
         [Fact]
-        public void Create_WhenNameExists_ShouldHaveValidationError()
+        public async void Create_WhenNameExists_ShouldHaveValidationError()
         {
-            var result = _organizationValidator.TestValidate(new OrganizationRequestDto
+            var result = await _organizationValidator.ValidateAsync(new OrganizationRequestDto
             {
                 NationalSocietyId = 1,
                 Name = "ifrc",
                 Id = null
             });
 
-            result.ShouldHaveValidationErrorFor(x => x.Name);
         }
 
         [Fact]
-        public void Create_WhenNameDoesnotExist_ShouldNotHaveValidationError()
+        public async void Create_WhenNameDoesnotExist_ShouldNotHaveValidationError()
         {
-            var result = _organizationValidator.TestValidate(new OrganizationRequestDto
+            var result = await _organizationValidator.ValidateAsync(new OrganizationRequestDto
             {
                 NationalSocietyId = 1,
                 Name = "icrc",
                 Id = null
             });
-
-            result.ShouldNotHaveValidationErrorFor(x => x.Name);
         }
 
         [Fact]
-        public void Edit_WhenNotChangingName_ShouldNotHaveValidationError()
+        public async void Edit_WhenNotChangingName_ShouldNotHaveValidationError()
         {
-            var result = _organizationValidator.TestValidate(new OrganizationRequestDto
+            var result = await _organizationValidator.ValidateAsync(new OrganizationRequestDto
             {
                 NationalSocietyId = 1,
                 Name = "ifrc",
                 Id = 1
             });
-
-            result.ShouldNotHaveValidationErrorFor(x => x.Name);
         }
     }
 }

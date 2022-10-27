@@ -2179,7 +2179,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DateOfOnsetDataElementId")
-<<<<<<< HEAD
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventTypeDataElementId")
@@ -2190,8 +2189,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("LocationDataElementId")
                         .HasColumnType("nvarchar(max)");
-=======
-                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("EventTypeDataElementId")
                         .HasColumnType("varchar(256)");
@@ -2201,7 +2198,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("LocationDataElementId")
                         .HasColumnType("varchar(256)");
->>>>>>> master
 
                     b.Property<int>("NationalSocietyId")
                         .HasColumnType("int");
@@ -2210,7 +2206,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumberDataElementId")
-<<<<<<< HEAD
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SuspectedDiseaseDataElementId")
@@ -2221,8 +2216,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
-=======
-                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("SuspectedDiseaseDataElementId")
                         .HasColumnType("varchar(256)");
@@ -2232,7 +2225,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("Username")
                         .HasColumnType("varchar(256)");
->>>>>>> master
 
                     b.HasKey("Id");
 
