@@ -8,8 +8,8 @@ namespace RX.Nyss.Data.Repositories;
 
 public interface IEidsrRepository
 {
-    List<EidsrReport> GetReportsForEidsr(int alertId);
-    EidsrReport GetReportForEidsr(int reportId);
+    List<EidsrDbReport> GetReportsForEidsr(int alertId);
+    EidsrDbReport GetReportForEidsr(int reportId);
 }
 
 public class EidsrRepository : IEidsrRepository
@@ -21,7 +21,7 @@ public class EidsrRepository : IEidsrRepository
         _nyssContext = nyssContext;
     }
 
-    public List<EidsrReport> GetReportsForEidsr(int alertId)
+    public List<EidsrDbReport> GetReportsForEidsr(int alertId)
     {
         var reportsOfAlertIds = _nyssContext.AlertReports
             .Where(x=>x.AlertId == alertId).Select(x => x.ReportId);
@@ -29,22 +29,22 @@ public class EidsrRepository : IEidsrRepository
         var reports = GetReportFilterQuery()
             .Where(x => reportsOfAlertIds.Contains(x.Id)).ToList();
 
-        return reports.Select(report => new EidsrReport
+        return reports.Select(report => new EidsrDbReport
         {
-            EidsrReportData = GetReportData(report),
-            EidsrReportTemplate = GetReportTemplate(report)
+            EidsrDbReportData = GetReportData(report),
+            EidsrDbReportTemplate = GetReportTemplate(report)
         }).ToList();
     }
 
-    public EidsrReport GetReportForEidsr(int reportId)
+    public EidsrDbReport GetReportForEidsr(int reportId)
     {
         var rawReport = GetReportFilterQuery()
             .FirstOrDefault(x => x.Id == reportId);
 
-        return new EidsrReport
+        return new EidsrDbReport
         {
-            EidsrReportData = GetReportData(rawReport),
-            EidsrReportTemplate = GetReportTemplate(rawReport)
+            EidsrDbReportData = GetReportData(rawReport),
+            EidsrDbReportTemplate = GetReportTemplate(rawReport)
         };
     }
 
@@ -61,11 +61,11 @@ public class EidsrRepository : IEidsrRepository
         return query;
     }
 
-    private EidsrReportTemplate GetReportTemplate(RawReport rawReport)
+    private EidsrDbReportTemplate GetReportTemplate(RawReport rawReport)
     {
         var config = rawReport.NationalSociety.EidsrConfiguration;
 
-        var template = new EidsrReportTemplate
+        var template = new EidsrDbReportTemplate
         {
             EidsrApiProperties = new EidsrApiProperties
             {
@@ -85,12 +85,12 @@ public class EidsrRepository : IEidsrRepository
         return template;
     }
 
-    private EidsrReportData GetReportData(RawReport rawReport)
+    private EidsrDbReportData GetReportData(RawReport rawReport)
     {
         var report = rawReport.Report;
         var organizationUnit = rawReport.Village.District.EidsrOrganisationUnits;
 
-        var data = new EidsrReportData //TODO: verify how to fill that fields
+        var data = new EidsrDbReportData //TODO: verify how to fill that fields
         {
             OrgUnit = organizationUnit?.OrganisationUnitId,
             EventDate = report.CreatedAt,

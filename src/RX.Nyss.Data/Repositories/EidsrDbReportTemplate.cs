@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Data.Repositories;
 
-public class EidsrReportTemplate
+public class EidsrDbReportTemplate
 {
     public string Program { get; set; }
 

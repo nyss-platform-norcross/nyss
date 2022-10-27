@@ -14,11 +14,10 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 
-namespace RX.Nyss.Web.Features.Alerts.Commands;
+namespace RX.Nyss.Web.Features.Alerts.Queries;
 
 public class ExportQuery : IRequest<byte[]>
 {
-
     public ExportQuery(int projectId, AlertListFilterRequestDto filterRequestDto)
     {
         ProjectId = projectId;

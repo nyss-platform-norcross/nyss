@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Repositories;
 
-public class EidsrReportData
+public class EidsrDbReportData
 {
     public string OrgUnit { get; set; }
 

@@ -53,32 +53,32 @@ public class EidsrReportHandler : IEidsrReportHandler
             {
                 EidsrApiProperties = new EidsrApiProperties
                 {
-                    Url = report.EidsrReportTemplate.EidsrApiProperties.Url,
-                    UserName = report.EidsrReportTemplate.EidsrApiProperties.UserName,
+                    Url = report.EidsrDbReportTemplate.EidsrApiProperties.Url,
+                    UserName = report.EidsrDbReportTemplate.EidsrApiProperties.UserName,
                     Password = _cryptographyService.Decrypt(
-                        report.EidsrReportTemplate.EidsrApiProperties.PasswordHash,
+                        report.EidsrDbReportTemplate.EidsrApiProperties.PasswordHash,
                         _nyssReportApiConfig.Key,
                         _nyssReportApiConfig.SupplementaryKey),
                 },
-                Program = report.EidsrReportTemplate.Program,
-                LocationDataElementId = report.EidsrReportTemplate.LocationDataElementId,
-                DateOfOnsetDataElementId = report.EidsrReportTemplate.DateOfOnsetDataElementId,
-                PhoneNumberDataElementId = report.EidsrReportTemplate.PhoneNumberDataElementId,
-                SuspectedDiseaseDataElementId = report.EidsrReportTemplate.SuspectedDiseaseDataElementId,
-                EventTypeDataElementId = report.EidsrReportTemplate.EventTypeDataElementId,
-                GenderDataElementId = report.EidsrReportTemplate.GenderDataElementId
+                Program = report.EidsrDbReportTemplate.Program,
+                LocationDataElementId = report.EidsrDbReportTemplate.LocationDataElementId,
+                DateOfOnsetDataElementId = report.EidsrDbReportTemplate.DateOfOnsetDataElementId,
+                PhoneNumberDataElementId = report.EidsrDbReportTemplate.PhoneNumberDataElementId,
+                SuspectedDiseaseDataElementId = report.EidsrDbReportTemplate.SuspectedDiseaseDataElementId,
+                EventTypeDataElementId = report.EidsrDbReportTemplate.EventTypeDataElementId,
+                GenderDataElementId = report.EidsrDbReportTemplate.GenderDataElementId
             };
 
             var data = new EidsrRegisterEventRequestData
             {
-                OrgUnit = report.EidsrReportData.OrgUnit,
-                EventDate = report.EidsrReportData.EventDate,
-                Location = report.EidsrReportData.Location,
-                DateOfOnset = report.EidsrReportData.DateOfOnset,
-                PhoneNumber = report.EidsrReportData.PhoneNumber,
-                SuspectedDisease = report.EidsrReportData.SuspectedDisease,
-                EventType = report.EidsrReportData.EventType,
-                Gender = report.EidsrReportData.Gender,
+                OrgUnit = report.EidsrDbReportData.OrgUnit,
+                EventDate = report.EidsrDbReportData.EventDate,
+                Location = report.EidsrDbReportData.Location,
+                DateOfOnset = report.EidsrDbReportData.DateOfOnset,
+                PhoneNumber = report.EidsrDbReportData.PhoneNumber,
+                SuspectedDisease = report.EidsrDbReportData.SuspectedDisease,
+                EventType = report.EidsrDbReportData.EventType,
+                Gender = report.EidsrDbReportData.Gender,
             };
 
             var request = EidsrRegisterEventRequest.CreateEidsrRegisterEventRequest(template, data);
