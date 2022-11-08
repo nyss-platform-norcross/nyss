@@ -7,8 +7,7 @@ namespace RX.Nyss.Data.Models.Maps
     {
         public void Configure(EntityTypeBuilder<HealthRiskSuspectedDisease> builder)
         {
-            builder.HasKey(x => x.HealthRiskId);
-            builder.HasKey(x => x.SuspectedDiseaseId);
+            builder.HasKey(x => x.Id);
 
             builder.HasOne(x => x.HealthRisk)
                 .WithMany(x => x.HealthRiskSuspectedDiseases)

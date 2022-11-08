@@ -72,7 +72,7 @@ const HealthRisksCreatePageComponent = (props) => {
   });
 
   useEffect(() => {
-    props.data && setSuspectedDiseasesDataSource(props.data.map(sd => ({ value: sd.suspectedDiseaseCode, label: sd.suspectedDiseaseName, data: sd })));
+    props.data && setSuspectedDiseasesDataSource(props.data.map(sd => ({ value: sd.suspectedDiseaseId, label: sd.suspectedDiseaseName, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
       form.fields.alertRuleKilometersThreshold.update("");
@@ -109,14 +109,14 @@ const HealthRisksCreatePageComponent = (props) => {
     if (eventData.action === "select-option") {
       setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
-      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseCode !== eventData.removedValue.value));
+      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
       suspectedDiseasesDataSource.sort();
     }
   }
 
   const getSelectedSuspectedDiseaseValue = () =>
-    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseCode === sd.value)));
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
 
 
   return (
@@ -250,6 +250,9 @@ const HealthRisksCreatePageComponent = (props) => {
 }
 
 HealthRisksCreatePageComponent.propTypes = {
+  getHealthRisks: PropTypes.func,
+  openModule: PropTypes.func,
+  openCreation: PropTypes.func,
   data: PropTypes.array
 };
 

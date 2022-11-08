@@ -5,6 +5,9 @@ export const getSaveFormModel = (values, contentLanguages, selectedSuspectedDise
     alertRuleCountThreshold: parseInt(values.alertRuleCountThreshold),
     alertRuleDaysThreshold: parseInt(values.alertRuleDaysThreshold),
     alertRuleKilometersThreshold: parseInt(values.alertRuleKilometersThreshold),
+    healthRiskSuspectedDiseases: selectedSuspectedDiseases.map(sd => ({
+      suspectedDiseaseId: sd.suspectedDiseaseId
+    })),
     languageContent: contentLanguages.map(lang => ({
       languageId: lang.id,
       name: values[`contentLanguage_${lang.id}_name`],
@@ -12,4 +15,3 @@ export const getSaveFormModel = (values, contentLanguages, selectedSuspectedDise
       feedbackMessage: values[`contentLanguage_${lang.id}_feedbackMessage`]
     }))
 });
-

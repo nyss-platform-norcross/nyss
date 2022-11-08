@@ -16,7 +16,6 @@ export const healthRisksSagas = () => [
 
 function* getHealthRisks(force) {
   const currentData = yield select(state => state.healthRisks.listData)
-
   if (!force && currentData.length) {
     return;
   }
@@ -24,7 +23,6 @@ function* getHealthRisks(force) {
   yield put(actions.getList.request());
   try {
     const response = yield call(http.get, "/api/healthrisk/list");
-
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -32,7 +30,6 @@ function* getHealthRisks(force) {
 };
 
 function* openHealthRiskCreation() {
-  
   yield put(actions.openCreation.request());
   try {
     const formData = yield call(http.get, "/api/suspecteddisease/list");
@@ -46,11 +43,11 @@ function* openHealthRiskEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
     const response = yield call(http.get, `/api/healthrisk/${params.healthRiskId}/get`);
-
+    const formData = yield call(http.get, "/api/suspecteddisease/list");
     yield put(appActions.openModule.invoke(path, {
       healthRiskCode: response.value.healthRiskCode
     }));
-
+    response.value.suspectedDiseasesList = formData.value;
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
