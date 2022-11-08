@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as healthRisksActions from './logic/healthRisksActions';
@@ -18,8 +18,13 @@ import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys, stringsFormat } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const HealthRisksCreatePageComponent = (props) => {
+  const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
+  const [selectedSuspectedDiseases, setSelectedSuspectedDiseases] = useState([]);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   const [reportCountThreshold, setReportCountThreshold] = useState(0);
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [form] = useState(() => {
@@ -67,12 +72,13 @@ const HealthRisksCreatePageComponent = (props) => {
   });
 
   useEffect(() => {
+    props.data && setSuspectedDiseasesDataSource(props.data.map(sd => ({ value: sd.suspectedDiseaseId, label: sd.suspectedDiseaseName, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
       form.fields.alertRuleKilometersThreshold.update("");
     }
     return;
-  }, [form, reportCountThreshold])
+  }, [form, reportCountThreshold, props.data])
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
     value: t,
@@ -80,7 +86,8 @@ const HealthRisksCreatePageComponent = (props) => {
   })));
 
   useMount(() => {
-    props.openModule(props.match.path, props.match.params)
+    props.openModule(props.match.path, props.match.params);
+    props.openCreation();
   })
 
   useCustomErrors(form, props.formError);
@@ -92,8 +99,25 @@ const HealthRisksCreatePageComponent = (props) => {
       return;
     };
 
-    props.create(getSaveFormModel(form.getValues(), props.contentLanguages));
+    console.log('selected SD');
+    console.log(selectedSuspectedDiseases);
+
+    props.create(getSaveFormModel(form.getValues(), props.contentLanguages, selectedSuspectedDiseases));
   };
+
+  const onSuspectedDiseaseChange = (value, eventData) => {
+    if (eventData.action === "select-option") {
+      setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
+      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
+    } else if (eventData.action === "clear") {
+      suspectedDiseasesDataSource.sort();
+    }
+  }
+
+  const getSelectedSuspectedDiseaseValue = () =>
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
+
 
   return (
     <Fragment>
@@ -120,6 +144,17 @@ const HealthRisksCreatePageComponent = (props) => {
                 <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.suspectedDiseaseTitle)}</Typography>
+            <MultiSelect
+              label={strings(stringKeys.healthRisk.form.suspectedDiseaseList)}
+              options={suspectedDiseasesDataSource}
+              onChange={onSuspectedDiseaseChange}
+              value={getSelectedSuspectedDiseaseValue()}
+              rtl={useRtlDirection}
+            />
           </Grid>
 
           {props.contentLanguages.map(lang => (
@@ -217,10 +252,12 @@ const HealthRisksCreatePageComponent = (props) => {
 HealthRisksCreatePageComponent.propTypes = {
   getHealthRisks: PropTypes.func,
   openModule: PropTypes.func,
-  list: PropTypes.array
+  openCreation: PropTypes.func,
+  data: PropTypes.array
 };
 
 const mapStateToProps = state => ({
+  data: state.healthRisks.formData,
   contentLanguages: state.appData.contentLanguages,
   formError: state.healthRisks.formError,
   isSaving: state.healthRisks.formSaving
@@ -230,6 +267,7 @@ const mapDispatchToProps = {
   getList: healthRisksActions.getList.invoke,
   create: healthRisksActions.create.invoke,
   goToList: healthRisksActions.goToList,
+  openCreation: healthRisksActions.openCreation.invoke,
   openModule: appActions.openModule.invoke
 };
 

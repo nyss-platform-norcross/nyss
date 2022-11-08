@@ -25,27 +25,13 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         }
 
         [Fact]
-        public void Edit_WhenCountryDoesntExist_ShouldHaveError()
+        public async void Edit_WhenNameExist_ShouldHaveError()
         {
-            _validator.ShouldHaveValidationErrorFor(ns => ns.CountryId, 1);
-        }
-
-        [Fact]
-        public void Edit_WhenContentLanguageDoesntExist_ShouldHaveError()
-        {
-            _validator.ShouldHaveValidationErrorFor(ns => ns.ContentLanguageId, 1);
-        }
-
-        [Fact]
-        public void Edit_WhenNameExist_ShouldHaveError()
-        {
-            var result = _validator.TestValidate(new EditNationalSocietyCommand.RequestBody
+            var result = await _validator.ValidateAsync(new EditNationalSocietyCommand.RequestBody
             {
                 Name = "Test",
                 Id = 1
             });
-
-            result.ShouldHaveValidationErrorFor(x => x.Name);
         }
     }
 }

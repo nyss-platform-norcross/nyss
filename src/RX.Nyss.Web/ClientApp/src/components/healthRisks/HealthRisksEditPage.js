@@ -1,5 +1,5 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from "react-redux";
+import React, { useCallback, useEffect, useState, Fragment } from 'react';
+import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as healthRisksActions from './logic/healthRisksActions';
@@ -17,28 +17,44 @@ import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys, stringsFormat } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const HealthRisksEditPageComponent = (props) => {
+  const [suspectedDiseasesDataSource, setSuspectedDiseasesDataSource] = useState([]);
+  const [selectedSuspectedDiseases, setSelectedSuspectedDiseases] = useState([]);
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
   const [form, setForm] = useState(null);
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [reportCountThreshold, setReportCountThreshold] = useState(null);
 
+  var start = 1;
+
+  const setInitialSuspectedDisease = () => {
+    suspectedDiseasesDataSource.filter(sd => (props.data.healthRiskSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
+    console.log(start);
+  }
+
   useMount(() => {
-    props.openEdition(props.match);
+    props.openEdition(props.match);    
   });
 
   useEffect(() => {
+
+    props.data && setSuspectedDiseasesDataSource(props.data.suspectedDiseasesList.map(sd => ({ label: sd.suspectedDiseaseName, value: sd.suspectedDiseaseId, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
       form.fields.alertRuleKilometersThreshold.update("");
     }
     return;
-  }, [form, reportCountThreshold])
+  }, [form, reportCountThreshold]);
 
   useEffect(() => {
     if (!props.data) {
       return;
     }
+
+    setInitialSuspectedDisease();
 
     setReportCountThreshold(props.data.alertRuleCountThreshold);
     setHealthRiskType(props.data.healthRiskType);
@@ -89,6 +105,7 @@ const HealthRisksEditPageComponent = (props) => {
 
   }, [props.data, props.contentLanguages]);
 
+
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
     value: t,
     label: strings(stringKeys.healthRisk.constants.healthRiskType[t.toLowerCase()])
@@ -101,8 +118,21 @@ const HealthRisksEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages));
+    props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages, selectedSuspectedDiseases));
   };
+
+  const onSuspectedDiseaseChange = (value, eventData) => {
+    if (eventData.action === "select-option") {
+      setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
+      setSelectedSuspectedDiseases(selectedSuspectedDiseases.filter(sd => sd.suspectedDiseaseId !== eventData.removedValue.value));
+    } else if (eventData.action === "clear") {
+      suspectedDiseasesDataSource.sort();
+    }
+  }
+
+  const getSelectedSuspectedDiseaseValue = () =>
+    suspectedDiseasesDataSource.filter(sd => (props.data.healthRiskSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
 
   useCustomErrors(form, props.formError);
 
@@ -133,6 +163,17 @@ const HealthRisksEditPageComponent = (props) => {
                 <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.suspectedDiseaseTitle)}</Typography>
+            <MultiSelect
+              label={strings(stringKeys.healthRisk.form.suspectedDiseaseList)} ////========> form.fields.healthRiskSuspectedDiseases
+              options={suspectedDiseasesDataSource}
+              value={getSelectedSuspectedDiseaseValue()}
+              onChange={onSuspectedDiseaseChange}
+              rtl={useRtlDirection}
+            />
           </Grid>
 
           {props.contentLanguages.map(lang => (

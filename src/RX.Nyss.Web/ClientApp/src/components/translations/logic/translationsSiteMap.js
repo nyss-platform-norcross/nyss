@@ -3,7 +3,7 @@ import { strings, stringKeys } from "../../../strings";
 import { placeholders } from "../../../siteMapPlaceholders";
 
 export const translationsSiteMap = [
-  {
+  /*{
     path: "/translations",
     title: () => strings(stringKeys.translations.title),
     access: accessMap.translations.list,
@@ -23,5 +23,5 @@ export const translationsSiteMap = [
     access: accessMap.translations.list,
     placeholder: placeholders.tabMenu,
     placeholderIndex: 3
-  }
+  }*/
 ];

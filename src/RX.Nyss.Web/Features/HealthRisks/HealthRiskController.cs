@@ -64,5 +64,6 @@ namespace RX.Nyss.Web.Features.HealthRisks
         [HttpPost, Route("{id:int}/delete"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Delete(int id) =>
             await _healthRiskService.Delete(id);
+
     }
 }

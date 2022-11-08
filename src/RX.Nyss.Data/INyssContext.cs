@@ -42,6 +42,10 @@ namespace RX.Nyss.Data
 
         DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
 
+        DbSet<SuspectedDisease> SuspectedDisease { get; set; }
+
+        DbSet<SuspectedDiseaseLanguageContent> SuspectedDiseaseLanguageContent { get; set; }
+
         DbSet<Localization> Localizations { get; set; }
 
         DbSet<LocalizedTemplate> LocalizedTemplates { get; set; }
