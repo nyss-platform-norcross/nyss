@@ -67,7 +67,9 @@ namespace RX.Nyss.Web.Features.HealthRisks
                     Id = healthRisk.Id,
                     HealthRiskCode = healthRisk.HealthRiskCode,
                     HealthRiskType = healthRisk.HealthRiskType,
-                    
+
+                    HealthRiskSuspectedDiseases = healthRisk.HealthRiskSuspectedDiseases,
+                    SuspectedDiseasesList = null,
                     AlertRuleCountThreshold = healthRisk.AlertRule != null
                         ? healthRisk.AlertRule.CountThreshold
                         : (int?)null,
@@ -113,6 +115,10 @@ namespace RX.Nyss.Web.Features.HealthRisks
                     CaseDefinition = lc.CaseDefinition,
                     ContentLanguage = contentLanguages[lc.LanguageId]
                 }).ToList(),
+                HealthRiskSuspectedDiseases = dto.HealthRiskSuspectedDiseases.Select(hrsd => new HealthRiskSuspectedDisease
+                {
+                    SuspectedDiseaseId = hrsd.SuspectedDiseaseId,
+                }).ToList(),
                 AlertRule = dto.AlertRuleCountThreshold.HasValue
                     ? new AlertRule
                     {
@@ -131,6 +137,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         public async Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto)
         {
             var healthRisk = await _nyssContext.HealthRisks
+                .Include(hr => hr.HealthRiskSuspectedDiseases)
                 .Include(hr => hr.AlertRule)
                 .Include(hr => hr.LanguageContents)
                 .ThenInclude(lc => lc.ContentLanguage)
@@ -174,6 +181,11 @@ namespace RX.Nyss.Web.Features.HealthRisks
                 languageContent.FeedbackMessage = languageContentDto.FeedbackMessage;
                 languageContent.CaseDefinition = languageContentDto.CaseDefinition;
                 languageContent.Name = languageContentDto.Name;
+            }
+
+            if (healthRiskRequestDto.HealthRiskSuspectedDiseases.Count() > 0)
+            {
+                healthRisk.HealthRiskSuspectedDiseases = healthRiskRequestDto.HealthRiskSuspectedDiseases;
             }
 
             await _nyssContext.SaveChangesAsync();

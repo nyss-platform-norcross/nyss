@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import { GET_HEALTH_RISKS, CREATE_HEALTH_RISK, REMOVE_HEALTH_RISK, OPEN_CREATION_HEALTH_RISK } from "./healthRisksConstants";
 import { OPEN_EDITION_HEALTH_RISK, EDIT_HEALTH_RISK } from "./healthRisksConstants";
 
-export const goToCreation = () => push("/healthrisks/add");
+export const goToCreation = () => push("/healthrisks/add"); /// for listing page
 export const goToList = () => push("/healthrisks");
 export const goToEdition = (id) => push(`/healthrisks/${id}/edit`);
 
@@ -35,9 +35,9 @@ export const edit = {
 };
 
 export const openEdition = {
-  invoke: ({ path, params }) => ({ type: OPEN_EDITION_HEALTH_RISK.INVOKE, path, params }),
+  invoke: ({ path, params}) => ({ type: OPEN_EDITION_HEALTH_RISK.INVOKE, path, params}),
   request: () => ({ type: OPEN_EDITION_HEALTH_RISK.REQUEST }),
-  success: (data) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data }),
+  success: (data) => ({ type: OPEN_EDITION_HEALTH_RISK.SUCCESS, data}),
   failure: (message) => ({ type: OPEN_EDITION_HEALTH_RISK.FAILURE, message })
 };
 

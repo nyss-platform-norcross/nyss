@@ -304,7 +304,7 @@ namespace RX.Nyss.Web.Configuration
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonStringDateTimeConverter());
                 })
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ValidatorsFilter))
+                //.AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ValidatorsFilter))
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = actionContext =>
@@ -363,7 +363,7 @@ namespace RX.Nyss.Web.Configuration
                 .Select(Assembly.Load)
                 .ToArray();
 
-        private static bool ValidatorsFilter(AssemblyScanner.AssemblyScanResult result) =>
-            result.ValidatorType != typeof(DataCollectorLocationRequestDto.Validator);
+        //private static bool ValidatorsFilter(AssemblyScanner.AssemblyScanResult result) =>
+           // result.ValidatorType != typeof(DataCollectorLocationRequestDto.Validator);
     }
 }
