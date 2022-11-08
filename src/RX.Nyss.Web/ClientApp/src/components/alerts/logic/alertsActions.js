@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import {
   OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT,
   ACCEPT_REPORT, DISMISS_REPORT, RESET_REPORT, ESCALATE_ALERT,
-  DISMISS_ALERT, CLOSE_ALERT, FETCH_RECIPIENTS, EXPORT_ALERTS
+  DISMISS_ALERT, CLOSE_ALERT, FETCH_RECIPIENTS, EXPORT_ALERTS, VALIDATE_EIDSR
 } from "./alertsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/alerts`);
@@ -56,6 +56,13 @@ export const escalateAlert = {
   request: () => ({ type: ESCALATE_ALERT.REQUEST }),
   success: () => ({ type: ESCALATE_ALERT.SUCCESS }),
   failure: (message) => ({ type: ESCALATE_ALERT.FAILURE, message })
+};
+
+export const validateEidsr = {
+  invoke: (alertId) => ({ type: VALIDATE_EIDSR.INVOKE, alertId }),
+  request: () => ({ type: VALIDATE_EIDSR.REQUEST }),
+  success: (data) => ({ type: VALIDATE_EIDSR.SUCCESS, data }),
+  failure: (message) => ({ type: VALIDATE_EIDSR.FAILURE, message })
 };
 
 export const dismissAlert = {

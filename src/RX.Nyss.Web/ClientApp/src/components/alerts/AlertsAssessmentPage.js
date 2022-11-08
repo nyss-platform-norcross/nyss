@@ -116,6 +116,8 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
           projectId={projectId}
           alertAssessmentStatus={data.assessmentStatus}
 
+          isNationalSocietyEidsrEnabled={data.isNationalSocietyEidsrEnabled}
+
           hasAccess={hasAccessToActions}
 
           goToList={props.goToList}
@@ -131,6 +133,10 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
 
           fetchRecipients={props.fetchRecipients}
           isFetchingRecipients={props.isFetchingRecipients}
+
+          validateEidsr={props.validateEidsr}
+          validateEidsrResult={props.validateEidsrResult}
+          isLoadingValidateEidsr={props.isLoadingValidateEidsr}
 
           isPendingAlertState={props.isPendingAlertState}
 
@@ -158,7 +164,9 @@ const mapStateToProps = (state, ownProps) => ({
   notificationEmails: state.alerts.notificationEmails,
   notificationPhoneNumbers: state.alerts.notificationPhoneNumbers,
   projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
-  isPendingAlertState: state.alerts.isPendingAlertState
+  isPendingAlertState: state.alerts.isPendingAlertState,
+  validateEidsrResult: state.alerts.formData?.validateEidsrResult,
+  isLoadingValidateEidsr: state.alerts.isLoadingValidateEidsr,
 });
 
 const mapDispatchToProps = {
@@ -170,7 +178,8 @@ const mapDispatchToProps = {
   escalateAlert: alertsActions.escalateAlert.invoke,
   closeAlert: alertsActions.closeAlert.invoke,
   dismissAlert: alertsActions.dismissAlert.invoke,
-  fetchRecipients: alertsActions.fetchRecipients.invoke
+  fetchRecipients: alertsActions.fetchRecipients.invoke,
+  validateEidsr: alertsActions.validateEidsr.invoke,
 };
 
 export const AlertsAssessmentPage = withLayout(

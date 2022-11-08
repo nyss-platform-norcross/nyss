@@ -90,17 +90,27 @@ public class EidsrRepository : IEidsrRepository
         var report = rawReport.Report;
         var organizationUnit = rawReport.Village.District.EidsrOrganisationUnits;
 
-        var data = new EidsrDbReportData //TODO: verify how to fill that fields
+        // TODO: missing specification - this is the unified way of converting report to Eidsr event, this conversion was not discussed
+        var data = new EidsrDbReportData
         {
             OrgUnit = organizationUnit?.OrganisationUnitId,
-            EventDate = report.CreatedAt,
+            EventDate = report.CreatedAt.ToString("yyyy-MM-dd"),
             Location = report.Location.ToString(),
-            DateOfOnset = report.ReceivedAt,
+            DateOfOnset = report.ReceivedAt.ToString("u"),
             PhoneNumber = report.PhoneNumber,
             SuspectedDisease = "some disease",
             EventType = "some type",
-            Gender = "Male",
         };
+
+        if (report.ReportedCase.CountFemalesBelowFive == 1 || report.ReportedCase.CountFemalesAtLeastFive == 1)
+        {
+            data.Gender = "female";
+        }
+
+        if (report.ReportedCase.CountMalesBelowFive == 1 || report.ReportedCase.CountMalesAtLeastFive == 1)
+        {
+            data.Gender = "male";
+        }
 
         return data;
     }

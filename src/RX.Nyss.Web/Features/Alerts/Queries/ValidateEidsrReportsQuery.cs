@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Repositories;
+using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Services.EidsrService;
 using static RX.Nyss.Common.Utils.DataContract.Result;
+using EidsrApiProperties = RX.Nyss.Web.Services.EidsrClient.Dto.EidsrApiProperties;
 
 namespace RX.Nyss.Web.Features.Alerts.Queries;
 
-public class ValidateEidsrReportsQuery : IRequest<Result<ValidationResult>>
+public class ValidateEidsrReportsQuery : IRequest<Result<ValidateEidsrReportsResponse>>
 {
     public ValidateEidsrReportsQuery(int alertId)
     {
@@ -19,66 +22,106 @@ public class ValidateEidsrReportsQuery : IRequest<Result<ValidationResult>>
 
     private int AlertId { get; }
 
-    public class Handler : IRequestHandler<ValidateEidsrReportsQuery, Result>
+    public class Handler : IRequestHandler<ValidateEidsrReportsQuery, Result<ValidateEidsrReportsResponse>>
     {
         private readonly IEidsrRepository _repository;
-
-        public Handler(IEidsrRepository repository)
+        private readonly IEidsrService _eidsrService;
+        private readonly INyssWebConfig _nyssWebConfig;
+        private readonly ICryptographyService _cryptographyService;
+        public Handler(
+            IEidsrRepository repository,
+            IEidsrService eidsrService,
+            INyssWebConfig nyssWebConfig,
+            ICryptographyService cryptographyService)
         {
             _repository = repository;
+            _eidsrService = eidsrService;
+            _nyssWebConfig = nyssWebConfig;
+            _cryptographyService = cryptographyService;
         }
 
-        public async Task<Result> Handle(ValidateEidsrReportsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<ValidateEidsrReportsResponse>> Handle(ValidateEidsrReportsQuery request, CancellationToken cancellationToken)
         {
             var reports = _repository.GetReportsForEidsr(request.AlertId);
 
-            var result = await new EidsrDbReportsValidator().ValidateAsync(reports, cancellationToken);
+            var res = new ValidateEidsrReportsResponse();
 
-            return Success(result);
+            // assume all reports have the same template (come from the same national society)
+            var template = reports.FirstOrDefault()?.EidsrDbReportTemplate;
+            var templateValidation = await new EidsrDbReportTemplateValidator().ValidateAsync(template, cancellationToken);
+
+            res.IsIntegrationConfigValid = templateValidation.IsValid;
+
+            var pingResult = await _eidsrService.GetProgram(new EidsrApiProperties
+            {
+                Password = _cryptographyService.Decrypt(
+                    template?.EidsrApiProperties.PasswordHash,
+                    _nyssWebConfig.Key,
+                    _nyssWebConfig.SupplementaryKey),
+                Url = template?.EidsrApiProperties.Url,
+                UserName = template?.EidsrApiProperties.UserName,
+            }, template?.Program);
+
+            res.IsEidsrApiConnectionRunning = pingResult.IsSuccess && !string.IsNullOrEmpty(pingResult.Value.Name);
+
+            res.AreReportsValidCount = 0;
+
+            foreach (var report in reports)
+            {
+                var validation = await new EidsrDbReportDataValidator().ValidateAsync(report.EidsrDbReportData, cancellationToken);
+
+                if (validation.IsValid)
+                {
+                    res.AreReportsValidCount++;
+                }
+            }
+
+            return Success(res);
         }
     }
 }
 
-public class EidsrDbReportsValidator : AbstractValidator<List<EidsrDbReport>>
+public class ValidateEidsrReportsResponse
 {
-    public EidsrDbReportsValidator()
+    public bool IsIntegrationConfigValid { get; set; }
+
+    public bool IsEidsrApiConnectionRunning { get; set; }
+
+    public int AreReportsValidCount { get; set; }
+}
+
+public class EidsrDbReportTemplateValidator : AbstractValidator<EidsrDbReportTemplate>
+{
+    public EidsrDbReportTemplateValidator()
     {
-        RuleForEach(x => x).SetValidator(new EidsrDbReportValidator());
+        RuleFor(x => x.Program).NotEmpty();
+        RuleFor(x => x.GenderDataElementId).NotEmpty();
+        RuleFor(x => x.LocationDataElementId).NotEmpty();
+        RuleFor(x => x.EventTypeDataElementId).NotEmpty();
+        RuleFor(x => x.PhoneNumberDataElementId).NotEmpty();
+        RuleFor(x => x.SuspectedDiseaseDataElementId).NotEmpty();
+        RuleFor(x => x.DateOfOnsetDataElementId).NotEmpty();
+
+        RuleFor(x => x.EidsrApiProperties).NotEmpty().DependentRules(() =>
+        {
+            RuleFor(x => x.EidsrApiProperties.Url).NotEmpty();
+            RuleFor(x => x.EidsrApiProperties.PasswordHash).NotEmpty();
+            RuleFor(x => x.EidsrApiProperties.UserName).NotEmpty();
+        });
     }
 }
 
-public class EidsrDbReportValidator : AbstractValidator<EidsrDbReport>
+public class EidsrDbReportDataValidator : AbstractValidator<EidsrDbReportData>
 {
-    public EidsrDbReportValidator()
+    public EidsrDbReportDataValidator()
     {
-        RuleFor(er => er.EidsrDbReportTemplate).NotEmpty().DependentRules(() =>
-        {
-            RuleFor(x => x.EidsrDbReportTemplate.Program).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.GenderDataElementId).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.LocationDataElementId).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.EventTypeDataElementId).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.PhoneNumberDataElementId).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.SuspectedDiseaseDataElementId).NotEmpty();
-            RuleFor(x => x.EidsrDbReportTemplate.DateOfOnsetDataElementId).NotEmpty();
-
-            RuleFor(x => x.EidsrDbReportTemplate.EidsrApiProperties).NotEmpty().DependentRules(() =>
-            {
-                RuleFor(x => x.EidsrDbReportTemplate.EidsrApiProperties.Url).NotEmpty();
-                RuleFor(x => x.EidsrDbReportTemplate.EidsrApiProperties.PasswordHash).NotEmpty();
-                RuleFor(x => x.EidsrDbReportTemplate.EidsrApiProperties.UserName).NotEmpty();
-            });
-        });
-
-        RuleFor(er => er.EidsrDbReportData).NotEmpty().DependentRules(() =>
-        {
-            RuleFor(x => x.EidsrDbReportData.Gender).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.Location).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.EventDate).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.EventType).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.OrgUnit).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.PhoneNumber).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.SuspectedDisease).NotEmpty();
-            RuleFor(x => x.EidsrDbReportData.DateOfOnset).NotEmpty();
-        });
+        RuleFor(x => x.Gender).NotEmpty();
+        RuleFor(x => x.Location).NotEmpty();
+        RuleFor(x => x.EventDate).NotEmpty();
+        RuleFor(x => x.EventType).NotEmpty();
+        RuleFor(x => x.OrgUnit).NotEmpty();
+        RuleFor(x => x.PhoneNumber).NotEmpty();
+        RuleFor(x => x.SuspectedDisease).NotEmpty();
+        RuleFor(x => x.DateOfOnset).NotEmpty();
     }
 }

@@ -6,11 +6,11 @@ public class EidsrDbReportData
 {
     public string OrgUnit { get; set; }
 
-    public DateTime EventDate { get; set; }
+    public string EventDate { get; set; }
 
     public string Location	{ get; set; }
 
-    public DateTime DateOfOnset { get; set; }
+    public string DateOfOnset { get; set; }
 
     public string PhoneNumber { get; set; }
 

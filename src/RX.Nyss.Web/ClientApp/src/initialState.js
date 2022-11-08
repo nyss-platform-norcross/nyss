@@ -324,7 +324,8 @@ export const initialState = {
     notificationPhoneNumbers: [],
     notificationEmails: [],
     filters: null,
-    filtersData: null
+    filtersData: null,
+    isLoadingValidateEidsr: false,
   },
   alertEvents: {
     eventTypes: [],

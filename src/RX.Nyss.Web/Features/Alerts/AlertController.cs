@@ -146,5 +146,15 @@ namespace RX.Nyss.Web.Features.Alerts
             var excelSheetBytes =  await Sender.Send(new ExportQuery(projectId, alertListFilterRequestDto));;
             return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+
+        /// <summary>
+        /// Validates if reports of the alert can be safely migrated to Eidsr
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/eidsr-validate")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public async Task<Result> EidsrValidate(int alertId) =>
+            await Sender.Send(new ValidateEidsrReportsQuery(alertId));
     }
 }

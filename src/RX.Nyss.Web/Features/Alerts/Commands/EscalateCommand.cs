@@ -10,7 +10,9 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Repositories;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Alerts.Queries;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.EidsrService;
@@ -73,6 +75,7 @@ public class EscalateCommand : IRequest<Result>
         public async Task<Result> Handle(EscalateCommand request, CancellationToken cancellationToken)
         {
             var alertId = request.AlertId;
+
             var sendNotification = request.SendNotification;
 
             if (!await _alertService.HasCurrentUserAlertEditAccess(alertId))
@@ -118,6 +121,7 @@ public class EscalateCommand : IRequest<Result>
 
             var nonEssentialSubProcessesErrors = new List<string>();
 
+            // TODO: missing specification - this was not specified, but I do not care here if data migration to Eidsr have a chance to succeed
             await SendReportsToEidsr(
                 alertData.AcceptedReportIds.ToList(),
                 nonEssentialSubProcessesErrors,

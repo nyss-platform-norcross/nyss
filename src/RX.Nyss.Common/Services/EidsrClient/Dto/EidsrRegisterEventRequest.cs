@@ -21,7 +21,7 @@ public class EidsrRegisterEventRequest
             EidsrApiProperties = template.EidsrApiProperties,
             EidsrRegisterEventRequestBody = new EidsrRegisterEventRequestBody {
                 Program = template.Program,
-                EventDate = data.EventDate.ToString("yyyy-MM-dd"),
+                EventDate = data.EventDate,
                 OrgUnit = data.OrgUnit,
                 DataValues = GetDataValues(template, data)
             }
@@ -37,7 +37,7 @@ public class EidsrRegisterEventRequest
         var dataValues = new List<EidsrRegisterEventRequestBody.DataValue>();
 
         AddDataElement(dataValues, template.LocationDataElementId, data.Location);
-        AddDataElement(dataValues, template.DateOfOnsetDataElementId, data.DateOfOnset.ToString("u"));
+        AddDataElement(dataValues, template.DateOfOnsetDataElementId, data.DateOfOnset);
         AddDataElement(dataValues, template.PhoneNumberDataElementId, data.PhoneNumber);
         AddDataElement(dataValues, template.SuspectedDiseaseDataElementId, data.SuspectedDisease);
         AddDataElement(dataValues, template.GenderDataElementId, data.Gender);
@@ -47,7 +47,7 @@ public class EidsrRegisterEventRequest
 
     private static void AddDataElement(List<EidsrRegisterEventRequestBody.DataValue> list, string dataElementId, string value)
     {
-        // TODO: verify if we should send a report without data
+        // TODO: missing specification - I assume here that en event should be send even if some parts of the contract are missing
         if (!string.IsNullOrEmpty(value))
         {
             list.Add(new EidsrRegisterEventRequestBody.DataValue

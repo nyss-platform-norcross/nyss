@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
     {
         public string HealthRisk { get; set; }
 
+        public bool IsNationalSocietyEidsrEnabled { get; set; }
+
         public string CaseDefinition { get; set; }
 
         public string Comments { get; set; }
