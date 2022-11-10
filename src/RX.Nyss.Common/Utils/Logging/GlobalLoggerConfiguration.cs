@@ -20,10 +20,10 @@ public static class GlobalLoggerConfiguration
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: loggingOptions.LogMessageTemplate));
 
-        if (!string.IsNullOrEmpty(appInsightsInstrumentationKey))
+        /*if (!string.IsNullOrEmpty(appInsightsInstrumentationKey))
         {
             loggerConfiguration.WriteTo.ApplicationInsights(appInsightsInstrumentationKey, TelemetryConverter.Traces);
-        }
+        }*/
 
         Log.Logger = loggerConfiguration.CreateLogger();
     }
