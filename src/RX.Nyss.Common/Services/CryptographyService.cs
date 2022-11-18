@@ -1,29 +1,21 @@
-﻿using RX.Nyss.Web.Configuration;
-using Microsoft.AspNetCore.WebUtilities;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
-namespace RX.Nyss.Web.Services;
+namespace RX.Nyss.Common.Services;
 
 public interface ICryptographyService
 {
-    public string Encrypt(string data);
-    public string Decrypt(string encryptedTex);
+    public string Encrypt(string encryptedText, string encryptionKey, string supplementaryKey);
+    public string Decrypt(string data, string encryptionKey, string supplementaryKey);
 }
 
 public class CryptographyService : ICryptographyService
 {
-    private readonly INyssWebConfig _config;
+    public string Decrypt(string encryptedText, string encryptionKey, string supplementaryKey) => DecryptStringAES(encryptedText, Get128KeyWithSalt(encryptionKey, supplementaryKey));
 
-    public CryptographyService(INyssWebConfig config)
-    {
-        _config = config;
-    }
-
-    public string Decrypt(string encryptedText) => DecryptStringAES(encryptedText, Get128KeyWithSalt());
-
-    public string Encrypt(string data) => EncryptStringAES(data, Get128KeyWithSalt());
+    public string Encrypt(string data, string encryptionKey, string supplementaryKey) => EncryptStringAES(data, Get128KeyWithSalt(encryptionKey, supplementaryKey));
 
     private string EncryptStringAES(string plainText, string key128)
     {
@@ -78,10 +70,10 @@ public class CryptographyService : ICryptographyService
         }
     }
 
-    private string Get128KeyWithSalt()
+    private string Get128KeyWithSalt(string encryptionKey, string supplementaryKey)
     {
-        var key = _config.Key;
-        var salt = _config.SupplementaryKey;
+        var key = encryptionKey;
+        var salt = supplementaryKey;
 
         var plainText = Encoding.UTF8.GetBytes(key);
         var saltBytes = Encoding.UTF8.GetBytes(salt);

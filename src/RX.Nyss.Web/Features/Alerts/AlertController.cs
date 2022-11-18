@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Alerts.Commands;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Alerts.Queries;
 using RX.Nyss.Web.Features.Common;
@@ -32,8 +32,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("getFiltersData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId) =>
-            _alertService.GetFiltersData(projectId);
+        public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId) =>
+            await Sender.Send(new GetFiltersDataQuery(projectId));
 
         /// <summary>
         /// Lists alerts for a specific project
@@ -44,8 +44,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, [FromBody] AlertListFilterRequestDto filterRequestDto) =>
-            _alertService.List(projectId, pageNumber, filterRequestDto);
+        public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, [FromBody] AlertListFilterRequestDto filterRequestDto) =>
+            await Sender.Send(new GetListQuery(projectId, pageNumber, filterRequestDto));
 
         /// <summary>
         /// Gets information about the alert
@@ -65,8 +65,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/alertRecipients")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result<AlertRecipientsResponseDto>> GetAlertRecipients(int alertId) =>
-            _alertService.GetAlertRecipientsByAlertId(alertId);
+        public async Task<Result<AlertRecipientsResponseDto>> GetAlertRecipients(int alertId) =>
+            await Sender.Send(new GetAlertRecipientsByAlertIdQuery(alertId));
 
         /// <summary>
         /// Accepts the report
@@ -109,8 +109,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("{alertId:int}/escalate")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Escalate(int alertId, [FromBody] EscalateAlertRequestDto dto) =>
-            _alertService.Escalate(alertId, dto.SendNotification);
+        public async Task<Result> Escalate(int alertId, [FromBody] EscalateAlertRequestDto dto) =>
+            await Sender.Send(new EscalateCommand(alertId,  dto.SendNotification));
 
         /// <summary>
         /// Dismisses the alert
@@ -119,8 +119,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("{alertId:int}/dismiss")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Dismiss(int alertId) =>
-            _alertService.Dismiss(alertId);
+        public async Task<Result> Dismiss(int alertId) =>
+            await Sender.Send(new DismissCommand(alertId));
 
         /// <summary>
         /// Closes the alert
@@ -129,8 +129,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("{alertId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Close(int alertId) =>
-            _alertService.Close(alertId);
+        public async Task<Result> Close(int alertId) =>
+            await Sender.Send(new CloseCommand(alertId));
 
         /// <summary>
         /// Exports the alert list to excel
@@ -143,8 +143,18 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> Export(int projectId, [FromBody] AlertListFilterRequestDto alertListFilterRequestDto)
         {
-            var excelSheetBytes = await _alertService.Export(projectId, alertListFilterRequestDto);
+            var excelSheetBytes =  await Sender.Send(new ExportQuery(projectId, alertListFilterRequestDto));;
             return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+
+        /// <summary>
+        /// Validates if reports of the alert can be safely migrated to Eidsr
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/eidsr-validate")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public async Task<Result> EidsrValidate(int alertId) =>
+            await Sender.Send(new ValidateEidsrReportsQuery(alertId));
     }
 }

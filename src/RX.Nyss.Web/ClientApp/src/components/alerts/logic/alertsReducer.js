@@ -11,11 +11,13 @@ export function alertsReducer(state = initialState.alerts, action) {
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
+
     case actions.OPEN_ALERTS_LIST.INVOKE:
       return { ...state };
 
     case actions.OPEN_ALERTS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
+
 
     case actions.GET_ALERTS.REQUEST:
       return { ...state, listData: state.listData, listFetching: true };
@@ -26,6 +28,7 @@ export function alertsReducer(state = initialState.alerts, action) {
     case actions.GET_ALERTS.FAILURE:
       return { ...state, listFetching: false, listData: null };
 
+
     case actions.OPEN_ALERTS_ASSESSMENT.REQUEST:
       return { ...state, formFetching: true, formData: null };
 
@@ -34,6 +37,7 @@ export function alertsReducer(state = initialState.alerts, action) {
 
     case actions.OPEN_ALERTS_ASSESSMENT.FAILURE:
       return { ...state, formFetching: false };
+
 
     case actions.ACCEPT_REPORT.REQUEST:
       return {
@@ -63,6 +67,7 @@ export function alertsReducer(state = initialState.alerts, action) {
         }
       };
 
+
     case actions.DISMISS_REPORT.REQUEST:
       return {
         ...state,
@@ -90,6 +95,7 @@ export function alertsReducer(state = initialState.alerts, action) {
           reports: updateReport(state.formData.reports, action.reportId, { isDismissing: false })
         }
       };
+
 
     case actions.RESET_REPORT.REQUEST:
       return {
@@ -119,6 +125,7 @@ export function alertsReducer(state = initialState.alerts, action) {
         }
       };
 
+
     case actions.ESCALATE_ALERT.REQUEST:
       return { ...state, formEscalating: true };
 
@@ -127,6 +134,7 @@ export function alertsReducer(state = initialState.alerts, action) {
 
     case actions.ESCALATE_ALERT.FAILURE:
       return { ...state, formEscalating: false };
+
 
     case actions.DISMISS_ALERT.REQUEST:
       return { ...state, formDismissing: true };
@@ -137,6 +145,7 @@ export function alertsReducer(state = initialState.alerts, action) {
     case actions.DISMISS_ALERT.FAILURE:
       return { ...state, formDismissing: false };
 
+
     case actions.CLOSE_ALERT.REQUEST:
       return { ...state, formClosing: true };
 
@@ -146,6 +155,7 @@ export function alertsReducer(state = initialState.alerts, action) {
     case actions.CLOSE_ALERT.FAILURE:
       return { ...state, formClosing: false };
 
+
     case actions.FETCH_RECIPIENTS.REQUEST:
       return { ...state, isFetchingRecipients: true, notificationEmails: [], notificationPhoneNumbers: [] };
 
@@ -154,6 +164,16 @@ export function alertsReducer(state = initialState.alerts, action) {
 
     case actions.FETCH_RECIPIENTS.FAILURE:
       return { ...state, isFetchingRecipients: false, notificationEmails: [], notificationPhoneNumbers: [] };
+
+
+    case actions.VALIDATE_EIDSR.REQUEST:
+      return { ...state, isLoadingValidateEidsr: true };
+
+    case actions.VALIDATE_EIDSR.SUCCESS:
+      return { ...state, isLoadingValidateEidsr: false, formData: { ...state.formData, validateEidsrResult: action.data } };
+
+    case actions.VALIDATE_EIDSR.FAILURE:
+      return { ...state, isLoadingValidateEidsr: false };
 
     default:
       return state;

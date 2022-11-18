@@ -179,6 +179,7 @@ public static class ResultKey
         public static class EidsrApi
         {
             public const string ConnectionError = "EidsrIntegration.EidsrApi.ConnectionError";
+            public const string RegisterEventError = "EidsrIntegration.EidsrApi.RegisterEventError";
         }
     }
 
@@ -376,6 +377,7 @@ public static class ResultKey
             public const string WrongStatus = "alert.escalateAlert.wrongStatus";
             public const string EmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
             public const string SmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
+            public const string EidsrReportFailed = "alert.escalateAlert.eidsrReportFailed";
             public const string Success = "alert.escalateAlert.success";
             public const string NoPermission = "alert.escalateAlert.noPermission";
         }

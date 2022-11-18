@@ -20,7 +20,8 @@ export const alertsSagas = () => [
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
   takeEvery(consts.RESET_REPORT.INVOKE, resetReport),
   takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients),
-  takeEvery(consts.EXPORT_ALERTS.INVOKE, exportAlerts)
+  takeEvery(consts.EXPORT_ALERTS.INVOKE, exportAlerts),
+  takeEvery(consts.VALIDATE_EIDSR.INVOKE, validateEidsr)
 ];
 
 function* openAlertsList({ projectId }) {
@@ -218,3 +219,13 @@ function* openAlertsModule(projectId, title) {
     projectIsClosed: project.value.isClosed
   }));
 }
+
+function* validateEidsr({ alertId }) {
+  yield put(actions.validateEidsr.request());
+  try {
+    const response = yield call(http.get, `/api/alert/${alertId}/eidsr-validate`);
+    yield put(actions.validateEidsr.success(response.value));
+  } catch (error) {
+    yield put(actions.validateEidsr.failure(error.message));
+  }
+};

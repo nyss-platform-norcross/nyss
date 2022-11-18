@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace RX.Nyss.Web.Services;
+namespace RX.Nyss.Common.Services.EidsrClient.Dto;
 
 public class BasicAuthenticationHeaderValue : AuthenticationHeaderValue
 {

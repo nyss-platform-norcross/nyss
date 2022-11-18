@@ -11,6 +11,7 @@ export const DISMISS_ALERT = action("DISMISS_ALERT");
 export const CLOSE_ALERT = action("CLOSE_ALERT");
 export const FETCH_RECIPIENTS = action("FETCH_RECIPIENTS");
 export const EXPORT_ALERTS = action("EXPORT_ALERTS");
+export const VALIDATE_EIDSR = action("VALIDATE_EIDSR");
 
 export const assessmentStatus = {
   escalated: "Escalated",

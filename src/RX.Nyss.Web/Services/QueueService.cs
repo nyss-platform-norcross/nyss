@@ -1,24 +1,26 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
 {
     public interface IQueueService
     {
         Task Send<T>(string queueName, T data);
+
+        Task SendCollection<T>(string queueName, List<T> data);
+
     }
 
     public class QueueService : IQueueService
     {
-        private readonly INyssWebConfig _config;
         private readonly ServiceBusClient _serviceBusClient;
 
-        public QueueService(INyssWebConfig config, ServiceBusClient serviceBusClient)
+        public QueueService(ServiceBusClient serviceBusClient)
         {
-            _config = config;
             _serviceBusClient = serviceBusClient;
         }
 
@@ -32,6 +34,21 @@ namespace RX.Nyss.Web.Services
             };
 
             await sender.SendMessageAsync(message);
+        }
+
+        public async Task SendCollection<T>(string queueName, List<T> collection)
+        {
+            var sender = _serviceBusClient.CreateSender(queueName);
+
+            await Task.WhenAll(collection.Select(collectionItem =>
+            {
+                var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(collectionItem)))
+                {
+                    Subject = "RX.Nyss.Web",
+                };
+
+                return sender.SendMessageAsync(message);
+            }));
         }
     }
 }

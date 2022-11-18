@@ -57,6 +57,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                         a.Comments,
                         a.EscalatedOutcome,
                         a.RecipientsNotifiedAt,
+                        a.ProjectHealthRisk.Project.NationalSociety.EnableEidsrIntegration,
                         ProjectId = a.ProjectHealthRisk.Project.Id,
                         HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                             .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
@@ -112,6 +113,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                             .ToList(),
                     })
                     .AsNoTracking()
+                    .AsSplitQuery()
                     .SingleAsync(cancellationToken);
 
                 var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
@@ -150,6 +152,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                     EscalatedOutcome = alert.EscalatedOutcome,
                     RecipientsNotified = alert.RecipientsNotifiedAt.HasValue,
                     EscalatedTo = escalatedTo,
+                    IsNationalSocietyEidsrEnabled = alert.EnableEidsrIntegration,
                     Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                         ? new AlertAssessmentResponseDto.ReportDto
                         {

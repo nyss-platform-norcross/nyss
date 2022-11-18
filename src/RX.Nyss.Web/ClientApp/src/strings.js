@@ -810,7 +810,14 @@ export const stringKeys = {
         dismissalPossible: "alerts.assess.alert.dismissalPossible",
         escalatedSuccessfully: "alerts.assess.alert.escalatedSuccessfully",
         dismissedSuccessfully: "alerts.assess.alert.dismissedSuccessfully",
-        closedSuccessfully: "alerts.assess.alert.closedSuccessfully"
+        closedSuccessfully: "alerts.assess.alert.closedSuccessfully",
+        eidsrValidation: {
+          connection: "alerts.assess.alert.eidsrValidation.connection",
+          integrationValid: "alerts.assess.alert.eidsrValidation.integrationValid",
+          validReportsCount: "alerts.assess.alert.eidsrValidation.validReportsCount",
+          tip: "alerts.assess.alert.eidsrValidation.tip",
+          title: "alerts.assess.alert.eidsrValidation.title",
+        }
       },
       report: {
         accept: "alerts.assess.report.accept",
