@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,7 +28,6 @@ using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Coordinators.Access;
 using RX.Nyss.Web.Features.DataCollectors.Access;
-using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataConsumers.Access;
 using RX.Nyss.Web.Features.HeadSupervisors.Access;
 using RX.Nyss.Web.Features.Managers.Access;
@@ -84,6 +82,7 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterMediatR(IServiceCollection serviceCollection)
         {
             serviceCollection.AddMediatR(typeof(Startup));
+            serviceCollection.AddValidatorsFromAssembly(typeof(Startup).Assembly);
             serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         }
 
