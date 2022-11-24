@@ -55,12 +55,6 @@ const EidsrIntegrationEditPageComponent = (props) => {
       password: [validators.required],
       apiBaseUrl: [validators.required],
       trackerProgramId: [validators.required],
-      locationDataElementId: [validators.required],
-      dateOfOnsetDataElementId: [validators.required],
-      phoneNumberDataElementId: [validators.required],
-      suspectedDiseaseDataElementId: [validators.required],
-      eventTypeDataElementId: [validators.required],
-      genderDataElementId: [validators.required],
       districtsWithOrganizationUnits: [districtValidator.allOrganisationUnits],
     };
 

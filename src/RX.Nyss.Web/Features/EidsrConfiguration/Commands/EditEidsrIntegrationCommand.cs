@@ -11,8 +11,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
-using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Services.EidsrClient.Dto;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration.Commands;
 
@@ -197,21 +195,15 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
         public List<DistrictsWithOrganizationUnits> DistrictsWithOrganizationUnits { get; set; }
     }
 
-    public class Validator : AbstractValidator<RequestBody>
+    public class Validator : AbstractValidator<EditEidsrIntegrationCommand>
     {
         public Validator()
         {
-            RuleFor(r => r.Username).NotEmpty();
-            RuleFor(r => r.Password).NotEmpty();
-            RuleFor(r => r.ApiBaseUrl).NotEmpty();
-            RuleFor(r => r.TrackerProgramId).NotEmpty();
-            RuleFor(r => r.LocationDataElementId).NotEmpty();
-            RuleFor(r => r.DateOfOnsetDataElementId).NotEmpty();
-            RuleFor(r => r.PhoneNumberDataElementId).NotEmpty();
-            RuleFor(r => r.SuspectedDiseaseDataElementId).NotEmpty();
-            RuleFor(r => r.EventTypeDataElementId).NotEmpty();
-            RuleFor(r => r.GenderDataElementId).NotEmpty();
-            RuleFor(r => r.DistrictsWithOrganizationUnits).Must(districtsWithOrganizationUnits =>
+            RuleFor(r => r.Body.Username).NotEmpty();
+            RuleFor(r => r.Body.Password).NotEmpty();
+            RuleFor(r => r.Body.ApiBaseUrl).NotEmpty();
+            RuleFor(r => r.Body.TrackerProgramId).NotEmpty();
+            RuleFor(r => r.Body.DistrictsWithOrganizationUnits).Must(districtsWithOrganizationUnits =>
             {
                 foreach (var districtWithOrganizationUnit in districtsWithOrganizationUnits)
                 {

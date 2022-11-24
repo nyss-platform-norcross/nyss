@@ -121,9 +121,8 @@ public class EscalateCommand : IRequest<Result>
 
             var nonEssentialSubProcessesErrors = new List<string>();
 
-            // TODO: missing specification - this was not specified, but I do not care here if data migration to Eidsr have a chance to succeed
             await SendReportsToEidsr(
-                alertData.AcceptedReportIds.ToList(),
+                alertData.Alert.Id,
                 nonEssentialSubProcessesErrors,
                 alertData.NationalSocietyId);
 
@@ -188,7 +187,7 @@ public class EscalateCommand : IRequest<Result>
         }
 
         private async Task SendReportsToEidsr(
-            List<int> reportsId,
+            int alertId,
             List<string> nonEssentialSubProcessesErrors,
             int nationalSocietyId)
         {
@@ -202,7 +201,7 @@ public class EscalateCommand : IRequest<Result>
                     return;
                 }
 
-                await _eidsrService.SendReportsToEidsr(reportsId);
+                await _eidsrService.SendReportToEidsr(alertId);
             }
             catch (ResultException e)
             {

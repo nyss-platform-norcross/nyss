@@ -2,5 +2,5 @@
 
 public class EidsrReport
 {
-    public int? ReportId { get; set; }
+    public string AlertId { get; set; }
 }

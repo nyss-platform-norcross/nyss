@@ -41,14 +41,14 @@ public class EidsrRegisterEventRequest
         AddDataElement(dataValues, template.PhoneNumberDataElementId, data.PhoneNumber);
         AddDataElement(dataValues, template.SuspectedDiseaseDataElementId, data.SuspectedDisease);
         AddDataElement(dataValues, template.GenderDataElementId, data.Gender);
+        AddDataElement(dataValues, template.EventTypeDataElementId, data.EventType);
 
         return dataValues;
     }
 
     private static void AddDataElement(List<EidsrRegisterEventRequestBody.DataValue> list, string dataElementId, string value)
     {
-        // TODO: missing specification - I assume here that en event should be send even if some parts of the contract are missing
-        if (!string.IsNullOrEmpty(value))
+        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(dataElementId))
         {
             list.Add(new EidsrRegisterEventRequestBody.DataValue
             {

@@ -19,6 +19,22 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public class Validator : AbstractValidator<DataCollectorLocationRequestDto>
         {
+            public Validator()
+            {
+                RuleFor(l => l.Latitude)
+                    .InclusiveBetween(-90, 90);
+
+                RuleFor(l => l.Longitude)
+                    .InclusiveBetween(-180, 180);
+
+                RuleFor(l => l.VillageId)
+                    .GreaterThan(0);
+
+                RuleFor(l => l.ZoneId)
+                    .GreaterThan(0)
+                    .When(l => l.ZoneId.HasValue);
+            }
+
             public Validator(int dataCollectorId, IDataCollectorValidationService dataCollectorValidationService)
             {
                 RuleFor(l => l.Latitude)

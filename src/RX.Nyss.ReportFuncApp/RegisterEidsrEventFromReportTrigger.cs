@@ -37,7 +37,7 @@ namespace RX.Nyss.ReportFuncApp
             if (!postResult.IsSuccessStatusCode)
             {
                 _logger.LogError($"Status code: {(int)postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
-                throw new Exception($"A report '{reportForEidsr.ReportId}' was not registered properly as an eidsr event by the Report API.");
+                throw new Exception($"An alert '{reportForEidsr.AlertId}' was not registered properly as an eidsr event by the Report API.");
             }
         }
     }
