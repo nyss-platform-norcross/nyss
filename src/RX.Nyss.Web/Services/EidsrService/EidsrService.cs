@@ -19,7 +19,7 @@ public interface IEidsrService
 
     Task<Result<EidsrProgramResponse>> GetProgram(EidsrApiProperties apiProperties, string programId);
 
-    Task SendReportsToEidsr(List<int> reportsId);
+    Task SendReportToEidsr(int alertId);
 }
 
 public class EidsrService : IEidsrService
@@ -60,29 +60,16 @@ public class EidsrService : IEidsrService
     public Task<Result<EidsrProgramResponse>> GetProgram(EidsrApiProperties apiProperties, string programId) =>
         _eidsrClient.GetProgram(apiProperties, programId);
 
-    public async Task SendReportsToEidsr(List<int> reportsId)
+    public async Task SendReportToEidsr(int alertId)
     {
         try
         {
-            await _queueService.SendCollection(
-                _config.ServiceBusQueues.EidsrReportQueue,
-                reportsId.Select(x => new EidsrReport { ReportId = x }).ToList());
+            await _queueService.Send(_config.ServiceBusQueues.EidsrReportQueue, new EidsrReport { AlertId = alertId.ToString() });
         }
         catch (Exception e)
         {
-            _loggerAdapter.Error(e, $"Failed to SendReportsToEidsr");
+            _loggerAdapter.Error(e, $"Failed to SendReportToEidsr");
             throw new ResultException(ResultKey.Alert.EscalateAlert.EmailNotificationFailed);
         }
-    }
-
-    public void ValidateEidsrReports(List<int> reportsId)
-    {
-        // TODO: Important! call it from the frontend within Escalate component
-
-        // Get EidsrConfiguration
-
-        // Ping Client
-
-        // All districts have EidsUnit
     }
 }

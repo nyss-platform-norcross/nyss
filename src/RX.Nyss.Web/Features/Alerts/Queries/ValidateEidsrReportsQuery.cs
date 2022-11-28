@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -28,6 +29,7 @@ public class ValidateEidsrReportsQuery : IRequest<Result<ValidateEidsrReportsRes
         private readonly IEidsrService _eidsrService;
         private readonly INyssWebConfig _nyssWebConfig;
         private readonly ICryptographyService _cryptographyService;
+
         public Handler(
             IEidsrRepository repository,
             IEidsrService eidsrService,
@@ -42,38 +44,48 @@ public class ValidateEidsrReportsQuery : IRequest<Result<ValidateEidsrReportsRes
 
         public async Task<Result<ValidateEidsrReportsResponse>> Handle(ValidateEidsrReportsQuery request, CancellationToken cancellationToken)
         {
-            var reports = _repository.GetReportsForEidsr(request.AlertId);
-
             var res = new ValidateEidsrReportsResponse();
 
-            // assume all reports have the same template (come from the same national society)
-            var template = reports.FirstOrDefault()?.EidsrDbReportTemplate;
-            var templateValidation = await new EidsrDbReportTemplateValidator().ValidateAsync(template, cancellationToken);
-
-            res.IsIntegrationConfigValid = templateValidation.IsValid;
-
-            var pingResult = await _eidsrService.GetProgram(new EidsrApiProperties
+            try
             {
-                Password = _cryptographyService.Decrypt(
-                    template?.EidsrApiProperties.PasswordHash,
-                    _nyssWebConfig.Key,
-                    _nyssWebConfig.SupplementaryKey),
-                Url = template?.EidsrApiProperties.Url,
-                UserName = template?.EidsrApiProperties.UserName,
-            }, template?.Program);
+                var reports = _repository.GetReportsForEidsr(request.AlertId);
 
-            res.IsEidsrApiConnectionRunning = pingResult.IsSuccess && !string.IsNullOrEmpty(pingResult.Value.Name);
+                // assume all reports have the same template (come from the same national society)
+                var template = reports.FirstOrDefault()?.EidsrDbReportTemplate;
+                var templateValidation = await new EidsrDbReportTemplateValidator().ValidateAsync(template, cancellationToken);
 
-            res.AreReportsValidCount = 0;
+                res.IsIntegrationConfigValid = templateValidation.IsValid;
 
-            foreach (var report in reports)
-            {
-                var validation = await new EidsrDbReportDataValidator().ValidateAsync(report.EidsrDbReportData, cancellationToken);
-
-                if (validation.IsValid)
+                var pingResult = await _eidsrService.GetProgram(new EidsrApiProperties
                 {
-                    res.AreReportsValidCount++;
+                    Password = _cryptographyService.Decrypt(
+                        template?.EidsrApiProperties.PasswordHash,
+                        _nyssWebConfig.Key,
+                        _nyssWebConfig.SupplementaryKey),
+                    Url = template?.EidsrApiProperties.Url,
+                    UserName = template?.EidsrApiProperties.UserName,
+                }, template?.Program);
+
+                res.IsEidsrApiConnectionRunning = pingResult.IsSuccess && !string.IsNullOrEmpty(pingResult.Value.Name);
+
+                res.AreReportsValidCount = 0;
+
+                foreach (var report in reports)
+                {
+                    var validation = await new EidsrDbReportDataValidator().ValidateAsync(report.EidsrDbReportData, cancellationToken);
+
+                    if (validation.IsValid)
+                    {
+                        res.AreReportsValidCount++;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                res.IsEidsrApiConnectionRunning = false;
+                res.IsIntegrationConfigValid = false;
+                res.AreReportsValidCount = 0;
+                return Success(res);
             }
 
             return Success(res);
@@ -95,12 +107,6 @@ public class EidsrDbReportTemplateValidator : AbstractValidator<EidsrDbReportTem
     public EidsrDbReportTemplateValidator()
     {
         RuleFor(x => x.Program).NotEmpty();
-        RuleFor(x => x.GenderDataElementId).NotEmpty();
-        RuleFor(x => x.LocationDataElementId).NotEmpty();
-        RuleFor(x => x.EventTypeDataElementId).NotEmpty();
-        RuleFor(x => x.PhoneNumberDataElementId).NotEmpty();
-        RuleFor(x => x.SuspectedDiseaseDataElementId).NotEmpty();
-        RuleFor(x => x.DateOfOnsetDataElementId).NotEmpty();
 
         RuleFor(x => x.EidsrApiProperties).NotEmpty().DependentRules(() =>
         {
@@ -115,13 +121,6 @@ public class EidsrDbReportDataValidator : AbstractValidator<EidsrDbReportData>
 {
     public EidsrDbReportDataValidator()
     {
-        RuleFor(x => x.Gender).NotEmpty();
-        RuleFor(x => x.Location).NotEmpty();
-        RuleFor(x => x.EventDate).NotEmpty();
-        RuleFor(x => x.EventType).NotEmpty();
         RuleFor(x => x.OrgUnit).NotEmpty();
-        RuleFor(x => x.PhoneNumber).NotEmpty();
-        RuleFor(x => x.SuspectedDisease).NotEmpty();
-        RuleFor(x => x.DateOfOnset).NotEmpty();
     }
 }

@@ -40,59 +40,68 @@ public class EidsrReportHandler : IEidsrReportHandler
 
     public async Task<bool> Handle(EidsrReport eidsrReport)
     {
+        var isSuccess = true;
+
         try
         {
-            if (eidsrReport == null || eidsrReport.ReportId == null)
+            if (eidsrReport?.AlertId == null)
             {
                 throw new ArgumentException($"EidsrReport is null");
             }
 
-            var report = _eidsrRepository.GetReportForEidsr(eidsrReport.ReportId.Value);
+            var reports = _eidsrRepository.GetReportsForEidsr(eidsrReport.AlertId.Value);
 
-            var template = new EidsrRegisterEventRequestTemplate
+            foreach (var report in reports)
             {
-                EidsrApiProperties = new EidsrApiProperties
+                var template = new EidsrRegisterEventRequestTemplate
                 {
-                    Url = report.EidsrDbReportTemplate.EidsrApiProperties.Url,
-                    UserName = report.EidsrDbReportTemplate.EidsrApiProperties.UserName,
-                    Password = _cryptographyService.Decrypt(
-                        report.EidsrDbReportTemplate.EidsrApiProperties.PasswordHash,
-                        _nyssReportApiConfig.Key,
-                        _nyssReportApiConfig.SupplementaryKey),
-                },
-                Program = report.EidsrDbReportTemplate.Program,
-                LocationDataElementId = report.EidsrDbReportTemplate.LocationDataElementId,
-                DateOfOnsetDataElementId = report.EidsrDbReportTemplate.DateOfOnsetDataElementId,
-                PhoneNumberDataElementId = report.EidsrDbReportTemplate.PhoneNumberDataElementId,
-                SuspectedDiseaseDataElementId = report.EidsrDbReportTemplate.SuspectedDiseaseDataElementId,
-                EventTypeDataElementId = report.EidsrDbReportTemplate.EventTypeDataElementId,
-                GenderDataElementId = report.EidsrDbReportTemplate.GenderDataElementId
-            };
+                    EidsrApiProperties = new EidsrApiProperties
+                    {
+                        Url = report.EidsrDbReportTemplate.EidsrApiProperties.Url,
+                        UserName = report.EidsrDbReportTemplate.EidsrApiProperties.UserName,
+                        Password = _cryptographyService.Decrypt(
+                            report.EidsrDbReportTemplate.EidsrApiProperties.PasswordHash,
+                            _nyssReportApiConfig.Key,
+                            _nyssReportApiConfig.SupplementaryKey),
+                    },
+                    Program = report.EidsrDbReportTemplate.Program,
+                    LocationDataElementId = report.EidsrDbReportTemplate.LocationDataElementId,
+                    DateOfOnsetDataElementId = report.EidsrDbReportTemplate.DateOfOnsetDataElementId,
+                    PhoneNumberDataElementId = report.EidsrDbReportTemplate.PhoneNumberDataElementId,
+                    SuspectedDiseaseDataElementId = report.EidsrDbReportTemplate.SuspectedDiseaseDataElementId,
+                    EventTypeDataElementId = report.EidsrDbReportTemplate.EventTypeDataElementId,
+                    GenderDataElementId = report.EidsrDbReportTemplate.GenderDataElementId
+                };
 
-            var data = new EidsrRegisterEventRequestData
-            {
-                OrgUnit = report.EidsrDbReportData.OrgUnit,
-                EventDate = report.EidsrDbReportData.EventDate,
-                Location = report.EidsrDbReportData.Location,
-                DateOfOnset = report.EidsrDbReportData.DateOfOnset,
-                PhoneNumber = report.EidsrDbReportData.PhoneNumber,
-                SuspectedDisease = report.EidsrDbReportData.SuspectedDisease,
-                EventType = report.EidsrDbReportData.EventType,
-                Gender = report.EidsrDbReportData.Gender,
-            };
+                var data = new EidsrRegisterEventRequestData
+                {
+                    OrgUnit = report.EidsrDbReportData.OrgUnit,
+                    EventDate = report.EidsrDbReportData.EventDate,
+                    Location = report.EidsrDbReportData.Location,
+                    DateOfOnset = report.EidsrDbReportData.DateOfOnset,
+                    PhoneNumber = report.EidsrDbReportData.PhoneNumber,
+                    SuspectedDisease = report.EidsrDbReportData.SuspectedDisease,
+                    EventType = report.EidsrDbReportData.EventType,
+                    Gender = report.EidsrDbReportData.Gender,
+                };
 
-            var request = EidsrRegisterEventRequest.CreateEidsrRegisterEventRequest(template, data);
+                var request = EidsrRegisterEventRequest.CreateEidsrRegisterEventRequest(template, data);
 
-            var result = await _eidsrClient.RegisterEvent(request);
+                var result = await _eidsrClient.RegisterEvent(request);
 
-            return result.IsSuccess;
+                if (!result.IsSuccess)
+                {
+                    isSuccess = false;
+                }
+            }
         }
         catch (Exception e)
         {
             _loggerAdapter.Error(e.Message);
+            isSuccess = false;
         }
 
-        return false;
+        return isSuccess;
     }
 }
 

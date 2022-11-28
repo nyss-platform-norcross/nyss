@@ -343,7 +343,7 @@ public class EscalateTests : AlertFeatureBase
         Alerts.First().Status = AlertStatus.Open;
 
         // Arrange
-        _eidsrService.SendReportsToEidsr(Arg.Any<List<int>>())
+        _eidsrService.SendReportToEidsr(Arg.Any<int>())
             .Throws(new ResultException("Some connection error or queue doesn't exists"));
 
         // Act
@@ -360,7 +360,7 @@ public class EscalateTests : AlertFeatureBase
         // Arrange
         ConfigureAlertValidNotifications();
 
-        _eidsrService.SendReportsToEidsr(Arg.Any<List<int>>())
+        _eidsrService.SendReportToEidsr(Arg.Any<int>())
             .Throws(new ResultException("Some connection error or queue doesn't exists"));
 
         EmailTextGeneratorService.GenerateEscalatedAlertEmail(Arg.Any<string>())
