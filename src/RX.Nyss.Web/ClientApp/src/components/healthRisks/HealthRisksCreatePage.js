@@ -87,6 +87,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
   useMount(() => {
     props.openModule(props.match.path, props.match.params);
+    ///Added to handle suspected disease list
     props.openCreation();
   })
 
@@ -105,6 +106,7 @@ const HealthRisksCreatePageComponent = (props) => {
     props.create(getSaveFormModel(form.getValues(), props.contentLanguages, selectedSuspectedDiseases));
   };
 
+  //Handle add or remove suspected disease values in list
   const onSuspectedDiseaseChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
@@ -145,7 +147,6 @@ const HealthRisksCreatePageComponent = (props) => {
               ))}
             </SelectField>
           </Grid>
-
           <Grid item xs={12}>
             <Typography variant="h3">{strings(stringKeys.healthRisk.form.suspectedDiseaseTitle)}</Typography>
             <MultiSelect
@@ -252,7 +253,7 @@ const HealthRisksCreatePageComponent = (props) => {
 HealthRisksCreatePageComponent.propTypes = {
   getHealthRisks: PropTypes.func,
   openModule: PropTypes.func,
-  openCreation: PropTypes.func,
+  openCreation: PropTypes.func,//Added
   data: PropTypes.array
 };
 
@@ -267,7 +268,7 @@ const mapDispatchToProps = {
   getList: healthRisksActions.getList.invoke,
   create: healthRisksActions.create.invoke,
   goToList: healthRisksActions.goToList,
-  openCreation: healthRisksActions.openCreation.invoke,
+  openCreation: healthRisksActions.openCreation.invoke,//Added
   openModule: appActions.openModule.invoke
 };
 

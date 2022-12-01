@@ -13,6 +13,7 @@ export const getList = {
   failure: (message) => ({ type: GET_HEALTH_RISKS.FAILURE, message })
 };
 
+//Added as new creation action to handle start of health risk creation and data we need for that
 export const openCreation = {
   invoke: (data) => ({ type: OPEN_CREATION_HEALTH_RISK.INVOKE, data }),
   request: () => ({ type: OPEN_CREATION_HEALTH_RISK.REQUEST }),

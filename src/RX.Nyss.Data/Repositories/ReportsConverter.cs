@@ -112,10 +112,10 @@ public class ReportsConverter : IReportsConverter
                     OrgUnit = orgUnitGroup.Key.OrgUnit,
                     EventDate = orgUnitGroup.Key.EventDate,
                     Gender = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.Gender).ToList()),
-                    Location = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.Location).ToList()),
+                    Location = CreateValuesAndString(orgUnitGroup.Select(x => x.Location).ToList()),
                     EventType = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.EventType).ToList()),
                     PhoneNumber = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.PhoneNumber).ToList()),
-                    SuspectedDisease = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.SuspectedDisease).ToList()),
+                    SuspectedDisease = CreateValuesAndString(orgUnitGroup.Select(x => x.SuspectedDisease).ToList()),
                     DateOfOnset = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.DateOfOnset).ToList())
                 };
             })
@@ -136,5 +136,16 @@ public class ReportsConverter : IReportsConverter
                 valueCountPair.Count == 1
                     ? $"{valueCountPair.Value}"
                     : $"{valueCountPair.Value} ({valueCountPair.Count})"));
+    }
+
+    private string CreateValuesAndString(List<string> list)
+    {
+        var valuePairs = from x in list
+                              group x by x into g
+                              select new { Value = g.Key};
+
+        return string.Join(", ", valuePairs
+            .Where(valuePairs => !string.IsNullOrEmpty(valuePairs.Value))
+            .Select(valuePairs => $"{valuePairs.Value}"));
     }
 }
