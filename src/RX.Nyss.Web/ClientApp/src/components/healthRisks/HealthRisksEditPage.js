@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -28,19 +28,11 @@ const HealthRisksEditPageComponent = (props) => {
   const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [reportCountThreshold, setReportCountThreshold] = useState(null);
 
-  var start = 1;
-
-  const setInitialSuspectedDisease = () => {
-    suspectedDiseasesDataSource.filter(sd => (props.data.healthRiskSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
-    console.log(start);
-  }
-
   useMount(() => {
-    props.openEdition(props.match);    
+    props.openEdition(props.match);
   });
 
   useEffect(() => {
-
     props.data && setSuspectedDiseasesDataSource(props.data.suspectedDiseasesList.map(sd => ({ label: sd.suspectedDiseaseName, value: sd.suspectedDiseaseId, data: sd })));
     if (form && reportCountThreshold <= 1) {
       form.fields.alertRuleDaysThreshold.update("");
@@ -53,11 +45,11 @@ const HealthRisksEditPageComponent = (props) => {
     if (!props.data) {
       return;
     }
-
-    setInitialSuspectedDisease();
-
     setReportCountThreshold(props.data.alertRuleCountThreshold);
     setHealthRiskType(props.data.healthRiskType);
+
+    //Added to recall all suspected diseases link to selected health risk
+    setSelectedSuspectedDiseases(props.data.healthRiskSuspectedDiseases);
 
     let fields = {
       healthRiskCode: props.data.healthRiskCode.toString(),
@@ -102,7 +94,6 @@ const HealthRisksEditPageComponent = (props) => {
     newForm.fields.alertRuleCountThreshold.subscribe(({ newValue }) => setReportCountThreshold(newValue));
     newForm.fields.healthRiskType.subscribe(({ newValue }) => setHealthRiskType(newValue));
     setForm(newForm);
-
   }, [props.data, props.contentLanguages]);
 
 
@@ -110,6 +101,8 @@ const HealthRisksEditPageComponent = (props) => {
     value: t,
     label: strings(stringKeys.healthRisk.constants.healthRiskType[t.toLowerCase()])
   })));
+
+  useCustomErrors(form, props.formError);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -121,6 +114,7 @@ const HealthRisksEditPageComponent = (props) => {
     props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages, selectedSuspectedDiseases));
   };
 
+  //Handling changing selected suspected disease for selected health risk
   const onSuspectedDiseaseChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedSuspectedDiseases([...selectedSuspectedDiseases, eventData.option.data]);
@@ -131,10 +125,9 @@ const HealthRisksEditPageComponent = (props) => {
     }
   }
 
+  //Handling changing values in suspected disease list
   const getSelectedSuspectedDiseaseValue = () =>
-    suspectedDiseasesDataSource.filter(sd => (props.data.healthRiskSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
-
-  useCustomErrors(form, props.formError);
+    suspectedDiseasesDataSource.filter(sd => (selectedSuspectedDiseases.some(ssd => ssd.suspectedDiseaseId === sd.value)));
 
   if (props.isFetching || !form) {
     return <Loading />;

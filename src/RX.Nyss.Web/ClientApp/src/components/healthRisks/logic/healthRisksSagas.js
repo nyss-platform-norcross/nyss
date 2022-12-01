@@ -29,6 +29,7 @@ function* getHealthRisks(force) {
   }
 };
 
+//Added to handle the list of suspected diseases in helth risk creation
 function* openHealthRiskCreation() {
   yield put(actions.openCreation.request());
   try {
@@ -39,6 +40,7 @@ function* openHealthRiskCreation() {
   }
 };
 
+//Changed to handle the list of suspected diseases in helth risk edition
 function* openHealthRiskEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
