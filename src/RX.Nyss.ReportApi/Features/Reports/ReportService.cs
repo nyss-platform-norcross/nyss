@@ -51,6 +51,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 case ReportSource.Nyss:
                     await _nyssReportHandler.Handle(report.Content);
                     break;
+                case ReportSource.Telerivet:
+                    await _telerivetHandler.Handle(report.Content);
+                    break;
                 default:
                     _loggerAdapter.Error($"Could not find a proper handler to handle a report '{report}'.");
                     break;

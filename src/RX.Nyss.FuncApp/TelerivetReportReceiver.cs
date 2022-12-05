@@ -12,6 +12,8 @@ using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.FuncApp.Contracts;
 using RX.Nyss.FuncApp.Services;
+//using Telerivet;
+//using Telerivet.Client;
 
 namespace RX.Nyss.FuncApp;
 
@@ -31,7 +33,7 @@ private const string ApiKeyQueryParameterName = "apikey";
 
     [FunctionName("EnqueueTelerivetReport")]
     public async Task<IActionResult> EnqueueTelerivetReport(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "EnqueueTelerivetReport")] HttpRequestMessage httpRequest,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueTelerivetReport")] HttpRequestMessage httpRequest,
         [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
     {
         var maxContentLength = _config.MaxContentLength;
