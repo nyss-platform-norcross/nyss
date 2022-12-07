@@ -18,6 +18,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
     {
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly INyssReportHandler _nyssReportHandler;
+        private readonly ITelerivetHandler _telerivetHandler;
         private readonly IEidsrReportHandler _eidsrReportHandler;
         private readonly ILoggerAdapter _loggerAdapter;
 
@@ -25,11 +26,13 @@ namespace RX.Nyss.ReportApi.Features.Reports
             ISmsEagleHandler smsEagleHandler,
             ILoggerAdapter loggerAdapter,
             INyssReportHandler nyssReportHandler,
+            ITelerivetHandler telerivetHandler,
             IEidsrReportHandler eidsrReportHandler)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
             _nyssReportHandler = nyssReportHandler;
+            _telerivetHandler = telerivetHandler;
             _eidsrReportHandler = eidsrReportHandler;
         }
 
