@@ -471,7 +471,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         {
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
-            var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
+            var existingUserEmail = "emailTest1@domain.com";
 
             var editRequest = new EditTechnicalAdvisorRequestDto
             {
@@ -484,6 +484,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             await _technicalAdvisorService.Edit(123, editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as TechnicalAdvisorUser;
+            editedUser.EmailAddress= existingUserEmail;
 
             editedUser.ShouldNotBeNull();
             editedUser.Name.ShouldBe(editRequest.Name);
