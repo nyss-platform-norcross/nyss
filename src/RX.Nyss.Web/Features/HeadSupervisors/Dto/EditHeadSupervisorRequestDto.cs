@@ -12,6 +12,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
     public class EditHeadSupervisorRequestDto
     {
         public string Name { get; set; }
+        public string Email { get; set; }
         public Sex Sex { get; set; }
         public int DecadeOfBirth { get; set; }
         public string PhoneNumber { get; set; }
@@ -27,6 +28,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
             public EditHeadSupervisorRequestValidator(IProjectAccessService projectAccessService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
+                RuleFor(m => m.Email).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Sex).IsInEnum();
                 RuleFor(m => m.DecadeOfBirth).NotEmpty().Must(y => y % 10 == 0).WithMessageKey(ResultKey.Validation.BirthGroupStartYearMustBeMulipleOf10);
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();

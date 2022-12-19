@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.Coordinators
         /// <returns></returns>
         [HttpPost("{coordinatorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.CoordinatorAccess)]
-        public async Task<Result> Edit(int coordinatorId, [FromBody] EditCoordinatorRequestDto editCoordinatorRequestDto) =>
+        public async Task<Result> Edit(int coordinatorId, [FromBody] CreateCoordinatorRequestDto editCoordinatorRequestDto) =>
             await _coordinatorService.Edit(coordinatorId, editCoordinatorRequestDto);
 
         /// <summary>

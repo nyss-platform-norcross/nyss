@@ -29,7 +29,14 @@ namespace RX.Nyss.Web.Services
         {
             var baseUrl = new Uri(_config.BaseUrl);
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
-
+            if (user.ApplicationLanguage == null)
+            {
+                var lang = new ApplicationLanguage();
+                lang.SetDisplayLanguageId(1);
+                lang.SetDisplayLanguageCode("en");
+                lang.SetDisplayLanguageName("English");
+                user.ApplicationLanguage = lang;
+            }
             var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationEmail(
                 user.Role,
                 verificationUrl,
@@ -43,7 +50,14 @@ namespace RX.Nyss.Web.Services
         {
             var baseUrl = new Uri(_config.BaseUrl);
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
-
+            if (user.ApplicationLanguage == null)
+            {
+                var lang = new ApplicationLanguage();
+                lang.SetDisplayLanguageId(1);
+                lang.SetDisplayLanguageCode("en");
+                lang.SetDisplayLanguageName("English");
+                user.ApplicationLanguage = lang;
+            }
             var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationForDataConsumersEmail(
                 user.Role,
                 verificationUrl,
