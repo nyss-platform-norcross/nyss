@@ -73,7 +73,7 @@ export const getStrings = {
 
 export const openModule = {
   invoke: (path, params) =>
-    ({ type: actions.OPEN_MODULE.INVOKE, path, params }),
+    ({ type: actions.OPEN_MODULE.INVOKE, path, params}),
 
   success: (path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title) =>
     ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title }),

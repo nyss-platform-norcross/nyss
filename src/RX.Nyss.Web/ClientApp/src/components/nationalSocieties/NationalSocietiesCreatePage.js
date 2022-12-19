@@ -17,6 +17,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { EpiWeekStandards } from './logic/nationalSocietiesConstants';
+import CheckboxField from "../forms/CheckboxField";
 
 const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -26,6 +27,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
       contentLanguageId: "",
       countryId: "",
       epiWeekStartDay: "Sunday",
+      enableEidsrIntegration: false,
     };
 
     const validation = {
@@ -57,6 +59,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
       contentLanguageId: parseInt(values.contentLanguageId),
       countryId: parseInt(values.countryId),
       epiWeekStartDay: values.epiWeekStartDay,
+      enableEidsrIntegration: values.enableEidsrIntegration,
     });
   };
 
@@ -120,6 +123,15 @@ const NationalSocietiesCreatePageComponent = (props) => {
               ))}
             </SelectField>
           </Grid>
+
+          <Grid item xs={12}>
+            <CheckboxField
+              name="enableEidsrIntegration"
+              label={strings(stringKeys.nationalSociety.form.enableEidsrIntegration)}
+              field={form.fields.enableEidsrIntegration}
+            />
+          </Grid>
+
         </Grid>
 
         <FormActions>

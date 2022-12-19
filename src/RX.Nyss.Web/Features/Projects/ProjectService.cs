@@ -101,7 +101,7 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     Id = ph.HealthRiskId,
                     Name = ph.HealthRisk.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == ph.Project.NationalSociety.ContentLanguage.Id)
+                        //.Where(lc => lc.ContentLanguage.Id == ph.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
                         .FirstOrDefault()
                 })
@@ -219,6 +219,7 @@ namespace RX.Nyss.Web.Features.Projects
                     State = ProjectState.Open,
                     StartDate = _dateTimeProvider.UtcNow,
                     EndDate = null,
+
                     ProjectHealthRisks = dto.HealthRisks.Select(phr => new ProjectHealthRisk
                     {
                         FeedbackMessage = phr.FeedbackMessage,
@@ -231,6 +232,7 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
+
                     ProjectOrganizations = organizationId.HasValue
                         ? new List<ProjectOrganization> { new ProjectOrganization { OrganizationId = organizationId.Value } }
                         : new List<ProjectOrganization>()

@@ -1,5 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
+import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -70,7 +71,8 @@ export const stringKeys = {
           label: "nationalSociety.form.epiWeekStandard.monday.label",
           description: "nationalSociety.form.epiWeekStandard.monday.description"
         }
-      }
+      },
+      enableEidsrIntegration: "nationalSociety.form.enableEidsrIntegration",
     },
     messages: {
       create: {
@@ -132,6 +134,8 @@ export const stringKeys = {
       healthRiskType: "healthRisk.form.healthRiskType",
       translationsSection: "healthRisk.form.translationsSection",
       alertsSection: "healthRisk.form.alertsSection",
+      suspectedDiseaseTitle: "healthRisk.form.suspectedDiseaseTitle",
+      suspectedDiseaseList: "healthRisk.form.suspectedDiseaseList",
       noAlertRule: "healthRisk.form.noAlertRule",
       alertRuleDescription: "healthRisk.form.alertRuleDescription",
       alertRuleCountThreshold: "healthRisk.form.alertRuleCountThreshold",
@@ -165,6 +169,32 @@ export const stringKeys = {
       }
     }
   },
+
+  suspectedDisease: {
+    title: "suspectedDisease.title",
+    form: {
+      creationTitle: "suspectedDisease.form.creationTitle",
+      editionTitle: "suspectedDisease.form.editionTitle",
+      suspectedDiseaseCode: "suspectedDisease.form.suspectedDiseaseCode",
+      contentLanguageName: "suspectedDisease.form.contentLanguageName",
+      translationsSection: "suspectedDisease.form.translationsSection",
+    },
+    list: {
+      suspectedDiseaseCode: "suspectedDisease.list.suspectedDiseaseCode",
+      suspectedDiseaseName: "suspectedDisease.list.suspectedDiseaseName",
+      removalConfirmation: "suspectedDisease.list.removalConfirmation"
+    },
+    create: {
+      success: "suspectedDisease.create.success"
+    },
+    edit: {
+      success: "suspectedDisease.edit.success"
+    },
+    delete: {
+      success: "suspectedDisease.delete.success"
+    }
+  },
+
   smsGateway: {
     title: "smsGateway.title",
     apiKeyCopied: "smsGateway.apiKeyCopied",
@@ -197,6 +227,44 @@ export const stringKeys = {
       removalConfirmation: "smsGateway.list.removalConfirmation",
       useIotHub: "smsGateway.list.useIotHub"
     },
+  },
+  eidsrIntegration: {
+    title: "eidsrIntegration.title",
+    disabled: "eidsrIntegration.disabled",
+    form: {
+      editionTitle: "eidsrIntegration.form.editionTitle",
+      userName: "eidsrIntegration.form.userName",
+      password: "eidsrIntegration.form.password",
+      apiBaseUrl: "eidsrIntegration.form.apiBaseUrl",
+      trackerProgramId: "eidsrIntegration.form.trackerProgramId",
+      locationDataElementId: "eidsrIntegration.form.locationDataElementId",
+      dateOfOnsetDataElementId: "eidsrIntegration.form.dateOfOnsetDataElementId",
+      phoneNumberDataElementId: "eidsrIntegration.form.phoneNumberDataElementId",
+      suspectedDiseaseDataElementId: "eidsrIntegration.form.suspectedDiseaseDataElementId",
+      eventTypeDataElementId: "eidsrIntegration.form.eventTypeDataElementId",
+      genderDataElementId: "eidsrIntegration.form.genderDataElementId",
+      districts: "eidsrIntegration.form.districts",
+      organisationUnits: "eidsrIntegration.form.organisationUnits",
+      choseOrganisationUnit: "eidsrIntegration.form.choseOrganisationUnit",
+      noDistricts: "eidsrIntegration.form.noDistricts",
+      loading: "eidsrIntegration.form.loading",
+      noOptions: "eidsrIntegration.form.noOptions",
+      connNotTested: "eidsrIntegration.form.connNotTested",
+      testConn: "eidsrIntegration.form.testConn",
+      testConnToContinue: "eidsrIntegration.form.testConnToContinue",
+      allDistrictsShouldOrgUnit: "eidsrIntegration.form.allDistrictsShouldOrgUnit",
+      dataNotSet: "eidsrIntegration.from.dataNotSet",
+      dataElements: "eidsrIntegration.from.dataElements",
+    },
+    create: {
+      success: "eidsrIntegration.create.success"
+    },
+    edit: {
+      success: "eidsrIntegration.edit.success"
+    },
+    eidsrApi: {
+      ConnectionError: "eidsrIntegration.EidsrApi.ConnectionError"
+    }
   },
   organization: {
     title: "organization.title",
@@ -742,7 +810,14 @@ export const stringKeys = {
         dismissalPossible: "alerts.assess.alert.dismissalPossible",
         escalatedSuccessfully: "alerts.assess.alert.escalatedSuccessfully",
         dismissedSuccessfully: "alerts.assess.alert.dismissedSuccessfully",
-        closedSuccessfully: "alerts.assess.alert.closedSuccessfully"
+        closedSuccessfully: "alerts.assess.alert.closedSuccessfully",
+        eidsrValidation: {
+          connection: "alerts.assess.alert.eidsrValidation.connection",
+          integrationValid: "alerts.assess.alert.eidsrValidation.integrationValid",
+          validReportsCount: "alerts.assess.alert.eidsrValidation.validReportsCount",
+          tip: "alerts.assess.alert.eidsrValidation.tip",
+          title: "alerts.assess.alert.eidsrValidation.title",
+        }
       },
       report: {
         accept: "alerts.assess.report.accept",
@@ -930,6 +1005,7 @@ export const stringKeys = {
     invalidPhoneNumber: "validation.invalidPhoneNumber",
     fieldRequired: "validation.fieldRequired",
     noHealthRiskSelected: "validation.noHealthRiskSelected",
+    //noSuspectedDiseaseSelected: "validation.noSuspectedDiseaseSelected",
     tooShortString: "validation.tooShortString",
     tooLongString: "validation.tooLongString",
     invalidEmail: "validation.invalidEmail",

@@ -8,6 +8,10 @@ namespace RX.Nyss.ReportApi.Configuration
 
         int CheckAlertTimeoutInMinutes { get; set; }
         string NationalSocietiesToExcludeFromPublicStats { get; set; }
+
+        public string Key { get; set; }
+
+        public string SupplementaryKey { get; set; }
     }
 
     public class ConfigSingleton : INyssReportApiConfig
@@ -27,5 +31,9 @@ namespace RX.Nyss.ReportApi.Configuration
         public string SmsContentResourcesBlobObjectName { get; set; }
         public string PublicStatsBlobObjectName { get; set; }
         public string NationalSocietiesToExcludeFromPublicStats { get; set; }
+
+        public string Key { get; set; }
+
+        public string SupplementaryKey { get; set; }
     }
 }

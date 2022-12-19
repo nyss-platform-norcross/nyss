@@ -8,6 +8,7 @@ import { projectsReducer } from "../components/projects/logic/projectsReducer";
 import { requestReducer } from "../components/app/logic/requestReducer";
 import { globalCoordinatorsReducer } from "../components/globalCoordinators/logic/globalCoordinatorsReducer";
 import { healthRisksReducer } from "../components/healthRisks/logic/healthRisksReducer";
+import { suspectedDiseaseReducer } from "../components/suspectedDiseases/logic/suspectedDiseaseReducer";
 import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersReducer";
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
 import { agreementsReducer } from "../components/agreements/logic/agreementsReducer";
@@ -24,6 +25,7 @@ import { projectAlertRecipientsReducer } from "../components/projectAlertRecipie
 import { projectAlertNotHandledRecipientsReducer } from "../components/projectAlertNotHandledRecipient/logic/projectAlertNotHandledRecipientsReducer";
 import { alertEventsReducer } from "../components/alertEvents/logic/alertEventsReducer";
 import { trackingReducer } from "../utils/tracking";
+import {eidsrIntegrationReducer} from "../components/eidsrIntegration/logic/eidsrIntegrationReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -33,6 +35,7 @@ export const createRootReducer = (history) => combineReducers({
   nationalSocieties: nationalSocietiesReducer,
   nationalSocietyStructure: nationalSocietyStructureReducer,
   smsGateways: smsGatewaysReducer,
+  eidsrIntegration: eidsrIntegrationReducer,
   organizations: organizationsReducer,
   projects: projectsReducer,
   projectDashboard: projectDashboardReducer,
@@ -40,6 +43,7 @@ export const createRootReducer = (history) => combineReducers({
   projectAlertRecipients: projectAlertRecipientsReducer,
   globalCoordinators: globalCoordinatorsReducer,
   healthRisks: healthRisksReducer,
+  suspectedDiseases: suspectedDiseaseReducer,
   nationalSocietyUsers: nationalSocietyUsersReducer,
   dataCollectors: dataCollectorsReducer,
   agreements: agreementsReducer,

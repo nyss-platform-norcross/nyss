@@ -19,6 +19,10 @@ export const accessMap = {
     edit: [Administrator, Manager, TechnicalAdvisor, Coordinator],
     delete: [Administrator, Manager, TechnicalAdvisor, Coordinator]
   },
+  eidsrIntegration: {
+    get: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Coordinator],
+    edit: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+  },
   organizations: {
     list: [Administrator, Coordinator, Manager, TechnicalAdvisor],
     add: [Administrator, Coordinator, Manager, TechnicalAdvisor],
@@ -48,6 +52,12 @@ export const accessMap = {
     delete: [Administrator]
   },
   healthRisks: {
+    list: [Administrator, GlobalCoordinator],
+    add: [Administrator, GlobalCoordinator],
+    edit: [Administrator, GlobalCoordinator],
+    delete: [Administrator, GlobalCoordinator]
+  },
+  suspectedDiseases: {
     list: [Administrator, GlobalCoordinator],
     add: [Administrator, GlobalCoordinator],
     edit: [Administrator, GlobalCoordinator],

@@ -25,6 +25,8 @@ namespace RX.Nyss.Data.Models
 
         public DayOfWeek EpiWeekStartDay { get; set; }
 
+        public bool EnableEidsrIntegration { get; set; }
+
         public virtual ContentLanguage ContentLanguage { get; set; }
 
         public virtual Country Country { get; set; }
@@ -36,5 +38,7 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<RawReport> RawReports { get; set; }
 
         public virtual ICollection<Organization> Organizations { get; set; }
+
+        public virtual EidsrConfiguration EidsrConfiguration { get; set; }
     }
 }

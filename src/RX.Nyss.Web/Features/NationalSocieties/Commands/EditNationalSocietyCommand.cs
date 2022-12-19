@@ -75,6 +75,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
                 nationalSociety.ContentLanguage = contentLanguage;
                 nationalSociety.Country = country;
                 nationalSociety.EpiWeekStartDay = request.Body.EpiWeekStartDay;
+                nationalSociety.EnableEidsrIntegration = request.Body.EnableEidsrIntegration;
 
                 await _nyssContext.SaveChangesAsync(cancellationToken);
 
@@ -91,6 +92,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Commands
             public int ContentLanguageId { get; set; }
 
             public DayOfWeek EpiWeekStartDay { get; set; }
+
+            public bool EnableEidsrIntegration { get; set; }
 
             public int Id { get; set; }
         }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
@@ -9,6 +11,10 @@ namespace RX.Nyss.Data
     {
         public NyssContext(DbContextOptions<NyssContext> options)
             : base(options)
+        {
+        }
+
+        public NyssContext()
         {
         }
 
@@ -43,6 +49,10 @@ namespace RX.Nyss.Data
         public DbSet<HealthRisk> HealthRisks { get; set; }
 
         public DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
+
+        public DbSet<SuspectedDisease> SuspectedDisease { get; set; }
+
+        public DbSet<SuspectedDiseaseLanguageContent> SuspectedDiseaseLanguageContent { get; set; }
 
         public DbSet<Localization> Localizations { get; set; }
 
@@ -96,9 +106,12 @@ namespace RX.Nyss.Data
 
         public DbSet<ProjectErrorMessage> ProjectErrorMessages { get; set; }
 
+        public DbSet<EidsrConfiguration> EidsrConfiguration { get; set; }
+
+        public DbSet<EidsrOrganisationUnits> EidsrOrganisationUnits { get; set; }
+
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -57,6 +57,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                         a.Comments,
                         a.EscalatedOutcome,
                         a.RecipientsNotifiedAt,
+                        a.ProjectHealthRisk.Project.NationalSociety.EnableEidsrIntegration,
                         ProjectId = a.ProjectHealthRisk.Project.Id,
                         HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                             .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
@@ -67,7 +68,6 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                         Reports = a.AlertReports.Select(ar => new
                         {
                             Id = ar.Report.Id,
-                            PhoneNumber = ar.Report.PhoneNumber,
                             DataCollector = ar.Report.DataCollector.DisplayName,
                             OrganizationId = ar.Report.DataCollector.Supervisor != null
                                 ? ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId
@@ -84,6 +84,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                                 ? ar.Report.DataCollector.Supervisor.PhoneNumber
                                 : ar.Report.DataCollector.HeadSupervisor.PhoneNumber,
                             ReceivedAt = ar.Report.ReceivedAt,
+                            PhoneNumber = ar.Report.PhoneNumber,
                             Village = ar.Report.RawReport.Village.Name,
                             District = ar.Report.RawReport.Village.District.Name,
                             Region = ar.Report.RawReport.Village.District.Region.Name,
@@ -112,6 +113,7 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                             .ToList(),
                     })
                     .AsNoTracking()
+                    .AsSplitQuery()
                     .SingleAsync(cancellationToken);
 
                 var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
@@ -150,7 +152,8 @@ namespace RX.Nyss.Web.Features.Alerts.Queries
                     EscalatedOutcome = alert.EscalatedOutcome,
                     RecipientsNotified = alert.RecipientsNotifiedAt.HasValue,
                     EscalatedTo = escalatedTo,
-                     Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
+                    IsNationalSocietyEidsrEnabled = alert.EnableEidsrIntegration,
+                    Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                         ? new AlertAssessmentResponseDto.ReportDto
                         {
                             Id = ar.Id,

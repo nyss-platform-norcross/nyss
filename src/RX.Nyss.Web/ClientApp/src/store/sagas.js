@@ -7,6 +7,7 @@ import { smsGatewaysSagas } from "../components/smsGateways/logic/smsGatewaysSag
 import { projectsSagas } from "../components/projects/logic/projectsSagas";
 import { globalCoordinatorsSagas } from "../components/globalCoordinators/logic/globalCoordinatorsSagas";
 import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSagas";
+import { suspectedDiseaseSagas } from "../components/suspectedDiseases/logic/suspectedDiseaseSagas";
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { agreementsSagas } from "../components/agreements/logic/agreementsSagas";
@@ -23,6 +24,7 @@ import { projectOrganizationsSagas } from "../components/projectOrganizations/lo
 import { projectAlertRecipientsSagas } from "../components/projectAlertRecipients/logic/projectAlertRecipientsSagas";
 import { projectAlertNotHandledRecipientsSagas } from "../components/projectAlertNotHandledRecipient/logic/projectAlertNotHandledRecipientsSagas";
 import { trackingSagas } from "../utils/tracking";
+import { eidsrIntegrationSagas } from "../components/eidsrIntegration/logic/eidsrIntegrationSagas";
 
 function* rootSaga() {
   yield all([
@@ -31,6 +33,7 @@ function* rootSaga() {
     ...nationalSocietiesSagas(),
     ...nationalSocietyStructureSagas(),
     ...smsGatewaysSagas(),
+    ...eidsrIntegrationSagas(),
     ...organizationsSagas(),
     ...projectsSagas(),
     ...projectDashboardSagas(),
@@ -38,6 +41,7 @@ function* rootSaga() {
     ...projectAlertRecipientsSagas(),
     ...globalCoordinatorsSagas(),
     ...healthRisksSagas(),
+    ...suspectedDiseaseSagas(),
     ...nationalSocietyUsersSagas(),
     ...dataCollectorsSagas(),
     ...agreementsSagas(),

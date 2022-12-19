@@ -21,7 +21,7 @@ export const initialState = {
       isSending: false,
       result: "",
     },
-    direction: 'ltr' 
+    direction: 'ltr'
   },
   requests: {
     isFetching: false,
@@ -82,6 +82,29 @@ export const initialState = {
     formData: null,
     pinging: {},
     availableIoTDevices: []
+  },
+  eidsrIntegration: {
+    isFetching: true,
+    formSaving: false,
+    formError: null,
+    data:
+      {
+        id: null,
+        userName: null,
+        apiBaseUrl: null,
+        password: null,
+        trackerProgramId: null,
+        locationDataElementId: null,
+        dateOfOnsetDataElementId: null,
+        phoneNumberDataElementId: null,
+        suspectedDiseaseDataElementId: null,
+        eventTypeDataElementId: null,
+        genderDataElementId: null,
+      },
+    organisationUnits: [],
+    organisationUnitsIsFetching: false,
+    program: null,
+    programIsFetching: false,
   },
   organizations: {
     listNationalSocietyId: null,
@@ -165,6 +188,15 @@ export const initialState = {
     formData: null
   },
   healthRisks: {
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formError: null,
+    formData: null
+  },
+  suspectedDiseases: {
     listFetching: false,
     listRemoving: {},
     listData: [],
@@ -301,7 +333,8 @@ export const initialState = {
     notificationPhoneNumbers: [],
     notificationEmails: [],
     filters: null,
-    filtersData: null
+    filtersData: null,
+    isLoadingValidateEidsr: false,
   },
   alertEvents: {
     eventTypes: [],

@@ -28,6 +28,9 @@ import { ResetPasswordCallbackPage } from '../resetPasswordCallbackPage/ResetPas
 import { HealthRisksListPage } from '../healthRisks/HealthRisksListPage';
 import { HealthRisksCreatePage } from '../healthRisks/HealthRisksCreatePage';
 import { HealthRisksEditPage } from '../healthRisks/HealthRisksEditPage';
+import { SuspectedDiseaseListPage } from '../suspectedDiseases/SuspectedDiseaseListPage';
+import { SuspectedDiseaseCreatePage } from '../suspectedDiseases/SuspectedDiseaseCreatePage';
+import { SuspectedDiseaseEditPage } from '../suspectedDiseases/SuspectedDiseaseEditPage';
 import { NationalSocietyUsersListPage } from '../nationalSocietyUsers/NationalSocietyUsersListPage';
 import { NationalSocietyUsersCreatePage } from '../nationalSocietyUsers/NationalSocietyUsersCreatePage';
 import { NationalSocietyUsersAddExistingPage } from '../nationalSocietyUsers/NationalSocietyUsersAddExistingPage';
@@ -67,6 +70,8 @@ import { AlertEventsLogPage } from "../alertEvents/AlertEventsLogPage";
 import { ProjectErrorMessagesPage } from "../projects/ProjectErrorMessagesPage";
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { EidsrIntegrationPage } from "../eidsrIntegration/EidsrIntegrationPage";
+import { EidsrIntegrationEditPage } from "../eidsrIntegration/EidsrIntegrationEditPage";
 
 export const App = ({ history }) => {
   const direction = useSelector(state => state.appData.direction);
@@ -103,6 +108,9 @@ export const App = ({ history }) => {
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
 
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/eidsrintegration' component={EidsrIntegrationPage} roles={accessMap.eidsrIntegration.get} />
+            <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/eidsrintegration/edit' component={EidsrIntegrationEditPage} roles={accessMap.eidsrIntegration.edit} />
+
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations' component={OrganizationsListPage} roles={accessMap.organizations.list} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/add' component={OrganizationsCreatePage} roles={accessMap.organizations.add} />
             <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/:organizationId/edit' component={OrganizationsEditPage} roles={accessMap.organizations.edit} />
@@ -128,6 +136,10 @@ export const App = ({ history }) => {
             <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
             <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
             <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
+
+            <AuthRoute exact path='/suspecteddiseases' component={SuspectedDiseaseListPage} roles={accessMap.suspectedDiseases.list} />
+            <AuthRoute exact path='/suspecteddiseases/add' component={SuspectedDiseaseCreatePage} roles={accessMap.suspectedDiseases.add} />
+            <AuthRoute exact path='/suspecteddiseases/:suspecteddiseaseId/edit' component={SuspectedDiseaseEditPage} roles={accessMap.suspectedDiseases.edit} />
 
             <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
             <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />

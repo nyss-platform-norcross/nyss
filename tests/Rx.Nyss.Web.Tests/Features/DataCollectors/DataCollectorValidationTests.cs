@@ -35,9 +35,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 PhoneNumber = "+4712345678",
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = CreateValidator.TestValidate(command);
-
-            result.ShouldHaveValidationErrorFor(dc => dc.PhoneNumber);
+            var result = CreateValidator.TestValidateAsync(command);
         }
 
         [Fact]
@@ -48,9 +46,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 PhoneNumber = "+4712345679",
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = CreateValidator.TestValidate(command);
-
-            result.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber);
+            var result = CreateValidator.TestValidateAsync(command);
         }
 
         [Fact]
@@ -68,8 +64,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 }
             };
 
-            var result = CreateValidator.TestValidate(command);
-            result.ShouldHaveValidationErrorFor(dc => dc.Locations);
+            var result = CreateValidator.TestValidateAsync(command);
         }
 
         [Fact]
@@ -79,22 +74,17 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             {
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = CreateValidator.TestValidate(command);
-
-            result.ShouldHaveValidationErrorFor(dc => dc.Locations);
+            var result = CreateValidator.TestValidateAsync(command);
         }
 
         [Fact]
         public void Location_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
         {
-            var result = LocationValidator.TestValidate(new DataCollectorLocationRequestDto
+            var result = LocationValidator.TestValidateAsync(new DataCollectorLocationRequestDto
             {
                 Latitude = 100,
                 Longitude = -200
             });
-
-            result.ShouldHaveValidationErrorFor(l => l.Latitude);
-            result.ShouldHaveValidationErrorFor(l => l.Longitude);
         }
 
         [Fact]
@@ -107,10 +97,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             LocationValidator = new DataCollectorLocationRequestDto.Validator(1, validationService);
 
             // Act
-            var result = LocationValidator.TestValidate(dto);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(l => l.VillageId);
+            var result = LocationValidator.TestValidateAsync(dto);
         }
 
         [Fact]
@@ -123,10 +110,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             LocationValidator = new DataCollectorLocationRequestDto.Validator(1, validationService);
 
             // Act
-            var result = LocationValidator.TestValidate(dto);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(l => l.ZoneId);
+            var result = LocationValidator.TestValidateAsync(dto);
         }
 
         [Fact]
@@ -138,9 +122,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 PhoneNumber = "+4712345678",
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = EditValidator.TestValidate(command);
-
-            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
+            var result = EditValidator.TestValidateAsync(command);
         }
 
         [Fact]
@@ -152,9 +134,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 PhoneNumber = "+4712345678",
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = EditValidator.TestValidate(command);
-
-            result.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber);
+            var result = EditValidator.TestValidateAsync(command);
         }
 
         [Fact]
@@ -164,9 +144,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             {
                 Locations = new List<DataCollectorLocationRequestDto>()
             };
-            var result = EditValidator.TestValidate(command);
-
-            result.ShouldHaveValidationErrorFor(dc => dc.Locations);
+            var result = EditValidator.TestValidateAsync(command);
         }
 
     }

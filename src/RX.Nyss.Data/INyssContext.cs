@@ -42,6 +42,10 @@ namespace RX.Nyss.Data
 
         DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
 
+        DbSet<SuspectedDisease> SuspectedDisease { get; set; }
+
+        DbSet<SuspectedDiseaseLanguageContent> SuspectedDiseaseLanguageContent { get; set; }
+
         DbSet<Localization> Localizations { get; set; }
 
         DbSet<LocalizedTemplate> LocalizedTemplates { get; set; }
@@ -95,6 +99,10 @@ namespace RX.Nyss.Data
         DbSet<DataCollectorNotDeployed> DataCollectorNotDeployedDates { get; set; }
 
         public DbSet<ProjectErrorMessage> ProjectErrorMessages { get; }
+
+        public DbSet<EidsrConfiguration> EidsrConfiguration { get; set; }
+
+        public DbSet<EidsrOrganisationUnits> EidsrOrganisationUnits { get; set; }
 
         int SaveChanges();
 

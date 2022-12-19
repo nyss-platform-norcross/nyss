@@ -3,6 +3,7 @@ import { smsGatewaysSiteMap } from "./components/smsGateways/logic/smsGatewaysSi
 import { projectsSiteMap } from "./components/projects/logic/projectsSiteMap";
 import { globalCoordinatorsSiteMap } from "./components/globalCoordinators/logic/globalCoordinatorsSiteMap";
 import { healthRisksSiteMap } from "./components/healthRisks/logic/healthRisksSiteMap";
+import { suspectedDiseaseSiteMap } from "./components/suspectedDiseases/logic/suspectedDiseaseSiteMap";
 import { nationalSocietyUsersSiteMap } from "./components/nationalSocietyUsers/logic/nationalSocietyUsersSiteMap";
 import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCollectorsSiteMap";
 import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
@@ -16,6 +17,7 @@ import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDas
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
 import { organizationsSiteMap } from "./components/organizations/logic/organizationsSiteMap";
 import { projectOrganizationsSiteMap } from "./components/projectOrganizations/logic/projectOrganizationsSiteMap";
+import { eidsrIntegrationSiteMap } from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -25,6 +27,7 @@ export const siteMap = [
   ...smsGatewaysSiteMap,
   ...organizationsSiteMap,
   ...healthRisksSiteMap,
+  ...suspectedDiseaseSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,
   ...projectDashboardSiteMap,
@@ -35,5 +38,6 @@ export const siteMap = [
   ...agreementsSiteMap,
   ...alertsSiteMap,
   ...alertEventsSiteMap,
-  ...translationsSiteMap
+  ...translationsSiteMap,
+  ...eidsrIntegrationSiteMap,
 ];

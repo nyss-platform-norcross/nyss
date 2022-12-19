@@ -5,7 +5,7 @@ import { TextField, IconButton, InputAdornment } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-const PasswordInput = ({ error, name, label, value, controlProps, customProps }) => {
+const PasswordInput = ({ error, name, label, value, controlProps }) => {
     const [values, setValues] = React.useState({
         showPassword: false
     });
@@ -40,7 +40,6 @@ const PasswordInput = ({ error, name, label, value, controlProps, customProps })
                 type: values.showPassword ? "text" : "password",
                 endAdornment: showPasswordComponent
             }}
-            inputProps={{ ...customProps }}
         />
     );
 };

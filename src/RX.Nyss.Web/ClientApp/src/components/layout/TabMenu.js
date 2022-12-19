@@ -18,7 +18,8 @@ const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl, title }) => {
   const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
   const currentBreadcrumbItem = breadcrumbVisibleItems[breadcrumbVisibleItems.length - 1];
 
-  const showTabMenu = tabMenu.some(t => t.url === currentUrl);
+  // http addresses are case insensitive so compare to-lower versions
+  const showTabMenu = tabMenu.some(t => t.url.toLowerCase() === currentUrl.toLowerCase());
 
   return (
     <div className={styles.tabMenu}>

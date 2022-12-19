@@ -50,6 +50,28 @@ public static class ResultKey
             public const string InvalidUserOrganization = "user.registration.invalidUserOrganization";
         }
 
+        public static class Edition
+        {
+            public const string Success = "user.registration.success";
+            public const string UserAlreadyExists = "user.registration.userAlreadyExists";
+            public const string UserAlreadyInRole = "user.registration.userAlreadyInRole";
+            public const string UserNotFound = "user.registration.userNotFound";
+            public const string PasswordTooWeak = "user.registration.passwordTooWeak";
+            public const string NationalSocietyDoesNotExist = "user.registration.nationalSocietyDoesNotExist";
+            public const string CannotCreateUsersInArchivedNationalSociety = "user.registration.cannotCreateUsersInArchivedNationalSociety";
+            public const string CannotAddExistingUsersToArchivedNationalSociety = "user.registration.cannotAddExistingUsersToArchivedNationalSociety";
+            public const string NoAssignableUserWithThisEmailFound = "user.registration.noAssignableUserWithThisEmailFound";
+            public const string TechnicalAdvisorsCanBeAttachedOnlyByManagers = "user.registration.technicalAdvisorsCanBeAttachedOnlyByManagers";
+            public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
+            public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
+            public const string UnknownError = "user.registration.unknownError";
+            public const string HeadManagerAlreadyExists = "user.registration.headManagerAlreadyExists";
+            public const string CoordinatorExists = "user.registration.coordinatorExists";
+            public const string CannotAssignUserToModemInDifferentNationalSociety = "user.registration.cannotAssignUserToModemInDifferentNationalSociety";
+            public const string OrganizationDoesNotExists = "user.registration.organizationDoesNotExist";
+            public const string InvalidUserOrganization = "user.registration.invalidUserOrganization";
+        }
+
         public static class Supervisor
         {
             public const string ProjectDoesNotExistOrNoAccess = "user.registration.projectDoesNotExistOrSupervisorDoesntHaveAccess";
@@ -167,6 +189,22 @@ public static class ResultKey
         }
     }
 
+    public static class EidsrIntegration
+    {
+        public static class Edit
+        {
+            public const string Success = "EidsrIntegration.edit.success";
+            public const string ErrorNationalSocietyDoesNotExists = "EidsrIntegration.edit.ErrorNationalSocietyDoesNotExists";
+            public const string ErrorEidsrIntegrationDisabled = "EidsrIntegration.edit.ErrorEidsrIntegrationDisabled";
+        }
+
+        public static class EidsrApi
+        {
+            public const string ConnectionError = "EidsrIntegration.EidsrApi.ConnectionError";
+            public const string RegisterEventError = "EidsrIntegration.EidsrApi.RegisterEventError";
+        }
+    }
+
     public static class HealthRisk
     {
         public const string HealthRiskNotFound = "healthRisk.notFound";
@@ -186,6 +224,28 @@ public static class ResultKey
         public static class Remove
         {
             public const string RemoveSuccess = "healthRisk.remove.success";
+        }
+    }
+
+    public static class SuspectedDisease
+    {
+        public const string SuspectedDiseaseNotFound = "suspectedDisease.notFound";
+        public const string SuspectedDiseaseNumberAlreadyExists = "suspectedDisease.suspectedDiseaseNumberAlreadyExists";
+        public const string SuspectedDiseaseContainsReports = "suspectedDisease.suspectedDiseaseContainsReports";
+
+        public static class Create
+        {
+            public const string CreationSuccess = "SuspectedDisease.create.success";
+        }
+
+        public static class Edit
+        {
+            public const string EditSuccess = "SuspectedDisease.edit.success";
+        }
+
+        public static class Remove
+        {
+            public const string RemoveSuccess = "SuspectedDisease.remove.success";
         }
     }
 
@@ -339,6 +399,7 @@ public static class ResultKey
             public const string WrongStatus = "alert.escalateAlert.wrongStatus";
             public const string EmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
             public const string SmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
+            public const string EidsrReportFailed = "alert.escalateAlert.eidsrReportFailed";
             public const string Success = "alert.escalateAlert.success";
             public const string NoPermission = "alert.escalateAlert.noPermission";
         }

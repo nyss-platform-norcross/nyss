@@ -77,7 +77,14 @@ The user secrets file is the same for all running applications. How to access it
 * Naviagte to `src/RX.Nyss.FuncApp` or `src/RX.Nyss.ReportFuncApp` directory and in a terminal run `func host start`.
 References: [Code and test Azure Functions locally](https://docs.microsoft.com/en-us/azure/azure-functions/functions-develop-local)
 
-**And you are done!**
+### DHIS2 Integration
+
+Nyss app includes the integration with DHIS2 API. If you want to test or develop that solution, please visit that readme file to 
+setup your machine.
+
+[DHIS2 integration instruction](./README_DHIS2.md)
+
+## And you are done!
 
 ## Some contribution notes
 

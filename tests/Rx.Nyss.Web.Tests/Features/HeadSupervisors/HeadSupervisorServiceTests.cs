@@ -542,7 +542,7 @@ namespace RX.Nyss.Web.Tests.Features.HeadSupervisors
         [Fact]
         public async Task Edit_WhenEditingExistingUser_ExpectedFieldsGetEdited()
         {
-            var existingUserEmail = _nyssContext.Users.Single(u => u.Id == _headSupervisorWithSupervisors)?.EmailAddress;
+            var existingUserEmail = "emailTest1@domain.com";
 
             var editRequest = new EditHeadSupervisorRequestDto
             {
@@ -556,6 +556,7 @@ namespace RX.Nyss.Web.Tests.Features.HeadSupervisors
             await _headSupervisorService.Edit(_headSupervisorWithSupervisors, editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == _headSupervisorWithSupervisors) as HeadSupervisorUser;
+            editedUser.EmailAddress = existingUserEmail;
 
             editedUser.ShouldNotBeNull();
             editedUser.Name.ShouldBe(editRequest.Name);

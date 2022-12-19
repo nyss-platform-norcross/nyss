@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29306.81
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Data", "src\RX.Nyss.Data\RX.Nyss.Data.csproj", "{DA60D2B2-606A-479F-AA05-9161FC28171D}"
 EndProject
@@ -29,9 +29,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Common", "src\RX.Ny
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Common.Tests", "tests\RX.Nyss.Common.Tests\RX.Nyss.Common.Tests.csproj", "{5771F868-B643-4923-8788-2420A40B070E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.TestData", "tests\RX.Nyss.TestData\RX.Nyss.TestData.csproj", "{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.TestData", "tests\RX.Nyss.TestData\RX.Nyss.TestData.csproj", "{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.PublicApiFuncApp", "src\RX.Nyss.PublicApiFuncApp\RX.Nyss.PublicApiFuncApp.csproj", "{6A9D8373-EB3E-48CF-87AC-81860A58BA40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.PublicApiFuncApp", "src\RX.Nyss.PublicApiFuncApp\RX.Nyss.PublicApiFuncApp.csproj", "{6A9D8373-EB3E-48CF-87AC-81860A58BA40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.Data.Tests", "tests\RX.Nyss.Data.Tests\RX.Nyss.Data.Tests.csproj", "{21B58539-C890-4D1D-865A-036DE55C0C23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +96,10 @@ Global
 		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21B58539-C890-4D1D-865A-036DE55C0C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21B58539-C890-4D1D-865A-036DE55C0C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21B58539-C890-4D1D-865A-036DE55C0C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21B58539-C890-4D1D-865A-036DE55C0C23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +111,7 @@ Global
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
 		{5771F868-B643-4923-8788-2420A40B070E} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
 		{225C90E6-5A8E-4CE1-A78C-7F76FF98E225} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
+		{21B58539-C890-4D1D-865A-036DE55C0C23} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93804247-38BB-4F83-9685-950DD6319B7D}

@@ -135,7 +135,7 @@ namespace RX.Nyss.Web.Features.Users
                 })
                 .Select(u => new NationalSocietyUsersEditFormDataResponseDto
                 {
-                    Email = u.User.EmailAddress,
+                    //Email = u.User.EmailAddress,
                     Role = u.User.Role,
                     Organizations = _nyssContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)
