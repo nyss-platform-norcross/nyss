@@ -225,15 +225,15 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 name="dateOfOnsetDataElementId"
                 field={form.fields.dateOfOnsetDataElementId}
               />
-            </Grid>
-            <Grid item xs={4}>
+          </Grid>
+          <div hidden="true"><Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.phoneNumberDataElementId)}
                 name="phoneNumberDataElementId"
                 field={form.fields.phoneNumberDataElementId}
               />
-            </Grid>
+            </Grid></div>
             <Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}
