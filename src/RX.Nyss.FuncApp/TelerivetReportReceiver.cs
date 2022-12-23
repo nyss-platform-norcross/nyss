@@ -12,8 +12,7 @@ using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.FuncApp.Contracts;
 using RX.Nyss.FuncApp.Services;
-//using Telerivet;
-//using Telerivet.Client;
+
 
 namespace RX.Nyss.FuncApp;
 

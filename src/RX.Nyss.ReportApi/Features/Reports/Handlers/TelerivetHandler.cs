@@ -31,11 +31,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
     public class TelerivetHandler : ITelerivetHandler
     {
-        private const string SenderParameterName = "sender";
+        private const string SenderParameterName = "from_number";
 
         private const string TimestampParameterName = "timestamp";
 
-        private const string TextParameterName = "text";
+        private const string TextParameterName = "content";
 
         private const string IncomingMessageIdParameterName = "msgid";
 
