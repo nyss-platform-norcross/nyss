@@ -242,14 +242,14 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 field={form.fields.suspectedDiseaseDataElementId}
               />
             </Grid>
-            <Grid item xs={4}>
+          <div hidden="true"><Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.eventTypeDataElementId)}
                 name="eventTypeDataElementId"
                 field={form.fields.eventTypeDataElementId}
               />
-            </Grid>
+            </Grid></div>
             <Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}

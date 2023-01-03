@@ -71,7 +71,7 @@ export const AlertsAssessmentActions = ({
             {
               isNationalSocietyEidsrEnabled &&
               <>
-                <Button disabled={props.isLoadingValidateEidsr} color="primary" onClick={ ()=> props.validateEidsr(alertId) } > Validate Eidsr migration </Button>
+                <div hidden="true"><Button disabled={props.isLoadingValidateEidsr} color="primary" onClick={ ()=> props.validateEidsr(alertId) } > Validate Eidsr migration </Button></div>
                 { props.isLoadingValidateEidsr &&
                   <CircularProgress size={12} />
                 }
