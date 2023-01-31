@@ -142,7 +142,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Gets all districts in a region
         /// </summary>
         [Route("district/list"), HttpGet]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.RegionAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor, Role.Coordinator), NeedsPolicy(Policy.RegionAccess)]
         public async Task<Result<List<DistrictResponseDto>>> ListDistricts(int regionId) =>
             await _nationalSocietyStructureService.ListDistricts(regionId);
 
@@ -150,7 +150,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Gets all villages in a district
         /// </summary>
         [Route("village/list"), HttpGet]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DistrictAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.DistrictAccess)]
         public async Task<Result<List<VillageResponseDto>>> ListVillages(int districtId) =>
             await _nationalSocietyStructureService.ListVillages(districtId);
 
@@ -158,7 +158,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Gets all zones in a village
         /// </summary>
         [Route("zone/list"), HttpGet]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
         public async Task<Result<List<ZoneResponseDto>>> ListZones(int villageId) =>
             await _nationalSocietyStructureService.ListZones(villageId);
     }
