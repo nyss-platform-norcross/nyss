@@ -140,6 +140,13 @@ namespace RX.Nyss.Data.MigrationApp
                             Sex = Sex.Other,
                             DecadeOfBirth = 1980
                         },
+                        "HeadSupervisor" => new HeadSupervisorUser
+                        {
+                            Role = Role.Supervisor,
+                            CurrentProject = context.Projects.First(),
+                            Sex = Sex.Other,
+                            DecadeOfBirth = 1990
+                        },
                         "DataConsumer" => new DataConsumerUser(),
                         "GlobalCoordinator" => new GlobalCoordinatorUser(),
                         "Coordinator" => new CoordinatorUser(),
