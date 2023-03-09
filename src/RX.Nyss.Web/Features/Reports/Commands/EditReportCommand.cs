@@ -210,10 +210,7 @@ public class EditReportCommand : IRequest<Result>
                 report.ReportedCase.CountUnspecifiedSexAndAge = requestDto.CountUnspecifiedSexAndAge;
             }
 
-            report.ReportedCaseCount = requestDto.CountMalesBelowFive ?? 0 +
-                requestDto.CountMalesAtLeastFive ?? 0 +
-                requestDto.CountFemalesBelowFive ?? 0 +
-                requestDto.CountFemalesAtLeastFive ?? 0;
+            report.ReportedCaseCount = (requestDto.CountMalesBelowFive + requestDto.CountMalesAtLeastFive + requestDto.CountFemalesBelowFive + requestDto.CountFemalesAtLeastFive) ?? 0;
 
             if (report.ReportType != ReportType.DataCollectionPoint)
             {
