@@ -13,7 +13,6 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 7.0.101
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: CmdLine@2
