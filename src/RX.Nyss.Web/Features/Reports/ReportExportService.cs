@@ -71,56 +71,53 @@ namespace RX.Nyss.Web.Features.Reports
 
             var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
 
-            var reportsQuery =  baseQuery.Select(r => new ExportReportListResponseDto
-                {
-                    Id = r.Id,
-                    DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+            var reportsQuery = baseQuery.Select(r => new ExportReportListResponseDto
+            {
+                Id = r.Id,
+                DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
+                HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
                         .Single(),
-                    IsValid = r.Report != null,
-                    IsAnonymized = currentRole == Role.Supervisor || currentRole == Role.HeadSupervisor
+                IsValid = r.Report != null,
+                IsAnonymized = currentRole == Role.Supervisor || currentRole == Role.HeadSupervisor
                         ? (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUser.Id)
                         || (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id)
                         : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                             nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
-                    OrganizationName = r.NationalSociety.NationalSocietyUsers
+                OrganizationName = r.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
-                    SupervisorName = r.DataCollector.Supervisor.Name,
-                    Status = r.Report != null && !r.Report.IsActivityReport()
+                SupervisorName = r.DataCollector.Supervisor.Name,
+                Status = r.Report != null && !r.Report.IsActivityReport()
                         ? GetReportStatusString(strings, r.Report.Status)
                         : null,
-                    Region = r.Village.District.Region.Name,
-                    District = r.Village.District.Name,
-                    Village = r.Village.Name,
-                    Zone = r.Zone.Name,
-                    Location = r.Report != null
+                Region = r.Village.District.Region.Name,
+                District = r.Village.District.Name,
+                Village = r.Village.Name,
+                Zone = r.Zone.Name,
+                Location = r.Report != null
                         ? r.Report.Location
                         : null,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
                         ? r.DataCollector.Name
                         : r.DataCollector.DisplayName,
-                    PhoneNumber = r.Sender,
-                    Message = r.Text.Trim(),
-                    CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
-                    CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
-                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
-                    DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                    EpiWeek = r.Report != null ? r.Report.EpiWeek : _dateTimeProvider.GetEpiWeek(r.ReceivedAt, epiWeekStartDay),
-                    EpiYear = r.Report != null ? r.Report.EpiYear : _dateTimeProvider.GetEpiDate(r.ReceivedAt, epiWeekStartDay).EpiYear,
-                    ReportAlertId = r.Report.ReportAlerts
+                CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
+                CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+                CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
+                CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
+                DeathCount = r.Report.DataCollectionPointCase.DeathCount,
+                FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+                EpiWeek = r.Report != null ? r.Report.EpiWeek : _dateTimeProvider.GetEpiWeek(r.ReceivedAt, epiWeekStartDay),
+                EpiYear = r.Report != null ? r.Report.EpiYear : _dateTimeProvider.GetEpiDate(r.ReceivedAt, epiWeekStartDay).EpiYear,
+                ReportAlertId = r.Report.ReportAlerts
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
                         .FirstOrDefault(),
-                    ErrorType = GetReportErrorTypeString(strings, r.ErrorType),
-                    Corrected = r.Report.CorrectedAt.HasValue
-                })
+                ErrorType = GetReportErrorTypeString(strings, r.ErrorType),
+            })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
 
@@ -161,8 +158,9 @@ namespace RX.Nyss.Web.Features.Reports
                 _ => null
             };
 
-        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
-            if(filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId)
+        {
+            if (filter.DataCollectorType == ReportListDataCollectorType.UnknownSender)
             {
                 var nationalSocietyId = await _nyssContext.Projects
                     .Where(p => p.Id == projectId)

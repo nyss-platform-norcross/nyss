@@ -107,7 +107,9 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var columnLabels = GetColumnLabels(strings, epiDateRange);
                 var title = strings["dataCollectors.performanceExport.title"];
 
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
+                
                 package.Workbook.Properties.Title = title;
                 var worksheet = package.Workbook.Worksheets.Add(title);
 

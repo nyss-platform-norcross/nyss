@@ -55,6 +55,7 @@ namespace RX.Nyss.Web.Services
             IReadOnlyList<string> columnLabels,
             string title)
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             var package = new ExcelPackage();
             package.Workbook.Properties.Title = title;
 
@@ -106,7 +107,7 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 18].Style.Numberformat.Format = "HH:mm";
                 worksheet.Cells[columnIndex, 19].Value = alert.Investigation;
                 worksheet.Cells[columnIndex, 20].Value = alert.Outcome;
-                worksheet.Cells[columnIndex, 21].Value = alert.EscalatedOutcome;
+                worksheet.Cells[columnIndex, 21].Value = alert.PublicHealthActionTaken;
                 worksheet.Cells[columnIndex, 22].Value = alert.Comments;
             }
 
@@ -127,10 +128,10 @@ namespace RX.Nyss.Web.Services
             worksheet.Column(16).Width = 15;
             worksheet.Column(17).Width = 15;
             worksheet.Column(18).Width = 15;
-            worksheet.Column(19).Width = 20;
+            worksheet.Column(19).Width = 30;
             worksheet.Column(20).Width = 30;
-            worksheet.Column(21).Width = 16;
-            worksheet.Column(22).Width = 20;
+            worksheet.Column(21).Width = 40;
+            worksheet.Column(22).Width = 50;
 
             return package;
         }

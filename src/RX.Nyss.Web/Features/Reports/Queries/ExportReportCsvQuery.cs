@@ -63,15 +63,9 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                         Village = report.Village,
                         Zone = report.Zone,
                         DataCollectorDisplayName = report.DataCollectorDisplayName,
-                        PhoneNumber = report.PhoneNumber,
-                        Message = report.Message,
-                        Location = report.Location != null
-                            ? $"{report.Location.Y}/{report.Location.X}"
-                            : "",
-                        ErrorType = report.ErrorType,
-                        Corrected = report.Corrected
-                            ? strings["report.export.corrected"]
-                            : null
+                        
+                        ErrorType = report.ErrorType
+
                     };
                 });
                 return _excelExportService.ToCsv(reportData, columnLabels);
@@ -103,21 +97,12 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                         CountMalesAtLeastFive = report.CountMalesAtLeastFive,
                         CountFemalesBelowFive = report.CountFemalesBelowFive,
                         CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
-                        TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                        TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                        TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                        TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                        Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
+                       
                         ReferredCount = report.ReferredCount,
                         DeathCount = report.DeathCount,
                         FromOtherVillagesCount = report.FromOtherVillagesCount,
-                        DataCollectorDisplayName = report.DataCollectorDisplayName,
-                        PhoneNumber = report.PhoneNumber,
-                        Message = report.Message,
-                        Location = report.Location != null
-                            ? $"{report.Location.Y}/{report.Location.X}"
-                            : "",
-                        Corrected = report.Corrected ? strings["report.export.corrected"] : null
+                        DataCollectorDisplayName = report.DataCollectorDisplayName
+                        
                     });
 
                     return _excelExportService.ToCsv(dcpReportData, columnLabels);
@@ -140,19 +125,8 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                     CountMalesAtLeastFive = report.CountMalesAtLeastFive,
                     CountFemalesBelowFive = report.CountFemalesBelowFive,
                     CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
-                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
-                    DataCollectorDisplayName = report.DataCollectorDisplayName,
-                    PhoneNumber = report.PhoneNumber,
-                    Message = report.Message,
-                    ReportAlertId = report.ReportAlertId,
-                    Location = report.Location != null
-                        ? $"{report.Location.Y}/{report.Location.X}"
-                        : "",
-                    Corrected = report.Corrected ? strings["reports.export.corrected"] : null
+                    DataCollectorDisplayName = report.DataCollectorDisplayName
+                   
                 });
 
                 return _excelExportService.ToCsv(reportData, columnLabels);
