@@ -48,6 +48,7 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                 var columnLabels = GetIncorrectReportsColumnLabels(strings);
                 var title = strings["reports.export.title"];
 
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
                 package.Workbook.Properties.Title = title;
 
@@ -78,17 +79,12 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                     worksheet.Cells[columnIndex, 10].Value = data.Village;
                     worksheet.Cells[columnIndex, 11].Value = data.Zone;
                     worksheet.Cells[columnIndex, 12].Value = data.DataCollectorDisplayName;
-                    worksheet.Cells[columnIndex, 13].Value = data.PhoneNumber;
-                    worksheet.Cells[columnIndex, 14].Value = data.Location != null
-                        ? $"{data.Location.Y}/{data.Location.X}"
-                        : "";
+                    
                 }
 
                 worksheet.Column(2).Width = 12; //Date
                 worksheet.Column(7).Width = 50; //ErrorType
                 worksheet.Column(12).Width = 20; //DcName
-                worksheet.Column(13).Width = 20; //PhoneNr
-                worksheet.Column(14).Width = 37; //Location
 
                 return package.GetAsByteArray();
             }
@@ -101,6 +97,7 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                 var columnLabels = GetCorrectReportsColumnLabels(strings, reportListDataCollectorType);
                 var title = strings["reports.export.title"];
 
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
                 package.Workbook.Properties.Title = title;
 
@@ -134,33 +131,20 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                     worksheet.Cells[columnIndex, 13].Value = data.CountMalesAtLeastFive;
                     worksheet.Cells[columnIndex, 14].Value = data.CountFemalesBelowFive;
                     worksheet.Cells[columnIndex, 15].Value = data.CountFemalesAtLeastFive;
-                    worksheet.Cells[columnIndex, 16].Value = data.CountMalesBelowFive + data.CountFemalesBelowFive;
-                    worksheet.Cells[columnIndex, 17].Value = data.CountMalesAtLeastFive + data.CountFemalesAtLeastFive;
-                    worksheet.Cells[columnIndex, 18].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive;
-                    worksheet.Cells[columnIndex, 19].Value = data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
-                    worksheet.Cells[columnIndex, 20].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive + data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
+                   
 
                     if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
                     {
-                        worksheet.Cells[columnIndex, 21].Value = data.ReferredCount;
-                        worksheet.Cells[columnIndex, 22].Value = data.DeathCount;
-                        worksheet.Cells[columnIndex, 23].Value = data.FromOtherVillagesCount;
-                        worksheet.Cells[columnIndex, 24].Value = data.DataCollectorDisplayName;
-                        worksheet.Cells[columnIndex, 25].Value = data.PhoneNumber;
-                        worksheet.Cells[columnIndex, 26].Value = data.Message;
-                        worksheet.Cells[columnIndex, 27].Value = data.Location != null
-                            ? $"{data.Location.Y}/{data.Location.X}"
-                            : "";
+                        worksheet.Cells[columnIndex, 16].Value = data.ReferredCount;
+                        worksheet.Cells[columnIndex, 17].Value = data.DeathCount;
+                        worksheet.Cells[columnIndex, 18].Value = data.FromOtherVillagesCount;
+                        worksheet.Cells[columnIndex, 19].Value = data.DataCollectorDisplayName;
+                        
                     }
                     else
                     {
-                        worksheet.Cells[columnIndex, 21].Value = data.DataCollectorDisplayName;
-                        worksheet.Cells[columnIndex, 22].Value = data.PhoneNumber;
-                        worksheet.Cells[columnIndex, 23].Value = data.Message;
-                        worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;
-                        worksheet.Cells[columnIndex, 25].Value = data.Location != null
-                            ? $"{data.Location.Y}/{data.Location.X}"
-                            : "";
+                        worksheet.Cells[columnIndex, 16].Value = data.DataCollectorDisplayName;
+                        
                     }
                 }
 
@@ -170,17 +154,13 @@ namespace RX.Nyss.Web.Features.Reports.Queries
 
                 if (reportListDataCollectorType == ReportListDataCollectorType.CollectionPoint)
                 {
-                    worksheet.Column(24).Width = 20; //DcpName
-                    worksheet.Column(25).Width = 20; //PhoneNr
-                    worksheet.Column(26).Width = 20; //Message
-                    worksheet.Column(27).Width = 37; //Location
+                    worksheet.Column(19).Width = 20; //DcpName
+                    
                 }
                 else
                 {
-                    worksheet.Column(21).Width = 20; //DcName
-                    worksheet.Column(22).Width = 20; //PhoneNr
-                    worksheet.Column(23).Width = 12; //Message
-                    worksheet.Column(25).Width = 37; //Location
+                    worksheet.Column(16).Width = 20; //DcName
+
                 }
 
                 return package.GetAsByteArray();

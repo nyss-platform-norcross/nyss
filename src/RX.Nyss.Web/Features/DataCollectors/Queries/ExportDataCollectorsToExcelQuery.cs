@@ -49,6 +49,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
             {
                 var title = GetSheetTitle(strings);
                 var columnLabels = GetColumnLabels(strings);
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
 
                 package.Workbook.Properties.Title = title;

@@ -26,6 +26,7 @@ public class ExportTests : AlertFeatureBase
         var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
         var users = TestData.GetUsers();
         var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         var excelDoc = new ExcelPackage();
         excelDoc.Workbook.Worksheets.Add("title");
         NyssContext.Users.Returns(usersMockDbSet);
