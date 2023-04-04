@@ -148,7 +148,7 @@ namespace RX.Nyss.Data.MigrationApp
                         case "HeadSupervisor":
                             nyssUser = new HeadSupervisorUser
                             {
-                                Role = Role.Supervisor,
+                                Role = Role.HeadSupervisor,
                                 CurrentProject = context.Projects.First(),
                                 Sex = Sex.Other,
                                 DecadeOfBirth = 1990
