@@ -224,7 +224,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertNotHandledRecipients
             var res = await _projectAlertNotHandledRecipientService.GetFormData(projectId);
 
             // Assert
-            res.Value.Count.ShouldBe(2);
+            res.Value.Count.ShouldBe(3);
         }
     }
 }

@@ -123,7 +123,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
             var recipients = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .SelectMany(p => p.NationalSociety.NationalSocietyUsers
-                    .Where(nsu => (nsu.User.Role == Role.Manager || nsu.User.Role == Role.TechnicalAdvisor)
+                    .Where(nsu => (nsu.User.Role == Role.Manager || nsu.User.Role == Role.TechnicalAdvisor || nsu.User.Role == Role.HeadSupervisor || nsu.User.Role == Role.Supervisor)
                         && (currentUser.Role == Role.Administrator || currentUserOrganizationId == nsu.OrganizationId)))
                 .Select(nsu => new ProjectAlertNotHandledRecipientResponseDto
                 {
