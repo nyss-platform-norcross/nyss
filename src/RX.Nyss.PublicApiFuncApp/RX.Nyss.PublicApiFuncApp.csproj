@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <UserSecretsId>a53b196f-5472-4183-8faa-92af93f592f4</UserSecretsId>
@@ -8,9 +8,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.2.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.3" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

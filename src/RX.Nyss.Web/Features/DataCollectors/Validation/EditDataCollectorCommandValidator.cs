@@ -43,7 +43,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
             {
                 RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.Sex).IsInEnum();
-                RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
             });
 
             RuleFor(dc => dc.Deployed)
