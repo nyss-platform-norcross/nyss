@@ -81,7 +81,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       displayName: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human), validators.maxLength(100)],
       sex: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       supervisorId: [validators.required],
-      birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.phoneNumber, validators.maxLength(20)],
       additionalPhoneNumber: [validators.phoneNumber, validators.maxLength(20)]
     };
@@ -92,7 +91,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       displayName: createRef(),
       sex: createRef(),
       supervisorId: createRef(),
-      birthGroupDecade: createRef(),
       phoneNumber: createRef(),
       additionalPhoneNumber: createRef(),
       deployed: createRef(),
@@ -220,21 +218,24 @@ const DataCollectorsCreatePageComponent = (props) => {
             </Grid>
           )}
 
+          
           {type === dataCollectorType.human && (<Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
-              field={form.fields.birthGroupDecade}
-              name="birthGroupDecade"
-              fieldRef={form.fields.birthGroupDecade.ref}
-            >
-              {birthDecades.map(decade => (
-                <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                  {parseBirthDecade(decade)}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>)}
-
+            <div hidden={true}>
+              <SelectField
+                label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
+                field={form.fields.birthGroupDecade}
+                name="birthGroupDecade"
+                fieldRef={form.fields.birthGroupDecade.ref}
+              >
+                {birthDecades.map(decade => (
+                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                    {parseBirthDecade(decade)}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </div>
+            </Grid>)}
+          
           <Grid item xs={12}>
             <PhoneInputField
               label={strings(stringKeys.dataCollectors.form.phoneNumber)}
