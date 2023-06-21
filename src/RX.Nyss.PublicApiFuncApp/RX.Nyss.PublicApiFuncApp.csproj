@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <UserSecretsId>a53b196f-5472-4183-8faa-92af93f592f4</UserSecretsId>
