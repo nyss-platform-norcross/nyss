@@ -16,8 +16,8 @@ export const openDashboard = {
 export const getDashboardData = {
   invoke: (nationalSocietyId, filters) => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_DATA.INVOKE, nationalSocietyId, filters }),
   request: () => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_DATA.REQUEST }),
-  success: (filters, summary, reportsGroupedByLocation, reportsGroupedByVillageAndDate) =>
-    ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_DATA.SUCCESS, filters, summary, reportsGroupedByLocation, reportsGroupedByVillageAndDate }),
+  success: (filters, summary, reportsGroupedByLocation, reportsGroupedByVillageAndDate, reportsGroupedByHealthRiskAndDate) =>
+    ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_DATA.SUCCESS, filters, summary, reportsGroupedByLocation, reportsGroupedByVillageAndDate, reportsGroupedByHealthRiskAndDate }),
   failure: (message) => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_DATA.FAILURE, message })
 };
 

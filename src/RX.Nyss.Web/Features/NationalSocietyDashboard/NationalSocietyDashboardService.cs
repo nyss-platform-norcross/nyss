@@ -88,7 +88,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             {
                 Summary = await _nationalSocietyDashboardSummaryService.GetData(filters),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
-                ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate
+                ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate,
+                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType, epiWeekStartDay),
             };
 
             return Success(dashboardDataDto);
