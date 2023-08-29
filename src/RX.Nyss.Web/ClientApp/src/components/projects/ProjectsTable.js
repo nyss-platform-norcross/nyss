@@ -88,19 +88,13 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
         submit={() => closeConfirmed()}
         close={() => setRemoveConfirmationDialog({ isOpen: false })}
       >
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Grid container direction="row" spacing={2} alignItems="center">
-              <Grid item xs={2} style={{ textAlign: "center" }}>
-                <WarningIcon color="error" style={{ fontSize: "45px", verticalAlign: "bottom" }} />
-              </Grid>
-              <Grid item xs={10}>
-                <Typography variant="body1">{strings(stringKeys.project.list.removalConfirmationText)}</Typography>
-              </Grid>
-            </Grid>
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={2} style={{ textAlign: "center" }}>
+            <WarningIcon color="error" style={{ fontSize: "45px" }} />
           </Grid>
-          <Grid item>
-            <Typography variant="body1" color="error">{strings(stringKeys.project.list.removalConfirmationTextTwo)}</Typography>
+          <Grid item xs={9}>
+            <Typography variant="body1">{strings(stringKeys.project.list.removalConfirmationText)}</Typography>
+            <Typography style={{ marginTop: 10 }} variant="body1" color="error">{strings(stringKeys.project.list.removalConfirmationTextTwo)}</Typography>
           </Grid>
         </Grid>
       </ConfirmationDialog>
