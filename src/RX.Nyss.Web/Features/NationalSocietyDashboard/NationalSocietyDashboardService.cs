@@ -32,6 +32,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly INationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
+        private readonly IReportsDashboardByHealthRiskService _reportsDashboardByHealthRiskService;
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
@@ -40,6 +41,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
+            IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService,
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService)
         {
@@ -47,6 +49,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
+            _reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
         }
@@ -83,13 +86,14 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
             var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
+            var reportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
                 Summary = await _nationalSocietyDashboardSummaryService.GetData(filters),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
                 ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate,
-                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType, epiWeekStartDay),
+                ReportsGroupedByHealthRiskAndDate = reportsGroupedByHealthRiskAndDate,
             };
 
             return Success(dashboardDataDto);

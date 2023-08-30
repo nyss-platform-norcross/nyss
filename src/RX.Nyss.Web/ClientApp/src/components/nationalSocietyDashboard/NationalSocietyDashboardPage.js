@@ -65,7 +65,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
             </Grid>
 
             <Grid item xs={12}>
-              <ProjectsDashboardReportChart data={props.nationalSocietyDashboard.reportsGroupedByHealthRiskAndDate}/>
+              <ProjectsDashboardReportChart data={props.reportsGroupedByHealthRiskAndDate}/>
             </Grid>
 
             <Grid item xs={12}>
