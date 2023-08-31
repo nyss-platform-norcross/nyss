@@ -33,6 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly IReportsDashboardByHealthRiskService _reportsDashboardByHealthRiskService;
+        private readonly IReportsDashboardByFeatureService _reportsDashboardByFeatureService;
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
@@ -42,6 +43,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
             IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService,
+            IReportsDashboardByFeatureService reportsDashboardByFeatureService,
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService)
         {
@@ -52,6 +54,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             _reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
+            _reportsDashboardByFeatureService = reportsDashboardByFeatureService;
         }
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId)
@@ -87,6 +90,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
             var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
             var reportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
+            var reportsGroupedByFeaturesAndDate = await _reportsDashboardByFeatureService.GetReportsGroupedByFeaturesAndDate(filters, filtersDto.GroupingType, epiWeekStartDay);
+
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
@@ -94,6 +99,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
                 ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate,
                 ReportsGroupedByHealthRiskAndDate = reportsGroupedByHealthRiskAndDate,
+                ReportsGroupedByFeaturesAndDate = reportsGroupedByFeaturesAndDate,
+                ReportsGroupedByFeatures = GetReportsGroupedByFeatures(reportsGroupedByFeaturesAndDate),
+
             };
 
             return Success(dashboardDataDto);
@@ -138,6 +146,17 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollector => DataCollectorType.Human,
                 NationalSocietyDashboardFiltersRequestDto.NationalSocietyDataCollectorTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
+            };
+
+        private static ReportByFeaturesAndDateResponseDto GetReportsGroupedByFeatures(IList<ReportByFeaturesAndDateResponseDto> reportByFeaturesAndDate) =>
+            new ReportByFeaturesAndDateResponseDto
+            {
+                Period = "all",
+                CountFemalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesAtLeastFive),
+                CountFemalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesBelowFive),
+                CountMalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountMalesAtLeastFive),
+                CountMalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountMalesBelowFive),
+                CountUnspecifiedSexAndAge = reportByFeaturesAndDate.Sum(r => r.CountUnspecifiedSexAndAge)
             };
     }
 }
