@@ -14,6 +14,7 @@ import { NationalSocietyDashboardReportsMap } from './components/NationalSociety
 import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
 import { ProjectsDashboardReportChart } from '../projectDashboard/components/ProjectsDashboardReportChart';
 import { ProjectsDashboardReportSexAgeChart } from '../projectDashboard/components/ProjectsDashboardReportSexAgeChart';
+import {ProjectsDashboardReportSexAgeTable} from "../projectDashboard/components/ProjectsDashboardReportSexAgeTable";
 
 const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
@@ -72,9 +73,13 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
             <Grid item xs={12}>
               <NationalSocietyDashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
             </Grid>
-            {/* {console.log(props)} */}
+
             <Grid item xs={12}>
               <ProjectsDashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
+            </Grid>
+
+            <Grid item sm={6} xs={12}>
+              <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
           </Fragment>
         )}
@@ -102,6 +107,7 @@ const mapStateToProps = state => ({
   userRoles: state.appData.user.roles,
   reportsGroupedByHealthRiskAndDate: state.nationalSocietyDashboard.reportsGroupedByHealthRiskAndDate,
   reportsGroupedByFeaturesAndDate: state.nationalSocietyDashboard.reportsGroupedByFeaturesAndDate,
+  reportsGroupedByFeatures: state.nationalSocietyDashboard.reportsGroupedByFeatures,
 });
 
 const mapDispatchToProps = {

@@ -61,6 +61,7 @@ function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
       response.value.reportsGroupedByVillageAndDate,
       response.value.reportsGroupedByHealthRiskAndDate,
       response.value.reportsGroupedByFeaturesAndDate,
+      response.value.reportsGroupedByFeatures,
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
