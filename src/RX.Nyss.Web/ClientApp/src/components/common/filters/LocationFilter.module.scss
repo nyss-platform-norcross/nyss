@@ -9,8 +9,9 @@
 .filterActionsContainer {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   flex-wrap: nowrap;
+  padding: 0 10px 3px 33px;
 }
 
 .locationFilterItem {
