@@ -231,10 +231,7 @@ const LocationFilter = ({
             rtl={rtl}
           />
         ))}
-
-        <hr className={styles.divider} />
         <SelectAll
-          styles={styles}
           selectAll={selectAll}
           showResults={showResults}
           toggleSelectAll={toggleSelectAll}
