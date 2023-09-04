@@ -1,5 +1,5 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker } from "../../forms/DatePicker";
 import { strings, stringKeys } from "../../../strings";
 import {
@@ -56,6 +56,14 @@ export const NationalSocietyDashboardFilters = ({
     setValue(newValue);
     return newValue;
   };
+
+  useEffect(() => {
+    onChange(
+      updateValue({
+        healthRisks: healthRisks.map((hr) => hr.id),
+      })
+    );
+  }, [healthRisks]);
 
   const collectionsTypes = {
     all: strings(stringKeys.dashboard.filters.allReportsType),
