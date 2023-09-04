@@ -357,8 +357,10 @@ export const NationalSocietyDashboardFilters = ({
                   <MenuItem
                     key={`filter_healthRisk_${healthRisk.id}`}
                     value={healthRisk.id}
+                    className={styles.healtRiskMenuItem}
                   >
                     <Checkbox
+                      color="primary"
                       checked={value.healthRisks.indexOf(healthRisk.id) > -1}
                     />
                     <span>{healthRisk.name}</span>
