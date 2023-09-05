@@ -3,6 +3,7 @@ using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
+    // Defines the response object for getData in NationalSocietyDashboardService
     public class NationalSocietyDashboardResponseDto
     {
         public NationalSocietySummaryResponseDto Summary { get; set; } = new NationalSocietySummaryResponseDto();
@@ -16,7 +17,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public IEnumerable<ReportByFeaturesAndDateResponseDto> ReportsGroupedByFeaturesAndDate { get; set; } = new List<ReportByFeaturesAndDateResponseDto>();
 
         public ReportByFeaturesAndDateResponseDto ReportsGroupedByFeatures { get; set; } = new ReportByFeaturesAndDateResponseDto();
-
 
     }
 }

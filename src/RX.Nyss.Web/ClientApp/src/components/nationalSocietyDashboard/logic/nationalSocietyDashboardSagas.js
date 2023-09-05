@@ -50,6 +50,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
   }
 };
 
+// fetches dashboard data from server. Runs success action with data if successful, otherwise runs failure action with error message
 function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
   yield put(actions.getDashboardData.request());
   try {

@@ -91,6 +91,7 @@ NationalSocietyDashboardPageComponent.propTypes = {
   openDashboard: PropTypes.func
 };
 
+// Map redux state to component props
 const mapStateToProps = state => ({
   nationalSocietyId: state.appData.route.params.nationalSocietyId,
   healthRisks: state.nationalSocietyDashboard.filtersData.healthRisks,

@@ -38,6 +38,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
 
         public NationalSocietyDashboardService(
+            //Dependency injection of necessary services
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
@@ -148,6 +149,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 _ => null as DataCollectorType?
             };
 
+        // Returns counts of all reports, filtered by sex and age. Used in "Reported health risk/event by sex and age" table in dashboard.
         private static ReportByFeaturesAndDateResponseDto GetReportsGroupedByFeatures(IList<ReportByFeaturesAndDateResponseDto> reportByFeaturesAndDate) =>
             new ReportByFeaturesAndDateResponseDto
             {
