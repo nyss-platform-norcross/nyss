@@ -11,6 +11,7 @@ export const HealthRiskFilter = ({
   onChange,
   updateValue,
 }) => {
+  // Checks off all boxes on mount
   useEffect(() => {
     onChange(allHealthRisks?.map((hr) => hr.id));
   }, [allHealthRisks]);

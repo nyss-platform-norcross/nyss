@@ -120,12 +120,6 @@ export const ProjectsDashboardFilters = ({
     ),
   };
 
-  const renderHealthRiskValues = (selectedIds) =>
-    selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.dashboard.filters.healthRiskAll)
-      : selectedIds
-          .map((id) => healthRisks.find((hr) => hr.id === id).name)
-          .join(",");
   const allLocationsSelected = () =>
     !value.locations ||
     value.locations.regionIds.length === locations.regions.length;
@@ -385,20 +379,6 @@ export const ProjectsDashboardFilters = ({
             </Grid>
 
             <Grid item>
-              {/* <MultiSelectField
-                name="healthRisks"
-                label={strings(stringKeys.dashboard.filters.healthRisk)}
-                className={styles.filterItem}
-                onChange={handleHealthRiskChange}
-                value={value.healthRisks}
-                renderValues={renderHealthRiskValues}>
-                  {healthRisks.map(hr => (
-                    <MenuItem key={hr.id} value={hr.id}>
-                      <Checkbox checked={value.healthRisks.indexOf(hr.id) > -1} />
-                      <span>{hr.name}</span>
-                    </MenuItem>
-                  ))}
-              </MultiSelectField> */}
               <HealthRiskFilter
                 allHealthRisks={healthRisks}
                 filteredHealthRisks={value.healthRisks}
