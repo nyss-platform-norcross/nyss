@@ -36,7 +36,7 @@ export const HealthRiskFilter = ({
     });
   };
 
-  // Displays the text of the dropdown i.e if all are selected, then "All" is displayed or if Acute malnutrition and Fever and rash are selected then "Acute malnutrition, Fever and rash" is displayed.
+  // Displays the text of the dropdown i.e if all are selected, then "All" is displayed or if Acute malnutrition and Fever and rash are selected then "Acute malnutrition (+1)" is displayed.
   const renderHealthRiskValues = (selectedIds) =>
     selectedIds.length < 1 || selectedIds.length === allHealthRisks.length
       ? strings(stringKeys.dashboard.filters.healthRiskAll)
