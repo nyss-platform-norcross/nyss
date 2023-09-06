@@ -1,7 +1,7 @@
 import { push } from "connected-react-router";
 import {
   OPEN_NATIONAL_SOCIETY_DASHBOARD, GET_NATIONAL_SOCIETY_DASHBOARD_DATA,
-  GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS
+  GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS, GENERATE_NATIONAL_SOCIETY_PDF
 } from "./nationalSocietyDashboardConstants";
 
 export const goToDashboard = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/dashboard`);
@@ -26,4 +26,12 @@ export const getReportHealthRisks = {
   request: () => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS.REQUEST }),
   success: (data) => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS.SUCCESS, data }),
   failure: (message) => ({ type: GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS.FAILURE, message })
+};
+
+
+export const generateNationalSocietyPdf = {
+  invoke: (containerElement) => ({ type: GENERATE_NATIONAL_SOCIETY_PDF.INVOKE, containerElement }),
+  request: () => ({ type: GENERATE_NATIONAL_SOCIETY_PDF.REQUEST }),
+  success: () => ({ type: GENERATE_NATIONAL_SOCIETY_PDF.SUCCESS }),
+  failure: (message) => ({ type: GENERATE_NATIONAL_SOCIETY_PDF.FAILURE, message })
 };

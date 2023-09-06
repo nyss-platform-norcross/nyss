@@ -4,6 +4,9 @@ import * as actions from "./nationalSocietyDashboardActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { stringsFormat, stringKeys } from "../../../strings";
+import { generatePdfDocument } from "../../../utils/pdf";
+import { trackTrace } from "../../../utils/tracking";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
@@ -12,6 +15,7 @@ export const nationalSocietyDashboardSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, openNationalSocietyDashboard),
   takeEvery(consts.GET_NATIONAL_SOCIETY_DASHBOARD_DATA.INVOKE, getNationalSocietyDashboardData),
   takeEvery(consts.GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS.INVOKE, getNationalSocietyDashboardReportHealthRisks),
+  takeEvery(consts.GENERATE_NATIONAL_SOCIETY_PDF.INVOKE, generateNationalSocietyPdf),
 ];
 
 function* openNationalSocietyDashboard({ nationalSocietyId }) {
@@ -73,6 +77,33 @@ function* getNationalSocietyDashboardReportHealthRisks({ nationalSocietyId, lati
     yield put(actions.getReportHealthRisks.success(response.value));
   } catch (error) {
     yield put(actions.getReportHealthRisks.failure(error.message));
+  }
+};
+
+function* generateNationalSocietyPdf({ containerElement }) {
+  const reportFileName = "Report";
+
+  const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
+  const message = "Generate National Society dashboard pdf";
+  const properties = {
+    nationalSocietyId,
+  };
+
+  yield call(trackTrace, { message, properties });
+  yield put(actions.generateNationalSocietyPdf.request());
+  try {
+    const siteMapParams = yield select(state => state.appData.siteMap.parameters);
+
+    const printTitleParams = {
+      nationalSocietyName: siteMapParams.nationalSocietyName
+    }
+
+    const title = stringsFormat(stringKeys.dashboard.printTitle, printTitleParams, true);
+
+    yield call(generatePdfDocument, title, containerElement, reportFileName);
+    yield put(actions.generateNationalSocietyPdf.success());
+  } catch (error) {
+    yield put(actions.generateNationalSocietyPdf.failure(error.message));
   }
 };
 
