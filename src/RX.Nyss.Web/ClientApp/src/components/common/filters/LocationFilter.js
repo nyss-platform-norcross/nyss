@@ -232,7 +232,7 @@ const LocationFilter = ({
           />
         ))}
         <SelectAll
-          selectAll={selectAll}
+          isSelectAllEnabled={selectAll}
           showResults={showResults}
           toggleSelectAll={toggleSelectAll}
         />

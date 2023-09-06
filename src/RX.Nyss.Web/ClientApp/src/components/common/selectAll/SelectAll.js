@@ -2,14 +2,18 @@ import { stringKeys, strings } from "../../../strings";
 import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
 import styles from "../filters/LocationFilter.module.scss";
 
-export const SelectAll = ({ selectAll, toggleSelectAll, showResults }) => {
+export const SelectAll = ({
+  isSelectAllEnabled,
+  toggleSelectAll,
+  showResults,
+}) => {
   return (
     <>
       <hr className={styles.divider} />
       <FormControlLabel
         control={
           <Checkbox
-            checked={selectAll}
+            checked={isSelectAllEnabled}
             color="primary"
             onClick={toggleSelectAll}
           />
