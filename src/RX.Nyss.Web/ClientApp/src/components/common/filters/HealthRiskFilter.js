@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { MenuItem, Checkbox } from "@material-ui/core";
 import MultiSelectField from "../../forms/MultiSelectField";
 import { strings, stringKeys } from "../../../strings";
@@ -10,6 +11,10 @@ export const HealthRiskFilter = ({
   onChange,
   updateValue,
 }) => {
+  useEffect(() => {
+    onChange(allHealthRisks?.map((hr) => hr.id));
+  }, [allHealthRisks]);
+
   // Handles when the checkbox is checked off or not checked on. Will only update filteredHealthRisks to not fetch from backend every time.
   const handleHealthRiskChange = (event) => {
     updateValue({

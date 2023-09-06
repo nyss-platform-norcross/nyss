@@ -55,14 +55,6 @@ export const NationalSocietyDashboardFilters = ({
     return newValue;
   };
 
-  useEffect(() => {
-    onChange(
-      updateValue({
-        healthRisks: healthRisks.map((hr) => hr.id),
-      })
-    );
-  }, [healthRisks]);
-
   const collectionsTypes = {
     all: strings(stringKeys.dashboard.filters.allReportsType),
     dataCollector: strings(
