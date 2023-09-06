@@ -18,7 +18,6 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Checkbox,
 } from "@material-ui/core";
 import DateRange from "@material-ui/icons/DateRange";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -27,10 +26,9 @@ import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { DataConsumer } from "../../../authentication/roles";
-import MultiSelectField from "../../forms/MultiSelectField";
 import LocationFilter from "../../common/filters/LocationFilter";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
-import { SelectAll } from "../../common/selectAll/SelectAll";
+import { HealthRiskFilter } from "../../common/filters/HealthRiskFilter";
 
 export const NationalSocietyDashboardFilters = ({
   filters,
@@ -78,15 +76,8 @@ export const NationalSocietyDashboardFilters = ({
   const handleLocationChange = (locations) => {
     onChange(updateValue({ locations: locations }));
   };
-  const handleHealthRiskChange = (event) =>
-    onChange(
-      updateValue({
-        healthRisks:
-          typeof event.target.value === "string"
-            ? event.target.value.split(",")
-            : event.target.value,
-      })
-    );
+  const handleHealthRiskChange = (filteredHealthRisks) =>
+    onChange(updateValue({ healthRisks: filteredHealthRisks }));
 
   const handleOrganizationChange = (event) =>
     onChange(
@@ -117,12 +108,6 @@ export const NationalSocietyDashboardFilters = ({
       })
     );
 
-  const renderHealthRiskValues = (selectedIds) =>
-    selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.dashboard.filters.healthRiskAll)
-      : selectedIds
-          .map((id) => healthRisks.find((hr) => hr.id === id).name)
-          .join(",");
   const allLocationsSelected = () =>
     !value.locations ||
     value.locations.regionIds.length === locations.regions.length;
@@ -345,42 +330,12 @@ export const NationalSocietyDashboardFilters = ({
             </Grid>
 
             <Grid item>
-              <MultiSelectField
-                name="healthRisks"
-                label={strings(stringKeys.dashboard.filters.healthRisk)}
+              <HealthRiskFilter
+                allHealthRisks={healthRisks}
+                filteredHealthRisks={value.healthRisks}
                 onChange={handleHealthRiskChange}
-                value={value.healthRisks}
-                renderValues={renderHealthRiskValues}
-                className={styles.filterItem}
-              >
-                {healthRisks.map((healthRisk) => (
-                  <MenuItem
-                    key={`filter_healthRisk_${healthRisk.id}`}
-                    value={healthRisk.id}
-                    className={styles.healtRiskMenuItem}
-                  >
-                    <Checkbox
-                      color="primary"
-                      checked={value.healthRisks.indexOf(healthRisk.id) > -1}
-                    />
-                    <span>{healthRisk.name}</span>
-                  </MenuItem>
-                ))}
-                <SelectAll
-                  selectAll={value.healthRisks.length === healthRisks.length}
-                  toggleSelectAll={() => {
-                    onChange(
-                      updateValue({
-                        healthRisks:
-                          value.healthRisks.length === healthRisks.length
-                            ? []
-                            : healthRisks.map((hr) => hr.id),
-                      })
-                    );
-                  }}
-                  showResults={() => null}
-                />
-              </MultiSelectField>
+                updateValue={updateValue}
+              />
             </Grid>
 
             <Grid item>
