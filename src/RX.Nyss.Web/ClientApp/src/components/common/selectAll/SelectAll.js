@@ -1,5 +1,5 @@
 import { stringKeys, strings } from "../../../strings";
-import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Button, Checkbox, FormControlLabel, Grid } from "@material-ui/core";
 import styles from "../filters/LocationFilter.module.scss";
 
 export const SelectAll = ({
@@ -8,8 +8,14 @@ export const SelectAll = ({
   showResults,
 }) => {
   return (
-    <>
-      <hr className={styles.divider} />
+    <Grid
+      container
+      justifyContent="space-between"
+      style={{
+        paddingLeft: 10,
+        paddingRight: 10,
+      }}
+    >
       <FormControlLabel
         control={
           <Checkbox
@@ -20,9 +26,10 @@ export const SelectAll = ({
         }
         label={strings(stringKeys.filters.area.selectAll)}
       />
-      <Button variant="outlined" color="primary" onClick={showResults}>
+      <Button size="small" variant="text" color="primary" onClick={showResults}>
         {strings(stringKeys.filters.area.showResults)}
       </Button>
-    </>
+      <hr className={styles.divider} />
+    </Grid>
   );
 };

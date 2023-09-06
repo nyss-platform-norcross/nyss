@@ -58,6 +58,13 @@ export const HealthRiskFilter = ({
       renderValues={renderHealthRiskValues}
       className={styles.healthRiskFilter}
     >
+      <SelectAll
+        isSelectAllEnabled={
+          filteredHealthRisks.length === allHealthRisks.length
+        }
+        toggleSelectAll={toggleSelectAll}
+        showResults={showResults}
+      />
       {allHealthRisks.map((hr) => (
         <MenuItem
           key={`filter_healthRisk_${hr.id}`}
@@ -71,13 +78,6 @@ export const HealthRiskFilter = ({
           <span>{hr.name}</span>
         </MenuItem>
       ))}
-      <SelectAll
-        isSelectAllEnabled={
-          filteredHealthRisks.length === allHealthRisks.length
-        }
-        toggleSelectAll={toggleSelectAll}
-        showResults={showResults}
-      />
     </MultiSelectField>
   );
 };
