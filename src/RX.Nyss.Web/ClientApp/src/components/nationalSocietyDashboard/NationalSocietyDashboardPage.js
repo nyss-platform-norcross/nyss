@@ -10,13 +10,13 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { NationalSocietyDashboardFilters } from "./components/NationalSocietyDashboardFilters";
 import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDashboardNumbers';
-import { NationalSocietyDashboardReportsMap } from './components/NationalSocietyDashboardReportsMap';
-import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
-import { ProjectsDashboardReportChart } from '../projectDashboard/components/ProjectsDashboardReportChart';
-import { ProjectsDashboardReportSexAgeChart } from '../projectDashboard/components/ProjectsDashboardReportSexAgeChart';
-import {ProjectsDashboardReportSexAgeTable} from "../projectDashboard/components/ProjectsDashboardReportSexAgeTable";
+import { DashboardReportsMap } from '../dashboardCharts/DashboardReportsMap';
+import { DashboardReportVillageChart } from '../dashboardCharts/DashboardReportVillageChart';
+import { DashboardReportChart } from '../dashboardCharts/DashboardReportChart';
+import { DashboardReportSexAgeChart } from '../dashboardCharts/DashboardReportSexAgeChart';
+import { DashboardReportSexAgeTable } from "../dashboardTables/DashboardReportSexAgeTable";
 
-const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
+const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
   useMount(() => {
     openDashboard(props.match.params.nationalSocietyId);
   });
@@ -26,7 +26,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
   const dashboardElement = useRef(null);
 
   const handleFiltersChange = (filters) =>
-    getDashboardData(props.nationalSocietyId, filters);
+    getDashboardData(nationalSocietyId, filters);
 
   if (!props.filters) {
     return <Loading />;
@@ -57,29 +57,28 @@ const NationalSocietyDashboardPageComponent = ({ openDashboard, getDashboardData
                 reportsType={props.filters.reportsType} />
             </Grid>
             <Grid item xs={12}>
-              <NationalSocietyDashboardReportsMap
-                nationalSocietyId={props.nationalSocietyId}
+              <DashboardReportsMap
                 data={props.reportsGroupedByLocation}
                 detailsFetching={props.reportsGroupedByLocationDetailsFetching}
                 details={props.reportsGroupedByLocationDetails}
-                getReportHealthRisks={props.getReportHealthRisks}
+                getReportHealthRisks={(lat, long) => props.getReportHealthRisks(nationalSocietyId, lat, long)}
               />
             </Grid>
 
             <Grid item xs={12}>
-              <ProjectsDashboardReportChart data={props.reportsGroupedByHealthRiskAndDate}/>
+              <DashboardReportChart data={props.reportsGroupedByHealthRiskAndDate}/>
             </Grid>
 
             <Grid item xs={12}>
-              <NationalSocietyDashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
+              <DashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
             </Grid>
 
             <Grid item xs={12}>
-              <ProjectsDashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
+              <DashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
             </Grid>
 
             <Grid item sm={6} xs={12}>
-              <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
+              <DashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
           </Fragment>
         )}

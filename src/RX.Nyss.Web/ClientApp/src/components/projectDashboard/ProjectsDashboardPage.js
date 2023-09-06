@@ -10,13 +10,13 @@ import { Loading } from "../common/loading/Loading";
 import { useMount } from "../../utils/lifecycle";
 import { ProjectsDashboardFilters } from "./components/ProjectsDashboardFilters";
 import { ProjectsDashboardNumbers } from "./components/ProjectsDashboardNumbers";
-import { ProjectsDashboardReportsMap } from "./components/ProjectsDashboardReportsMap";
-import { ProjectsDashboardReportChart } from "./components/ProjectsDashboardReportChart";
-import { ProjectsDashboardReportSexAgeChart } from "./components/ProjectsDashboardReportSexAgeChart";
-import { ProjectsDashboardReportSexAgeTable } from "./components/ProjectsDashboardReportSexAgeTable";
-import { ProjectsDashboardDataCollectionPointChart } from "./components/ProjectsDashboardDataCollectionPointChart";
+import { DashboardReportsMap } from "../dashboardCharts/DashboardReportsMap";
+import { DashboardReportChart } from "../dashboardCharts/DashboardReportChart";
+import { DashboardReportSexAgeChart } from "../dashboardCharts/DashboardReportSexAgeChart";
+import { DashboardReportSexAgeTable } from "../dashboardTables/DashboardReportSexAgeTable";
+import { DashboardDataCollectionPointChart } from "../dashboardCharts/DashboardDataCollectionPointChart";
 import { strings, stringKeys } from "../../strings";
-import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
+import { DashboardReportVillageChart } from "../dashboardCharts/DashboardReportVillageChart";
 import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 
 const ProjectDashboardPageComponent = ({
@@ -83,38 +83,37 @@ const ProjectDashboardPageComponent = ({
             />
           </Grid>
           <Grid item xs={12}>
-            <ProjectsDashboardReportsMap
-              projectId={projectId}
+            <DashboardReportsMap
               data={props.reportsGroupedByLocation}
               detailsFetching={props.reportsGroupedByLocationDetailsFetching}
               details={props.reportsGroupedByLocationDetails}
-              getReportHealthRisks={props.getReportHealthRisks}
+              getReportHealthRisks={(lat, long) => props.getReportHealthRisks(projectId, lat, long)}
             />
           </Grid>
           <Grid item xs={12}>
-            <ProjectsDashboardReportChart
+            <DashboardReportChart
               data={props.reportsGroupedByHealthRiskAndDate}
             />
           </Grid>
           <Grid item xs={12}>
-            <ProjectsDashboardReportVillageChart
+            <DashboardReportVillageChart
               data={props.reportsGroupedByVillageAndDate}
             />
           </Grid>
           <Grid item xs={12}>
-            <ProjectsDashboardReportSexAgeChart
+            <DashboardReportSexAgeChart
               data={props.reportsGroupedByFeaturesAndDate}
             />
           </Grid>
           <Grid item sm={6} xs={12}>
-            <ProjectsDashboardReportSexAgeTable
+            <DashboardReportSexAgeTable
               data={props.reportsGroupedByFeatures}
             />
           </Grid>
 
           {props.filters.reportsType === "dataCollectionPoint" && (
             <Grid item xs={12}>
-              <ProjectsDashboardDataCollectionPointChart
+              <DashboardDataCollectionPointChart
                 data={props.dataCollectionPointsReportData}
               />
             </Grid>

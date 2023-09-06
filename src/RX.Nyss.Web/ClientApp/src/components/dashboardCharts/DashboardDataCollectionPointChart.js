@@ -2,7 +2,7 @@ import React from 'react';
 import { CardContent, Card, CardHeader } from '@material-ui/core';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import { strings, stringKeys } from '../../../strings';
+import { strings, stringKeys } from '../../strings';
 
 const getOptions = (valuesLabel, series, categories) => ({
   chart: {
@@ -43,7 +43,7 @@ const getOptions = (valuesLabel, series, categories) => ({
   series
 });
 
-export const ProjectsDashboardDataCollectionPointChart = ({ data }) => {
+export const DashboardDataCollectionPointChart = ({ data }) => {
   const categories = data.map(d => d.period);
 
   const series = [
