@@ -13,7 +13,6 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Checkbox,
 } from "@material-ui/core";
 import { strings, stringKeys } from "../../../strings";
 import {
@@ -23,9 +22,9 @@ import {
 } from "./logic/reportFilterConstsants";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "./ReportStatusFilter";
-import MultiSelectField from "../../forms/MultiSelectField";
 import LocationFilter from "./LocationFilter";
 import { renderFilterLabel } from "./logic/locationFilterService";
+import { HealthRiskFilter } from "../../common/filters/HealthRiskFilter";
 
 export const ReportFilters = ({
   filters,
@@ -35,14 +34,19 @@ export const ReportFilters = ({
   showCorrectReportFilters,
   hideTrainingStatusFilter,
   hideCorrectedFilter,
-  rtl
+  rtl,
 }) => {
   const [value, setValue] = useState(filters);
 
-  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(
+    strings(stringKeys.filters.area.all)
+  );
 
   useEffect(() => {
-    const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, true);
+    const label =
+      !value || !locations
+        ? strings(stringKeys.filters.area.all)
+        : renderFilterLabel(value.locations, locations.regions, true);
     setLocationsFilterLabel(label);
   }, [value, locations]);
 
@@ -64,12 +68,8 @@ export const ReportFilters = ({
     );
   };
 
-  const handleHealthRiskChange = (event) =>
-    onChange(
-      updateValue({
-        healthRisks: typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
-      })
-    );
+  const handleHealthRiskChange = (filteredHealthRisks) =>
+    onChange(updateValue({ healthRisks: filteredHealthRisks }));
 
   const handleDataCollectorTypeChange = (event) =>
     onChange(updateValue({ dataCollectorType: event.target.value }));
@@ -98,15 +98,9 @@ export const ReportFilters = ({
       })
     );
 
-  const renderHealthRiskValues = (selectedIds) => 
-    selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.filters.report.healthRiskAll)
-      : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
-
   if (!value) {
     return null;
   }
-
 
   return (
     <Card>
@@ -150,24 +144,12 @@ export const ReportFilters = ({
           {showCorrectReportFilters && (
             <Fragment>
               <Grid item>
-                <MultiSelectField
-                  name="healthRisks"
-                  label={strings(stringKeys.filters.report.healthRisk)}
+                <HealthRiskFilter
+                  allHealthRisks={healthRisks}
+                  filteredHealthRisks={value.healthRisks}
                   onChange={handleHealthRiskChange}
-                  value={value.healthRisks}
-                  className={styles.filterItem}
-                  renderValues={renderHealthRiskValues}
-                  rtl={rtl}
-                >
-                  {healthRisks.map((healthRisk) => (
-                    <MenuItem
-                      key={`filter_healthRisk_${healthRisk.id}`}
-                      value={healthRisk.id}>
-                      <Checkbox checked={value.healthRisks.indexOf(healthRisk.id) > -1} color={"primary"}/>
-                      <span>{healthRisk.name}</span>
-                    </MenuItem>
-                  ))}
-                </MultiSelectField>
+                  updateValue={updateValue}
+                />
               </Grid>
             </Fragment>
           )}
@@ -210,11 +192,8 @@ export const ReportFilters = ({
                     onChange={handleCorrectedStateChange}
                     value={filters.correctedState}
                   >
-                    {correctedStateTypes.map(state => (
-                      <MenuItem
-                        value={state}
-                        key={`correctedState_${state}`}
-                      >
+                    {correctedStateTypes.map((state) => (
+                      <MenuItem value={state} key={`correctedState_${state}`}>
                         {strings(
                           stringKeys.filters.report.correctedStates[state]
                         )}
@@ -224,7 +203,7 @@ export const ReportFilters = ({
                 </FormControl>
               </Grid>
             </Fragment>
-          )}          
+          )}
 
           {!hideTrainingStatusFilter && (
             <Fragment>
@@ -241,7 +220,8 @@ export const ReportFilters = ({
                     <FormControlLabel
                       className={styles.radio}
                       label={strings(
-                        stringKeys.dataCollectors.constants.trainingStatus.Trained
+                        stringKeys.dataCollectors.constants.trainingStatus
+                          .Trained
                       )}
                       value={"Trained"}
                       control={<Radio color="primary" />}
@@ -249,7 +229,8 @@ export const ReportFilters = ({
                     <FormControlLabel
                       className={styles.radio}
                       label={strings(
-                        stringKeys.dataCollectors.constants.trainingStatus.InTraining
+                        stringKeys.dataCollectors.constants.trainingStatus
+                          .InTraining
                       )}
                       value={"InTraining"}
                       control={<Radio color="primary" />}
