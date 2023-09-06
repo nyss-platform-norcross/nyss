@@ -209,6 +209,11 @@ const LocationFilter = ({
           className: styles.filterContainer,
         }}
       >
+        <SelectAll
+          isSelectAllEnabled={selectAll}
+          showResults={showResults}
+          toggleSelectAll={toggleSelectAll}
+        />
         {showUnknownLocation && (
           <LocationItem
             type="unknown"
@@ -231,11 +236,6 @@ const LocationFilter = ({
             rtl={rtl}
           />
         ))}
-        <SelectAll
-          isSelectAllEnabled={selectAll}
-          showResults={showResults}
-          toggleSelectAll={toggleSelectAll}
-        />
       </Popover>
     </Fragment>
   );
