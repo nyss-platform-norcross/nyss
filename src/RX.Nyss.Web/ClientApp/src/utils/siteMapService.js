@@ -13,9 +13,9 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath, authU
   const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
 
   const filteredSiteMap = siteMap
-    .filter(item => item.parentPath === closestMenuPath 
-      && item.placeholder 
-      && item.placeholder === placeholder 
+    .filter(item => item.parentPath === closestMenuPath
+      && item.placeholder
+      && item.placeholder === placeholder
       && item.access.some(role => authUser.roles.some(r => r === role))
       && !(!!item.hideWhen && item.hideWhen(parameters)));
 

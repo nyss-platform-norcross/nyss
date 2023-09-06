@@ -45,7 +45,7 @@ export const theme = (direction) => createTheme({
       main: "#333333",
       dark: "#3d5afe",
       contrastText: "#ffffff"
-    }
+    },
   },
   overrides: {
     MuiButton: {
