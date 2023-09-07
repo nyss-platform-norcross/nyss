@@ -1,2 +1,3 @@
 export const smsEagle = "SmsEagle";
-export const smsGatewayTypes = [smsEagle];
+export const smsGateway = "SmsGateway";
+export const smsGatewayTypes = [smsEagle, smsGateway];
