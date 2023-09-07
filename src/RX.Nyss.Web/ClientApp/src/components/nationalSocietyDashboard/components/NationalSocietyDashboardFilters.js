@@ -1,5 +1,5 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DatePicker } from "../../forms/DatePicker";
 import { strings, stringKeys } from "../../../strings";
 import {
