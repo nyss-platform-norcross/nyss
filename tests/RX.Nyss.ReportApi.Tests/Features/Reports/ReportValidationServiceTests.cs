@@ -249,7 +249,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
                 new GatewaySetting
                 {
                     ApiKey = apiKey,
-                    GatewayType = GatewayType.SmsEagle
+                    GatewayType = GatewayType.SmsGateway
                 }
             };
             var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
