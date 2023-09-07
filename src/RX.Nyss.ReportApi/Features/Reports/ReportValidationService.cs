@@ -174,9 +174,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 throw new ReportValidationException($"A gateway setting with API key '{apiKey}' does not exist.", ReportErrorType.Gateway);
             }
 
-            if (gatewaySetting.GatewayType != GatewayType.SmsEagle)
+            if (gatewaySetting.GatewayType != GatewayType.SmsEagle || gatewaySetting.GatewayType != GatewayType.SmsGateway)
             {
-                throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.", ReportErrorType.Gateway);
+                throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}' or '{GatewayType.SmsGateway}'.", ReportErrorType.Gateway);
             }
 
             return gatewaySetting;
