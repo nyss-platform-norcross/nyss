@@ -1,11 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
-import { strings, stringKeys } from "../../../strings";
-import { ReportsMap } from "../../maps/ReportsMap";
+import { strings, stringKeys } from "../../strings";
+import { ReportsMap } from "../maps/ReportsMap";
 
-export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {
-  const handleMarkerClick = (lat, lng) =>
-    getReportHealthRisks(projectId, lat, lng);
+export const DashboardReportsMap = ({ data, details, detailsFetching, getReportHealthRisks }) => {
 
   return (
     <Card data-printable={true}>
@@ -15,7 +13,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
           data={data}
           details={details}
           detailsFetching={detailsFetching}
-          onMarkerClick={handleMarkerClick}
+          onMarkerClick={getReportHealthRisks}
         />
       </CardContent>
     </Card>

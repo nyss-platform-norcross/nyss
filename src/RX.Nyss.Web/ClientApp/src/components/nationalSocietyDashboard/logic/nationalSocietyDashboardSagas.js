@@ -50,6 +50,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
   }
 };
 
+// fetches dashboard data from server. Runs success action with data if successful, otherwise runs failure action with error message
 function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
@@ -58,7 +59,10 @@ function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
       filters,
       response.value.summary,
       response.value.reportsGroupedByLocation,
-      response.value.reportsGroupedByVillageAndDate
+      response.value.reportsGroupedByVillageAndDate,
+      response.value.reportsGroupedByHealthRiskAndDate,
+      response.value.reportsGroupedByFeaturesAndDate,
+      response.value.reportsGroupedByFeatures,
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
