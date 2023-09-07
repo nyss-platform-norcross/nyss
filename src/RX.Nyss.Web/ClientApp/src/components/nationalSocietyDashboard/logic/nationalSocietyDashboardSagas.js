@@ -133,11 +133,11 @@ function* generateNationalSocietyPdf({ containerElement }) {
     );
 
     const printTitleParams = {
-      projectName: siteMapParams.nationalSocietyName,
+      nationalSocietyName: siteMapParams.nationalSocietyName,
     };
 
     const title = stringsFormat(
-      stringKeys.dashboard.printTitle,
+      stringKeys.dashboard.printTitleNationalSociety,
       printTitleParams,
       true
     );
