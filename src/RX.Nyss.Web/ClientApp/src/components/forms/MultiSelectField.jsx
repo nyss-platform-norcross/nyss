@@ -10,6 +10,8 @@ const MultiSelectField = ({
   className,
   renderValues,
   rtl,
+  isOpen,
+  setIsOpen,
 }) => {
   const renderSelectedValues = (selected) =>
     !!renderValues ? renderValues(selected) : selected.join(",");
@@ -20,6 +22,9 @@ const MultiSelectField = ({
         {label}
       </InputLabel>
       <Select
+        open={isOpen}
+        onOpen={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
         multiple
         displayEmpty
         name={name}

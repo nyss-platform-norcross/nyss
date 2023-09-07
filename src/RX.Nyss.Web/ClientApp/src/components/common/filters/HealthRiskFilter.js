@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MenuItem, Checkbox } from "@material-ui/core";
 import MultiSelectField from "../../forms/MultiSelectField";
 import { strings, stringKeys } from "../../../strings";
@@ -11,6 +11,7 @@ export const HealthRiskFilter = ({
   onChange,
   updateValue,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   // Checks off all boxes on mount
   useEffect(() => {
     onChange(allHealthRisks?.map((hr) => hr.id));
@@ -48,6 +49,7 @@ export const HealthRiskFilter = ({
   // Uses the onChange function to fetch from backend
   const showResults = () => {
     onChange(filteredHealthRisks);
+    setIsOpen(false);
   };
 
   return (
@@ -58,6 +60,8 @@ export const HealthRiskFilter = ({
       value={filteredHealthRisks}
       renderValues={renderHealthRiskValues}
       className={styles.healthRiskFilter}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
     >
       <SelectAll
         isSelectAllEnabled={
