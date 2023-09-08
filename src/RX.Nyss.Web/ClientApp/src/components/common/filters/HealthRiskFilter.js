@@ -42,9 +42,9 @@ export const HealthRiskFilter = ({
     selectedIds.length < 1 || selectedIds.length === allHealthRisks.length
       ? strings(stringKeys.dashboard.filters.healthRiskAll)
       : selectedIds.map(
-          (id) => allHealthRisks.find((hr) => hr.id === id).name
-        )[0] +
-        `${selectedIds.length > 1 ? ` (+${selectedIds.length - 1})` : ""}`;
+        (id) => allHealthRisks.find((hr) => hr.id === id).name
+      )[0] +
+      `${selectedIds.length > 1 ? ` (+${selectedIds.length - 1})` : ""}`;
 
   // Uses the onChange function to fetch from backend
   const showResults = () => {
@@ -80,9 +80,12 @@ export const HealthRiskFilter = ({
             color="primary"
             checked={filteredHealthRisks.indexOf(hr.id) > -1}
           />
-          <span>{hr.name}</span>
+          <span style={{ width: "90%", whiteSpace: 'pre-wrap', wordWrap: "break-word", overflowWrap: 'break-word' }}>
+            {hr.name}
+          </span>
         </MenuItem>
-      ))}
-    </MultiSelectField>
+      ))
+      }
+    </MultiSelectField >
   );
 };
