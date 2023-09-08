@@ -235,9 +235,8 @@ export const NationalSocietyDashboardFilters = ({
               )}
             <Grid
               item
-              className={`${styles.expandFilterButton} ${
-                rtl ? styles.rtl : ""
-              }`}
+              className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ""
+                }`}
             >
               <IconButton
                 data-expanded={isFilterExpanded}

@@ -14,7 +14,10 @@ export const HealthRiskFilter = ({
   const [isOpen, setIsOpen] = useState(false);
   // Checks off all boxes on mount
   useEffect(() => {
-    onChange(allHealthRisks?.map((hr) => hr.id));
+    // If a new health risk is created and the user returns to a dashboard, the new health risk will also be checked off.
+    if (filteredHealthRisks.length !== allHealthRisks.length) {
+      onChange(allHealthRisks?.map((hr) => hr.id))
+    }
   }, [allHealthRisks]);
 
   // Handles when the checkbox is checked off or not checked on. Will only update filteredHealthRisks to not fetch from backend every time.
@@ -62,6 +65,7 @@ export const HealthRiskFilter = ({
       className={styles.healthRiskFilter}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
+      showResults={showResults}
     >
       <SelectAll
         isSelectAllEnabled={
