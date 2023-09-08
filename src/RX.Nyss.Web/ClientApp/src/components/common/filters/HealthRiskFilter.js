@@ -42,7 +42,7 @@ export const HealthRiskFilter = ({
     selectedIds.length < 1 || selectedIds.length === allHealthRisks.length
       ? strings(stringKeys.dashboard.filters.healthRiskAll)
       : selectedIds.map(
-        (id) => allHealthRisks.find((hr) => hr.id === id).name
+        (id) => allHealthRisks?.find((hr) => hr.id === id)?.name
       )[0] +
       `${selectedIds.length > 1 ? ` (+${selectedIds.length - 1})` : ""}`;
 
