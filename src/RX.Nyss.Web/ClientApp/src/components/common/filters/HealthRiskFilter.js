@@ -14,9 +14,10 @@ export const HealthRiskFilter = ({
   const [isOpen, setIsOpen] = useState(false);
   // Checks off all boxes on mount
   useEffect(() => {
-    // If a new health risk is created and the user returns to a dashboard, the new health risk will also be checked off.
-    if (filteredHealthRisks.length !== allHealthRisks.length) {
-      onChange(allHealthRisks?.map((hr) => hr.id))
+    // If a new health risk is created or deleted and the user returns to a dashboard, the filtered health risk is updated
+    // It also doesn´t run if filteredHealthRisks is the same as allHealthRisks.
+    if (allHealthRisks.length !== filteredHealthRisks.length) {
+      onChange(allHealthRisks.map((hr) => hr.id))
     }
   }, [allHealthRisks]);
 
