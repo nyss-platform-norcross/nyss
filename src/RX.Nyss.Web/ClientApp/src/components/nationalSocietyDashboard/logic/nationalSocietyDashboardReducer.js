@@ -25,6 +25,7 @@ export function nationalSocietyDashboardReducer(state = initialState.nationalSoc
     case actions.GET_NATIONAL_SOCIETY_DASHBOARD_DATA.REQUEST:
       return { ...state, isFetching: true };
 
+    // Updates redux state with dashboard data recieved from action
     case actions.GET_NATIONAL_SOCIETY_DASHBOARD_DATA.SUCCESS:
       return {
         ...state,
@@ -33,6 +34,9 @@ export function nationalSocietyDashboardReducer(state = initialState.nationalSoc
         summary: action.summary,
         reportsGroupedByLocation: action.reportsGroupedByLocation,
         reportsGroupedByVillageAndDate: action.reportsGroupedByVillageAndDate,
+        reportsGroupedByHealthRiskAndDate: action.reportsGroupedByHealthRiskAndDate,
+        reportsGroupedByFeaturesAndDate: action.reportsGroupedByFeaturesAndDate,
+        reportsGroupedByFeatures: action.reportsGroupedByFeatures,
         isFetching: false
       };
 
