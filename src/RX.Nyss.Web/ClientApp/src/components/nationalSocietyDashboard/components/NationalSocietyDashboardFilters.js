@@ -362,7 +362,7 @@ export const NationalSocietyDashboardFilters = ({
                 select
                 label={strings(stringKeys.dashboard.filters.reportsType)}
                 onChange={handleDataCollectorTypeChange}
-                value={value.reportsType || "all"}
+                value={value.dataCollectorType}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
