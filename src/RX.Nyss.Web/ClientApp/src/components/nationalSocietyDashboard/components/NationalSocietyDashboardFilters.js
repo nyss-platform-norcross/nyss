@@ -76,15 +76,15 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
   const handleReportStatusChange = event =>
     onChange(updateValue({ reportStatus: { ...value.reportStatus, [event.target.name]: event.target.checked } }));
 
-  const renderHealthRiskValues = (selectedIds) => 
+  const renderHealthRiskValues = (selectedIds) =>
     selectedIds.length < 1 || selectedIds.length === healthRisks.length
       ? strings(stringKeys.dashboard.filters.healthRiskAll)
       : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
   const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
 
-  const renderLocationLabel = () => 
+  const renderLocationLabel = () =>
     !locations
-      ? strings(stringKeys.filters.area.all) 
+      ? strings(stringKeys.filters.area.all)
       : renderFilterLabel(value.locations, locations.regions, false);
 
   if (!value) {
@@ -98,47 +98,47 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
         <CardContent className={styles.collapsedFilterBar} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <CardHeader title={strings(stringKeys.dashboard.filters.title)}/>
+              <CardHeader title={strings(stringKeys.dashboard.filters.title)} />
             </Grid>
             {!isFilterExpanded && (
               <Fragment>
                 <Grid item>
-                  <Chip icon={<DateRange/>}
-                        label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`}
-                        onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  <Chip icon={<DateRange />}
+                    label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`}
+                    onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
                 </Grid>
                 <Grid item>
                   <Chip label={
                     value.groupingType === "Day" ? strings(stringKeys.dashboard.filters.timeGroupingDay) : strings(stringKeys.dashboard.filters.timeGroupingWeek)
-                  } onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  } onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
                 </Grid>
               </Fragment>
             )}
             {!isFilterExpanded && !allLocationsSelected() && (
               <Grid item>
                 <Chip label={renderLocationLabel()}
-                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             {!isFilterExpanded && value.healthRiskId && (
               <Grid item>
                 <Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name}
-                      onDelete={() => onChange(updateValue({healthRiskId: null}))}
-                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  onDelete={() => onChange(updateValue({ healthRiskId: null }))}
+                  onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             {!isFilterExpanded && value.dataCollectorType !== "all" && (
               <Grid item>
                 <Chip label={collectionsTypes[value.dataCollectorType]}
-                      onDelete={() => onChange(updateValue({dataCollectorType: "all"}))}
-                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  onDelete={() => onChange(updateValue({ dataCollectorType: "all" }))}
+                  onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             {!isFilterExpanded && value.organizationId && (
               <Grid item>
                 <Chip label={organizations.filter(o => o.id === value.organizationId)[0].name}
-                      onDelete={() => onChange(updateValue({organizationId: null}))}
-                      onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  onDelete={() => onChange(updateValue({ organizationId: null }))}
+                  onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.kept && (
@@ -148,23 +148,23 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                     ...value.reportStatus,
                     kept: false
                   }
-                }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             {!isFilterExpanded && !userRoles.some(r => r === DataConsumer) && value.reportStatus.notCrossChecked && (
               <Grid item>
                 <Chip label={strings(stringKeys.filters.report.notCrossChecked)}
-                      onDelete={() => onChange(updateValue({
-                        reportStatus: {
-                          ...value.reportStatus,
-                          notCrossChecked: false
-                        }
-                      }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)}/>
+                  onDelete={() => onChange(updateValue({
+                    reportStatus: {
+                      ...value.reportStatus,
+                      notCrossChecked: false
+                    }
+                  }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
               </Grid>
             )}
             <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
-                <ExpandMore/>
+                <ExpandMore />
               </IconButton>
             </Grid>
           </Grid>
@@ -217,7 +217,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
             </Grid>
 
             <Grid item>
-              <LocationFilter 
+              <LocationFilter
                 value={value.locations}
                 filterLabel={renderLocationLabel()}
                 locations={locations}
@@ -248,7 +248,7 @@ export const NationalSocietyDashboardFilters = ({ filters, healthRisks, organiza
                 select
                 label={strings(stringKeys.dashboard.filters.reportsType)}
                 onChange={handleDataCollectorTypeChange}
-                value={value.reportsType || "all"}
+                value={value.dataCollectorType}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
