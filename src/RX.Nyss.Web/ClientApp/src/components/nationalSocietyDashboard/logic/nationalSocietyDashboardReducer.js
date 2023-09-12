@@ -15,6 +15,13 @@ export function nationalSocietyDashboardReducer(state = initialState.nationalSoc
     case actions.OPEN_NATIONAL_SOCIETY_DASHBOARD.FAILURE:
       return { ...state, isFetching: false };
 
+    case actions.GENERATE_NATIONAL_SOCIETY_PDF.REQUEST:
+      return { ...state, isGeneratingPdf: true };
+
+    case actions.GENERATE_NATIONAL_SOCIETY_PDF.SUCCESS:
+    case actions.GENERATE_NATIONAL_SOCIETY_PDF.FAILURE:
+      return { ...state, isGeneratingPdf: false };
+
     case actions.GET_NATIONAL_SOCIETY_DASHBOARD_DATA.REQUEST:
       return { ...state, isFetching: true };
 

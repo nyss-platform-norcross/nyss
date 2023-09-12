@@ -1,5 +1,5 @@
 import styles from "./NationalSocietyDashboardPage.module.scss";
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import * as nationalSocietyDashboardActions from './logic/nationalSocietyDashboardActions';
@@ -10,13 +10,15 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { NationalSocietyDashboardFilters } from "./components/NationalSocietyDashboardFilters";
 import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDashboardNumbers';
+import { strings, stringKeys } from "../../strings";
+import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import { DashboardReportsMap } from '../dashboardCharts/DashboardReportsMap';
 import { DashboardReportVillageChart } from '../dashboardCharts/DashboardReportVillageChart';
 import { DashboardReportChart } from '../dashboardCharts/DashboardReportChart';
 import { DashboardReportSexAgeChart } from '../dashboardCharts/DashboardReportSexAgeChart';
 import { DashboardReportSexAgeTable } from "../dashboardTables/DashboardReportSexAgeTable";
 
-const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, ...props }) => {
+const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboard, getDashboardData, isGeneratingPdf, isFetching, userRoles, generateNationalSocietyPdf, ...props }) => {
   useMount(() => {
     openDashboard(props.match.params.nationalSocietyId);
   });
@@ -24,6 +26,8 @@ const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboar
   const useRtlDirection = useSelector(state => state.appData.direction === 'rtl');
 
   const dashboardElement = useRef(null);
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+
 
   const handleFiltersChange = (filters) =>
     getDashboardData(nationalSocietyId, filters);
@@ -31,6 +35,16 @@ const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboar
   if (!props.filters) {
     return <Loading />;
   }
+
+  const handleGeneratePdf = () => {
+    const initialState = isFilterExpanded;
+    setIsFilterExpanded(true);
+    const timer = setTimeout(() => {
+      generateNationalSocietyPdf(dashboardElement.current);
+      setIsFilterExpanded(initialState);
+    }, 200);
+    return () => clearTimeout(timer);
+  };
 
   return (
     <Grid container spacing={2} ref={dashboardElement}>
@@ -42,6 +56,9 @@ const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboar
           onChange={handleFiltersChange}
           filters={props.filters}
           isFetching={isFetching}
+          isGeneratingPdf={isGeneratingPdf}
+          isFilterExpanded={isFilterExpanded}
+          setIsFilterExpanded={setIsFilterExpanded}
           userRoles={userRoles}
           rtl={useRtlDirection}
         />
@@ -82,6 +99,12 @@ const NationalSocietyDashboardPageComponent = ({ nationalSocietyId, openDashboar
             </Grid>
           </Fragment>
         )}
+
+      <Grid item xs={12}>
+        <SubmitButton isFetching={isGeneratingPdf} onClick={handleGeneratePdf}>
+          {strings(stringKeys.dashboard.generatePdf)}
+        </SubmitButton>
+      </Grid>
     </Grid>
   );
 }
@@ -113,7 +136,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   openDashboard: nationalSocietyDashboardActions.openDashboard.invoke,
   getReportHealthRisks: nationalSocietyDashboardActions.getReportHealthRisks.invoke,
-  getDashboardData: nationalSocietyDashboardActions.getDashboardData.invoke
+  getDashboardData: nationalSocietyDashboardActions.getDashboardData.invoke,
+  generateNationalSocietyPdf: nationalSocietyDashboardActions.generateNationalSocietyPdf.invoke,
 };
 
 export const NationalSocietyDashboardPage = withLayout(

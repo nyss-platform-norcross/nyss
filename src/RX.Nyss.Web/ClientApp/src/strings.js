@@ -1,6 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
-import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
+import { eidsrIntegrationSiteMap } from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -401,6 +401,7 @@ export const stringKeys = {
   dashboard: {
     title: "dashboard.title",
     printTitle: "dashboard.printTitle",
+    printTitleNationalSociety: "dashboard.printTitleNS",
     numbers: {
       reportCountTitle: "dashboard.numbers.reportCountTitle",
       totalReportCount: "dashboard.numbers.totalReportCount",
@@ -1037,7 +1038,7 @@ export const stringKeys = {
     downloadDirectly: "headManagerConsents.downloadDirectly"
   },
   common: {
-    buttons:{
+    buttons: {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
       update: "common.buttons.update"
