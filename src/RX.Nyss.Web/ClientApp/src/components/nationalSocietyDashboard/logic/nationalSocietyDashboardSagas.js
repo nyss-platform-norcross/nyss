@@ -25,7 +25,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
     endDate = endDate.set('hour', 0);
     endDate = endDate.set('minute', 0);
     endDate = endDate.set('second', 0);
-    const filters = (yield select(state => state.nationalSocietyDashboard.filters)) ||
+    const filters =
     {
       healthRisks: [],
       organizationId: null,

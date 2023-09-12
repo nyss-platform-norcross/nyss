@@ -14,11 +14,7 @@ export const HealthRiskFilter = ({
   const [isOpen, setIsOpen] = useState(false);
   // Checks off all boxes on mount
   useEffect(() => {
-    // If a new health risk is created or deleted and the user returns to a dashboard, the filtered health risk is updated
-    // It also doesn´t run if filteredHealthRisks is the same as allHealthRisks.
-    if (allHealthRisks.length !== filteredHealthRisks.length) {
-      onChange(allHealthRisks.map((hr) => hr.id))
-    }
+    updateValue({ healthRisks: allHealthRisks.map((hr) => hr.id) });
   }, [allHealthRisks]);
 
   // Handles when the checkbox is checked off or not checked on. Will only update filteredHealthRisks to not fetch from backend every time.
@@ -85,12 +81,18 @@ export const HealthRiskFilter = ({
             color="primary"
             checked={filteredHealthRisks.indexOf(hr.id) > -1}
           />
-          <span style={{ width: "90%", whiteSpace: 'pre-wrap', wordWrap: "break-word", overflowWrap: 'break-word' }}>
+          <span
+            style={{
+              width: "90%",
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
             {hr.name}
           </span>
         </MenuItem>
-      ))
-      }
-    </MultiSelectField >
+      ))}
+    </MultiSelectField>
   );
 };
