@@ -312,11 +312,12 @@ export const NationalSocietyDashboardFilters = ({
 
             <Grid item>
               <LocationFilter
-                value={value.locations}
-                filterLabel={renderLocationLabel()}
-                locations={locations}
+                filteredLocations={value.locations}
+                filterLabel={renderLocationLabel}
+                allLocations={locations}
                 onChange={handleLocationChange}
                 rtl={rtl}
+                updateValue={updateValue}
               />
             </Grid>
 
