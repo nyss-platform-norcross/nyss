@@ -46,13 +46,8 @@ export const NationalSocietyDashboardFilters = ({
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const updateValue = (change) => {
-    const newValue = {
-      ...value,
-      ...change,
-    };
-
-    setValue(newValue);
-    return newValue;
+    setValue((prev) => ({ ...prev, ...change }));
+    return value;
   };
 
   const collectionsTypes = {
@@ -105,9 +100,10 @@ export const NationalSocietyDashboardFilters = ({
     value.locations.regionIds.length === locations.regions.length;
 
   const renderLocationLabel = () =>
-    !locations
+    !locations || value.locations?.regionIds.length > locations.regions.length
       ? strings(stringKeys.filters.area.all)
-      : renderFilterLabel(value.locations, locations.regions, false);
+      : renderFilterLabel(value.locations, locations.regions, false)
+
 
   if (!value) {
     return null;
@@ -329,7 +325,6 @@ export const NationalSocietyDashboardFilters = ({
                 updateValue={updateValue}
               />
             </Grid>
-
             <Grid item>
               <TextField
                 select

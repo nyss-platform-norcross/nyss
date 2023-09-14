@@ -63,22 +63,15 @@ const LocationFilter = ({
       zoneIds: zoneIds,
       includeUnknownLocation: includeUnknownLocation,
     };
-    const mappedLocations = mapToSelectedLocations(
-      filterValue,
-      allLocations.regions
-    );
-    updateValue({ locations: mappedLocations });
 
-    // onChange(mappedLocations);
-
-    setSelectedLocations(mappedLocations);
-
-    setIncludeUnknownLocation(
-      !!selectedLocations
-        ? selectedLocations.includeUnknownLocation
-        : showUnknownLocation
-    );
+    updateValue({ locations: filterValue });
   }, [allLocations, showUnknownLocation]);
+
+  useEffect(() => {
+    if (!allLocations) return;
+    setSelectedLocations(mapToSelectedLocations(filteredLocations, allLocations.regions));
+    setIncludeUnknownLocation(!!filteredLocations ? filteredLocations.includeUnknownLocation : showUnknownLocation);
+  }, [allLocations, filteredLocations, showUnknownLocation]);
 
   useEffect(() => {
     const anyUnselected = selectedLocations.some(

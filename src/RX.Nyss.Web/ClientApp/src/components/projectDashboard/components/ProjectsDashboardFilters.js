@@ -50,13 +50,8 @@ export const ProjectsDashboardFilters = ({
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   const updateValue = (change) => {
-    const newValue = {
-      ...value,
-      ...change,
-    };
-
-    setValue(newValue);
-    return newValue;
+    setValue((prev) => ({ ...prev, ...change }));
+    return value;
   };
 
   useEffect(() => {
@@ -291,9 +286,8 @@ export const ProjectsDashboardFilters = ({
               )}
             <Grid
               item
-              className={`${styles.expandFilterButton} ${
-                rtl ? styles.rtl : ""
-              }`}
+              className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ""
+                }`}
             >
               <IconButton
                 data-expanded={isFilterExpanded}

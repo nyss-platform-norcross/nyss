@@ -51,13 +51,8 @@ export const ReportFilters = ({
   }, [value, locations]);
 
   const updateValue = (change) => {
-    const newValue = {
-      ...value,
-      ...change,
-    };
-
-    setValue(newValue);
-    return newValue;
+    setValue((prev) => ({ ...prev, ...change }));
+    return value;
   };
 
   const handleLocationChange = (newValue) => {
@@ -108,12 +103,13 @@ export const ReportFilters = ({
         <Grid container spacing={2}>
           <Grid item>
             <LocationFilter
-              value={value.locations}
-              locations={locations}
+              filteredLocations={value.locations}
+              allLocations={locations}
               onChange={handleLocationChange}
               showUnknownLocation
               filterLabel={locationsFilterLabel}
               rtl={rtl}
+              updateValue={updateValue}
             />
           </Grid>
 
