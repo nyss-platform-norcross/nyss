@@ -218,7 +218,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             </Grid>
           )}
 
-          
+
           {type === dataCollectorType.human && (<Grid item xs={12}>
             <div hidden={true}>
               <SelectField
@@ -235,7 +235,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               </SelectField>
             </div>
             </Grid>)}
-          
+
           <Grid item xs={12}>
             <PhoneInputField
               label={strings(stringKeys.dataCollectors.form.phoneNumber)}
@@ -287,9 +287,6 @@ const DataCollectorsCreatePageComponent = (props) => {
               isOnlyLocation={locations.length === 1}
               defaultLocation={centerLocation}
               regions={props.regions}
-              initialDistricts={[]}
-              initialVillages={[]}
-              initialZones={[]}
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
