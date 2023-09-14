@@ -1,5 +1,5 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DatePicker } from "../../forms/DatePicker";
 import { strings, stringKeys } from "../../../strings";
 import {
@@ -41,7 +41,9 @@ export const NationalSocietyDashboardFilters = ({
   rtl,
 }) => {
   const [value, setValue] = useState(filters);
-
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(
+    strings(stringKeys.filters.area.all)
+  );
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
@@ -49,6 +51,51 @@ export const NationalSocietyDashboardFilters = ({
     setValue((prev) => ({ ...prev, ...change }));
     return value;
   };
+
+  useEffect(() => {
+    if (!locations) return;
+
+    const regionIds = locations.regions.map((region) => region.id);
+
+    const districtIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) => districtIds.push(district.id))
+    );
+
+    const villageIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) => villageIds.push(village.id))
+      )
+    );
+
+    const zoneIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) =>
+          village.zones.forEach((zone) => zoneIds.push(zone.id))
+        )
+      )
+    );
+
+    const filterValue = {
+      regionIds: regionIds,
+      districtIds: districtIds,
+      villageIds: villageIds,
+      zoneIds: zoneIds,
+      includeUnknownLocation: false,
+    };
+
+    updateValue({ locations: filterValue });
+  }, [locations]);
+
+  useEffect(() => {
+    const label =
+      !value || !locations || !value.locations || value.locations.regionIds.length === 0
+        ? strings(stringKeys.filters.area.all)
+        : renderFilterLabel(value.locations, locations.regions, false);
+    setLocationsFilterLabel(label);
+  }, [value.locations]);
 
   const collectionsTypes = {
     all: strings(stringKeys.dashboard.filters.allReportsType),
@@ -99,11 +146,6 @@ export const NationalSocietyDashboardFilters = ({
     !value.locations ||
     value.locations.regionIds.length === locations.regions.length;
 
-  const renderLocationLabel = () =>
-    !locations || value.locations?.regionIds.length > locations.regions.length
-      ? strings(stringKeys.filters.area.all)
-      : renderFilterLabel(value.locations, locations.regions, false)
-
 
   if (!value) {
     return null;
@@ -146,7 +188,7 @@ export const NationalSocietyDashboardFilters = ({
             {!isFilterExpanded && !allLocationsSelected() && (
               <Grid item>
                 <Chip
-                  label={renderLocationLabel()}
+                  label={locationsFilterLabel}
                   onClick={() => setIsFilterExpanded(!isFilterExpanded)}
                 />
               </Grid>
@@ -309,11 +351,10 @@ export const NationalSocietyDashboardFilters = ({
             <Grid item>
               <LocationFilter
                 filteredLocations={value.locations}
-                filterLabel={renderLocationLabel}
+                filterLabel={locationsFilterLabel}
                 allLocations={locations}
                 onChange={handleLocationChange}
                 rtl={rtl}
-                updateValue={updateValue}
               />
             </Grid>
 

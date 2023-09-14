@@ -41,19 +41,56 @@ export const ReportFilters = ({
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(
     strings(stringKeys.filters.area.all)
   );
-
-  useEffect(() => {
-    const label =
-      !value || !locations
-        ? strings(stringKeys.filters.area.all)
-        : renderFilterLabel(value.locations, locations.regions, true);
-    setLocationsFilterLabel(label);
-  }, [value, locations]);
-
   const updateValue = (change) => {
     setValue((prev) => ({ ...prev, ...change }));
     return value;
   };
+
+  useEffect(() => {
+    const label =
+      !value || !locations || !value.locations || value.locations.regionIds.length === 0
+        ? strings(stringKeys.filters.area.all)
+        : renderFilterLabel(value.locations, locations.regions, true);
+    setLocationsFilterLabel(label);
+  }, [value.locations]);
+
+
+  useEffect(() => {
+    if (!locations) return;
+
+    const regionIds = locations.regions.map((region) => region.id);
+
+    const districtIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) => districtIds.push(district.id))
+    );
+
+    const villageIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) => villageIds.push(village.id))
+      )
+    );
+
+    const zoneIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) =>
+          village.zones.forEach((zone) => zoneIds.push(zone.id))
+        )
+      )
+    );
+
+    const filterValue = {
+      regionIds: regionIds,
+      districtIds: districtIds,
+      villageIds: villageIds,
+      zoneIds: zoneIds,
+      includeUnknownLocation: false,
+    };
+
+    updateValue({ locations: filterValue });
+  }, [locations]);
 
   const handleLocationChange = (newValue) => {
     onChange(
@@ -109,7 +146,6 @@ export const ReportFilters = ({
               showUnknownLocation
               filterLabel={locationsFilterLabel}
               rtl={rtl}
-              updateValue={updateValue}
             />
           </Grid>
 

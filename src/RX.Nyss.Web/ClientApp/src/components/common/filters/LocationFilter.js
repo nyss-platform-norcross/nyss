@@ -22,50 +22,12 @@ const LocationFilter = ({
   onChange,
   showUnknownLocation,
   rtl,
-  updateValue,
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [includeUnknownLocation, setIncludeUnknownLocation] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
-
-  useEffect(() => {
-    if (!allLocations) return;
-
-    const regionIds = allLocations.regions.map((region) => region.id);
-
-    const districtIds = [];
-    allLocations.regions.forEach((region) =>
-      region.districts.forEach((district) => districtIds.push(district.id))
-    );
-
-    const villageIds = [];
-    allLocations.regions.forEach((region) =>
-      region.districts.forEach((district) =>
-        district.villages.forEach((village) => villageIds.push(village.id))
-      )
-    );
-
-    const zoneIds = [];
-    allLocations.regions.forEach((region) =>
-      region.districts.forEach((district) =>
-        district.villages.forEach((village) =>
-          village.zones.forEach((zone) => zoneIds.push(zone.id))
-        )
-      )
-    );
-
-    const filterValue = {
-      regionIds: regionIds,
-      districtIds: districtIds,
-      villageIds: villageIds,
-      zoneIds: zoneIds,
-      includeUnknownLocation: includeUnknownLocation,
-    };
-
-    updateValue({ locations: filterValue });
-  }, [allLocations, showUnknownLocation]);
 
   useEffect(() => {
     if (!allLocations) return;
@@ -222,7 +184,7 @@ const LocationFilter = ({
           readOnly: true,
           endAdornment: <ArrowDropDown className={styles.arrow} />,
         }}
-        value={filterLabel()}
+        value={filterLabel}
         inputProps={{
           className: styles.clickable,
         }}

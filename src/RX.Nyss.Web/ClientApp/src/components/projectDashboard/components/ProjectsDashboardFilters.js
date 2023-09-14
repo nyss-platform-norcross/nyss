@@ -55,12 +55,49 @@ export const ProjectsDashboardFilters = ({
   };
 
   useEffect(() => {
+    if (!locations) return;
+
+    const regionIds = locations.regions.map((region) => region.id);
+
+    const districtIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) => districtIds.push(district.id))
+    );
+
+    const villageIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) => villageIds.push(village.id))
+      )
+    );
+
+    const zoneIds = [];
+    locations.regions.forEach((region) =>
+      region.districts.forEach((district) =>
+        district.villages.forEach((village) =>
+          village.zones.forEach((zone) => zoneIds.push(zone.id))
+        )
+      )
+    );
+
+    const filterValue = {
+      regionIds: regionIds,
+      districtIds: districtIds,
+      villageIds: villageIds,
+      zoneIds: zoneIds,
+      includeUnknownLocation: false,
+    };
+
+    updateValue({ locations: filterValue });
+  }, [locations]);
+
+  useEffect(() => {
     const label =
-      !value || !locations
+      !value || !locations || !value.locations || value.locations.regionIds.length === 0
         ? strings(stringKeys.filters.area.all)
         : renderFilterLabel(value.locations, locations.regions, false);
     setLocationsFilterLabel(label);
-  }, [value, locations]);
+  }, [value.locations]);
 
   const handleLocationChange = (newValue) => {
     onChange(

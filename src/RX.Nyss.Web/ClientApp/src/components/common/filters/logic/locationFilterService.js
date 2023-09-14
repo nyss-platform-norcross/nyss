@@ -1,6 +1,6 @@
 import { stringKeys, strings } from "../../../../strings";
 
-/* 
+/*
   extracts location ids used in dto
   if multiple locations on different levels in the same hierarchy are selected, only the highest is returned
 */
@@ -205,7 +205,7 @@ export const renderFilterLabel = (filterValue, regions, showUnknownLocation) => 
   helper functions
 */
 
-const regionIsSelected = (regionId, filterValue) => 
+const regionIsSelected = (regionId, filterValue) =>
   !filterValue || filterValue.regionIds.some(id => id === regionId);
 
 const districtIsSelected = (districtId, regionId, filterValue) =>
