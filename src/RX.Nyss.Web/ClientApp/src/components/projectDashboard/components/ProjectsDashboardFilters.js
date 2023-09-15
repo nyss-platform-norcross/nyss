@@ -401,8 +401,8 @@ export const ProjectsDashboardFilters = ({
 
             <Grid item>
               <LocationFilter
-                locations={locations}
-                value={value.locations}
+                allLocations={locations}
+                filteredLocations={value.locations}
                 filterLabel={locationsFilterLabel}
                 onChange={handleLocationChange}
                 rtl={rtl}
