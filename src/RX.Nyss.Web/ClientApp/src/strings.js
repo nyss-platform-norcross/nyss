@@ -581,7 +581,12 @@ export const stringKeys = {
       removeLocation: "dataCollectors.form.removeLocation",
       locationsHeader: "dataCollectors.form.locationsHeader",
       showYourLocation: "dataCollectors.form.showYourLocation",
-      retrievingLocation: "dataCollectors.form.retrievingLocation"
+      retrievingLocation: "dataCollectors.form.retrievingLocation",
+      alerts: {
+        noDistrictsAlert: "dataCollectors.form.alert.noDistrictsAlert",
+        noVillagesAlert: "dataCollectors.form.alert.noVillagesAlert",
+        noZonesAlert: "dataCollectors.form.alert.noZonesAlert",
+      }
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
