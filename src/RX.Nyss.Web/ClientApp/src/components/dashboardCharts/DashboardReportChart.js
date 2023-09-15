@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import { strings, stringKeys } from '../../../strings';
+import { strings, stringKeys } from '../../strings';
 
 const getOptions = (valuesLabel, series, categories) => ({
   chart: {
@@ -44,7 +44,7 @@ const getOptions = (valuesLabel, series, categories) => ({
   series
 });
 
-export const ProjectsDashboardReportChart = ({ data }) => {
+export const DashboardReportChart = ({ data }) => {
   const resizeChart = element => { element && element.chart.reflow() };
 
   const categories = data.allPeriods;

@@ -298,7 +298,7 @@ export const NationalSocietyDashboardFilters = ({
             />
           </Grid>
         )}
-        <CardContent>
+        <CardContent data-printable={true}>
           <Grid container spacing={2}>
             <Grid item>
               <DatePicker
@@ -371,7 +371,7 @@ export const NationalSocietyDashboardFilters = ({
                 select
                 label={strings(stringKeys.dashboard.filters.reportsType)}
                 onChange={handleDataCollectorTypeChange}
-                value={value.reportsType || "all"}
+                value={value.dataCollectorType}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
@@ -425,6 +425,6 @@ export const NationalSocietyDashboardFilters = ({
           </Grid>
         </CardContent>
       </ConditionalCollapse>
-    </Card>
+    </Card >
   );
 };

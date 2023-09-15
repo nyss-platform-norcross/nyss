@@ -114,14 +114,14 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     Periods = g.Data.GroupBy(v => v.Period).OrderBy(g => g.Key)
                         .Select(g => new PeriodDto
                         {
-                            Period = g.Key.ToString("dd/MM", CultureInfo.InvariantCulture),
+                            Period = g.Key.ToString("dd/MM/yy", CultureInfo.InvariantCulture),
                             Count = g.Sum(w => w.Count)
                         })
                         .ToList()
                 });
 
             var allPeriods = startDate.GetDaysRange(endDate)
-                .Select(i => i.ToString("dd/MM", CultureInfo.InvariantCulture))
+                .Select(i => i.ToString("dd/MM/yy", CultureInfo.InvariantCulture))
                 .ToList();
 
             return new ReportByHealthRiskAndDateResponseDto

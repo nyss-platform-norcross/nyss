@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new DataCollectionPointsReportsByDateDto
                 {
-                    Period = x.Period.ToString("dd/MM", CultureInfo.InvariantCulture),
+                    Period = x.Period.ToString("dd/MM/yy", CultureInfo.InvariantCulture),
                     ReferredCount = x.ReferredCount,
                     DeathCount = x.DeathCount,
                     FromOtherVillagesCount = x.FromOtherVillagesCount

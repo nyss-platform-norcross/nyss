@@ -10,7 +10,7 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../common/buttons/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
-import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
+import { smsGatewayTypes, smsEagle,smsGateway } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
@@ -31,7 +31,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
     const fields = {
       name: "",
       apiKey: uuidv4().replace(/-/g, ''),
-      gatewayType: smsEagle,
+      gatewayType: smsEagle || smsGateway,
       emailAddress: "",
       useIotHub: false,
       iotHubDeviceName: "",
