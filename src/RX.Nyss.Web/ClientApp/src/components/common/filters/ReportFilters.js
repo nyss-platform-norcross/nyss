@@ -42,8 +42,13 @@ export const ReportFilters = ({
     strings(stringKeys.filters.area.all)
   );
   const updateValue = (change) => {
+    const newValue = {
+      ...value,
+      ...change,
+    };
+
     setValue((prev) => ({ ...prev, ...change }));
-    return value;
+    return newValue;
   };
 
   useEffect(() => {

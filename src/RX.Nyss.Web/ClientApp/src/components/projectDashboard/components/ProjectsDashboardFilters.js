@@ -50,8 +50,13 @@ export const ProjectsDashboardFilters = ({
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   const updateValue = (change) => {
+    const newValue = {
+      ...value,
+      ...change,
+    };
+
     setValue((prev) => ({ ...prev, ...change }));
-    return value;
+    return newValue;
   };
 
   useEffect(() => {

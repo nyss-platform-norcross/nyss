@@ -48,8 +48,13 @@ export const NationalSocietyDashboardFilters = ({
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const updateValue = (change) => {
+    const newValue = {
+      ...value,
+      ...change,
+    };
+
     setValue((prev) => ({ ...prev, ...change }));
-    return value;
+    return newValue;
   };
 
   useEffect(() => {
