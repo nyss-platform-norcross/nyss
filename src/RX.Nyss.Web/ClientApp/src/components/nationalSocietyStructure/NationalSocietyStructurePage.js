@@ -1,18 +1,26 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment } from "react";
 import { connect } from "react-redux";
-import * as nationalSocietyStructureActions from './logic/nationalSocietyStructureActions';
-import { withLayout } from '../../utils/layout';
-import Layout from '../layout/Layout';
-import { Typography } from '@material-ui/core';
-import { strings, stringKeys } from '../../strings';
-import { NationalSocietyStructureTree } from './NationalSocietyStructureTree';
+import * as nationalSocietyStructureActions from "./logic/nationalSocietyStructureActions";
+import { withLayout } from "../../utils/layout";
+import Layout from "../layout/Layout";
+import { Typography } from "@material-ui/core";
+import { strings, stringKeys } from "../../strings";
+import { NationalSocietyStructureTree } from "./NationalSocietyStructureTree";
 
 const NationalSocietyStructurePageComponent = (props) => {
-  const { regions, districts, villages, zones, isFetching, openStructure, nationalSocietyId } = props;
+  const {
+    regions,
+    districts,
+    villages,
+    zones,
+    isFetching,
+    openStructure,
+    nationalSocietyId,
+  } = props;
 
   useEffect(() => {
     openStructure(nationalSocietyId);
-  }, [openStructure, nationalSocietyId])
+  }, [openStructure, nationalSocietyId]);
 
   if (!regions) {
     return null;
@@ -21,9 +29,9 @@ const NationalSocietyStructurePageComponent = (props) => {
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived && (
-      <Typography variant="body1">
-        {strings(stringKeys.nationalSociety.structure.introduction)}
-      </Typography>
+        <Typography variant="body1" style={{ marginBottom: 50 }}>
+          {strings(stringKeys.nationalSociety.structure.introduction)}
+        </Typography>
       )}
 
       <NationalSocietyStructureTree
@@ -33,32 +41,27 @@ const NationalSocietyStructurePageComponent = (props) => {
         zones={zones}
         isFetching={isFetching}
         nationalSocietyId={nationalSocietyId}
-        nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
+        nationalSocietyIsArchived={props.nationalSocietyIsArchived}
         nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
         callingUserRoles={props.callingUserRoles}
-
         expandedItems={props.expandedItems}
         updateExpandedItems={props.updateExpandedItems}
-
         createRegion={props.createRegion}
         editRegion={props.editRegion}
         removeRegion={props.removeRegion}
-
         createDistrict={props.createDistrict}
         editDistrict={props.editDistrict}
         removeDistrict={props.removeDistrict}
-
         createVillage={props.createVillage}
         editVillage={props.editVillage}
         removeVillage={props.removeVillage}
-
         createZone={props.createZone}
         editZone={props.editZone}
         removeZone={props.removeZone}
       />
     </Fragment>
   );
-}
+};
 
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
@@ -68,9 +71,11 @@ const mapStateToProps = (state, ownProps) => ({
   villages: state.nationalSocietyStructure.villages,
   zones: state.nationalSocietyStructure.zones,
   expandedItems: state.nationalSocietyStructure.expandedItems,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
-  nationalSocietyHasCoordinator: state.appData.siteMap.parameters.nationalSocietyHasCoordinator,
-  callingUserRoles: state.appData.user.roles
+  nationalSocietyIsArchived:
+    state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  nationalSocietyHasCoordinator:
+    state.appData.siteMap.parameters.nationalSocietyHasCoordinator,
+  callingUserRoles: state.appData.user.roles,
 });
 
 const mapDispatchToProps = {
@@ -92,10 +97,13 @@ const mapDispatchToProps = {
 
   createZone: nationalSocietyStructureActions.createZone.invoke,
   editZone: nationalSocietyStructureActions.editZone.invoke,
-  removeZone: nationalSocietyStructureActions.removeZone.invoke
+  removeZone: nationalSocietyStructureActions.removeZone.invoke,
 };
 
 export const NationalSocietyStructurePage = withLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(NationalSocietyStructurePageComponent)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(NationalSocietyStructurePageComponent)
 );
