@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import List from "@material-ui/core/List";
 import { NationalSocietyLocationListItem } from "./NationalSocietyLocationListItem";
 
 export const NationalSocietyLocationList = (props) => {
+  // const [isListOpen, setIsListOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState("");
+
   const headerHeight = 48;
+  const borderStyle = props.locations.length > 0 ? "1px solid black" : "none";
   const useStyles = makeStyles((theme) => ({
     root: {
       width: "100%",
@@ -13,7 +18,6 @@ export const NationalSocietyLocationList = (props) => {
     },
     nested: {
       position: "absolute",
-      // marginTop: -headerHeight,
       marginTop: -headerHeight - 1,
     },
     header: {
@@ -34,7 +38,9 @@ export const NationalSocietyLocationList = (props) => {
       borderRadius: "8px",
     },
     listContainer: {
-      border: props.locations.length > 0 ? "1px solid black" : "none",
+      borderLeft: borderStyle,
+      borderRight: borderStyle,
+      borderTop: borderStyle,
     },
   }));
 
@@ -43,9 +49,9 @@ export const NationalSocietyLocationList = (props) => {
   let nextLocationType = "";
   switch (props.locationType) {
     case "Regions":
-      nextLocationType = "Districs";
+      nextLocationType = "Districts";
       break;
-    case "Districs":
+    case "Districts":
       nextLocationType = "Villages";
       break;
     case "Villages":
@@ -74,7 +80,7 @@ export const NationalSocietyLocationList = (props) => {
       }
     >
       <div className={classes.listContainer}>
-        {props.locations.map((location, index) => (
+        {props.locations.map((location) => (
           <NationalSocietyLocationListItem
             key={`${props.locationType}_${location.id}`}
             location={location}
@@ -84,7 +90,10 @@ export const NationalSocietyLocationList = (props) => {
             districts={props.districts}
             villages={props.villages}
             zones={props.zones}
-            hasNextLocation={props.locations[index + 1]}
+            // isListOpen={isListOpen}
+            // setIsListOpen={setIsListOpen}
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
           />
         ))}
       </div>

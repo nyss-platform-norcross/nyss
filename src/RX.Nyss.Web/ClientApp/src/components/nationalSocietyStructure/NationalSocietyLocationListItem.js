@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
@@ -9,18 +9,20 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
 
 export const NationalSocietyLocationListItem = (props) => {
+  const isCurrentOpen =
+    props.activeIndex === `${props.locationType}_${props.location.id}`;
+  const isZones = props.locationType === "Zones";
+
   const useStyles = makeStyles((theme) => ({
     container: {
-      // maxHeight: 55,
-      maxHeight: props.hasNextLocation ? 55 : 54,
+      maxHeight: 55,
       display: "flex",
       flexDirection: "row",
     },
     row: {
-      // border: "1px solid black",
-      borderBottom: !props.hasNextLocation ? "none" : "1px solid black",
+      borderBottom: "1px solid black",
       "&:hover": {
-        backgroundColor: "#FEF1F1",
+        backgroundColor: props.nextLocationType ? "#FEF1F1" : "none",
       },
       "&:focus": {
         backgroundColor: "#FEF1F1",
@@ -43,15 +45,18 @@ export const NationalSocietyLocationListItem = (props) => {
     },
   }));
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
 
   const handleClick = () => {
-    setOpen(!open);
+    if (isCurrentOpen) {
+      props.setActiveIndex("");
+    } else {
+      props.setActiveIndex(`${props.locationType}_${props.location.id}`);
+    }
   };
 
   let nextLocations = [];
   switch (props.nextLocationType) {
-    case "Districs":
+    case "Districts":
       nextLocations = props.districts.filter(
         (district) => district.regionId === props.location.id
       );
@@ -71,13 +76,13 @@ export const NationalSocietyLocationListItem = (props) => {
       break;
   }
 
-  const isZones = props.locationType === "Zones";
-
   return (
     <Fragment>
       <div className={classes.container}>
         <ListItem
-          className={classes.row + " " + (open ? classes.expanded : "")}
+          className={
+            classes.row + " " + (isCurrentOpen ? classes.expanded : "")
+          }
           button={!!props.nextLocationType && !!nextLocations}
           onClick={!isZones ? handleClick : () => null}
         >
@@ -87,23 +92,31 @@ export const NationalSocietyLocationListItem = (props) => {
             primary={props.location.name}
           />
           {!isZones &&
-            (open ? (
+            (isCurrentOpen ? (
               <ExpandLess
                 className={
-                  classes.icon + " " + (open ? classes.iconExpanded : "")
+                  classes.icon +
+                  " " +
+                  (isCurrentOpen ? classes.iconExpanded : "")
                 }
-                fontSize="large"
               />
             ) : (
               <ExpandMore
                 className={
-                  classes.icon + " " + (open ? classes.iconExpanded : "")
+                  classes.icon +
+                  " " +
+                  (isCurrentOpen ? classes.iconExpanded : "")
                 }
-                fontSize="large"
               />
             ))}
         </ListItem>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse
+          in={
+            props.activeIndex === `${props.locationType}_${props.location.id}`
+          }
+          timeout="auto"
+          unmountOnExit
+        >
           <NationalSocietyLocationList
             regions={props.regions}
             districts={props.districts}
