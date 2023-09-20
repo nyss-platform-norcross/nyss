@@ -13,9 +13,9 @@ export const NationalSocietyLocationList = (props) => {
     },
     nested: {
       position: "absolute",
-      marginTop: -headerHeight,
+      // marginTop: -headerHeight,
+      marginTop: -headerHeight - 1,
     },
-
     header: {
       height: headerHeight,
       minWidth: 200,
@@ -32,6 +32,9 @@ export const NationalSocietyLocationList = (props) => {
       backgroundColor: "#F1F1F1",
       width: "100%",
       borderRadius: "8px",
+    },
+    listContainer: {
+      border: props.locations.length > 0 ? "1px solid black" : "none",
     },
   }));
 
@@ -70,18 +73,21 @@ export const NationalSocietyLocationList = (props) => {
         </ListSubheader>
       }
     >
-      {props.locations.map((location) => (
-        <NationalSocietyLocationListItem
-          key={`${props.locationType}_${location.id}`}
-          location={location}
-          locationType={props.locationType}
-          nextLocationType={nextLocationType}
-          regions={props.regions}
-          districts={props.districts}
-          villages={props.villages}
-          zones={props.zones}
-        />
-      ))}
+      <div className={classes.listContainer}>
+        {props.locations.map((location, index) => (
+          <NationalSocietyLocationListItem
+            key={`${props.locationType}_${location.id}`}
+            location={location}
+            locationType={props.locationType}
+            nextLocationType={nextLocationType}
+            regions={props.regions}
+            districts={props.districts}
+            villages={props.villages}
+            zones={props.zones}
+            hasNextLocation={props.locations[index + 1]}
+          />
+        ))}
+      </div>
     </List>
   );
 };

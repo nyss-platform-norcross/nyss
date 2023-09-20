@@ -11,12 +11,14 @@ import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
 export const NationalSocietyLocationListItem = (props) => {
   const useStyles = makeStyles((theme) => ({
     container: {
-      maxHeight: 55,
+      // maxHeight: 55,
+      maxHeight: props.hasNextLocation ? 55 : 54,
       display: "flex",
       flexDirection: "row",
     },
     row: {
-      border: "1px solid black",
+      // border: "1px solid black",
+      borderBottom: !props.hasNextLocation ? "none" : "1px solid black",
       "&:hover": {
         backgroundColor: "#FEF1F1",
       },
