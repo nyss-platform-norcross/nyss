@@ -183,12 +183,18 @@ export const NationalSocietyStructureTree = (props) => {
 
   return (
     <NationalSocietyLocationList
-      regions={regions}
+      regions={props.regions}
       districts={props.districts}
       villages={props.villages}
       zones={props.zones}
-      locations={regions}
+      locations={props.regions}
       locationType={"Regions"}
+      nationalSocietyId={nationalSocietyId}
+      activeParentLocation={nationalSocietyId}
+      createRegion={props.createRegion}
+      createDistrict={props.createDistrict}
+      createVillage={props.createVillage}
+      createZone={props.createZone}
     />
   );
 

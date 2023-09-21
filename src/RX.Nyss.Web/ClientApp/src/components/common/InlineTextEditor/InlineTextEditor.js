@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { strings, stringKeys } from '../../../strings';
 import { Button, TextField, InputAdornment } from '@material-ui/core';
 
-export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, autoFocus }) => {
+export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, autoFocus, setIsModifying }) => {
   const [value, setValue] = useState(initialValue || "");
   const [isFocused, setIsFocused] = useState(false);
 
@@ -43,6 +43,10 @@ export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, a
 
     if (onClose) {
       onClose();
+    }
+
+    if (setIsModifying) {
+      setIsModifying(false);
     }
   }
 

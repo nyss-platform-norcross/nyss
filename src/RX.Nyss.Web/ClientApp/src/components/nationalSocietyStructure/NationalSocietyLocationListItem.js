@@ -12,6 +12,8 @@ export const NationalSocietyLocationListItem = (props) => {
   const isCurrentOpen =
     props.activeIndex === `${props.locationType}_${props.location.id}`;
   const isZones = props.locationType === "Zones";
+  let nextLocations = [];
+  const activeParentLocation = props.location.id
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -54,7 +56,6 @@ export const NationalSocietyLocationListItem = (props) => {
     }
   };
 
-  let nextLocations = [];
   switch (props.nextLocationType) {
     case "Districts":
       nextLocations = props.districts.filter(
@@ -124,6 +125,11 @@ export const NationalSocietyLocationListItem = (props) => {
             zones={props.zones}
             locations={nextLocations}
             locationType={props.nextLocationType}
+            createRegion={props.createRegion}
+            createDistrict={props.createDistrict}
+            createVillage={props.createVillage}
+            createZone={props.createZone}
+            activeParentLocation={activeParentLocation}
           />
         </Collapse>
       </div>
