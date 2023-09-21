@@ -24,12 +24,12 @@ export const NationalSocietyLocationList = (props) => {
       backgroundColor: theme.palette.background.paper,
     },
     nested: {
+      width: "100%",
       position: "absolute",
       marginTop: -headerHeight - 1,
     },
     header: {
       height: headerHeight,
-      minWidth: 200,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -125,6 +125,8 @@ export const NationalSocietyLocationList = (props) => {
           {props.locations.map((location) => (
             <NationalSocietyLocationListItem
               key={`${props.locationType}_${location.id}`}
+              activeIndex={activeIndex}
+              setActiveIndex={setActiveIndex}
               location={location}
               locationType={props.locationType}
               nextLocationType={nextLocationType}
@@ -136,8 +138,6 @@ export const NationalSocietyLocationList = (props) => {
               createDistrict={props.createDistrict}
               createVillage={props.createVillage}
               createZone={props.createZone}
-              activeIndex={activeIndex}
-              setActiveIndex={setActiveIndex}
             />
           ))}
         </div>
