@@ -5,7 +5,6 @@ import List from "@material-ui/core/List";
 import { NationalSocietyLocationListItem } from "./NationalSocietyLocationListItem";
 
 export const NationalSocietyLocationList = (props) => {
-  // const [isListOpen, setIsListOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState("");
 
   const headerHeight = 48;
@@ -90,8 +89,6 @@ export const NationalSocietyLocationList = (props) => {
             districts={props.districts}
             villages={props.villages}
             zones={props.zones}
-            // isListOpen={isListOpen}
-            // setIsListOpen={setIsListOpen}
             activeIndex={activeIndex}
             setActiveIndex={setActiveIndex}
           />
