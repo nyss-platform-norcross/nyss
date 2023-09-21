@@ -62,36 +62,13 @@ export const ProjectsDashboardFilters = ({
   useEffect(() => {
     if (!locations) return;
 
-    const regionIds = locations.regions.map((region) => region.id);
-
-    const districtIds = [];
-    locations.regions.forEach((region) =>
-      region.districts.forEach((district) => districtIds.push(district.id))
-    );
-
-    const villageIds = [];
-    locations.regions.forEach((region) =>
-      region.districts.forEach((district) =>
-        district.villages.forEach((village) => villageIds.push(village.id))
-      )
-    );
-
-    const zoneIds = [];
-    locations.regions.forEach((region) =>
-      region.districts.forEach((district) =>
-        district.villages.forEach((village) =>
-          village.zones.forEach((zone) => zoneIds.push(zone.id))
-        )
-      )
-    );
-
     const filterValue = {
-      regionIds: regionIds,
-      districtIds: districtIds,
-      villageIds: villageIds,
-      zoneIds: zoneIds,
+      regionIds: locations.regions.map((region) => region.id),
+      districtIds: locations.regions.map((region) => region.districts.map((district) => district.id)).flat(),
+      villageIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.id))).flat(2),
+      zoneIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.zones.map((zone) => zone.id)))).flat(3),
       includeUnknownLocation: false,
-    };
+    }
 
     updateValue({ locations: filterValue });
   }, [locations]);
