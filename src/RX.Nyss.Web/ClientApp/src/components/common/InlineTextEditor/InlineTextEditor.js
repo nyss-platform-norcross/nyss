@@ -63,6 +63,11 @@ export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, a
       value={value}
       onChange={e => setValue(e.target.value)}
       onClick={stopPropagation}
+      inputProps={{
+        style: {
+          fontSize: "16px"
+        }
+      }}
       InputProps={{
         endAdornment: isFocused ? button() : null
       }} />

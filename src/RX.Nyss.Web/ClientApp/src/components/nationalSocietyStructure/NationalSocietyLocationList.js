@@ -67,7 +67,8 @@ export const NationalSocietyLocationList = (props) => {
     },
     addLocationField: {
       marginTop: 10,
-      width: "90%",
+      marginRight: 5,
+      marginLeft: 5,
       alignSelf: "center",
     }
   }));
