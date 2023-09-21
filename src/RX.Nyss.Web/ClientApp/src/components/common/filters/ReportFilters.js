@@ -51,6 +51,7 @@ export const ReportFilters = ({
     return newValue;
   };
 
+  // Sets label for location filter to 'All' or "Region (+n)"
   useEffect(() => {
     const label =
       !value || !locations || !value.locations || value.locations.regionIds.length === 0
@@ -60,6 +61,7 @@ export const ReportFilters = ({
   }, [value.locations]);
 
 
+  // useEffect which runs on mount and when locations are added, edited or removed. Updates locations in the filter state in order to avoid mismatch between locations and filtered locations
   useEffect(() => {
     if (!locations) return;
 

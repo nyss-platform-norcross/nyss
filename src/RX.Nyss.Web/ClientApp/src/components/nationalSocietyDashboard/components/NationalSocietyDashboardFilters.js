@@ -52,14 +52,14 @@ export const NationalSocietyDashboardFilters = ({
       ...value,
       ...change,
     };
-
     setValue((prev) => ({ ...prev, ...change }));
     return newValue;
   };
 
+  // useEffect which runs on mount and when locations are added, edited or removed. Updates locations in the filter state in order to avoid mismatch between locations and filtered locations
   useEffect(() => {
     if (!locations) return;
-    
+
     const filterValue = {
       regionIds: locations.regions.map((region) => region.id),
       districtIds: locations.regions.map((region) => region.districts.map((district) => district.id)).flat(),
@@ -71,6 +71,7 @@ export const NationalSocietyDashboardFilters = ({
     updateValue({ locations: filterValue });
   }, [locations]);
 
+  // Sets label for location filter to 'All' or "Region (+n)"
   useEffect(() => {
     const label =
       !value || !locations || !value.locations || value.locations.regionIds.length === 0
