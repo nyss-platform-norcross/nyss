@@ -3,16 +3,21 @@ import { makeStyles } from "@material-ui/core/styles";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import List from "@material-ui/core/List";
 import { NationalSocietyLocationListItem } from "./NationalSocietyLocationListItem";
+import { Typography, Button} from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 
 export const NationalSocietyLocationList = (props) => {
   const [activeIndex, setActiveIndex] = useState("");
 
   const headerHeight = 48;
-  const borderStyle = props.locations.length > 0 ? "1px solid black" : "none";
+  const borderStyle = props.locations.length > 0 ? "1px solid black" : "1px dashed black";
+
+  const lowerCaseLocationType = props.locationType.toLowerCase();
+
   const useStyles = makeStyles((theme) => ({
     root: {
       width: "100%",
-      maxWidth: 360,
+      maxWidth: 300,
       backgroundColor: theme.palette.background.paper,
     },
     nested: {
@@ -41,6 +46,22 @@ export const NationalSocietyLocationList = (props) => {
       borderRight: borderStyle,
       borderTop: borderStyle,
     },
+    noLocationsContainer: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    noLocationsTextContainer: {
+      border: borderStyle,
+      minHeight: 54,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: 16
+    },
+    button: {
+      marginTop: 10,
+      alignSelf: "center",
+    }
   }));
 
   const classes = useStyles();
@@ -78,22 +99,32 @@ export const NationalSocietyLocationList = (props) => {
         </ListSubheader>
       }
     >
-      <div className={classes.listContainer}>
-        {props.locations.map((location) => (
-          <NationalSocietyLocationListItem
-            key={`${props.locationType}_${location.id}`}
-            location={location}
-            locationType={props.locationType}
-            nextLocationType={nextLocationType}
-            regions={props.regions}
-            districts={props.districts}
-            villages={props.villages}
-            zones={props.zones}
-            activeIndex={activeIndex}
-            setActiveIndex={setActiveIndex}
-          />
-        ))}
-      </div>
+      {props.locations.length === 0 && (
+        <div className={classes.noLocationsContainer}>
+          <div className={classes.noLocationsTextContainer}>
+            <Typography>{`No ${lowerCaseLocationType} added`}</Typography>
+          </div>
+          <Button startIcon={<AddIcon />} className={classes.button} variant="outlined" color="primary">{`Add ${lowerCaseLocationType}`}</Button>
+        </div>
+      )}
+      {props.locations.length > 0 && (
+        <div className={classes.listContainer}>
+          {props.locations.map((location) => (
+            <NationalSocietyLocationListItem
+              key={`${props.locationType}_${location.id}`}
+              location={location}
+              locationType={props.locationType}
+              nextLocationType={nextLocationType}
+              regions={props.regions}
+              districts={props.districts}
+              villages={props.villages}
+              zones={props.zones}
+              activeIndex={activeIndex}
+              setActiveIndex={setActiveIndex}
+            />
+          ))}
+        </div>
+      )}
     </List>
   );
 };
