@@ -10,7 +10,7 @@ import * as roles from "../../authentication/roles";
 
 export const NationalSocietyLocationList = (props) => {
   const [activeIndex, setActiveIndex] = useState("");
-  const [isModifying, setIsModifying] = useState(false)
+  const [isCreatingLocation, setIsCreatingLocation] = useState(false)
 
   const headerHeight = 48;
   const borderStyle = props.locations.length > 0 ? "1px solid black" : "1px dashed black";
@@ -148,12 +148,12 @@ export const NationalSocietyLocationList = (props) => {
             <Typography>{`No ${lowerCaseLocationType} added`}</Typography>
           </div>
         )}
-        {canModify && !isModifying && (
-          <Button startIcon={<AddIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsModifying(!isModifying)}>{`Add ${lowerCaseLocationType.slice(0, -1)}`}</Button>
+        {canModify && !isCreatingLocation && (
+          <Button startIcon={<AddIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType.slice(0, -1)}`}</Button>
         )}
-        {isModifying && (
+        {isCreatingLocation && (
           <div className={classes.addLocationField}>
-            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocation, name)} autoFocus setIsModifying={setIsModifying} />
+            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocation, name)} autoFocus setIsModifying={setIsCreatingLocation} />
           </div>
         )}
       </div>
