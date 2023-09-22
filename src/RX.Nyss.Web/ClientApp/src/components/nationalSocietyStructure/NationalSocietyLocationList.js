@@ -3,17 +3,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import List from "@material-ui/core/List";
 import { NationalSocietyLocationListItem } from "./NationalSocietyLocationListItem";
-import { Typography, Button} from "@material-ui/core";
+import { Typography, Button, Grid } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 import * as roles from "../../authentication/roles";
+import EditIcon from '@material-ui/icons/Edit';
 
 export const NationalSocietyLocationList = (props) => {
   const [activeIndex, setActiveIndex] = useState("");
   const [isCreatingLocation, setIsCreatingLocation] = useState(false)
+  const [isEditingLocations, setIsEditingLocations] = useState(false)
 
   const headerHeight = 48;
   const borderStyle = props.locations.length > 0 ? "1px solid black" : "1px dashed black";
+  const hasLocations = props.locations.length > 0
 
   const lowerCaseLocationType = props.locationType.toLowerCase();
 
@@ -127,6 +130,7 @@ export const NationalSocietyLocationList = (props) => {
               key={`${props.locationType}_${location.id}`}
               activeIndex={activeIndex}
               setActiveIndex={setActiveIndex}
+              isEditingLocations={isEditingLocations}
               location={location}
               locationType={props.locationType}
               nextLocationType={nextLocationType}
@@ -142,21 +146,37 @@ export const NationalSocietyLocationList = (props) => {
           ))}
         </div>
       )}
-      <div className={classes.noLocationsContainer}>
+      <Grid container direction="column">
         {props.locations.length === 0 && (
           <div className={classes.noLocationsTextContainer}>
             <Typography>{`No ${lowerCaseLocationType} added`}</Typography>
           </div>
         )}
-        {canModify && !isCreatingLocation && (
-          <Button startIcon={<AddIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType.slice(0, -1)}`}</Button>
-        )}
+        <Grid container direction="row" justifyContent="space-evenly">
+          {canModify && !isEditingLocations && !isCreatingLocation && (
+            <>
+              {hasLocations && (
+              <Grid item>
+                <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType.slice(0, -1)}`}</Button>
+              </Grid>
+              )}
+              <Grid item>
+                <Button startIcon={<AddIcon />} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType.slice(0, -1)}`}</Button>
+              </Grid>
+            </>
+          )}
+          {canModify && isEditingLocations && (
+            <Grid item>
+              <Button className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>Cancel</Button>
+            </Grid>
+          )}
+        </Grid>
         {isCreatingLocation && (
           <div className={classes.addLocationField}>
             <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocation, name)} autoFocus setIsModifying={setIsCreatingLocation} />
           </div>
         )}
-      </div>
+      </Grid>
     </List>
   );
 };

@@ -7,6 +7,10 @@ import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { IconButton } from "@material-ui/core";
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 export const NationalSocietyLocationListItem = (props) => {
   const isCurrentOpen =
@@ -20,8 +24,10 @@ export const NationalSocietyLocationListItem = (props) => {
       maxHeight: 55,
       display: "flex",
       flexDirection: "row",
+      width: "100%",
     },
     row: {
+      maxHeight: "100%",
       borderBottom: "1px solid black",
       "&:hover": {
         backgroundColor: props.nextLocationType ? "#FEF1F1" : "none",
@@ -84,6 +90,9 @@ export const NationalSocietyLocationListItem = (props) => {
           className={
             classes.row + " " + (isCurrentOpen ? classes.expanded : "")
           }
+          ContainerProps={{
+            className: classes.container
+          }}
           button={!!props.nextLocationType && !!nextLocations}
           onClick={!isZones ? handleClick : () => null}
         >
@@ -92,7 +101,7 @@ export const NationalSocietyLocationListItem = (props) => {
             className={classes.text}
             primary={props.location.name}
           />
-          {!isZones &&
+          {!isZones && !props.isEditingLocations &&
             (isCurrentOpen ? (
               <ExpandLess
                 className={
@@ -109,7 +118,17 @@ export const NationalSocietyLocationListItem = (props) => {
                   (isCurrentOpen ? classes.iconExpanded : "")
                 }
               />
-            ))}
+          ))}
+          {props.isEditingLocations && (
+            <ListItemSecondaryAction>
+              <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`}>
+                <EditIcon style={{color: "#D52B1E"}}/>
+              </IconButton>
+              <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
+                <DeleteIcon style={{color: "#D52B1E"}}/>
+              </IconButton>
+            </ListItemSecondaryAction>
+          )}
         </ListItem>
         <Collapse
           in={
