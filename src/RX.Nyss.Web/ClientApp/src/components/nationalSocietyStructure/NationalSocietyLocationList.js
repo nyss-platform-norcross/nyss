@@ -131,6 +131,7 @@ export const NationalSocietyLocationList = (props) => {
               activeIndex={activeIndex}
               setActiveIndex={setActiveIndex}
               isEditingLocations={isEditingLocations}
+              setIsEditingLocations={setIsEditingLocations}
               location={location}
               locationType={props.locationType}
               nextLocationType={nextLocationType}
@@ -146,6 +147,10 @@ export const NationalSocietyLocationList = (props) => {
               removeDistrict={props.removeDistrict}
               removeVillage={props.removeVillage}
               removeZone={props.removeZone}
+              editRegion={props.editRegion}
+              editDistrict={props.editDistrict}
+              editVillage={props.editVillage}
+              editZone={props.editZone}
             />
           ))}
         </div>

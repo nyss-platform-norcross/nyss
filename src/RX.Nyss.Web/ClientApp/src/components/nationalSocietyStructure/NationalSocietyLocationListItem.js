@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
@@ -13,14 +13,17 @@ import { IconButton } from "@material-ui/core";
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ConfirmationAction from "../common/confirmationAction/ConfirmationAction";
 import { strings, stringKeys } from "../../strings";
+import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 
 export const NationalSocietyLocationListItem = (props) => {
+  const [isEdited, setIsEdited] = useState(false);
   const isCurrentOpen =
     props.activeIndex === `${props.locationType}_${props.location.id}`;
   const isZones = props.locationType === "Zones";
   let nextLocations = [];
   const activeParentLocation = props.location.id
   let removeLocation = null
+  let editLocation = null
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -63,24 +66,28 @@ export const NationalSocietyLocationListItem = (props) => {
   switch (props.nextLocationType) {
     case "Districts":
       removeLocation = props.removeRegion
+      editLocation = props.editRegion
       nextLocations = props.districts.filter(
         (district) => district.regionId === props.location.id
       );
       break;
     case "Villages":
       removeLocation = props.district
+      editLocation = props.editDistrict
       nextLocations = props.villages.filter(
         (village) => village.districtId === props.location.id
       );
       break;
     case "Zones":
       removeLocation = props.removeVillage
+      editLocation = props.editVillage
       nextLocations = props.zones.filter(
         (zone) => zone.villageId === props.location.id
       );
       break;
     default:
       removeLocation = props.removeZone
+      editLocation = props.editZone
       nextLocations = null;
       break;
   }
@@ -95,6 +102,18 @@ export const NationalSocietyLocationListItem = (props) => {
 
   const handleRemove = () => {
     removeLocation(props.location.id)
+    props.setIsEditingLocations(false)
+  }
+
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    setIsEdited(true);
+  }
+
+  const handleSave = (newName) => {
+    editLocation(props.location.id, newName);
+    setIsEdited(false);
   }
 
 
@@ -111,44 +130,55 @@ export const NationalSocietyLocationListItem = (props) => {
           button={!!props.nextLocationType && !!nextLocations}
           onClick={!isZones ? handleClick : () => null}
         >
-          <ListItemText
-            disableTypography
-            className={classes.text}
-            primary={props.location.name}
-          />
-          {!isZones && !props.isEditingLocations &&
-            (isCurrentOpen ? (
-              <ExpandLess
-                className={
-                  classes.icon +
-                  " " +
-                  (isCurrentOpen ? classes.iconExpanded : "")
-                }
-              />
-            ) : (
-              <ExpandMore
-                className={
-                  classes.icon +
-                  " " +
-                  (isCurrentOpen ? classes.iconExpanded : "")
-                }
-              />
-          ))}
-          {props.isEditingLocations && (
-            <ListItemSecondaryAction className={classes.editContainer}>
-              <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`}>
-                <EditIcon style={{color: "#D52B1E"}}/>
-              </IconButton>
-              <ConfirmationAction
-                className={classes.icon}
-                confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
-                onClick={handleRemove}>
-                  <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
-                    <DeleteIcon style={{color: "#D52B1E"}}/>
-                  </IconButton>
-              </ConfirmationAction>
-            </ListItemSecondaryAction>
-          )}
+        {!isEdited && (
+            <>
+            <ListItemText
+              disableTypography
+              className={classes.text}
+              primary={props.location.name}
+            />
+            {!isZones && !props.isEditingLocations &&
+              (isCurrentOpen ? (
+                <ExpandLess
+                  className={
+                    classes.icon +
+                    " " +
+                    (isCurrentOpen ? classes.iconExpanded : "")
+                  }
+                />
+              ) : (
+                <ExpandMore
+                  className={
+                    classes.icon +
+                    " " +
+                    (isCurrentOpen ? classes.iconExpanded : "")
+                  }
+                />
+            ))}
+            {props.isEditingLocations && (
+              <ListItemSecondaryAction className={classes.editContainer}>
+                <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`} onClick={handleEdit}>
+                  <EditIcon style={{color: "#D52B1E"}}/>
+                </IconButton>
+                <ConfirmationAction
+                  className={classes.icon}
+                  confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
+                  onClick={handleRemove}>
+                    <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
+                      <DeleteIcon style={{color: "#D52B1E"}}/>
+                    </IconButton>
+                </ConfirmationAction>
+              </ListItemSecondaryAction>
+            )}
+          </>
+        )}
+        {isEdited && (
+          <InlineTextEditor
+            initialValue={props.location.name}
+            onSave={handleSave}
+            autoFocus
+            onClose={() => setIsEdited(false)} />
+        )}
         </ListItem>
         <Collapse
           in={
@@ -168,6 +198,14 @@ export const NationalSocietyLocationListItem = (props) => {
             createDistrict={props.createDistrict}
             createVillage={props.createVillage}
             createZone={props.createZone}
+            removeRegion={props.removeRegion}
+            removeDistrict={props.removeDistrict}
+            removeVillage={props.removeVillage}
+            removeZone={props.removeZone}
+            editRegion={props.editRegion}
+            editDistrict={props.editDistrict}
+            editVillage={props.editVillage}
+            editZone={props.editZone}
             activeParentLocation={activeParentLocation}
           />
         </Collapse>
