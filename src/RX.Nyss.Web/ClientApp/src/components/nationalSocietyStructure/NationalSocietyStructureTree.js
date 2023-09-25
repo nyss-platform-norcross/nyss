@@ -12,6 +12,7 @@ import { Icon } from "@material-ui/core";
 import * as roles from "../../authentication/roles";
 import { useSelector } from "react-redux";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
+import { editDistrict, editRegion } from "./logic/nationalSocietyStructureActions";
 
 const AddPanel = ({ placeholder, onSave, rtl }) => {
   return (
@@ -181,6 +182,29 @@ export const NationalSocietyStructureTree = (props) => {
     );
   };
 
+  const manageLocation = {
+    region: {
+      create: props.createRegion,
+      edit: props.editRegion,
+      remove: props.removeRegion
+    },
+    district: {
+      create: props.createDistrict,
+      edit: props.editDistrict,
+      remove: props.removeDistrict
+    },
+    village: {
+      create: props.createVillage,
+      edit: props.editVillage,
+      remove: props.removeVillage
+    },
+    zone: {
+      create: props.createZone,
+      edit: props.editZone,
+      remove: props.removeZone
+    }
+  }
+
   return (
     <NationalSocietyLocationList
       regions={props.regions}
@@ -191,10 +215,7 @@ export const NationalSocietyStructureTree = (props) => {
       locationType={"Regions"}
       nationalSocietyId={nationalSocietyId}
       activeParentLocation={nationalSocietyId}
-      createRegion={props.createRegion}
-      createDistrict={props.createDistrict}
-      createVillage={props.createVillage}
-      createZone={props.createZone}
+      manageLocation={manageLocation}
     />
   );
 

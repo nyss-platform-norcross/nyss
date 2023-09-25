@@ -83,19 +83,19 @@ export const NationalSocietyLocationList = (props) => {
   switch (props.locationType) {
     case "Regions":
       nextLocationType = "Districts";
-      createLocation = props.createRegion
+      createLocation = props.manageLocation.region.create
       break;
     case "Districts":
       nextLocationType = "Villages";
-      createLocation = props.createDistrict
+      createLocation = props.manageLocation.district.create
       break;
     case "Villages":
       nextLocationType = "Zones";
-      createLocation = props.createVillage
+      createLocation = props.manageLocation.village.create
       break;
     default:
       nextLocationType = null;
-      createLocation = props.createZone
+      createLocation = props.manageLocation.zone.create
       break;
   }
 
@@ -139,18 +139,7 @@ export const NationalSocietyLocationList = (props) => {
               districts={props.districts}
               villages={props.villages}
               zones={props.zones}
-              createRegion={props.createRegion}
-              createDistrict={props.createDistrict}
-              createVillage={props.createVillage}
-              createZone={props.createZone}
-              removeRegion={props.removeRegion}
-              removeDistrict={props.removeDistrict}
-              removeVillage={props.removeVillage}
-              removeZone={props.removeZone}
-              editRegion={props.editRegion}
-              editDistrict={props.editDistrict}
-              editVillage={props.editVillage}
-              editZone={props.editZone}
+              manageLocation={props.manageLocation}
             />
           ))}
         </div>

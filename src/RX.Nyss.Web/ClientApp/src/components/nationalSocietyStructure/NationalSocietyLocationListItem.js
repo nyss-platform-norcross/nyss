@@ -65,29 +65,29 @@ export const NationalSocietyLocationListItem = (props) => {
 
   switch (props.nextLocationType) {
     case "Districts":
-      removeLocation = props.removeRegion
-      editLocation = props.editRegion
+      removeLocation = props.manageLocation.region.remove
+      editLocation = props.manageLocation.region.edit
       nextLocations = props.districts.filter(
         (district) => district.regionId === props.location.id
       );
       break;
     case "Villages":
-      removeLocation = props.district
-      editLocation = props.editDistrict
+      removeLocation = props.manageLocation.district.remove
+      editLocation = props.manageLocation.district.edit
       nextLocations = props.villages.filter(
         (village) => village.districtId === props.location.id
       );
       break;
     case "Zones":
-      removeLocation = props.removeVillage
-      editLocation = props.editVillage
+      removeLocation = props.manageLocation.village.remove
+      editLocation = props.manageLocation.village.edit
       nextLocations = props.zones.filter(
         (zone) => zone.villageId === props.location.id
       );
       break;
     default:
-      removeLocation = props.removeZone
-      editLocation = props.editZone
+      removeLocation = props.manageLocation.zone.remove
+      editLocation = props.manageLocation.zone.edit
       nextLocations = null;
       break;
   }
@@ -194,18 +194,7 @@ export const NationalSocietyLocationListItem = (props) => {
             zones={props.zones}
             locations={nextLocations}
             locationType={props.nextLocationType}
-            createRegion={props.createRegion}
-            createDistrict={props.createDistrict}
-            createVillage={props.createVillage}
-            createZone={props.createZone}
-            removeRegion={props.removeRegion}
-            removeDistrict={props.removeDistrict}
-            removeVillage={props.removeVillage}
-            removeZone={props.removeZone}
-            editRegion={props.editRegion}
-            editDistrict={props.editDistrict}
-            editVillage={props.editVillage}
-            editZone={props.editZone}
+            manageLocation={props.manageLocation}
             activeParentLocation={activeParentLocation}
           />
         </Collapse>
