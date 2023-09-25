@@ -147,6 +147,7 @@ export const NationalSocietyLocationListItem = (props) => {
             locations={nextLocations}
             manageLocation={props.manageLocation}
             activeParentLocationId={activeParentLocationId}
+            canModify={props.canModify}
           />
         </Collapse>
       </div>

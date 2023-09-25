@@ -6,7 +6,6 @@ import { NationalSocietyLocationListItem } from "./NationalSocietyLocationListIt
 import { Typography, Button, Grid } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
-import * as roles from "../../authentication/roles";
 import EditIcon from '@material-ui/icons/Edit';
 
 export const NationalSocietyLocationList = (props) => {
@@ -20,13 +19,6 @@ export const NationalSocietyLocationList = (props) => {
 
   const lowerCaseLocationType = props.locationType.toLowerCase();
   const createLocation = props.manageLocation[props.locationType].create;
-
-  const canModify =
-  !props.nationalSocietyIsArchived &&
-  (!props.nationalSocietyHasCoordinator ||
-    props.callingUserRoles.some(
-      (r) => r === roles.Coordinator || r === roles.Administrator
-    ));
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -115,6 +107,7 @@ export const NationalSocietyLocationList = (props) => {
               location={location}
               locationType={props.locationType}
               manageLocation={props.manageLocation}
+              canModify={props.canModify}
             />
           ))}
         </div>
@@ -126,11 +119,11 @@ export const NationalSocietyLocationList = (props) => {
           </div>
         )}
         <Grid container direction="row" justifyContent="space-evenly">
-          {canModify && !isEditingLocations && !isCreatingLocation && (
+          {props.canModify && !isEditingLocations && !isCreatingLocation && (
             <>
               {hasLocations && (
                 <Grid item>
-                  <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType}`}</Button>
+                  <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit`}</Button>
                 </Grid>
               )}
               <Grid item>
@@ -138,7 +131,7 @@ export const NationalSocietyLocationList = (props) => {
               </Grid>
             </>
           )}
-          {canModify && isEditingLocations && (
+          {props.canModify && isEditingLocations && (
             <Grid item>
               <Button className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>Cancel</Button>
             </Grid>

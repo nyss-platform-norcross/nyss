@@ -6,6 +6,8 @@ import Layout from "../layout/Layout";
 import { Typography } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
 import { NationalSocietyStructureTree } from "./NationalSocietyStructureTree";
+import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
+import * as roles from "../../authentication/roles";
 
 const NationalSocietyStructurePageComponent = (props) => {
   const {
@@ -22,8 +24,50 @@ const NationalSocietyStructurePageComponent = (props) => {
     openStructure(nationalSocietyId);
   }, [openStructure, nationalSocietyId]);
 
-  if (!regions) {
-    return null;
+  const canModify =
+    !props.nationalSocietyIsArchived
+    && (
+      !props.nationalSocietyHasCoordinator
+      || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)
+    );
+
+  if(!regions) return null;
+
+  const manageLocation = {
+    region: {
+      create: props.createRegion,
+      edit: props.editRegion,
+      remove: props.removeRegion,
+      nextLocationType: "district",
+      nextLocations: (location) => props.districts.filter(
+        (district) => district.regionId === location.id
+      )
+    },
+    district: {
+      create: props.createDistrict,
+      edit: props.editDistrict,
+      remove: props.removeDistrict,
+      nextLocationType: "village",
+      nextLocations: (location) => props.villages.filter(
+        (village) => village.districtId === location.id
+      )
+    },
+    village: {
+      create: props.createVillage,
+      edit: props.editVillage,
+      remove: props.removeVillage,
+      nextLocationType: "zone",
+      nextLocations: (location) => props.zones.filter(
+        (zone) => zone.villageId === location.id
+      )
+    },
+    zone: {
+      create: props.createZone,
+      edit: props.editZone,
+      remove: props.removeZone,
+      nextLocationType: null,
+      nextLocations: () => null
+    }
   }
 
   return (
@@ -33,34 +77,51 @@ const NationalSocietyStructurePageComponent = (props) => {
           {strings(stringKeys.nationalSociety.structure.introduction)}
         </Typography>
       )}
-
-      <NationalSocietyStructureTree
-        regions={regions}
-        districts={districts}
-        villages={villages}
-        zones={zones}
-        isFetching={isFetching}
-        nationalSocietyId={nationalSocietyId}
-        nationalSocietyIsArchived={props.nationalSocietyIsArchived}
-        nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
-        callingUserRoles={props.callingUserRoles}
-        expandedItems={props.expandedItems}
-        updateExpandedItems={props.updateExpandedItems}
-        createRegion={props.createRegion}
-        editRegion={props.editRegion}
-        removeRegion={props.removeRegion}
-        createDistrict={props.createDistrict}
-        editDistrict={props.editDistrict}
-        removeDistrict={props.removeDistrict}
-        createVillage={props.createVillage}
-        editVillage={props.editVillage}
-        removeVillage={props.removeVillage}
-        createZone={props.createZone}
-        editZone={props.editZone}
-        removeZone={props.removeZone}
-      />
+      <NationalSocietyLocationList
+        locations={props.regions}
+        locationType="region"
+        activeParentLocationId={nationalSocietyId}
+        manageLocation={manageLocation}
+        canModify={canModify}
+        />
     </Fragment>
   );
+
+  // return (
+  //   <Fragment>
+  //     {!props.nationalSocietyIsArchived && (
+  //       <Typography variant="body1" style={{ marginBottom: 50 }}>
+  //         {strings(stringKeys.nationalSociety.structure.introduction)}
+  //       </Typography>
+  //     )}
+
+  //     <NationalSocietyStructureTree
+  //       regions={regions}
+  //       districts={districts}
+  //       villages={villages}
+  //       zones={zones}
+  //       isFetching={isFetching}
+  //       nationalSocietyId={nationalSocietyId}
+  //       nationalSocietyIsArchived={props.nationalSocietyIsArchived}
+  //       nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
+  //       callingUserRoles={props.callingUserRoles}
+  //       expandedItems={props.expandedItems}
+  //       updateExpandedItems={props.updateExpandedItems}
+  //       createRegion={props.createRegion}
+  //       editRegion={props.editRegion}
+  //       removeRegion={props.removeRegion}
+  //       createDistrict={props.createDistrict}
+  //       editDistrict={props.editDistrict}
+  //       removeDistrict={props.removeDistrict}
+  //       createVillage={props.createVillage}
+  //       editVillage={props.editVillage}
+  //       removeVillage={props.removeVillage}
+  //       createZone={props.createZone}
+  //       editZone={props.editZone}
+  //       removeZone={props.removeZone}
+  //     />
+  //   </Fragment>
+  // );
 };
 
 const mapStateToProps = (state, ownProps) => ({
