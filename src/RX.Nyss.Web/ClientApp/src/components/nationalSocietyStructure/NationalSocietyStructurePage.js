@@ -41,7 +41,8 @@ const NationalSocietyStructurePageComponent = (props) => {
       nextLocationType: "district",
       nextLocations: (location) => props.districts.filter(
         (district) => district.regionId === location.id
-      )
+      ),
+      addLocationLabel: strings(stringKeys.nationalSociety.structure.addRegion, true)
     },
     district: {
       create: props.createDistrict,
@@ -50,7 +51,8 @@ const NationalSocietyStructurePageComponent = (props) => {
       nextLocationType: "village",
       nextLocations: (location) => props.villages.filter(
         (village) => village.districtId === location.id
-      )
+      ),
+      addLocationLabel: strings(stringKeys.nationalSociety.structure.addDistrict, true)
     },
     village: {
       create: props.createVillage,
@@ -59,14 +61,16 @@ const NationalSocietyStructurePageComponent = (props) => {
       nextLocationType: "zone",
       nextLocations: (location) => props.zones.filter(
         (zone) => zone.villageId === location.id
-      )
+      ),
+      addLocationLabel: strings(stringKeys.nationalSociety.structure.addVillage, true)
     },
     zone: {
       create: props.createZone,
       edit: props.editZone,
       remove: props.removeZone,
       nextLocationType: null,
-      nextLocations: () => null
+      nextLocations: () => null,
+      addLocationLabel: strings(stringKeys.nationalSociety.structure.addZone, true)
     }
   }
 

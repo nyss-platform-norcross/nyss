@@ -139,7 +139,7 @@ export const NationalSocietyLocationList = (props) => {
         </Grid>
         {isCreatingLocation && (
           <div className={classes.addLocationField}>
-            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType}`} onSave={(name) => createLocation(props.activeParentLocationId, name)} autoFocus setIsModifying={setIsCreatingLocation} />
+            <InlineTextEditor placeholder={props.manageLocation[props.locationType].addLocationLabel} onSave={(name) => createLocation(props.activeParentLocationId, name)} autoFocus setIsModifying={setIsCreatingLocation} />
           </div>
         )}
       </Grid>
