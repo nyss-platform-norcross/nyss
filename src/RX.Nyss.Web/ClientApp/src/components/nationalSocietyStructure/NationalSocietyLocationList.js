@@ -15,12 +15,18 @@ export const NationalSocietyLocationList = (props) => {
   const [isEditingLocations, setIsEditingLocations] = useState(false)
 
   const headerHeight = 48;
-  const borderStyle = props.locations.length > 0 ? "1px solid black" : "1px dashed black";
   const hasLocations = props.locations.length > 0
+  const borderStyle = hasLocations ? "1px solid black" : "1px dashed black";
 
   const lowerCaseLocationType = props.locationType.toLowerCase();
   const createLocation = props.manageLocation[props.locationType].create;
 
+  const canModify =
+  !props.nationalSocietyIsArchived &&
+  (!props.nationalSocietyHasCoordinator ||
+    props.callingUserRoles.some(
+      (r) => r === roles.Coordinator || r === roles.Administrator
+    ));
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,14 +86,6 @@ export const NationalSocietyLocationList = (props) => {
 
   const classes = useStyles();
 
-
-  const canModify =
-    !props.nationalSocietyIsArchived &&
-    (!props.nationalSocietyHasCoordinator ||
-      props.callingUserRoles.some(
-        (r) => r === roles.Coordinator || r === roles.Administrator
-      ));
-
   return (
     <List
       className={
@@ -105,7 +103,7 @@ export const NationalSocietyLocationList = (props) => {
         </ListSubheader>
       }
     >
-      {props.locations.length > 0 && (
+      {hasLocations && (
         <div className={classes.listContainer}>
           {props.locations.map((location) => (
             <NationalSocietyLocationListItem
@@ -122,7 +120,7 @@ export const NationalSocietyLocationList = (props) => {
         </div>
       )}
       <Grid container direction="column">
-        {props.locations.length === 0 && (
+        {!hasLocations && (
           <div className={classes.noLocationsTextContainer}>
             <Typography>{`No ${lowerCaseLocationType} added`}</Typography>
           </div>
@@ -131,9 +129,9 @@ export const NationalSocietyLocationList = (props) => {
           {canModify && !isEditingLocations && !isCreatingLocation && (
             <>
               {hasLocations && (
-              <Grid item>
-                <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType}`}</Button>
-              </Grid>
+                <Grid item>
+                  <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType}`}</Button>
+                </Grid>
               )}
               <Grid item>
                 <Button startIcon={<AddIcon />} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType}`}</Button>
@@ -148,7 +146,7 @@ export const NationalSocietyLocationList = (props) => {
         </Grid>
         {isCreatingLocation && (
           <div className={classes.addLocationField}>
-            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocationId, name)} autoFocus setIsModifying={setIsCreatingLocation} />
+            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType}`} onSave={(name) => createLocation(props.activeParentLocationId, name)} autoFocus setIsModifying={setIsCreatingLocation} />
           </div>
         )}
       </Grid>

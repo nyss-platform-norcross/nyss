@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
-import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
 import EditIcon from '@material-ui/icons/Edit';
@@ -23,7 +22,7 @@ export const NationalSocietyLocationListItem = (props) => {
   const activeParentLocationId = props.location.id
   const removeLocation = props.manageLocation[props.locationType].remove
   const editLocation = props.manageLocation[props.locationType].edit
-  const nextLocation = props.manageLocation[props.locationType].nextLocationType
+  const nextLocationType = props.manageLocation[props.locationType].nextLocationType
   const nextLocations = props.manageLocation[props.locationType].nextLocations(props.location)
 
   const useStyles = makeStyles((theme) => ({
@@ -37,7 +36,7 @@ export const NationalSocietyLocationListItem = (props) => {
       maxHeight: "100%",
       borderBottom: "1px solid black",
       "&:hover": {
-        backgroundColor: nextLocations ? "#FEF1F1" : "none",
+        backgroundColor: nextLocationType ? "#FEF1F1" : "none",
       },
       "&:focus": {
         backgroundColor: "#FEF1F1",
@@ -48,7 +47,7 @@ export const NationalSocietyLocationListItem = (props) => {
       fontWeight: "bold",
     },
     iconExpanded: {
-      transform: "rotate(90deg)",
+      transform: "rotate(-90deg)",
     },
     text: {
       fontSize: 16,
@@ -60,7 +59,7 @@ export const NationalSocietyLocationListItem = (props) => {
     },
     editContainer: {
       display: "flex"
-    }
+    },
   }));
   const classes = useStyles();
 
@@ -99,7 +98,7 @@ export const NationalSocietyLocationListItem = (props) => {
           ContainerProps={{
             className: classes.container
           }}
-          button={!!nextLocations}
+          button={!!nextLocationType}
           onClick={!isZone ? handleClick : () => null}
         >
         {!isEditing && (
@@ -109,31 +108,15 @@ export const NationalSocietyLocationListItem = (props) => {
               className={classes.text}
               primary={props.location.name}
             />
-            {!isZone && !props.isEditingLocations &&
-              (isCurrentOpen ? (
-                <ExpandLess
-                  className={
-                    classes.icon +
-                    " " +
-                    (isCurrentOpen ? classes.iconExpanded : "")
-                  }
-                />
-              ) : (
-                <ExpandMore
-                  className={
-                    classes.icon +
-                    " " +
-                    (isCurrentOpen ? classes.iconExpanded : "")
-                  }
-                />
-            ))}
+            {!isZone && !props.isEditingLocations && (
+                <ExpandMore className={`${classes.icon} ${isCurrentOpen && classes.iconExpanded}`}/>
+            )}
             {props.isEditingLocations && (
               <ListItemSecondaryAction className={classes.editContainer}>
                 <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`} onClick={handleEdit}>
                   <EditIcon style={{color: "#D52B1E"}}/>
                 </IconButton>
                 <ConfirmationAction
-                  className={classes.icon}
                   confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
                   onClick={handleRemove}>
                     <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
@@ -160,7 +143,7 @@ export const NationalSocietyLocationListItem = (props) => {
           unmountOnExit
         >
           <NationalSocietyLocationList
-            locationType={nextLocation}
+            locationType={nextLocationType}
             locations={nextLocations}
             manageLocation={props.manageLocation}
             activeParentLocationId={activeParentLocationId}
