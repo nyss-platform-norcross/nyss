@@ -186,35 +186,44 @@ export const NationalSocietyStructureTree = (props) => {
     region: {
       create: props.createRegion,
       edit: props.editRegion,
-      remove: props.removeRegion
+      remove: props.removeRegion,
+      nextLocationType: "district",
+      nextLocations: (location) => props.districts.filter(
+        (district) => district.regionId === location.id
+      )
     },
     district: {
       create: props.createDistrict,
       edit: props.editDistrict,
-      remove: props.removeDistrict
+      remove: props.removeDistrict,
+      nextLocationType: "village",
+      nextLocations: (location) => props.villages.filter(
+        (village) => village.districtId === location.id
+      )
     },
     village: {
       create: props.createVillage,
       edit: props.editVillage,
-      remove: props.removeVillage
+      remove: props.removeVillage,
+      nextLocationType: "zone",
+      nextLocations: (location) => props.zones.filter(
+        (zone) => zone.villageId === location.id
+      )
     },
     zone: {
       create: props.createZone,
       edit: props.editZone,
-      remove: props.removeZone
+      remove: props.removeZone,
+      nextLocationType: null,
+      nextLocations: () => null
     }
   }
 
   return (
     <NationalSocietyLocationList
-      regions={props.regions}
-      districts={props.districts}
-      villages={props.villages}
-      zones={props.zones}
       locations={props.regions}
-      locationType={"Regions"}
-      nationalSocietyId={nationalSocietyId}
-      activeParentLocation={nationalSocietyId}
+      locationType="region"
+      activeParentLocationId={nationalSocietyId}
       manageLocation={manageLocation}
     />
   );

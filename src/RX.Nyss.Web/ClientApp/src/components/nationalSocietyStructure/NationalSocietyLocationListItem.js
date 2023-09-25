@@ -16,14 +16,15 @@ import { strings, stringKeys } from "../../strings";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 
 export const NationalSocietyLocationListItem = (props) => {
-  const [isEdited, setIsEdited] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const isCurrentOpen =
     props.activeIndex === `${props.locationType}_${props.location.id}`;
-  const isZones = props.locationType === "Zones";
-  let nextLocations = [];
-  const activeParentLocation = props.location.id
-  let removeLocation = null
-  let editLocation = null
+  const isZone = props.locationType === "zone";
+  const activeParentLocationId = props.location.id
+  const removeLocation = props.manageLocation[props.locationType].remove
+  const editLocation = props.manageLocation[props.locationType].edit
+  const nextLocation = props.manageLocation[props.locationType].nextLocationType
+  const nextLocations = props.manageLocation[props.locationType].nextLocations(props.location)
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -36,7 +37,7 @@ export const NationalSocietyLocationListItem = (props) => {
       maxHeight: "100%",
       borderBottom: "1px solid black",
       "&:hover": {
-        backgroundColor: props.nextLocationType ? "#FEF1F1" : "none",
+        backgroundColor: nextLocations ? "#FEF1F1" : "none",
       },
       "&:focus": {
         backgroundColor: "#FEF1F1",
@@ -63,35 +64,6 @@ export const NationalSocietyLocationListItem = (props) => {
   }));
   const classes = useStyles();
 
-  switch (props.nextLocationType) {
-    case "Districts":
-      removeLocation = props.manageLocation.region.remove
-      editLocation = props.manageLocation.region.edit
-      nextLocations = props.districts.filter(
-        (district) => district.regionId === props.location.id
-      );
-      break;
-    case "Villages":
-      removeLocation = props.manageLocation.district.remove
-      editLocation = props.manageLocation.district.edit
-      nextLocations = props.villages.filter(
-        (village) => village.districtId === props.location.id
-      );
-      break;
-    case "Zones":
-      removeLocation = props.manageLocation.village.remove
-      editLocation = props.manageLocation.village.edit
-      nextLocations = props.zones.filter(
-        (zone) => zone.villageId === props.location.id
-      );
-      break;
-    default:
-      removeLocation = props.manageLocation.zone.remove
-      editLocation = props.manageLocation.zone.edit
-      nextLocations = null;
-      break;
-  }
-
   const handleClick = () => {
     if (isCurrentOpen) {
       props.setActiveIndex("");
@@ -108,12 +80,12 @@ export const NationalSocietyLocationListItem = (props) => {
 
   const handleEdit = (e) => {
     e.stopPropagation();
-    setIsEdited(true);
+    setIsEditing(true);
   }
 
   const handleSave = (newName) => {
     editLocation(props.location.id, newName);
-    setIsEdited(false);
+    setIsEditing(false);
   }
 
 
@@ -127,17 +99,17 @@ export const NationalSocietyLocationListItem = (props) => {
           ContainerProps={{
             className: classes.container
           }}
-          button={!!props.nextLocationType && !!nextLocations}
-          onClick={!isZones ? handleClick : () => null}
+          button={!!nextLocations}
+          onClick={!isZone ? handleClick : () => null}
         >
-        {!isEdited && (
+        {!isEditing && (
             <>
             <ListItemText
               disableTypography
               className={classes.text}
               primary={props.location.name}
             />
-            {!isZones && !props.isEditingLocations &&
+            {!isZone && !props.isEditingLocations &&
               (isCurrentOpen ? (
                 <ExpandLess
                   className={
@@ -172,12 +144,12 @@ export const NationalSocietyLocationListItem = (props) => {
             )}
           </>
         )}
-        {isEdited && (
+        {isEditing && (
           <InlineTextEditor
             initialValue={props.location.name}
             onSave={handleSave}
             autoFocus
-            onClose={() => setIsEdited(false)} />
+            onClose={() => setIsEditing(false)} />
         )}
         </ListItem>
         <Collapse
@@ -188,14 +160,10 @@ export const NationalSocietyLocationListItem = (props) => {
           unmountOnExit
         >
           <NationalSocietyLocationList
-            regions={props.regions}
-            districts={props.districts}
-            villages={props.villages}
-            zones={props.zones}
+            locationType={nextLocation}
             locations={nextLocations}
-            locationType={props.nextLocationType}
             manageLocation={props.manageLocation}
-            activeParentLocation={activeParentLocation}
+            activeParentLocationId={activeParentLocationId}
           />
         </Collapse>
       </div>

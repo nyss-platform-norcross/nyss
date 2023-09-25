@@ -19,6 +19,8 @@ export const NationalSocietyLocationList = (props) => {
   const hasLocations = props.locations.length > 0
 
   const lowerCaseLocationType = props.locationType.toLowerCase();
+  const createLocation = props.manageLocation[props.locationType].create;
+
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -78,26 +80,6 @@ export const NationalSocietyLocationList = (props) => {
 
   const classes = useStyles();
 
-  let nextLocationType = "";
-  let createLocation = null;
-  switch (props.locationType) {
-    case "Regions":
-      nextLocationType = "Districts";
-      createLocation = props.manageLocation.region.create
-      break;
-    case "Districts":
-      nextLocationType = "Villages";
-      createLocation = props.manageLocation.district.create
-      break;
-    case "Villages":
-      nextLocationType = "Zones";
-      createLocation = props.manageLocation.village.create
-      break;
-    default:
-      nextLocationType = null;
-      createLocation = props.manageLocation.zone.create
-      break;
-  }
 
   const canModify =
     !props.nationalSocietyIsArchived &&
@@ -109,7 +91,7 @@ export const NationalSocietyLocationList = (props) => {
   return (
     <List
       className={
-        props.locationType === "Regions" ? classes.root : classes.nested
+        props.locationType === "region" ? classes.root : classes.nested
       }
       component="nav"
       aria-labelledby={`${props.locationType}_list`}
@@ -119,7 +101,7 @@ export const NationalSocietyLocationList = (props) => {
           component="div"
           id={`${props.locationType}_list`}
         >
-          <div className={classes.background}>{props.locationType}</div>
+          <div className={classes.background}>{`${props.locationType.charAt(0).toUpperCase() + props.locationType.slice(1)}s`}</div>
         </ListSubheader>
       }
     >
@@ -134,11 +116,6 @@ export const NationalSocietyLocationList = (props) => {
               setIsEditingLocations={setIsEditingLocations}
               location={location}
               locationType={props.locationType}
-              nextLocationType={nextLocationType}
-              regions={props.regions}
-              districts={props.districts}
-              villages={props.villages}
-              zones={props.zones}
               manageLocation={props.manageLocation}
             />
           ))}
@@ -155,11 +132,11 @@ export const NationalSocietyLocationList = (props) => {
             <>
               {hasLocations && (
               <Grid item>
-                <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType.slice(0, -1)}`}</Button>
+                <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit ${lowerCaseLocationType}`}</Button>
               </Grid>
               )}
               <Grid item>
-                <Button startIcon={<AddIcon />} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType.slice(0, -1)}`}</Button>
+                <Button startIcon={<AddIcon />} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType}`}</Button>
               </Grid>
             </>
           )}
@@ -171,7 +148,7 @@ export const NationalSocietyLocationList = (props) => {
         </Grid>
         {isCreatingLocation && (
           <div className={classes.addLocationField}>
-            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocation, name)} autoFocus setIsModifying={setIsCreatingLocation} />
+            <InlineTextEditor placeholder={`Add ${lowerCaseLocationType.slice(0, -1)}`} onSave={(name) => createLocation(props.activeParentLocationId, name)} autoFocus setIsModifying={setIsCreatingLocation} />
           </div>
         )}
       </Grid>
