@@ -11,6 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IconButton } from "@material-ui/core";
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ConfirmationAction from "../common/confirmationAction/ConfirmationAction";
+import { strings, stringKeys } from "../../strings";
 
 export const NationalSocietyLocationListItem = (props) => {
   const isCurrentOpen =
@@ -18,6 +20,7 @@ export const NationalSocietyLocationListItem = (props) => {
   const isZones = props.locationType === "Zones";
   let nextLocations = [];
   const activeParentLocation = props.location.id
+  let removeLocation = null
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -51,8 +54,36 @@ export const NationalSocietyLocationListItem = (props) => {
       fontSize: 36,
       color: "#D52B1E",
     },
+    editContainer: {
+      display: "flex"
+    }
   }));
   const classes = useStyles();
+
+  switch (props.nextLocationType) {
+    case "Districts":
+      removeLocation = props.removeRegion
+      nextLocations = props.districts.filter(
+        (district) => district.regionId === props.location.id
+      );
+      break;
+    case "Villages":
+      removeLocation = props.district
+      nextLocations = props.villages.filter(
+        (village) => village.districtId === props.location.id
+      );
+      break;
+    case "Zones":
+      removeLocation = props.removeVillage
+      nextLocations = props.zones.filter(
+        (zone) => zone.villageId === props.location.id
+      );
+      break;
+    default:
+      removeLocation = props.removeZone
+      nextLocations = null;
+      break;
+  }
 
   const handleClick = () => {
     if (isCurrentOpen) {
@@ -62,26 +93,10 @@ export const NationalSocietyLocationListItem = (props) => {
     }
   };
 
-  switch (props.nextLocationType) {
-    case "Districts":
-      nextLocations = props.districts.filter(
-        (district) => district.regionId === props.location.id
-      );
-      break;
-    case "Villages":
-      nextLocations = props.villages.filter(
-        (village) => village.districtId === props.location.id
-      );
-      break;
-    case "Zones":
-      nextLocations = props.zones.filter(
-        (zone) => zone.villageId === props.location.id
-      );
-      break;
-    default:
-      nextLocations = null;
-      break;
+  const handleRemove = () => {
+    removeLocation(props.location.id)
   }
+
 
   return (
     <Fragment>
@@ -120,13 +135,18 @@ export const NationalSocietyLocationListItem = (props) => {
               />
           ))}
           {props.isEditingLocations && (
-            <ListItemSecondaryAction>
+            <ListItemSecondaryAction className={classes.editContainer}>
               <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`}>
                 <EditIcon style={{color: "#D52B1E"}}/>
               </IconButton>
-              <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
-                <DeleteIcon style={{color: "#D52B1E"}}/>
-              </IconButton>
+              <ConfirmationAction
+                className={classes.icon}
+                confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
+                onClick={handleRemove}>
+                  <IconButton size="small" id={`${props.locationType}_${props.location.id}_delete`}>
+                    <DeleteIcon style={{color: "#D52B1E"}}/>
+                  </IconButton>
+              </ConfirmationAction>
             </ListItemSecondaryAction>
           )}
         </ListItem>

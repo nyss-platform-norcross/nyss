@@ -142,6 +142,10 @@ export const NationalSocietyLocationList = (props) => {
               createDistrict={props.createDistrict}
               createVillage={props.createVillage}
               createZone={props.createZone}
+              removeRegion={props.removeRegion}
+              removeDistrict={props.removeDistrict}
+              removeVillage={props.removeVillage}
+              removeZone={props.removeZone}
             />
           ))}
         </div>
