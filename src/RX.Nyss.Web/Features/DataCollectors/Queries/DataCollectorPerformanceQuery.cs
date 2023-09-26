@@ -7,6 +7,7 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.DataContracts;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -75,7 +76,9 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var totalRows = await dataCollectors.CountAsync(cancellationToken);
                 var epiDateRange = _dateTimeProvider.GetEpiDateRange(fromDate, previousEpiWeekDate, epiWeekStartDay).ToList();
 
-                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, fromDate, currentDate, cancellationToken);
+                var dcTraining = request.Filter.TrainingStatus == TrainingStatusDto.Trained;
+
+                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, fromDate, currentDate, cancellationToken, dcTraining);
 
                 var dataCollectorCompleteness = _dataCollectorPerformanceService.GetDataCollectorCompleteness(dataCollectorsWithReportsData, epiDateRange, epiWeekStartDay)
                     .Reverse()
