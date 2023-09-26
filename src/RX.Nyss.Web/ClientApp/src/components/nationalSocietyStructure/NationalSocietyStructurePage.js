@@ -8,6 +8,7 @@ import { strings, stringKeys } from "../../strings";
 import { NationalSocietyStructureTree } from "./NationalSocietyStructureTree";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
 import * as roles from "../../authentication/roles";
+import { useSelector } from "react-redux";
 
 const NationalSocietyStructurePageComponent = (props) => {
   const {
@@ -30,6 +31,9 @@ const NationalSocietyStructurePageComponent = (props) => {
       !props.nationalSocietyHasCoordinator
       || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)
     );
+
+  const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
+
 
   if(!regions) return null;
 
@@ -87,6 +91,7 @@ const NationalSocietyStructurePageComponent = (props) => {
         activeParentLocationId={nationalSocietyId}
         manageLocation={manageLocation}
         canModify={canModify}
+        rtl={useRtlDirection}
         />
     </Fragment>
   );

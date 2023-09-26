@@ -47,7 +47,7 @@ export const NationalSocietyLocationListItem = (props) => {
       fontWeight: "bold",
     },
     iconExpanded: {
-      transform: "rotate(-90deg)",
+      transform: props.rtl ? "rotate(90deg)" : "rotate(-90deg)",
     },
     text: {
       fontSize: 16,
@@ -58,7 +58,7 @@ export const NationalSocietyLocationListItem = (props) => {
       color: "#D52B1E",
     },
     editContainer: {
-      display: "flex"
+      display: "flex",
     },
   }));
   const classes = useStyles();
@@ -85,6 +85,8 @@ export const NationalSocietyLocationListItem = (props) => {
   const handleSave = (newName) => {
     editLocation(props.location.id, newName);
     setIsEditing(false);
+    props.setIsEditingLocations(false)
+    props.setActiveIndex(null);
   }
 
 
@@ -113,7 +115,7 @@ export const NationalSocietyLocationListItem = (props) => {
             )}
             {props.isEditingLocations && (
               <ListItemSecondaryAction className={classes.editContainer}>
-                <IconButton size="small" id={`${props.locationType}_${props.location.id}_edit`} onClick={handleEdit}>
+                <IconButton size="small" onClick={handleEdit}>
                   <EditIcon style={{color: "#D52B1E"}}/>
                 </IconButton>
                 <ConfirmationAction
@@ -148,6 +150,7 @@ export const NationalSocietyLocationListItem = (props) => {
             manageLocation={props.manageLocation}
             activeParentLocationId={activeParentLocationId}
             canModify={props.canModify}
+            rtl={props.rtl}
           />
         </Collapse>
       </div>

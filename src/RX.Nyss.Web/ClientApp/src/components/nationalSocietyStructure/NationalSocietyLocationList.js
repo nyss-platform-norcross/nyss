@@ -7,6 +7,7 @@ import { Typography, Button, Grid } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 import EditIcon from '@material-ui/icons/Edit';
+import { strings, stringKeys } from "../../strings";
 
 export const NationalSocietyLocationList = (props) => {
   const [activeIndex, setActiveIndex] = useState("");
@@ -66,7 +67,10 @@ export const NationalSocietyLocationList = (props) => {
     },
     button: {
       marginTop: 10,
-      alignSelf: "center",
+    },
+    icon: {
+      marginLeft: "4px",
+      marginRight: 0
     },
     addLocationField: {
       marginTop: 10,
@@ -108,6 +112,7 @@ export const NationalSocietyLocationList = (props) => {
               locationType={props.locationType}
               manageLocation={props.manageLocation}
               canModify={props.canModify}
+              rtl={props.rtl}
             />
           ))}
         </div>
@@ -123,17 +128,17 @@ export const NationalSocietyLocationList = (props) => {
             <>
               {hasLocations && (
                 <Grid item>
-                  <Button startIcon={<EditIcon />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit`}</Button>
+                  <Button startIcon={<EditIcon className={`${props.rtl && classes.icon}`} />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit`}</Button>
                 </Grid>
               )}
               <Grid item>
-                <Button startIcon={<AddIcon />} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType}`}</Button>
+                <Button startIcon={<AddIcon className={`${props.rtl && classes.icon}`}/>} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType}`}</Button>
               </Grid>
             </>
           )}
           {props.canModify && isEditingLocations && (
             <Grid item>
-              <Button className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>Cancel</Button>
+              <Button className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{strings(stringKeys.form.cancel)}</Button>
             </Grid>
           )}
         </Grid>
