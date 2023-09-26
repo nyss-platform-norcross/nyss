@@ -50,7 +50,7 @@ export const NationalSocietyLocationListItem = (props) => {
       transform: props.rtl ? "rotate(90deg)" : "rotate(-90deg)",
     },
     text: {
-      fontSize: 16,
+      fontSize: "1rem",
       color: theme.palette.text.primary,
     },
     icon: {

@@ -24,8 +24,9 @@ export const NationalSocietyLocationList = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       width: "100%",
-      maxWidth: 300,
+      maxWidth: 250,
       backgroundColor: theme.palette.background.paper,
+      marginBottom: 50
     },
     nested: {
       width: "100%",
@@ -37,7 +38,7 @@ export const NationalSocietyLocationList = (props) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 20,
+      fontSize: 16,
       color: theme.palette.text.primary,
     },
     background: {
@@ -46,7 +47,7 @@ export const NationalSocietyLocationList = (props) => {
       justifyContent: "center",
       backgroundColor: "#F1F1F1",
       width: "100%",
-      borderRadius: "8px",
+      borderRadius: 2,
     },
     listContainer: {
       borderLeft: borderStyle,
@@ -67,6 +68,7 @@ export const NationalSocietyLocationList = (props) => {
     },
     button: {
       marginTop: 10,
+      fontSize: "1rem"
     },
     icon: {
       marginLeft: "4px",
