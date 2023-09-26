@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         }
 
         public async Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors,
-            DateTime fromDate, DateTime toDate, CancellationToken cancellationToken, bool dataCollectorIsTraining) =>
+            DateTime fromDate, DateTime toDate, CancellationToken cancellationToken, bool dcIsTraining) =>
             await dataCollectors
                 .Select(dc => new DataCollectorWithRawReportData
                 {
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     PhoneNumber = dc.PhoneNumber,
                     VillageName = dc.DataCollectorLocations.First().Village.Name,
                     CreatedAt = dc.CreatedAt,
-                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value == dataCollectorIsTraining
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value == dcIsTraining
                             && r.ReceivedAt >= fromDate && r.ReceivedAt <= toDate)
                         .Select(r => new RawReportData
                         {
