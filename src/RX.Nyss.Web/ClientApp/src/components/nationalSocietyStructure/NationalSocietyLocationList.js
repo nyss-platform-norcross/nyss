@@ -54,10 +54,6 @@ export const NationalSocietyLocationList = (props) => {
       borderRight: borderStyle,
       borderTop: borderStyle,
     },
-    noLocationsContainer: {
-      display: "flex",
-      flexDirection: "column",
-    },
     noLocationsTextContainer: {
       border: borderStyle,
       minHeight: 54,
@@ -78,7 +74,6 @@ export const NationalSocietyLocationList = (props) => {
       marginTop: 10,
       marginRight: 5,
       marginLeft: 5,
-      alignSelf: "center",
     }
   }));
 
