@@ -148,19 +148,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
             dataCollectors.Count(dc => DataCollectorExistedInWeek(epiDate, dc.CreatedAt, epiWeekStartDay)
                 && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList(), epiWeekStartDay));
 
-        private ReportingStatus GetDataCollectorStatus(IGrouping<EpiDate, RawReportData> grouping)
-        {
-            // Not reporting: if grouping is null or empty list.
-
-            //  ReportingWithErrors: If non-empty grouping exists and any report is not valid.
-
-            // ReportingCorrectly: If non-empty grouping exists and data collector is in training AND all reports are valid. AND no previous
-            //                     If
-            return grouping != null && grouping.Any()
+        private ReportingStatus GetDataCollectorStatus(IGrouping<EpiDate, RawReportData> grouping) =>
+            grouping != null && grouping.Any()
                 ? grouping.All(x => x.IsValid ) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
                 : ReportingStatus.NotReporting;
-
-        }
 
         private bool DataCollectorExistedInWeek(EpiDate date, DateTime dataCollectorCreated, DayOfWeek epiWeekStartDay)
         {
