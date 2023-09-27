@@ -97,7 +97,7 @@ export const NationalSocietyLocationList = (props) => {
           component="div"
           id={`${props.locationType}_list`}
         >
-          <div className={classes.background}>{`${props.locationType.charAt(0).toUpperCase() + props.locationType.slice(1)}s`}</div>
+          <div className={classes.background}>{strings(stringKeys.nationalSociety.structure.locationHeader[props.locationType])}</div>
         </ListSubheader>
       }
     >
@@ -130,11 +130,11 @@ export const NationalSocietyLocationList = (props) => {
             <>
               {hasLocations && (
                 <Grid item>
-                  <Button startIcon={<EditIcon className={`${props.rtl && classes.icon}`} />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{`Edit`}</Button>
+                  <Button startIcon={<EditIcon className={`${props.rtl && classes.icon}`} />} className={classes.button} variant="outlined" color="primary" onClick={() => setIsEditingLocations(!isEditingLocations)}>{strings(stringKeys.common.buttons.edit)}</Button>
                 </Grid>
               )}
               <Grid item>
-                <Button startIcon={<AddIcon className={`${props.rtl && classes.icon}`}/>} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{`Add ${lowerCaseLocationType}`}</Button>
+                <Button startIcon={<AddIcon className={`${props.rtl && classes.icon}`}/>} className={classes.button} variant="contained" color="primary" onClick={() => setIsCreatingLocation(!isCreatingLocation)}>{props.manageLocation[props.locationType].addLocationLabel}</Button>
               </Grid>
             </>
           )}
