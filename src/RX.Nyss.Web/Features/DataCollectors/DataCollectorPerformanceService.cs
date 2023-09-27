@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, DateTime fromDate,
             DateTime toDate, CancellationToken cancellationToken, TrainingStatusDto dataCollectorTrainingStatus);
 
-        Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, CancellationToken cancellationToken);
+        Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, CancellationToken cancellationToken, TrainingStatusDto dataCollectorTrainingStatus);
     }
 
     public class DataCollectorPerformanceService : IDataCollectorPerformanceService
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 }).ToListAsync(cancellationToken);
 
         public async Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(
-            IQueryable<DataCollector> dataCollectors, CancellationToken cancellationToken) =>
+            IQueryable<DataCollector> dataCollectors, CancellationToken cancellationToken, TrainingStatusDto dataCollectorTrainingStatus) =>
             await dataCollectors
                 .Select(dc => new DataCollectorWithRawReportData
                 {
@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     DistrictName = dc.DataCollectorLocations.First().Village.District.Name,
                     RegionName = dc.DataCollectorLocations.First().Village.District.Region.Name,
                     CreatedAt = dc.CreatedAt,
-                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value == IsDataCollectorInTraining(dataCollectorTrainingStatus))
                         .Select(r => new RawReportData
                         {
                             IsValid =  r.ReportId.HasValue,

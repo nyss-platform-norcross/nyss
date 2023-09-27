@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var currentDate = _dateTimeProvider.UtcNow;
                 var epiDateRange = _dateTimeProvider.GetEpiDateRange(projectStartDate, currentDate, epiWeekStartDay).ToList();
 
-                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, cancellationToken );
+                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, cancellationToken, request.Filter.TrainingStatus);
 
                 var dataCollectorPerformance = _dataCollectorPerformanceService.GetDataCollectorPerformance(dataCollectorsWithReportsData, currentDate, epiDateRange, epiWeekStartDay);
 
