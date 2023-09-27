@@ -12,18 +12,18 @@ import { RcIcon } from '../icons/RcIcon';
 
 const useStyles = makeStyles((theme) => ({
   SideMenuIcon: {
-    fontSize: '26px',
-    color: '#4F4F4F',
+    fontSize: '22px',
+    color: '#1E1E1E',
   },
   SideMenuIconActive: {
     color: '#D52B1E',
   },
   ListItemIconWrapper: {
     minWidth: '20px',
-    marginRight: '5px',
   },
   SideMenuText: {
-    color: '#4F4F4F',
+    color: '#1E1E1E',
+    fontSize: '16px',
   },
   ListItemActive: {
     "& span": {
@@ -100,7 +100,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
                     <ListItemIcon className={classes.ListItemIconWrapper}>
                       {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
                     </ListItemIcon>
-                    <ListItemText primary={item.title} primaryTypographyProps={{'className': classes.SideMenuText }} />
+                    <ListItemText disablePadding primary={item.title} primaryTypographyProps={{'className': classes.SideMenuText }} />
                   </ListItem>
                 )
               })}
