@@ -21,15 +21,9 @@ export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, a
     setValue("");
   };
 
-  const handleCancel = (e) => {
-    e.stopPropagation();
-    onClose();
-  };
-
   const button = () => (
     <InputAdornment position="end">
-      {onClose && <Button onClick={handleCancel}>{strings(stringKeys.form.cancel)}</Button>}
-      <Button onClick={stopPropagation} onMouseDown={event => event.preventDefault()} type="submit" color="primary">{strings(stringKeys.form.inlineSave)}</Button>
+      <Button onClick={stopPropagation} onMouseDown={event => event.preventDefault()} type="submit" color="primary">{strings(stringKeys.common.buttons.update)}</Button>
     </InputAdornment>
   );
 
@@ -63,11 +57,11 @@ export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, a
       value={value}
       onChange={e => setValue(e.target.value)}
       onClick={stopPropagation}
-      inputProps={{
-        style: {
-          fontSize: "16px"
-        }
-      }}
+      // inputProps={{
+      //   style: {
+      //     fontSize: "16px"
+      //   }
+      // }}
       InputProps={{
         endAdornment: isFocused ? button() : null
       }} />
