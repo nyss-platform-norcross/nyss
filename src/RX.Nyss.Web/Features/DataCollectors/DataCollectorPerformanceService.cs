@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             List<EpiDate> epiDateRange, DayOfWeek epiWeekStartDay);
 
         Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, DateTime fromDate,
-            DateTime toDate, CancellationToken cancellationToken, bool dataCollectorIsTraining);
+            DateTime toDate, CancellationToken cancellationToken, TrainingStatusDto dataCollectorTrainingStatus);
 
         Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors, CancellationToken cancellationToken);
     }
@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         }
 
         public async Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IQueryable<DataCollector> dataCollectors,
-            DateTime fromDate, DateTime toDate, CancellationToken cancellationToken, bool dcIsTraining) =>
+            DateTime fromDate, DateTime toDate, CancellationToken cancellationToken, TrainingStatusDto dataCollectorTrainingStatus) =>
             await dataCollectors
                 .Select(dc => new DataCollectorWithRawReportData
                 {
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     PhoneNumber = dc.PhoneNumber,
                     VillageName = dc.DataCollectorLocations.First().Village.Name,
                     CreatedAt = dc.CreatedAt,
-                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value == dcIsTraining
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && r.IsTraining.Value == IsDataCollectorInTraining(dataCollectorTrainingStatus)
                             && r.ReceivedAt >= fromDate && r.ReceivedAt <= toDate)
                         .Select(r => new RawReportData
                         {
@@ -147,6 +147,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private int TotalDataCollectorsDeployedInWeek(EpiDate epiDate, DayOfWeek epiWeekStartDay, IEnumerable<DataCollectorWithRawReportData> dataCollectors) =>
             dataCollectors.Count(dc => DataCollectorExistedInWeek(epiDate, dc.CreatedAt, epiWeekStartDay)
                 && DataCollectorWasDeployedInWeek(epiDate, dc.DatesNotDeployed.ToList(), epiWeekStartDay));
+
+        private bool IsDataCollectorInTraining(TrainingStatusDto dataCollectorTrainingStatus) => dataCollectorTrainingStatus == TrainingStatusDto.InTraining;
 
         private ReportingStatus GetDataCollectorStatus(IGrouping<EpiDate, RawReportData> grouping) =>
             grouping != null && grouping.Any()

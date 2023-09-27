@@ -76,9 +76,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Queries
                 var totalRows = await dataCollectors.CountAsync(cancellationToken);
                 var epiDateRange = _dateTimeProvider.GetEpiDateRange(fromDate, previousEpiWeekDate, epiWeekStartDay).ToList();
 
-                var dcIsTraining = request.Filter.TrainingStatus == TrainingStatusDto.InTraining;
-
-                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, fromDate, currentDate, cancellationToken, dcIsTraining);
+                var dataCollectorsWithReportsData = await _dataCollectorPerformanceService.GetDataCollectorsWithReportData(dataCollectors, fromDate, currentDate, cancellationToken, request.Filter.TrainingStatus);
 
                 var dataCollectorCompleteness = _dataCollectorPerformanceService.GetDataCollectorCompleteness(dataCollectorsWithReportsData, epiDateRange, epiWeekStartDay)
                     .Reverse()
