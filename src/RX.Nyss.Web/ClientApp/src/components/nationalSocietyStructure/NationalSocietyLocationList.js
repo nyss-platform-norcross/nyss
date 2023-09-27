@@ -71,8 +71,8 @@ export const NationalSocietyLocationList = (props) => {
       fontSize: "1rem"
     },
     icon: {
-      marginLeft: "4px",
-      marginRight: 0
+      marginLeft: 8,
+      marginRight: -8
     },
     addLocationField: {
       marginTop: 10,
