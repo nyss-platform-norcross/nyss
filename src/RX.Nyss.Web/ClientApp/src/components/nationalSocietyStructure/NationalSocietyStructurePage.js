@@ -12,11 +12,6 @@ import { useSelector } from "react-redux";
 
 const NationalSocietyStructurePageComponent = (props) => {
   const {
-    regions,
-    districts,
-    villages,
-    zones,
-    isFetching,
     openStructure,
     nationalSocietyId,
   } = props;
@@ -35,7 +30,7 @@ const NationalSocietyStructurePageComponent = (props) => {
   const useRtlDirection = useSelector(state => state.appData.user.languageCode === 'ar');
 
 
-  if(!regions) return null;
+  if(!props.regions) return null;
 
   const manageLocation = {
     region: {
@@ -95,42 +90,6 @@ const NationalSocietyStructurePageComponent = (props) => {
         />
     </Fragment>
   );
-
-  // return (
-  //   <Fragment>
-  //     {!props.nationalSocietyIsArchived && (
-  //       <Typography variant="body1" style={{ marginBottom: 50 }}>
-  //         {strings(stringKeys.nationalSociety.structure.introduction)}
-  //       </Typography>
-  //     )}
-
-  //     <NationalSocietyStructureTree
-  //       regions={regions}
-  //       districts={districts}
-  //       villages={villages}
-  //       zones={zones}
-  //       isFetching={isFetching}
-  //       nationalSocietyId={nationalSocietyId}
-  //       nationalSocietyIsArchived={props.nationalSocietyIsArchived}
-  //       nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
-  //       callingUserRoles={props.callingUserRoles}
-  //       expandedItems={props.expandedItems}
-  //       updateExpandedItems={props.updateExpandedItems}
-  //       createRegion={props.createRegion}
-  //       editRegion={props.editRegion}
-  //       removeRegion={props.removeRegion}
-  //       createDistrict={props.createDistrict}
-  //       editDistrict={props.editDistrict}
-  //       removeDistrict={props.removeDistrict}
-  //       createVillage={props.createVillage}
-  //       editVillage={props.editVillage}
-  //       removeVillage={props.removeVillage}
-  //       createZone={props.createZone}
-  //       editZone={props.editZone}
-  //       removeZone={props.removeZone}
-  //     />
-  //   </Fragment>
-  // );
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -140,7 +99,6 @@ const mapStateToProps = (state, ownProps) => ({
   districts: state.nationalSocietyStructure.districts,
   villages: state.nationalSocietyStructure.villages,
   zones: state.nationalSocietyStructure.zones,
-  expandedItems: state.nationalSocietyStructure.expandedItems,
   nationalSocietyIsArchived:
     state.appData.siteMap.parameters.nationalSocietyIsArchived,
   nationalSocietyHasCoordinator:
@@ -150,8 +108,6 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openStructure: nationalSocietyStructureActions.openStructure.invoke,
-
-  updateExpandedItems: nationalSocietyStructureActions.updateExpandedItems,
 
   createRegion: nationalSocietyStructureActions.createRegion.invoke,
   editRegion: nationalSocietyStructureActions.editRegion.invoke,

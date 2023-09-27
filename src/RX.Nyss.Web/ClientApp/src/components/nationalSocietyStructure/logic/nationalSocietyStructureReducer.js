@@ -18,10 +18,7 @@ export function nationalSocietyStructureReducer(state = initialState.nationalSoc
       return { ...state, isFetching: false };
 
     case actions.CREATE_REGION.SUCCESS:
-      return { ...state, regions: [...state.regions, action.region], expandedItems: [...state.expandedItems, "region_" + action.region.id] };
-
-    case actions.UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS:
-      return { ...state, expandedItems: action.items };
+      return { ...state, regions: [...state.regions, action.region] };
 
     case actions.REMOVE_REGION.SUCCESS:
       return { ...state, regions: removeFromArray(state.regions, item => item.id === action.id) };
@@ -30,7 +27,7 @@ export function nationalSocietyStructureReducer(state = initialState.nationalSoc
       return { ...state, regions: assignInArray(state.regions, item => item.id === action.id, item => ({ ...item, name: action.name })) };
 
     case actions.CREATE_DISTRICT.SUCCESS:
-      return { ...state, districts: [...state.districts, action.district], expandedItems: [...state.expandedItems, "district_" + action.district.id] };
+      return { ...state, districts: [...state.districts, action.district] };
 
     case actions.REMOVE_DISTRICT.SUCCESS:
       return { ...state, districts: removeFromArray(state.districts, item => item.id === action.id) };
@@ -39,7 +36,7 @@ export function nationalSocietyStructureReducer(state = initialState.nationalSoc
       return { ...state, districts: assignInArray(state.districts, item => item.id === action.id, item => ({ ...item, name: action.name })) };
 
     case actions.CREATE_VILLAGE.SUCCESS:
-      return { ...state, villages: [...state.villages, action.village], expandedItems: [...state.expandedItems, "village_" + action.village.id] };
+      return { ...state, villages: [...state.villages, action.village] };
 
     case actions.REMOVE_VILLAGE.SUCCESS:
       return { ...state, villages: removeFromArray(state.villages, item => item.id === action.id) };
