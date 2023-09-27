@@ -59,6 +59,7 @@ export const NationalSocietyLocationListItem = (props) => {
     },
     editContainer: {
       display: "flex",
+      right: props.rtl ? 180 : "none"
     },
   }));
   const classes = useStyles();
