@@ -40,13 +40,12 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
     );
     const localDate = dayjs();
     const utcOffset = Math.floor(localDate.utcOffset() / 60);
-    let endDate = localDate.add(-utcOffset, "hour");
-    endDate = endDate.set("hour", 0);
-    endDate = endDate.set("minute", 0);
-    endDate = endDate.set("second", 0);
-    const filters = (yield select(
-      (state) => state.nationalSocietyDashboard.filters
-    )) || {
+    let endDate = localDate.add(-utcOffset, 'hour');
+    endDate = endDate.set('hour', 0);
+    endDate = endDate.set('minute', 0);
+    endDate = endDate.set('second', 0);
+    const filters =
+    {
       healthRisks: [],
       organizationId: null,
       locations: null,

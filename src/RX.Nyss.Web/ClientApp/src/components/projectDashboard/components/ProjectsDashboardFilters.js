@@ -22,14 +22,13 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
-  Checkbox
 } from "@material-ui/core";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { Fragment } from "react";
 import { DataConsumer } from "../../../authentication/roles";
-import MultiSelectField from "../../forms/MultiSelectField";
 import LocationFilter from "../../common/filters/LocationFilter";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
+import { HealthRiskFilter } from "../../common/filters/HealthRiskFilter";
 
 export const ProjectsDashboardFilters = ({
   filters,
@@ -42,10 +41,12 @@ export const ProjectsDashboardFilters = ({
   isFilterExpanded,
   setIsFilterExpanded,
   userRoles,
-  rtl
+  rtl,
 }) => {
   const [value, setValue] = useState(filters);
-  const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(
+    strings(stringKeys.filters.area.all)
+  );
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   const updateValue = (change) => {
@@ -54,14 +55,33 @@ export const ProjectsDashboardFilters = ({
       ...change,
     };
 
-    setValue(newValue);
+    setValue((prev) => ({ ...prev, ...change }));
     return newValue;
   };
 
+  // useEffect which runs on mount and when locations are added, edited or removed. Updates locations in the filter state in order to avoid mismatch between locations and filtered locations
   useEffect(() => {
-    const label = !value || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(value.locations, locations.regions, false);
+    if (!locations) return;
+
+    const filterValue = {
+      regionIds: locations.regions.map((region) => region.id),
+      districtIds: locations.regions.map((region) => region.districts.map((district) => district.id)).flat(),
+      villageIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.id))).flat(2),
+      zoneIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.zones.map((zone) => zone.id)))).flat(3),
+      includeUnknownLocation: false,
+    }
+
+    updateValue({ locations: filterValue });
+  }, [locations]);
+
+  // Sets label for location filter to 'All' or "Region (+n)"
+  useEffect(() => {
+    const label =
+      !value || !locations || !value.locations || value.locations.regionIds.length === 0
+        ? strings(stringKeys.filters.area.all)
+        : renderFilterLabel(value.locations, locations.regions, false);
     setLocationsFilterLabel(label);
-  }, [value, locations]);
+  }, [value.locations]);
 
   const handleLocationChange = (newValue) => {
     onChange(
@@ -71,12 +91,8 @@ export const ProjectsDashboardFilters = ({
     );
   };
 
-  const handleHealthRiskChange = (event) => 
-    onChange(
-      updateValue({
-        healthRisks: typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
-      })
-    );
+  const handleHealthRiskChange = (filteredHealthRisks) =>
+    onChange(updateValue({ healthRisks: filteredHealthRisks }));
 
   const handleOrganizationChange = (event) =>
     onChange(
@@ -120,11 +136,9 @@ export const ProjectsDashboardFilters = ({
     ),
   };
 
-  const renderHealthRiskValues = (selectedIds) =>
-    selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.dashboard.filters.healthRiskAll)
-      : selectedIds.map(id => healthRisks.find(hr => hr.id === id).name).join(',');
-  const allLocationsSelected = () => !value.locations || value.locations.regionIds.length === locations.regions.length;
+  const allLocationsSelected = () =>
+    !value.locations ||
+    value.locations.regionIds.length === locations.regions.length;
 
   if (!value) {
     return null;
@@ -137,11 +151,7 @@ export const ProjectsDashboardFilters = ({
         <CardContent className={styles.collapsedFilterBar}>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <CardHeader
-                title={strings(
-                  stringKeys.dashboard.filters.title
-                )}
-              />
+              <CardHeader title={strings(stringKeys.dashboard.filters.title)} />
             </Grid>
             {!isFilterExpanded && (
               <Fragment>
@@ -161,13 +171,8 @@ export const ProjectsDashboardFilters = ({
                     onClick={() => setIsFilterExpanded(!isFilterExpanded)}
                     label={
                       value.groupingType === "Day"
-                        ? strings(
-                            stringKeys.dashboard.filters.timeGroupingDay
-                          )
-                        : strings(
-                            stringKeys.dashboard.filters
-                              .timeGroupingWeek
-                          )
+                        ? strings(stringKeys.dashboard.filters.timeGroupingDay)
+                        : strings(stringKeys.dashboard.filters.timeGroupingWeek)
                     }
                   />
                 </Grid>
@@ -284,20 +289,27 @@ export const ProjectsDashboardFilters = ({
               value.trainingStatus !== "Trained" && (
                 <Grid item>
                   <Chip
-                    label={strings(stringKeys.dataCollectors.constants.trainingStatus.InTraining)}
+                    label={strings(
+                      stringKeys.dataCollectors.constants.trainingStatus
+                        .InTraining
+                    )}
                     onDelete={() =>
                       onChange(
                         updateValue({
                           ...value,
-                          trainingStatus: "Trained"
+                          trainingStatus: "Trained",
                         })
                       )
                     }
                     onClick={() => setIsFilterExpanded(!isFilterExpanded)}
                   />
                 </Grid>
-              )}              
-            <Grid item className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ''}`}>
+              )}
+            <Grid
+              item
+              className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ""
+                }`}
+            >
               <IconButton
                 data-expanded={isFilterExpanded}
                 onClick={() => setIsFilterExpanded(!isFilterExpanded)}
@@ -316,9 +328,7 @@ export const ProjectsDashboardFilters = ({
         {!isSmallScreen && (
           <Grid container spacing={2}>
             <CardHeader
-              title={strings(
-                stringKeys.dashboard.filters.title
-              )}
+              title={strings(stringKeys.dashboard.filters.title)}
               className={styles.filterTitle}
             />
           </Grid>
@@ -375,8 +385,8 @@ export const ProjectsDashboardFilters = ({
 
             <Grid item>
               <LocationFilter
-                locations={locations}
-                value={value.locations}
+                allLocations={locations}
+                filteredLocations={value.locations}
                 filterLabel={locationsFilterLabel}
                 onChange={handleLocationChange}
                 rtl={rtl}
@@ -384,28 +394,18 @@ export const ProjectsDashboardFilters = ({
             </Grid>
 
             <Grid item>
-              <MultiSelectField
-                name="healthRisks"
-                label={strings(stringKeys.dashboard.filters.healthRisk)}
-                className={styles.filterItem}
+              <HealthRiskFilter
+                allHealthRisks={healthRisks}
+                filteredHealthRisks={value.healthRisks}
                 onChange={handleHealthRiskChange}
-                value={value.healthRisks}
-                renderValues={renderHealthRiskValues}>
-                  {healthRisks.map(hr => (
-                    <MenuItem key={hr.id} value={hr.id}>
-                      <Checkbox checked={value.healthRisks.indexOf(hr.id) > -1} />
-                      <span>{hr.name}</span>
-                    </MenuItem>
-                  ))}
-              </MultiSelectField>
+                updateValue={updateValue}
+              />
             </Grid>
 
             <Grid item>
               <TextField
                 select
-                label={strings(
-                  stringKeys.dashboard.filters.reportsType
-                )}
+                label={strings(stringKeys.dashboard.filters.reportsType)}
                 onChange={handleDataCollectorTypeChange}
                 value={value.dataCollectorType || "all"}
                 className={styles.filterItem}
@@ -419,24 +419,20 @@ export const ProjectsDashboardFilters = ({
                   {collectionsTypes["dataCollectionPoint"]}
                 </MenuItem>
               </TextField>
-            </Grid>          
+            </Grid>
 
             {organizations.length > 1 && (
               <Grid item>
                 <TextField
                   select
-                  label={strings(
-                    stringKeys.dashboard.filters.organization
-                  )}
+                  label={strings(stringKeys.dashboard.filters.organization)}
                   onChange={handleOrganizationChange}
                   value={value.organizationId || 0}
                   className={styles.filterItem}
                   InputLabelProps={{ shrink: true }}
                 >
                   <MenuItem value={0}>
-                    {strings(
-                      stringKeys.dashboard.filters.organizationsAll
-                    )}
+                    {strings(stringKeys.dashboard.filters.organizationsAll)}
                   </MenuItem>
 
                   {organizations.map((organization) => (
@@ -472,14 +468,15 @@ export const ProjectsDashboardFilters = ({
                   <FormControlLabel
                     className={styles.radio}
                     label={strings(
-                      stringKeys.dataCollectors.constants.trainingStatus.InTraining
+                      stringKeys.dataCollectors.constants.trainingStatus
+                        .InTraining
                     )}
                     value={"InTraining"}
                     control={<Radio color="primary" />}
                   />
                 </RadioGroup>
               </FormControl>
-            </Grid>            
+            </Grid>
 
             {!userRoles.some((r) => r === DataConsumer) && (
               <Grid item>

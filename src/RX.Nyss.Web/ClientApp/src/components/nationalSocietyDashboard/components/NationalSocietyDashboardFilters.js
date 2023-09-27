@@ -1,5 +1,5 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DatePicker } from "../../forms/DatePicker";
 import { strings, stringKeys } from "../../../strings";
 import {
@@ -18,7 +18,6 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Checkbox,
 } from "@material-ui/core";
 import DateRange from "@material-ui/icons/DateRange";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -27,9 +26,9 @@ import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 import { Fragment } from "react";
 import { ReportStatusFilter } from "../../common/filters/ReportStatusFilter";
 import { DataConsumer } from "../../../authentication/roles";
-import MultiSelectField from "../../forms/MultiSelectField";
 import LocationFilter from "../../common/filters/LocationFilter";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
+import { HealthRiskFilter } from "../../common/filters/HealthRiskFilter";
 
 export const NationalSocietyDashboardFilters = ({
   filters,
@@ -42,6 +41,9 @@ export const NationalSocietyDashboardFilters = ({
   rtl,
 }) => {
   const [value, setValue] = useState(filters);
+  const [locationsFilterLabel, setLocationsFilterLabel] = useState(
+    strings(stringKeys.filters.area.all)
+  );
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
@@ -50,10 +52,33 @@ export const NationalSocietyDashboardFilters = ({
       ...value,
       ...change,
     };
-
-    setValue(newValue);
+    setValue((prev) => ({ ...prev, ...change }));
     return newValue;
   };
+
+  // useEffect which runs on mount and when locations are added, edited or removed. Updates locations in the filter state in order to avoid mismatch between locations and filtered locations
+  useEffect(() => {
+    if (!locations) return;
+
+    const filterValue = {
+      regionIds: locations.regions.map((region) => region.id),
+      districtIds: locations.regions.map((region) => region.districts.map((district) => district.id)).flat(),
+      villageIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.id))).flat(2),
+      zoneIds: locations.regions.map((region) => region.districts.map((district) => district.villages.map((village) => village.zones.map((zone) => zone.id)))).flat(3),
+      includeUnknownLocation: false,
+    }
+
+    updateValue({ locations: filterValue });
+  }, [locations]);
+
+  // Sets label for location filter to 'All' or "Region (+n)"
+  useEffect(() => {
+    const label =
+      !value || !locations || !value.locations || value.locations.regionIds.length === 0
+        ? strings(stringKeys.filters.area.all)
+        : renderFilterLabel(value.locations, locations.regions, false);
+    setLocationsFilterLabel(label);
+  }, [value.locations]);
 
   const collectionsTypes = {
     all: strings(stringKeys.dashboard.filters.allReportsType),
@@ -68,15 +93,8 @@ export const NationalSocietyDashboardFilters = ({
   const handleLocationChange = (locations) => {
     onChange(updateValue({ locations: locations }));
   };
-  const handleHealthRiskChange = (event) =>
-    onChange(
-      updateValue({
-        healthRisks:
-          typeof event.target.value === "string"
-            ? event.target.value.split(",")
-            : event.target.value,
-      })
-    );
+  const handleHealthRiskChange = (filteredHealthRisks) =>
+    onChange(updateValue({ healthRisks: filteredHealthRisks }));
 
   const handleOrganizationChange = (event) =>
     onChange(
@@ -107,20 +125,10 @@ export const NationalSocietyDashboardFilters = ({
       })
     );
 
-  const renderHealthRiskValues = (selectedIds) =>
-    selectedIds.length < 1 || selectedIds.length === healthRisks.length
-      ? strings(stringKeys.dashboard.filters.healthRiskAll)
-      : selectedIds
-          .map((id) => healthRisks.find((hr) => hr.id === id).name)
-          .join(",");
   const allLocationsSelected = () =>
     !value.locations ||
     value.locations.regionIds.length === locations.regions.length;
 
-  const renderLocationLabel = () =>
-    !locations
-      ? strings(stringKeys.filters.area.all)
-      : renderFilterLabel(value.locations, locations.regions, false);
 
   if (!value) {
     return null;
@@ -163,7 +171,7 @@ export const NationalSocietyDashboardFilters = ({
             {!isFilterExpanded && !allLocationsSelected() && (
               <Grid item>
                 <Chip
-                  label={renderLocationLabel()}
+                  label={locationsFilterLabel}
                   onClick={() => setIsFilterExpanded(!isFilterExpanded)}
                 />
               </Grid>
@@ -248,9 +256,8 @@ export const NationalSocietyDashboardFilters = ({
               )}
             <Grid
               item
-              className={`${styles.expandFilterButton} ${
-                rtl ? styles.rtl : ""
-              }`}
+              className={`${styles.expandFilterButton} ${rtl ? styles.rtl : ""
+                }`}
             >
               <IconButton
                 data-expanded={isFilterExpanded}
@@ -326,37 +333,22 @@ export const NationalSocietyDashboardFilters = ({
 
             <Grid item>
               <LocationFilter
-                value={value.locations}
-                filterLabel={renderLocationLabel()}
-                locations={locations}
+                filteredLocations={value.locations}
+                filterLabel={locationsFilterLabel}
+                allLocations={locations}
                 onChange={handleLocationChange}
                 rtl={rtl}
               />
             </Grid>
 
             <Grid item>
-              <MultiSelectField
-                name="healthRisks"
-                label={strings(stringKeys.dashboard.filters.healthRisk)}
+              <HealthRiskFilter
+                allHealthRisks={healthRisks}
+                filteredHealthRisks={value.healthRisks}
                 onChange={handleHealthRiskChange}
-                value={value.healthRisks}
-                renderValues={renderHealthRiskValues}
-                className={styles.filterItem}
-              >
-                {healthRisks.map((healthRisk) => (
-                  <MenuItem
-                    key={`filter_healthRisk_${healthRisk.id}`}
-                    value={healthRisk.id}
-                  >
-                    <Checkbox
-                      checked={value.healthRisks.indexOf(healthRisk.id) > -1}
-                    />
-                    <span>{healthRisk.name}</span>
-                  </MenuItem>
-                ))}
-              </MultiSelectField>
+                updateValue={updateValue}
+              />
             </Grid>
-
             <Grid item>
               <TextField
                 select
@@ -416,6 +408,6 @@ export const NationalSocietyDashboardFilters = ({
           </Grid>
         </CardContent>
       </ConditionalCollapse>
-    </Card>
+    </Card >
   );
 };
