@@ -53,10 +53,10 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
     onChange(updateValue({ status: event.target.value }));
   }
 
-  const handleDateFromChange = (date) => 
+  const handleDateFromChange = (date) =>
     onChange(updateValue({ startDate: convertToUtc(date) }));
 
-  const handleDateToChange = (date) => 
+  const handleDateToChange = (date) =>
     onChange(updateValue({ endDate: convertToUtc(date) }));
 
   if (!value || !healthRisks) {
@@ -91,8 +91,8 @@ export const AlertsFilters = ({ filters, filtersData, onChange, rtl }) => {
           </Grid>
           <Grid item>
             <LocationFilter
-              value={value.locations}
-              locations={locations}
+              filteredLocations={value.locations}
+              allLocations={locations}
               filterLabel={locationsFilterLabel}
               onChange={handleLocationChange}
               rtl={rtl}
