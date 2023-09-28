@@ -5,7 +5,6 @@ import { withLayout } from "../../utils/layout";
 import Layout from "../layout/Layout";
 import { Typography } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
-import { NationalSocietyStructureTree } from "./NationalSocietyStructureTree";
 import { NationalSocietyLocationList } from "./NationalSocietyLocationList";
 import * as roles from "../../authentication/roles";
 import { useSelector } from "react-redux";
