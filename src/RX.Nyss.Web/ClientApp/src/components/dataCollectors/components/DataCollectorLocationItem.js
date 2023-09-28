@@ -133,10 +133,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
   }
 
   const renderCollapsedLocationData = () => {
-    const region = regions.find(r => r.id === parseInt(form.fields[`locations_${locationNumber}_regionId`].value));
-    const district = districts.find(d => d.id === parseInt(form.fields[`locations_${locationNumber}_districtId`].value));
-    const village = villages.find(v => v.id === parseInt(form.fields[`locations_${locationNumber}_villageId`].value));
-    const zone = zones.find(z => z.id === parseInt(form.fields[`locations_${locationNumber}_zoneId`].value));
+    const region = regions?.find(r => r.id === parseInt(form.fields[`locations_${locationNumber}_regionId`].value));
+    const district = districts?.find(d => d.id === parseInt(form.fields[`locations_${locationNumber}_districtId`].value));
+    const village = villages?.find(v => v.id === parseInt(form.fields[`locations_${locationNumber}_villageId`].value));
+    const zone = zones?.find(z => z.id === parseInt(form.fields[`locations_${locationNumber}_zoneId`].value));
 
     return `${!!region ? region.name : ''} ${!!district ? `> ${district.name}` : ''} ${!!village ? `> ${village.name}` : ''} ${!!zone ? `> ${zone.name}` : ''}`;
   }
