@@ -273,8 +273,9 @@ const DataCollectorsCreatePageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
-          <Grid item xs={12}>
+          <Grid item xs={12} container justifyContent="space-between" alignItems="center">
             <Typography variant="h6">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
+            <Button color='primary' variant="outlined" onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
           </Grid>
 
           {locations.map((location, i) => (
@@ -294,7 +295,6 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           ))}
 
-          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
         </Grid>
 
         <FormActions className={formStyles.shrinked}>
