@@ -52,6 +52,8 @@ export const NationalSocietyLocationListItem = (props) => {
     text: {
       fontSize: "1rem",
       color: theme.palette.text.primary,
+      maxWidth: "70%",
+      whiteSpace: "pre",
     },
     icon: {
       fontSize: 36,
