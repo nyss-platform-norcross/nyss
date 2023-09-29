@@ -25,7 +25,6 @@ export const NationalSocietyLocationList = (props) => {
     root: {
       width: "100%",
       maxWidth: 250,
-      backgroundColor: theme.palette.background.paper,
       marginBottom: 50
     },
     nested: {
