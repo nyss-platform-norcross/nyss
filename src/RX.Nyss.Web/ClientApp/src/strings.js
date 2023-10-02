@@ -1068,10 +1068,12 @@ export const stringKeys = {
     needsImprovement: "translations.needsImprovement"
   },
   feedback: {
+    title: "feedback.title",
     send: "feedback.send",
     submit: "feedback.submit",
     dialogTitle: "feedback.dialogTitle",
     dialogDescription: "feedback.dialogDescription",
+    placeholder: "feedback.placeholder",
     thankYou: "feedback.thankYou"
   },
 };

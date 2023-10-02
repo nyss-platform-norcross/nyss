@@ -15,7 +15,6 @@ export const UserStatusComponent = ({ push }) => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState();
   const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
-  const isSendingFeedback = useSelector(state => state.appData.feedback.isSending);
   const sendFeedbackResult = useSelector(state => state.appData.feedback.result);
   const user = useSelector(state => state.appData.user);
 
