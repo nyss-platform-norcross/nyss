@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   },
   title: {
     color: "black",
-    fontSize: "1.5rem",
+    fontSize: 24,
     textAlign: "center",
   },
 });
@@ -56,7 +56,7 @@ const Feedback = ({ openModule, match }) => {
             {strings(stringKeys.feedback.title)}
           </Typography>
           <TextInputField
-            label={strings(stringKeys.feedback.dialogDescription)}
+            label={strings(stringKeys.feedback.description)}
             name="feedback"
             multiline
             rows="4"
