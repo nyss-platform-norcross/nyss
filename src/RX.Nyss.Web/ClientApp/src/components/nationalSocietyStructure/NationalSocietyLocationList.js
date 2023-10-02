@@ -87,6 +87,7 @@ export const NationalSocietyLocationList = (props) => {
       aria-labelledby={`${props.locationType}_list`}
       subheader={
         <ListSubheader
+          disableSticky
           className={classes.header}
           component="div"
           id={`${props.locationType}_list`}
