@@ -57,6 +57,12 @@ export const theme = (direction) => createTheme({
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
       },
+      containedPrimary: {
+        boxShadow: 'none',
+        '&:hover': {
+            boxShadow: 'none',
+          },
+      },
     },
     MuiMenu: {
       paper: {
