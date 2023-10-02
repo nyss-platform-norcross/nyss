@@ -77,7 +77,6 @@ export const theme = (direction) => createTheme({
       },
       elevation1: {
         boxShadow: "none",
-        background: '#FAFAFA',
         borderRadius: 0,
       }
     },
@@ -173,10 +172,18 @@ export const theme = (direction) => createTheme({
         color: "#737373"
       }
     },
+    MuiTable: {
+      root: {
+        borderTop: "2px solid #f3f3f3",
+        borderLeft: "2px solid #f3f3f3",
+        borderRight: "2px solid #f3f3f3",
+      }
+    },
     MuiTableCell: {
       root: {
         fontSize: "1rem",
-        textAlign: direction === 'ltr' ? 'left' : 'right'
+        textAlign: direction === 'ltr' ? 'left' : 'right',
+        background: "#FFFFFF",
       },
       head: {
         fontWeight: 600,
