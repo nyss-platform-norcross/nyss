@@ -2,15 +2,16 @@ import styles from './UserStatus.module.scss';
 
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, connect } from "react-redux";
 import { Menu, MenuItem, ListItemText, Icon } from "@material-ui/core";
 import { logout } from '../../authentication/authActions';
 import { sendFeedback } from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import { strings, stringKeys } from '../../strings';
+import { push } from "connected-react-router";
 
-export const UserStatusComponent = () => {
+export const UserStatusComponent = ({ push }) => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState();
   const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
@@ -56,7 +57,7 @@ export const UserStatusComponent = () => {
           className={styles.authCaption}>
           <ListItemText secondary={user.email} />
         </MenuItem>
-        <MenuItem onClick={() => setFeedbackDialogOpened(true)} className={styles.authButton}>
+        <MenuItem onClick={() => push('/feedback')} className={styles.authButton}>
           <Icon className={`${styles.fontIcon} ${user.languageCode === 'ar' ? styles.rtl : ''}`}>feedback</Icon>
           {strings(stringKeys.feedback.send)}
         </MenuItem>        
@@ -65,12 +66,6 @@ export const UserStatusComponent = () => {
           {strings(stringKeys.user.logout)}
         </MenuItem>
       </Menu>
-      <FeedbackDialog
-        isOpened={feedbackDialogOpened}
-        close={handleFeedbackDialogClose}
-        sendFeedback={sendFeedback.invoke}
-        isSending={isSendingFeedback}
-        result={sendFeedbackResult} />      
     </div >
   );
 }
@@ -82,4 +77,8 @@ UserStatusComponent.propTypes = {
   sendFeedbackResult: PropTypes.string,  
 };
 
-export const UserStatus = UserStatusComponent;
+const mapDispatchToProps = {
+  push: push,
+};
+
+export const UserStatus = connect(null, mapDispatchToProps)(UserStatusComponent);
