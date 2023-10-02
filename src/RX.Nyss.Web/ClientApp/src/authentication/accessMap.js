@@ -109,5 +109,8 @@ export const accessMap = {
   projectErrorMessages: {
     list: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
+  },
+  feedback: {
+    send: [Administrator, GlobalCoordinator, TechnicalAdvisor, DataConsumer, Manager, Supervisor, Coordinator, HeadSupervisor],
   }
 };
