@@ -177,13 +177,13 @@ export const theme = (direction) => createTheme({
         borderTop: "2px solid #f3f3f3",
         borderLeft: "2px solid #f3f3f3",
         borderRight: "2px solid #f3f3f3",
-      }
+        background: "#FFFFFF",
+      },
     },
     MuiTableCell: {
       root: {
         fontSize: "1rem",
         textAlign: direction === 'ltr' ? 'left' : 'right',
-        background: "#FFFFFF",
       },
       head: {
         fontWeight: 600,
