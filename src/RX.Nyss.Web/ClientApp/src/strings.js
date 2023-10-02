@@ -1071,8 +1071,7 @@ export const stringKeys = {
     title: "feedback.title",
     send: "feedback.send",
     submit: "feedback.submit",
-    dialogTitle: "feedback.dialogTitle",
-    dialogDescription: "feedback.dialogDescription",
+    description: "feedback.description",
     placeholder: "feedback.placeholder",
     thankYou: "feedback.thankYou"
   },

@@ -88,7 +88,7 @@ export const FeedbackDialog = ({
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextInputField
-                label={strings(stringKeys.feedback.dialogDescription)}
+                label={strings(stringKeys.feedback.description)}
                 name="feedback"
                 multiline
                 rows="4"
