@@ -14,7 +14,6 @@ export const nationalSocietiesSiteMap = [
   {
     path: "/nationalsocieties",
     title: () => strings(stringKeys.nationalSociety.title),
-    // placeholder: placeholders.topMenu,
     placeholder: placeholders.generalMenu,
     access: accessMap.nationalSocieties.list
   },
