@@ -1046,7 +1046,8 @@ export const stringKeys = {
     buttons: {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
-      update: "common.buttons.update"
+      update: "common.buttons.update",
+      goBack: "common.buttons.goBack"
     },
     boolean: {
       true: "common.true",

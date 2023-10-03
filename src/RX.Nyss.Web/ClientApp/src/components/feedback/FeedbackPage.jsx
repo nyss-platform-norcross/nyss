@@ -12,6 +12,7 @@ import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import TextInputField from "../forms/TextInputField";
 import { makeStyles } from "@material-ui/core/styles";
 import { sendFeedback } from "../app/logic/appActions";
+import GoBackToButton from "../common/buttons/goBackToButton/GoBackToButton";
 
 const useStyles = makeStyles({
   input: {
@@ -120,12 +121,17 @@ const Feedback = ({ openModule, match }) => {
             />
           </Grid>
           <Grid item>
+            <Grid container direction="column">
             <Typography variant={"h1"} className={classes.title}>
               {strings(stringKeys.feedback.thankYouTitle)}
             </Typography>
             <Typography>
               {strings(stringKeys.feedback.thankYouDescription)}
             </Typography>
+            <GoBackToButton>
+              {strings(stringKeys.common.buttons.goBack)}
+            </GoBackToButton>
+            </Grid>
           </Grid>
         </Grid>
       )}
