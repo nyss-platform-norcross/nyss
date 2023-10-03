@@ -196,9 +196,9 @@ const DataCollectorsEditPageComponent = (props) => {
               ))}
             </SelectField>
           </Grid>)}
-          
-          
-            
+
+
+
           <Grid item xs={12}>
             <PhoneInputField
               label={strings(stringKeys.dataCollectors.form.phoneNumber)}
@@ -236,6 +236,10 @@ const DataCollectorsEditPageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
+          <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
+            <Button className={styles.addAnotherLocation} color='primary' variant="outlined" onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
+          </Grid>
           {locations.map((location, i) => (
             <DataCollectorLocationItem
               key={`location_${location.number}`}
@@ -255,13 +259,11 @@ const DataCollectorsEditPageComponent = (props) => {
               rtl={useRtlDirection}
             />
           ))}
-
-          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
         </Grid>
 
 
-        <FormActions className={formStyles.shrinked}>
-          <CancelButton onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
+        <FormActions>
+          <CancelButton variant="outlined" onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</CancelButton>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.common.buttons.update)}</SubmitButton>
         </FormActions>
       </Form>
