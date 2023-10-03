@@ -77,7 +77,6 @@ export const theme = (direction) => createTheme({
       },
       elevation1: {
         boxShadow: "none",
-        background: '#FAFAFA',
         borderRadius: 0,
       }
     },
@@ -172,6 +171,14 @@ export const theme = (direction) => createTheme({
         fontSize: 16,
         color: "#737373"
       }
+    },
+    MuiTable: {
+      root: {
+        borderTop: "2px solid #f3f3f3",
+        borderLeft: "2px solid #f3f3f3",
+        borderRight: "2px solid #f3f3f3",
+        background: "#FFFFFF",
+      },
     },
     MuiTableCell: {
       root: {
