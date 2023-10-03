@@ -183,7 +183,7 @@ export const theme = (direction) => createTheme({
     MuiTableCell: {
       root: {
         fontSize: "1rem",
-        textAlign: direction === 'ltr' ? 'left' : 'right',
+        textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       head: {
         fontWeight: 600,
