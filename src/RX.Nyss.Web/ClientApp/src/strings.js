@@ -1073,7 +1073,8 @@ export const stringKeys = {
     submit: "feedback.submit",
     description: "feedback.description",
     placeholder: "feedback.placeholder",
-    thankYou: "feedback.thankYou"
+    thankYouTitle: "feedback.thankYouTitle",
+    thankYouDescription: "feedback.thankYouDescription",
   },
 };
 

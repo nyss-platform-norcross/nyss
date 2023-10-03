@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useMount } from "../../utils/lifecycle";
 import * as appActions from "../app/logic/appActions";
 import { withLayout } from "../../utils/layout";
@@ -11,6 +11,7 @@ import { createForm, validators } from "../../utils/forms";
 import SubmitButton from "../common/buttons/submitButton/SubmitButton";
 import TextInputField from "../forms/TextInputField";
 import { makeStyles } from "@material-ui/core/styles";
+import { sendFeedback } from "../app/logic/appActions";
 
 const useStyles = makeStyles({
   input: {
@@ -31,8 +32,14 @@ const Feedback = ({ openModule, match }) => {
   const isSendingFeedback = useSelector(
     (state) => state.appData.feedback.isSending
   );
+  const sendFeedbackResult = useSelector(
+    (state) => state.appData.feedback.result
+  );
 
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const [hasSent, setHasSent] = useState(false);
   const [form, setForm] = useState(() => {
     const fields = { message: "" };
     const validation = {
@@ -45,34 +52,87 @@ const Feedback = ({ openModule, match }) => {
     openModule(match.path, match.params);
   });
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.isValid()) {
+      return;
+    }
+
+    dispatch(
+      sendFeedback.invoke({
+        message: form.fields.message.value,
+      })
+    );
+  };
+
+  const resetForm = () => {
+    setForm(() => {
+      const fields = { message: "" };
+      const validation = {
+        message: [validators.maxLength(1000), validators.required],
+      };
+      return createForm(fields, validation);
+    });
+  };
+
+  useEffect(() => {
+    if (sendFeedbackResult === "ok") {
+      setHasSent(true);
+      resetForm();
+    }
+  }, [sendFeedbackResult]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setHasSent(false);
+    }, [4000]);
+    
+  }, [form])
+
   return (
     <Grid container justifyContent="center">
-      <Grid container style={{ width: 600 }} spacing={3}>
-        <Grid item xs={12}>
-          <Typography
-            variant={"h1"}
-            className={classes.title}
-          >
-            {strings(stringKeys.feedback.title)}
-          </Typography>
-          <TextInputField
-            label={strings(stringKeys.feedback.description)}
-            name="feedback"
-            multiline
-            rows="4"
-            disabled={isSendingFeedback}
-            field={form.fields.message}
-            classNameInput={classes.input}
-            classNameLabel={classes.label}
-            placeholder={strings(stringKeys.feedback.placeholder)}
-          />
+      {!hasSent ? (
+        <Grid container style={{ width: 600 }} spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant={"h1"} className={classes.title}>
+              {strings(stringKeys.feedback.title)}
+            </Typography>
+            <TextInputField
+              label={strings(stringKeys.feedback.description)}
+              name="feedback"
+              multiline
+              rows="4"
+              disabled={isSendingFeedback}
+              field={form.fields.message}
+              classNameInput={classes.input}
+              classNameLabel={classes.label}
+              placeholder={strings(stringKeys.feedback.placeholder)}
+            />
+          </Grid>
+          <Grid item xs={12} style={{ textAlign: "right" }}>
+            <SubmitButton isFetching={isSendingFeedback} onClick={handleSubmit}>
+              {strings(stringKeys.feedback.submit)}
+            </SubmitButton>
+          </Grid>
         </Grid>
-        <Grid item xs={12} style={{ textAlign: "right" }}>
-          <SubmitButton isFetching={isSendingFeedback} onClick={() => {}}>
-            {strings(stringKeys.feedback.submit)}
-          </SubmitButton>
+      ) : (
+        <Grid container justifyContent="center" spacing={7}>
+          <Grid item>
+            <img
+              src="/images/feedback-illustration.png"
+              alt="Thank you for the feedback illustration"
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant={"h1"} className={classes.title}>
+              {strings(stringKeys.feedback.thankYouTitle)}
+            </Typography>
+            <Typography>
+              {strings(stringKeys.feedback.thankYouDescription)}
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </Grid>
   );
 };
