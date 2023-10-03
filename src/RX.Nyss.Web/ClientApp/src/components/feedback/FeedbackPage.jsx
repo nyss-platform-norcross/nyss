@@ -26,6 +26,9 @@ const useStyles = makeStyles({
     fontSize: 24,
     textAlign: "center",
   },
+  container: {
+    height: "100%",
+  }
 });
 
 const Feedback = ({ openModule, match }) => {
@@ -82,15 +85,8 @@ const Feedback = ({ openModule, match }) => {
     }
   }, [sendFeedbackResult]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setHasSent(false);
-    }, [4000]);
-    
-  }, [form])
-
   return (
-    <Grid container justifyContent="center">
+    <Grid container className={classes.container} justifyContent="center" alignItems="center">
       {!hasSent ? (
         <Grid container style={{ width: 600 }} spacing={3}>
           <Grid item xs={12}>
@@ -143,5 +139,5 @@ const mapDispatchToProps = {
 
 export const FeedbackPage = withLayout(
   Layout,
-  connect(null, mapDispatchToProps)(Feedback)
+  connect(null, mapDispatchToProps)(Feedback), {fillPage: true}
 );
