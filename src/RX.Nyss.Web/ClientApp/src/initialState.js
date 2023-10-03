@@ -8,6 +8,7 @@ export const initialState = {
       parameters: {},
       breadcrumb: [],
       topMenu: [],
+      generalMenu: [],
       tabMenu: [],
       sideMenu: []
     },

@@ -26,7 +26,7 @@ TopMenuComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  topMenu: state.appData.siteMap.topMenu
+  topMenu: state.appData.siteMap.generalMenu
 });
 
 export const TopMenu = connect(mapStateToProps)(TopMenuComponent);
