@@ -1,10 +1,5 @@
-.sideMenu {
-  flex: 1;
-  width: 221px;
-  background: linear-gradient(90deg, #F4F4F4 90%, #F4F4F4);
-}
-
 .sideMenuHeader {
+  display: flex;
   height: 80px;
   border-bottom: 1px solid #d4d4d4;
   justify-content: left;

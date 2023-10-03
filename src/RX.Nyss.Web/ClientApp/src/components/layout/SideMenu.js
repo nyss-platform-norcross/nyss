@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 import { push } from "connected-react-router";
-import { useTheme, List, ListItem, ListItemText, ListItemIcon, Drawer, useMediaQuery, makeStyles } from "@material-ui/core";
+import { useTheme, Drawer, Grid, useMediaQuery, makeStyles } from "@material-ui/core";
 import { toggleSideMenu } from '../app/logic/appActions';
-import { RcIcon } from '../icons/RcIcon';
+import { MenuSection } from './MenuSection';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,39 +29,27 @@ const useStyles = makeStyles((theme) => ({
     "& span": {
       color: '#D52B1E',
       fontWeight: '600',
-    },
+    }
+  },
+  MenuContainer: {
+    height: '100%',
+    marginTop: '32px',
+  },
+  SideMenu: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)',
   }
 }));
 
 
-const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const userLanguageCode = useSelector(state => state.appData.user.languageCode);
-
-  const mapPathToSideMenuIcon = (path) => {
-    if (path.includes('dashboard')) {
-      return "Dashboard"
-    } else if (path.includes('reports')) {
-      return "Report"
-    } else if (path.includes('users')) {
-      return "Users"
-    } else if (path.includes('settings')) {
-      return "Settings"
-    } else if (path.includes('datacollectors')) {
-      return "DataCollectors"
-    } else if (path.includes('alerts')) {
-      return "Alerts"
-    } else if (path.includes('overview')) {
-      return "Settings"
-    } else if (path.includes('projects')) {
-      return "Project"
-    } else {
-      return "Dashboard"
-    }
-  }
 
   const handleItemClick = (item) => {
     push(item.url);
@@ -85,27 +73,23 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
           keepMounted: fullScreen
         }}
       >
-        <div className={styles.sideMenu}>
+        <div className={classes.SideMenu}>
           <div className={styles.sideMenuHeader}>
             <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-
-          {sideMenu.length !== 0 && (
-            <List component="nav" className={styles.list} aria-label="Side navigation menu">
-              {sideMenu.map((item) => {
-                return (
-                  <ListItem key={`sideMenuItem_${item.title}`} className={item.isActive ? classes.ListItemActive : undefined} button onClick={() => handleItemClick(item)} >
-                    <ListItemIcon className={classes.ListItemIconWrapper}>
-                      {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
-                    </ListItemIcon>
-                    <ListItemText disablePadding primary={item.title} primaryTypographyProps={{'className': classes.SideMenuText }} />
-                  </ListItem>
-                )
-              })}
-            </List>
-          )}
+          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
+            {generalMenu.length !== 0 && (
+              <MenuSection menuTitle={"General"} menuItems={generalMenu} handleItemClick={handleItemClick}/>
+              )}
+            {sideMenu.length !== 0 && (
+              <MenuSection menuTitle={"National Societies"} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+              )}
+            <div>
+              {/*Insert account here*/}
+            </div>
+          </Grid>
         </div>
       </Drawer>
     </div>
@@ -118,6 +102,7 @@ SideMenuComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  generalMenu: state.appData.siteMap.generalMenu,
   sideMenu: state.appData.siteMap.sideMenu,
   sideMenuOpen: state.appData.mobile.sideMenuOpen
 });
