@@ -67,7 +67,7 @@ const Feedback = ({ openModule, match, goBack }) => {
     
     dispatch(
       sendFeedback.invoke({
-        message: parseInt(form.fields.message.value),
+        message: form.fields.message.value,
       })
     );
 
