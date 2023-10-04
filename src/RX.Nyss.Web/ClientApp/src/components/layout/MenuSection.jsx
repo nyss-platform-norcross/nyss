@@ -6,9 +6,6 @@ const useStyles = makeStyles(() => ({
     fontSize: '26px',
     color: '#1E1E1E',
   },
-  SideMenuIconActive: {
-    color: '#D52B1E',
-  },
   ListItemIconWrapper: {
     minWidth: '20px',
   },
@@ -21,7 +18,6 @@ const useStyles = makeStyles(() => ({
   },
   ListItemActive: {
     "& span": {
-      color: '#D52B1E',
       fontWeight: '600',
     },
   },
@@ -84,7 +80,7 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
       return (
         <ListItem key={`sideMenuItem_${item.title}`} className={`${classes.ListItem} ${item.isActive ? classes.ListItemActive : ''}`} button onClick={() => handleItemClick(item)} >
           <ListItemIcon className={classes.ListItemIconWrapper}>
-            {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
+            {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} `} />}
           </ListItemIcon>
           <ListItemText disablePadding primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} className={classes.SideMenuTextWrapper}/>
         </ListItem>

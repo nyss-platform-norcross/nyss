@@ -12,26 +12,6 @@ import { stringKeys, strings } from '../../strings';
 
 
 const useStyles = makeStyles(() => ({
-  SideMenuIcon: {
-    fontSize: '22px',
-    color: '#1E1E1E',
-  },
-  SideMenuIconActive: {
-    color: '#D52B1E',
-  },
-  ListItemIconWrapper: {
-    minWidth: '20px',
-  },
-  SideMenuText: {
-    color: '#1E1E1E',
-    fontSize: '16px',
-  },
-  ListItemActive: {
-    "& span": {
-      color: '#D52B1E',
-      fontWeight: '600',
-    }
-  },
   MenuContainer: {
     height: '100%',
     marginTop: '32px',
