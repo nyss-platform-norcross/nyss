@@ -7,6 +7,9 @@ import { ReactComponent as SettingsSvg } from "../../assets/icons/Settings.svg"
 import { ReactComponent as UsersSvg } from "../../assets/icons/Users.svg"
 import { ReactComponent as ValidateAccountSvg } from "../../assets/icons/Validate-account.svg"
 import { ReactComponent as AlertSvg } from "../../assets/icons/Alert.svg"
+import { ReactComponent as UserCircleSvg } from "../../assets/icons/Account-circle.svg"
+import { ReactComponent as LogoutSvg } from "../../assets/icons/Logout.svg"
+import { ReactComponent as FeedbackSvg } from "../../assets/icons/Feedback.svg"
 
 
 
@@ -28,6 +31,12 @@ export const RcIcon = ({ icon, ...props }) => {
       return <SvgIcon {...props} component={AlertSvg} viewBox="0 0 48 41" />
     case "Users2":
       return <SvgIcon {...props} component={UsersSvg} viewBox="0 0 48 36" />
+    case "UserCircle":
+      return <SvgIcon {...props} component={UserCircleSvg} viewBox="0 0 22 21" />
+    case "Logout":
+      return <SvgIcon {...props} component={LogoutSvg} viewBox="0 0 22 22" />
+    case "Feedback":
+      return <SvgIcon {...props} component={FeedbackSvg} viewBox="0 0 20 19" />
     default:
       return null
   }
