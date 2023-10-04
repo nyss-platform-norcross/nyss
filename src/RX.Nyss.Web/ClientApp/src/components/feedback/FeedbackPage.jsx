@@ -64,10 +64,10 @@ const Feedback = ({ openModule, match, goBack }) => {
     if (!form.isValid()) {
       return;
     }
-
+    
     dispatch(
       sendFeedback.invoke({
-        message: form.fields.message.value,
+        message: parseInt(form.fields.message.value),
       })
     );
 
@@ -88,6 +88,11 @@ const Feedback = ({ openModule, match, goBack }) => {
     resetForm();
     goBack();
   };
+
+  const handleSendNewFeedback = () => {
+    resetForm();
+    setHasSent(false);
+  }
 
   return (
     <Grid container className={classes.container} justifyContent="center" alignItems="center">
@@ -149,8 +154,8 @@ const Feedback = ({ openModule, match, goBack }) => {
             <Typography>
               {"Please try to send the feedback again"}
             </Typography>
-            <TableActionsButton add variant="contained" style={{marginTop: "30px"}}>
-              {"Send new feedback"}
+            <TableActionsButton variant="contained" style={{marginTop: "30px"}} onClick={handleSendNewFeedback}>
+              {"Try again"}
             </TableActionsButton>
         </Grid>
       )}
