@@ -13,6 +13,7 @@ import TextInputField from "../forms/TextInputField";
 import { makeStyles } from "@material-ui/core/styles";
 import { sendFeedback } from "../app/logic/appActions";
 import GoBackToButton from "../common/buttons/goBackToButton/GoBackToButton";
+import { goBack } from "connected-react-router";
 
 const useStyles = makeStyles({
   input: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles({
   }
 });
 
-const Feedback = ({ openModule, match }) => {
+const Feedback = ({ openModule, match, goBack }) => {
   const isSendingFeedback = useSelector(
     (state) => state.appData.feedback.isSending
   );
@@ -54,6 +55,7 @@ const Feedback = ({ openModule, match }) => {
 
   useMount(() => {
     openModule(match.path, match.params);
+    setHasSent(false);
   });
 
   const handleSubmit = (e) => {
@@ -67,6 +69,8 @@ const Feedback = ({ openModule, match }) => {
         message: form.fields.message.value,
       })
     );
+
+    setHasSent(true);
   };
 
   const resetForm = () => {
@@ -79,12 +83,10 @@ const Feedback = ({ openModule, match }) => {
     });
   };
 
-  useEffect(() => {
-    if (sendFeedbackResult === "ok") {
-      setHasSent(true);
-      resetForm();
-    }
-  }, [sendFeedbackResult]);
+  const handleGoBack = () => {
+    resetForm();
+    goBack();
+  };
 
   return (
     <Grid container className={classes.container} justifyContent="center" alignItems="center">
@@ -128,7 +130,7 @@ const Feedback = ({ openModule, match }) => {
             <Typography>
               {strings(stringKeys.feedback.thankYouDescription)}
             </Typography>
-            <GoBackToButton>
+            <GoBackToButton onClick={handleGoBack}>
               {strings(stringKeys.common.buttons.goBack)}
             </GoBackToButton>
             </Grid>
@@ -140,7 +142,8 @@ const Feedback = ({ openModule, match }) => {
 };
 
 const mapDispatchToProps = {
-  openModule: appActions.openModule.invoke
+  openModule: appActions.openModule.invoke,
+  goBack: goBack,
 };
 
 export const FeedbackPage = withLayout(
