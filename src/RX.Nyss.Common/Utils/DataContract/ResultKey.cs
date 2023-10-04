@@ -211,13 +211,13 @@ public static class ResultKey
         {
             public const string Success = "DhisIntegration.edit.success";
             public const string ErrorNationalSocietyDoesNotExists = "DhisIntegration.edit.ErrorNationalSocietyDoesNotExists";
-            public const string ErrorEidsrIntegrationDisabled = "DhisIntegration.edit.ErrorEidsrIntegrationDisabled";
+            public const string ErrorDhisIntegrationDisabled = "DhisIntegration.edit.ErrorDhisIntegrationDisabled";
         }
 
         public static class DhisApi
         {
             public const string ConnectionError = "DhisIntegration.DhisApi.ConnectionError";
-            public const string RegisterEventError = "DhisIntegration.DhisApi.RegisterEventError";
+            public const string RegisterReportError = "DhisIntegration.DhisApi.RegisterReportError";
         }
     }
 

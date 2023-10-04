@@ -47,7 +47,7 @@ public class DhisClient : IDhisClient
         }
 
         _loggerAdapter.Error(res.ReasonPhrase);
-        return Error<bool>(ResultKey.EidsrIntegration.EidsrApi.RegisterEventError);
+        return Error<bool>(ResultKey.DhisIntegration.DhisApi.RegisterReportError);
     }
 
     private static bool ConfigureClient(EidsrApiProperties apiProperties, HttpClient httpClient)
