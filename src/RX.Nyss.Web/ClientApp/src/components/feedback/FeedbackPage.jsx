@@ -90,7 +90,7 @@ const Feedback = ({ openModule, match, goBack }) => {
 
   return (
     <Grid container className={classes.container} justifyContent="center" alignItems="center">
-      {!hasSent ? (
+      {!hasSent && (
         <Grid container style={{ width: 600 }} spacing={3}>
           <Grid item xs={12}>
             <Typography variant={"h1"} className={classes.title}>
@@ -114,7 +114,9 @@ const Feedback = ({ openModule, match, goBack }) => {
             </SubmitButton>
           </Grid>
         </Grid>
-      ) : (
+      )} 
+      
+      {hasSent && sendFeedbackResult == "ok" && (
         <Grid container justifyContent="center" spacing={7}>
           <Grid item>
             <img
