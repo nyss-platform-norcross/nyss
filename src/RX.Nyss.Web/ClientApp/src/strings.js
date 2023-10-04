@@ -1047,7 +1047,8 @@ export const stringKeys = {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
       update: "common.buttons.update",
-      goBack: "common.buttons.goBack"
+      goBack: "common.buttons.goBack",
+      tryAgain: "common.buttons.tryAgain"
     },
     boolean: {
       true: "common.true",
@@ -1076,6 +1077,8 @@ export const stringKeys = {
     placeholder: "feedback.placeholder",
     thankYouTitle: "feedback.thankYouTitle",
     thankYouDescription: "feedback.thankYouDescription",
+    errorTitle: "feedback.errorTitle",
+    errorDescription: "feedback.errorDescription",
   },
 };
 
