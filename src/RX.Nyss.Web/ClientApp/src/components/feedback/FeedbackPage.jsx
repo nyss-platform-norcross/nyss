@@ -122,7 +122,7 @@ const Feedback = ({ openModule, match, goBack }) => {
         </Grid>
       )} 
       
-      {hasSent && sendFeedbackResult === "error" && (
+      {hasSent && sendFeedbackResult === "ok" && (
         <Grid container justifyContent="center" spacing={7}>
           <Grid item>
             <img
@@ -146,7 +146,7 @@ const Feedback = ({ openModule, match, goBack }) => {
         </Grid>
       )}
       
-      {hasSent && sendFeedbackResult === "ok" && (
+      {hasSent && sendFeedbackResult === "error" && (
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={7}>
             <Typography variant={"h1"} className={classes.title}>
               {strings(stringKeys.feedback.errorTitle)}
