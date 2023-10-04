@@ -8,6 +8,7 @@ import { push } from "connected-react-router";
 import { useTheme, Drawer, Grid, useMediaQuery, makeStyles } from "@material-ui/core";
 import { toggleSideMenu } from '../app/logic/appActions';
 import { MenuSection } from './MenuSection';
+import { stringKeys, strings } from '../../strings';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -81,10 +82,10 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
           </div>
           <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
             {generalMenu.length !== 0 && (
-              <MenuSection menuTitle={"General"} menuItems={generalMenu} handleItemClick={handleItemClick}/>
+              <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
               )}
             {sideMenu.length !== 0 && (
-              <MenuSection menuTitle={"National Societies"} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
               )}
             <div>
               {/*Insert account here*/}
