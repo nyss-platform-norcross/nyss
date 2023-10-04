@@ -1,9 +1,7 @@
-import styles from './SideMenu.module.scss';
-
 import { List, ListItem, ListItemText, ListItemIcon, ListSubheader, Divider, makeStyles } from "@material-ui/core";
 import { RcIcon } from '../icons/RcIcon';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   SideMenuIcon: {
     fontSize: '26px',
     color: '#1E1E1E',
@@ -73,7 +71,7 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
 
 
   return(
-    <List component="nav" className={styles.list} aria-label={`${menuTitle} navigation menu`}
+    <List component="nav" aria-label={`${menuTitle} navigation menu`}
       subheader={
       <>
         <ListSubheader component="div" id={menuTitle} className={classes.SubHeader}>

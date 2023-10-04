@@ -11,7 +11,7 @@ import { MenuSection } from './MenuSection';
 import { stringKeys, strings } from '../../strings';
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   SideMenuIcon: {
     fontSize: '22px',
     color: '#1E1E1E',
@@ -80,16 +80,13 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
+          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='flex-start'>
             {generalMenu.length !== 0 && (
               <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
               )}
             {sideMenu.length !== 0 && (
               <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
               )}
-            <div>
-              {/*Insert account here*/}
-            </div>
           </Grid>
         </div>
       </Drawer>
