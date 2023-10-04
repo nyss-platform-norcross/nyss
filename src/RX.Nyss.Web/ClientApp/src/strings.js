@@ -115,7 +115,13 @@ export const stringKeys = {
       addRegion: "nationalSociety.structure.addRegion",
       addDistrict: "nationalSociety.structure.addDistrict",
       addVillage: "nationalSociety.structure.addVillage",
-      addZone: "nationalSociety.structure.addZone"
+      addZone: "nationalSociety.structure.addZone",
+      locationHeader: {
+        region: "nationalSociety.structure.region",
+        district: "nationalSociety.structure.district",
+        village: "nationalSociety.structure.village",
+        zone: "nationalSociety.structure.zone"
+      },
     },
     setHead: {
       notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
