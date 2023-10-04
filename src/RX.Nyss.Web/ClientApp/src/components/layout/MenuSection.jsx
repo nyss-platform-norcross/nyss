@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
     padding: '16px 12px 16px 12px',
   },
   ListItemActive: {
+    backgroundColor: '#E3E3E3',
     "& span": {
       fontWeight: '600',
     },
