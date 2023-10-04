@@ -1,31 +1,21 @@
 import styles from './UserStatus.module.scss';
-
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { Menu, MenuItem, ListItemText, Icon } from "@material-ui/core";
 import { logout } from '../../authentication/authActions';
-import { sendFeedback } from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import { strings, stringKeys } from '../../strings';
 import { push } from "connected-react-router";
 
 export const UserStatusComponent = ({ push }) => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState();
-  const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
-  const sendFeedbackResult = useSelector(state => state.appData.feedback.result);
   const user = useSelector(state => state.appData.user);
 
   const handleClick = (e) => setAnchorEl(e.currentTarget);
   
   const handleClose = () => setAnchorEl(null);
-  
-  const handleFeedbackDialogClose = () => {
-    setFeedbackDialogOpened(false);
-    handleClose();
-  }
 
   const handleLogout = () => dispatch(logout.invoke());
 
