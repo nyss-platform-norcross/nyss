@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMount } from "../../utils/lifecycle";
 import * as appActions from "../app/logic/appActions";
@@ -9,6 +9,7 @@ import { Grid, Typography } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
 import { createForm, validators } from "../../utils/forms";
 import SubmitButton from "../common/buttons/submitButton/SubmitButton";
+import { TableActionsButton } from "../common/buttons/tableActionsButton/TableActionsButton";
 import TextInputField from "../forms/TextInputField";
 import { makeStyles } from "@material-ui/core/styles";
 import { sendFeedback } from "../app/logic/appActions";
@@ -116,7 +117,7 @@ const Feedback = ({ openModule, match, goBack }) => {
         </Grid>
       )} 
       
-      {hasSent && sendFeedbackResult == "ok" && (
+      {hasSent && sendFeedbackResult === "ok" && (
         <Grid container justifyContent="center" spacing={7}>
           <Grid item>
             <img
@@ -137,6 +138,20 @@ const Feedback = ({ openModule, match, goBack }) => {
             </GoBackToButton>
             </Grid>
           </Grid>
+        </Grid>
+      )}
+      
+      {hasSent && sendFeedbackResult === "error" && (
+        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={7}>
+            <Typography variant={"h1"} className={classes.title}>
+              {"We’re sorry, but there was a problem with sending the feedback"}
+            </Typography>
+            <Typography>
+              {"Please try to send the feedback again"}
+            </Typography>
+            <TableActionsButton add variant="contained" style={{marginTop: "30px"}}>
+              {"Send new feedback"}
+            </TableActionsButton>
         </Grid>
       )}
     </Grid>
