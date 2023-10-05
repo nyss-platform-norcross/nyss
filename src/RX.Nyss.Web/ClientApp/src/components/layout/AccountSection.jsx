@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { List, ListItem, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Typography, makeStyles } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Typography, makeStyles, Tooltip } from '@material-ui/core';
 import { RcIcon } from '../icons/RcIcon';
 import { logout } from '../../authentication/authActions';
 import { sendFeedback } from '../app/logic/appActions';
@@ -120,12 +120,16 @@ export const AccountSection = () => {
         <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
           <ListItem className={classes.ListItem}>
             <ListItemText className={classes.ListItemTextUserContainer}>
-              <Typography noWrap className={classes.ListItemTextUser}>
-                {user.roles[0]}
-              </Typography>
-              <Typography noWrap className={classes.ListItemTextUser}>
-                {user.email}
-              </Typography>
+              <Tooltip title={user.roles[0]}>
+                <Typography noWrap className={classes.ListItemTextUser}>
+                  {user.roles[0]}
+                </Typography>
+              </Tooltip>
+              <Tooltip title={user.email}>
+                <Typography noWrap className={classes.ListItemTextUser}>
+                  {user.email}
+                </Typography>
+              </Tooltip>
             </ListItemText>
           </ListItem>
           <ListItem button onClick={() => setFeedbackDialogOpened(true)} className={classes.ListItem}>
