@@ -7,7 +7,9 @@ import { UserStatus } from './UserStatus';
 import { Icon } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
-const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl }) => {
+const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) => {
+  if(!isSupervisor) return null;
+
   return (
     <div className={styles.header}>
       <div className={styles.placeholder}>
@@ -27,7 +29,8 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl }) => {
 const mapStateToProps = state => ({
   breadcrumb: state.appData.siteMap.breadcrumb,
   sideMenuOpen: state.appData.mobile.sideMenuOpen,
-  directionRtl: state.appData.user.languageCode === 'ar'
+  directionRtl: state.appData.user.languageCode === 'ar',
+  isSupervisor: state.appData.user.roles.includes("Supervisor") || state.appData.user.roles.includes("HeadSupervisor")
 });
 
 const mapDispatchToProps = {

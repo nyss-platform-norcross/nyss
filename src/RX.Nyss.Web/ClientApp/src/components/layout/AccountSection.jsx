@@ -9,6 +9,9 @@ import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import { strings, stringKeys } from '../../strings';
 
 const useStyles = makeStyles(() => ({
+    AccordionContainer: {
+      width: "100%"
+    },
     Accordion: {
       backgroundColor: '#F4F4F4',
       "&.MuiAccordion-root:before": {
@@ -95,7 +98,7 @@ export const AccountSection = () => {
   const handleLogout = () => dispatch(logout.invoke());
 
   return (
-    <div>
+    <div className={classes.AccordionContainer}>
       <Typography className={classes.Account}>{strings(stringKeys.sideMenu.account)}</Typography>
       <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
         <AccordionSummary
@@ -114,10 +117,15 @@ export const AccountSection = () => {
           <Typography className={classes.User}>{user.name}</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.AccordionDetails}>
-        <List component="nav" className={''} aria-label="Side navigation menu" disablePadding>
+        <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
           <ListItem className={classes.ListItem}>
-            <ListItemText className={classes.ListItemTextUserContainer} classes={{ primary: classes.ListItemTextUser }}>
-                {`${user.roles[0]}\n${user.email}`}
+            <ListItemText className={classes.ListItemTextUserContainer}>
+              <Typography noWrap className={classes.ListItemTextUser}>
+                {user.roles[0]}
+              </Typography>
+              <Typography noWrap className={classes.ListItemTextUser}>
+                {user.email}
+              </Typography>
             </ListItemText>
           </ListItem>
           <ListItem button onClick={() => setFeedbackDialogOpened(true)} className={classes.ListItem}>
