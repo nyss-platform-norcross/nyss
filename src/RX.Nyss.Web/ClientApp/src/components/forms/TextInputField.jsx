@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
 import { TextField } from '@material-ui/core';
 
-const TextInput = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type, inputMode, endAdornment, className, fieldRef }) => {
+const TextInput = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type, inputMode, endAdornment, className, fieldRef, placeholder, classNameInput, classNameLabel }) => {
   return (
     <TextField
       ref={fieldRef}
@@ -17,12 +17,13 @@ const TextInput = ({ error, name, label, value, controlProps, multiline, rows, a
       rows={rows}
       disabled={disabled}
       fullWidth={autoWidth ? false : true}
-      InputLabelProps={{ shrink: true }}
+      placeholder={placeholder}
+      InputLabelProps={{ shrink: true, className: classNameLabel}}
       InputProps={{
         ...controlProps,
-        endAdornment: !!endAdornment && endAdornment
+        endAdornment: !!endAdornment && endAdornment,
       }}
-      inputProps={{ autoFocus: autoFocus, inputMode: inputMode, step: type === "number" ? "any" : null }}
+      inputProps={{ autoFocus: autoFocus, inputMode: inputMode, step: type === "number" ? "any" : null, className: classNameInput}}
       type={type}
     />
   );

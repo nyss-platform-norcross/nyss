@@ -1052,7 +1052,9 @@ export const stringKeys = {
     buttons: {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
-      update: "common.buttons.update"
+      update: "common.buttons.update",
+      goBack: "common.buttons.goBack",
+      tryAgain: "common.buttons.tryAgain"
     },
     boolean: {
       true: "common.true",
@@ -1074,11 +1076,15 @@ export const stringKeys = {
     needsImprovement: "translations.needsImprovement"
   },
   feedback: {
+    title: "feedback.title",
     send: "feedback.send",
     submit: "feedback.submit",
-    dialogTitle: "feedback.dialogTitle",
-    dialogDescription: "feedback.dialogDescription",
-    thankYou: "feedback.thankYou"
+    description: "feedback.description",
+    placeholder: "feedback.placeholder",
+    thankYouTitle: "feedback.thankYouTitle",
+    thankYouDescription: "feedback.thankYouDescription",
+    errorTitle: "feedback.errorTitle",
+    errorDescription: "feedback.errorDescription",
   },
 };
 
