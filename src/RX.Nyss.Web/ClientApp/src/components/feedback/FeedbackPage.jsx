@@ -124,14 +124,7 @@ const Feedback = ({ openModule, match, goBack }) => {
       
       {hasSent && sendFeedbackResult === "ok" && (
         <Grid container justifyContent="center" spacing={7}>
-          <Grid item>
-            <img
-              src="/images/feedback-illustration.png"
-              alt="Thank you for the feedback illustration"
-            />
-          </Grid>
-          <Grid item>
-            <Grid container direction="column">
+          <Grid container direction="column" alignItems="center">
             <Typography variant={"h1"} className={classes.title}>
               {strings(stringKeys.feedback.thankYouTitle)}
             </Typography>
@@ -141,7 +134,6 @@ const Feedback = ({ openModule, match, goBack }) => {
             <GoBackToButton onClick={handleGoBack}>
               {strings(stringKeys.common.buttons.goBack)}
             </GoBackToButton>
-            </Grid>
           </Grid>
         </Grid>
       )}
