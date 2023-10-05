@@ -92,7 +92,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-          <Grid style={{height: "100%"}} container justifyContent='space-between' direction='column'>
+          <Grid style={{height: "100%"}} container justifyContent={sideMenu.length === 0 ? 'flex-end' : 'space-between'} direction='column'>
           {sideMenu.length !== 0 && (
             <List component="nav" className={styles.list} aria-label="Side navigation menu">
               {sideMenu.map((item) => {
