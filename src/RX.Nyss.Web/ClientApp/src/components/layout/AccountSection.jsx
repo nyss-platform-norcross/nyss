@@ -45,7 +45,11 @@ const useStyles = makeStyles(() => ({
     },
     ListItem: {
       color: "#1E1E1E",
-      padding: "0 16px 0 16px"
+      padding: "8px 16px 8px 16px"
+    },
+    ListItemUser: {
+      color: "#1E1E1E",
+      padding: "0px 16px 0px 16px"
     },
     ListItemTextUserContainer: {
       display: "flex",
@@ -118,7 +122,7 @@ export const AccountSection = () => {
         </AccordionSummary>
         <AccordionDetails className={classes.AccordionDetails}>
         <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
-          <ListItem className={classes.ListItem}>
+          <ListItem className={classes.ListItemUser}>
             <ListItemText className={classes.ListItemTextUserContainer}>
               <Tooltip title={user.roles[0]}>
                 <Typography noWrap className={classes.ListItemTextUser}>
