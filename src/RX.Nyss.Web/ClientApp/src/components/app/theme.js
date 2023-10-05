@@ -4,7 +4,7 @@ export const theme = (direction) => createTheme({
   direction: direction,
   typography: {
     fontSize: 14,
-    fontFamily: ["Poppins", '"Helvetica Neue"', 'Arial'].join(','),
+    fontFamily: ['Arial'].join(','),
     body1: {
       color: "#333333"
     },
