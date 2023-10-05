@@ -93,6 +93,7 @@ export const AccountSection = () => {
   const isSendingFeedback = useSelector(state => state.appData.feedback.isSending);
   const sendFeedbackResult = useSelector(state => state.appData.feedback.result);
   const user = useSelector(state => state.appData.user);
+  const isSupervisor = user.roles.includes("Supervisor") || user.roles.includes("HeadSupervisor")
 
 
   const handleFeedbackDialogClose = () => {
@@ -100,6 +101,8 @@ export const AccountSection = () => {
   }
 
   const handleLogout = () => dispatch(logout.invoke());
+
+  if(isSupervisor) return null;
 
   return (
     <div className={classes.AccordionContainer}>
