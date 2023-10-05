@@ -1074,6 +1074,9 @@ export const stringKeys = {
     dialogDescription: "feedback.dialogDescription",
     thankYou: "feedback.thankYou"
   },
+  sideMenu: {
+    account: "sideMenu.account"
+  }
 };
 
 export const isStringKey = (key) =>
