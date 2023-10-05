@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { List, ListItem, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Typography, makeStyles} from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Typography, makeStyles } from '@material-ui/core';
 import { RcIcon } from '../icons/RcIcon';
 import { logout } from '../../authentication/authActions';
 import { sendFeedback } from '../app/logic/appActions';
@@ -10,7 +10,13 @@ import { strings, stringKeys } from '../../strings';
 
 const useStyles = makeStyles(() => ({
     Accordion: {
-      backgroundColor: '#F4F4F4'
+      backgroundColor: '#F4F4F4',
+      "&.MuiAccordion-root:before": {
+        backgroundColor: "inherit",
+      },
+    },
+    AccordionExpanded: {
+      margin: 0
     },
     AccordionSummary: {
       display: 'flex',
@@ -20,8 +26,13 @@ const useStyles = makeStyles(() => ({
       padding: "5px 0 5px 0",
       margin: "10px 0 10px 0",
     },
+    AccordionSummaryRoot: {
+      boxShadow: "0px -2px 2px 0px rgba(124, 124, 124, 0.20)",
+      borderRadius: "8px 8px 0 0",
+    },
     AccordionSummaryExpanded: {
       padding: "0 8px",
+      borderRadius: "8px 8px 0 0"
     },
     AccordionDetails: {
       padding: 0
@@ -57,7 +68,12 @@ const useStyles = makeStyles(() => ({
     },
     User: {
       fontSize: 16
-    }
+    },
+    Account: {
+      fontSize: 12,
+      fontWeight: "bold",
+      margin: "0 0 8px 8px"
+    },
 }));
 
 
@@ -79,18 +95,19 @@ export const AccountSection = () => {
   const handleLogout = () => dispatch(logout.invoke());
 
   return (
-      <Accordion className={classes.Accordion}>
+    <div>
+      <Typography className={classes.Account}>{strings(stringKeys.sideMenu.account)}</Typography>
+      <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
         <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
           style={{
             backgroundColor: '#EDEDED',
           }}
           classes={{
+            root: classes.AccordionSummaryRoot,
             content: classes.AccordionSummary,
             expanded: classes.AccordionSummaryExpanded,
           }}
-        >
+          >
           <RcIcon icon="UserCircle" style={{
             fontSize: "24px",
           }}/>
@@ -128,6 +145,7 @@ export const AccountSection = () => {
         </List>
         </AccordionDetails>
       </Accordion>
+    </div>
   )
 }
 
