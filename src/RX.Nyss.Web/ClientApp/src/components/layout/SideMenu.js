@@ -5,9 +5,10 @@ import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 import { push } from "connected-react-router";
-import { useTheme, List, ListItem, ListItemText, ListItemIcon, Drawer, useMediaQuery, makeStyles } from "@material-ui/core";
+import { useTheme, List, ListItem, ListItemText, ListItemIcon, Drawer, useMediaQuery, makeStyles, Grid } from "@material-ui/core";
 import { toggleSideMenu } from '../app/logic/appActions';
 import { RcIcon } from '../icons/RcIcon';
+import { AccountSection } from './AccountSection';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -91,7 +92,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-
+          <Grid style={{height: "100%"}} container justifyContent='space-between' direction='column'>
           {sideMenu.length !== 0 && (
             <List component="nav" className={styles.list} aria-label="Side navigation menu">
               {sideMenu.map((item) => {
@@ -106,6 +107,8 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
               })}
             </List>
           )}
+          <AccountSection/>
+        </Grid>
         </div>
       </Drawer>
     </div>
