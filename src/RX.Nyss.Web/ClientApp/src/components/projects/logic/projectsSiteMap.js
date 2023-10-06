@@ -3,7 +3,7 @@ import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
 import { nationalSocietyLeftMenuOrder } from "../../nationalSocieties/logic/nationalSocietiesSiteMap";
 
-export const projectLeftMenuOrder = {
+export const projectTabMenuOrder = {
   dashboard: 0,
   alerts: 10,
   dataCollectors: 20,
@@ -36,9 +36,9 @@ export const projectsSiteMap = [
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
     title: () => strings(stringKeys.project.settingsRootTitle),
-    placeholder: placeholders.leftMenu,
+    placeholder: placeholders.projectTabMenu,
     access: accessMap.projects.showOverview,
-    placeholderIndex: projectLeftMenuOrder.settings
+    placeholderIndex: projectTabMenuOrder.settings
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
