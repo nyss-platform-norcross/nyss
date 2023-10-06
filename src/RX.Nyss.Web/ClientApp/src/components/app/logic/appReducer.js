@@ -95,6 +95,7 @@ export function appReducer(state = initialState.appData, action) {
           topMenu: action.topMenu,
           sideMenu: action.sideMenu,
           tabMenu: action.tabMenu,
+          projectTabMenu: action.projectTabMenu,
           title: action.title
         }
       }
@@ -150,7 +151,7 @@ export function appReducer(state = initialState.appData, action) {
           isSending: false,
           result: "error",
         }
-      }      
+      }
 
     default:
       return state;

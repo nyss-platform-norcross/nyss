@@ -89,8 +89,9 @@ function* openModule({ path, params }) {
   const topMenu = getMenu("/", menuParams, placeholders.topMenu, path, user);
   const sideMenu = getMenu(path, menuParams, placeholders.leftMenu, path, user);
   const tabMenu = getMenu(path, menuParams, placeholders.tabMenu, path, user);
+  const projectTabMenu = getMenu(path, menuParams, placeholders.projectTabMenu, path, user);
 
-  yield put(actions.openModule.success(path, menuParams, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
+  yield put(actions.openModule.success(path, menuParams, breadcrumb, topMenu, sideMenu, tabMenu, projectTabMenu, params.title))
 }
 
 function* getAppData() {
