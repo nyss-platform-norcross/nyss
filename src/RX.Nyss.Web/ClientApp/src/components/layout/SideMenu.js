@@ -41,27 +41,6 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
 
   const userLanguageCode = useSelector(state => state.appData.user.languageCode);
 
-  const mapPathToSideMenuIcon = (path) => {
-    if (path.includes('dashboard')) {
-      return "Dashboard"
-    } else if (path.includes('reports')) {
-      return "Report"
-    } else if (path.includes('users')) {
-      return "Users"
-    } else if (path.includes('settings')) {
-      return "Settings"
-    } else if (path.includes('datacollectors')) {
-      return "DataCollectors"
-    } else if (path.includes('alerts')) {
-      return "Alerts"
-    } else if (path.includes('overview')) {
-      return "Settings"
-    } else if (path.includes('projects')) {
-      return "Project"
-    } else {
-      return "Dashboard"
-    }
-  }
 
   const handleItemClick = (item) => {
     push(item.url);
