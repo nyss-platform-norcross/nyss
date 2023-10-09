@@ -1,16 +1,16 @@
 import { siteMap } from "../siteMap";
 
-const findClosestMenu = (breadcrumb, placeholder, pathForMenu) => {
-  for (let i = breadcrumb.length - 1; i >= 0; i--) {
-    if (breadcrumb[i].siteMapData.placeholder === placeholder) {
-      return breadcrumb[i].siteMapData.parentPath;
+const findClosestMenu = (hierarchy, placeholder) => {
+  for (let i = hierarchy.length - 1; i >= 0; i--) {
+    if (hierarchy[i].siteMapData.placeholder === placeholder) {
+      return hierarchy[i].siteMapData.parentPath;
     }
   }
 };
 
-export const getMenu = (pathForMenu, parameters, placeholder, currentPath, authUser) => {
-  const breadcrumb = getBreadcrumb(currentPath, parameters, authUser);
-  const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
+export const getMenu = (parameters, placeholder, currentPath, authUser) => {
+  const pathHierarchy = getHierarchy(currentPath, parameters, authUser);
+  const closestMenuPath = findClosestMenu(pathHierarchy, placeholder);
 
   const filteredSiteMap = siteMap
     .filter(item => item.parentPath === closestMenuPath
@@ -26,11 +26,11 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath, authU
     .map(item => ({
       title: item.title(),
       url: getUrl(item.path, parameters),
-      isActive: breadcrumb.some(b => b.siteMapData.path === item.path)
+      isActive: pathHierarchy.some(b => b.siteMapData.path === item.path)
     }))
 };
 
-export const getBreadcrumb = (path, siteMapParameters, authUser) => {
+export const getHierarchy = (path, siteMapParameters, authUser) => {
   if (!authUser || !path) {
     return [];
   }

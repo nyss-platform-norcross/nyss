@@ -77,7 +77,6 @@ export function appReducer(state = initialState.appData, action) {
         siteMap: {
           path: action.path,
           parameters: {},
-          breadcrumb: [],
           topMenu: [],
           sideMenu: [],
           tabMenu: [],
@@ -91,7 +90,6 @@ export function appReducer(state = initialState.appData, action) {
         siteMap: {
           path: action.path,
           parameters: action.parameters,
-          breadcrumb: action.breadcrumb,
           topMenu: action.topMenu,
           sideMenu: action.sideMenu,
           tabMenu: action.tabMenu,
@@ -150,7 +148,7 @@ export function appReducer(state = initialState.appData, action) {
           isSending: false,
           result: "error",
         }
-      }      
+      }
 
     default:
       return state;
