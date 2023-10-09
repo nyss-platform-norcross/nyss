@@ -22,6 +22,12 @@ const useStyles = makeStyles(() => ({
       margin: 0
     },
     AccordionSummary: {
+      backgroundColor: '#EDEDED',
+      "&:hover": {
+        backgroundColor: "rgba(0, 0, 0, 0.08)",
+      }
+    },
+    AccordionSummaryContent: {
       display: 'flex',
       flexDirection: 'row',
       alignItems: "center",
@@ -109,12 +115,10 @@ export const AccountSection = () => {
       <Typography className={classes.Account}>{strings(stringKeys.sideMenu.account)}</Typography>
       <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
         <AccordionSummary
-          style={{
-            backgroundColor: '#EDEDED',
-          }}
+          className={classes.AccordionSummary}
           classes={{
             root: classes.AccordionSummaryRoot,
-            content: classes.AccordionSummary,
+            content: classes.AccordionSummaryContent,
             expanded: classes.AccordionSummaryExpanded,
           }}
           >
