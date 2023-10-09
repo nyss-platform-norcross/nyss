@@ -9,7 +9,7 @@ const getOptions = (valuesLabel, series, categories) => ({
     type: 'column',
     backgroundColor: "transparent",
     style: {
-      fontFamily: 'Poppins,"Helvetica Neue",Arial'
+      fontFamily: 'Arial'
     }
   },
   title: {
