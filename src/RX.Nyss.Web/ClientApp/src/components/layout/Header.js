@@ -9,8 +9,9 @@ import { toggleSideMenu } from '../app/logic/appActions';
 
 const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) => {
 
-  // Only return top header menu for supervisors and head supervisors since they will not have the sidemenu displayed.
-  if(!isSupervisor) return null;
+  // Only return top header menu for supervisors and head supervisors since they will not have the sidemenu displayed. In addition, display top header for tablets and mobile devices for hamburger menu
+  const { innerWidth: width } = window;
+  if(!isSupervisor && width > 1280) return null;
 
   return (
     <div className={styles.header}>
@@ -21,9 +22,11 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervi
       <div className={styles.topMenu}>
         <TopMenu />
       </div>
-      <div className={styles.user}>
-        <UserStatus />
+      {isSupervisor && (
+        <div className={styles.user}>
+          <UserStatus />
       </div>
+      )}
     </div>
   );
 }
