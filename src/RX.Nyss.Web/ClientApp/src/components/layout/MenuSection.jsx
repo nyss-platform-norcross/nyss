@@ -28,6 +28,9 @@ const useStyles = makeStyles(() => ({
   SubHeader : {
     color: '#1E1E1E',
     lineHeight: '28px',
+    fontSize: 12,
+    fontWeight: "bold",
+    margin: "0 0 0px 8px"
   },
   Divider: {
     backgroundColor: '#B4B4B4',
@@ -71,7 +74,7 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
     <List component="nav" aria-label={`${menuTitle} navigation menu`}
       subheader={
       <>
-        <ListSubheader component="div" id={menuTitle} className={classes.SubHeader}>
+        <ListSubheader component="div" id={menuTitle} className={classes.SubHeader} disableGutters>
         {menuTitle}
       </ListSubheader>
       <Divider className={classes.Divider}/>
