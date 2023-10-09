@@ -39,7 +39,8 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.settingsRootTitle),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.showOverview,
-    placeholderIndex: projectLeftMenuOrder.settings
+    placeholderIndex: projectLeftMenuOrder.settings,
+    icon: "Settings"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
@@ -63,7 +64,7 @@ export const projectsSiteMap = [
     placeholder: placeholders.tabMenu,
     access: accessMap.projectAlertNotifications.list,
     placeholderIndex: 3,
-    middleStepOnly: true
+    middleStepOnly: true,
   },
   {
     parentPath: "/projects/:projectId/alertNotifications",
