@@ -8,6 +8,8 @@ import { Icon } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
 const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) => {
+
+  // Only return top header menu for supervisors and head supervisors since they will not have the sidemenu displayed.
   if(!isSupervisor) return null;
 
   return (
