@@ -66,7 +66,6 @@ public class ExportQuery : IRequest<byte[]>
                 .SingleOrDefaultAsync();
 
             var strings = await _stringsService.GetForCurrentUser();
-
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
@@ -102,12 +101,31 @@ public class ExportQuery : IRequest<byte[]>
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
                         .Single(),
+
                     InvestigationEventSubtype = _nyssContext.AlertEventLogs
-                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 1)
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 1)//Investigation
                         .Select(log => log.AlertEventSubtype)
                         .First(),
-                    OutcomeEventSubtype = _nyssContext.AlertEventLogs
+                    investigationComment = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 1)
+                        .Select(log => log.Text)
+                        .First(),
+
+                    publicHealthActionTakenComment = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 6)
+                    .Select(log => log.Text)
+                    .First(),
+                    PublicHealthActionEventSubtype = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 6)//PublicHealthActionTaken
+                        .Select(log => log.AlertEventSubtype)
+                        .First(),
+
+                    outcomeComment = _nyssContext.AlertEventLogs
                         .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 4)
+                        .Select(log => log.Text)
+                        .First(),
+                    OutcomeEventSubtype = _nyssContext.AlertEventLogs
+                        .Where(log => log.AlertId == a.Id && log.AlertEventType.Id == 4)//Outcome
                         .Select(log => log.AlertEventSubtype)
                         .First()
                 })
@@ -124,7 +142,7 @@ public class ExportQuery : IRequest<byte[]>
                     ClosedAt = a.ClosedAt?.AddHours(filterRequestDto.UtcOffset),
                     Status = strings[$"alerts.alertStatus.{a.Status.ToString().ToLower()}"],
                     EscalatedOutcome = a.EscalatedOutcome,
-                    Comments = a.Comments,
+                    Comments = a.investigationComment + " --- " + a.outcomeComment + " --- " + a.publicHealthActionTakenComment,
                     ReportCount = a.ReportCount,
                     LastReportVillage = a.LastReport.IsAnonymized
                         ? ""
@@ -137,6 +155,10 @@ public class ExportQuery : IRequest<byte[]>
                         : null,
                     Outcome = a.OutcomeEventSubtype != null
                         ? strings[$"alerts.eventTypes.subtypes.{a.OutcomeEventSubtype.Name.ToString().ToCamelCase()}"]
+                        : null,
+
+                    PublicHealthActionTaken = a.PublicHealthActionEventSubtype != null
+                        ? strings[$"alerts.eventTypes.subtypes.{a.PublicHealthActionEventSubtype.Name.ToString().ToCamelCase()}"]
                         : null
                 }).ToList();
 
@@ -170,8 +192,8 @@ public class ExportQuery : IRequest<byte[]>
                 strings["alerts.export.timeDismissed"],
                 strings["alerts.export.investigation"],
                 strings["alerts.export.outcome"],
-                strings["alerts.export.escalatedOutcome"],
-                strings["alerts.export.closedComments"],
+                strings["alerts.export.publicHealthAction"],
+                strings["alerts.export.closedComments"]
             };
     }
 }

@@ -1,16 +1,16 @@
 import styles from './DataCollectorsPerformanceFilters.module.scss';
 import { useEffect, useReducer, useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  Button, 
-  TextField, 
-  MenuItem, 
-  Grid, 
+import {
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  MenuItem,
+  Grid,
   Radio,
-  RadioGroup, 
-  FormControlLabel, 
-  InputLabel 
+  RadioGroup,
+  FormControlLabel,
+  InputLabel
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../../strings';
@@ -53,16 +53,16 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
     debouncedName.changed && onChange({ type: 'updateName', name: debouncedName.value });
   }, [debouncedName, onChange]);
 
-  useEffect(() => 
+  useEffect(() =>
     setLocationsFilterLabel(!filters || !locations ? strings(stringKeys.filters.area.all) : renderFilterLabel(filters.locations, locations.regions, false))
   , [filters, locations]);
-  
+
   const filterIsSet = filters && (
     filters.locations !== null ||
     (filters.name !== null && filters.name !== '') ||
     filters.trainingStatus !== trainingStatusTrained ||
-    Object.values(filters).slice(4).some(f => 
-      Object.values(f).some(week => 
+    Object.values(filters).slice(4).some(f =>
+      Object.values(f).some(week =>
         Object.values(week).slice(1).some(v => !v)))
   );
 
@@ -90,8 +90,8 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters, rtl }) => 
           </Grid>
           <Grid item>
             <LocationFilter
-              locations={locations}
-              value={filters.locations}
+              allLocations={locations}
+              filteredLocations={filters.locations}
               filterLabel={locationsFilterLabel}
               onChange={handleAreaChange}
               rtl={rtl}

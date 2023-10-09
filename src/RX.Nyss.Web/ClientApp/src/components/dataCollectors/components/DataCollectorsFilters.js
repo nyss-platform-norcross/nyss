@@ -20,7 +20,7 @@ import LocationFilter from "../../common/filters/LocationFilter";
 import { renderFilterLabel } from "../../common/filters/logic/locationFilterService";
 
 export const DataCollectorsFilters = ({ supervisors, locations, onChange, callingUserRoles, filters, rtl }) => {
-  
+
   const [locationsFilterLabel, setLocationsFilterLabel] = useState(strings(stringKeys.filters.area.all));
 
   const [filter, setFilter] = useReducer((state, action) => {
@@ -91,8 +91,8 @@ export const DataCollectorsFilters = ({ supervisors, locations, onChange, callin
           </Grid>
           <Grid item>
             <LocationFilter
-              value={filter.value.locations}
-              locations={locations}
+              filteredLocations={filter.value.locations}
+              allLocations={locations}
               filterLabel={locationsFilterLabel}
               onChange={handleLocationChange}
               rtl={rtl}

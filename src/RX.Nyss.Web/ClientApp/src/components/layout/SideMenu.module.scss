@@ -1,11 +1,7 @@
-.selected > span {
-  font-weight: 600;
-}
-
 .sideMenu {
   flex: 1;
   width: 221px;
-  background: linear-gradient(90deg, #f1f1f1 90%, #ececec);
+  background: linear-gradient(90deg, #F4F4F4 90%, #F4F4F4);
 }
 
 .sideMenuHeader {
@@ -33,17 +29,6 @@
     }
   }
 }
-
-.list {
-  .active {
-    span {
-      color: #424242;
-    }
-
-    background: rgba(0, 0, 0, 0.08);
-  }
-}
-
 
 .drawer {
   @media screen and (min-width: 1280px) {

@@ -1,10 +1,10 @@
-import styles from "./ProjectsDashboardReportSexAgeTable.module.scss";
+import styles from "./DashboardReportSexAgeTable.module.scss";
 
 import React from 'react';
 import { Card, CardContent, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
-import { strings, stringKeys } from '../../../strings';
+import { strings, stringKeys } from '../../strings';
 
-export const ProjectsDashboardReportSexAgeTable = ({ data }) => {
+export const DashboardReportSexAgeTable = ({ data }) => {
   return (
     <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.dashboard.reportsPerFeature.title)} />

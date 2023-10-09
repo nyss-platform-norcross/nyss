@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Reports.Access
                 return false;
             }
 
-            if (currentUser.Role == Role.HeadSupervisor && reportData.HeadSupervisor != currentUser)
+            if (currentUser.Role == Role.HeadSupervisor && (reportData.Supervisor != currentUser || reportData.Supervisor.HeadSupervisor != currentUser))
             {
                 return false;
             }

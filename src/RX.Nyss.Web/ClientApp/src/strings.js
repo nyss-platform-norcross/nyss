@@ -1,6 +1,6 @@
 import React from "react";
 import { StringsEditor } from "./components/common/stringsEditor/StringsEditor";
-import {eidsrIntegrationSiteMap} from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
+import { eidsrIntegrationSiteMap } from "./components/eidsrIntegration/logic/eidsrIntegrationSiteMap";
 
 let stringList = {};
 
@@ -115,7 +115,13 @@ export const stringKeys = {
       addRegion: "nationalSociety.structure.addRegion",
       addDistrict: "nationalSociety.structure.addDistrict",
       addVillage: "nationalSociety.structure.addVillage",
-      addZone: "nationalSociety.structure.addZone"
+      addZone: "nationalSociety.structure.addZone",
+      locationHeader: {
+        region: "nationalSociety.structure.region",
+        district: "nationalSociety.structure.district",
+        village: "nationalSociety.structure.village",
+        zone: "nationalSociety.structure.zone"
+      },
     },
     setHead: {
       notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
@@ -401,6 +407,7 @@ export const stringKeys = {
   dashboard: {
     title: "dashboard.title",
     printTitle: "dashboard.printTitle",
+    printTitleNationalSociety: "dashboard.printTitleNS",
     numbers: {
       reportCountTitle: "dashboard.numbers.reportCountTitle",
       totalReportCount: "dashboard.numbers.totalReportCount",
@@ -580,7 +587,12 @@ export const stringKeys = {
       removeLocation: "dataCollectors.form.removeLocation",
       locationsHeader: "dataCollectors.form.locationsHeader",
       showYourLocation: "dataCollectors.form.showYourLocation",
-      retrievingLocation: "dataCollectors.form.retrievingLocation"
+      retrievingLocation: "dataCollectors.form.retrievingLocation",
+      alerts: {
+        noDistrictsAlert: "dataCollectors.form.alert.noDistrictsAlert",
+        noVillagesAlert: "dataCollectors.form.alert.noVillagesAlert",
+        noZonesAlert: "dataCollectors.form.alert.noZonesAlert",
+      }
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
@@ -896,15 +908,15 @@ export const stringKeys = {
         "Recovered": "alerts.eventTypes.subtypes.recovered",
         "Deceased": "alerts.eventTypes.subtypes.deceased",
         "ImmunizationCampaign": "alerts.eventTypes.subtypes.immunizationCampaign",
-        "HealthMessagesAwarenessRaising": "alerts.eventTypes.subtypes.healthMessagesAwareNessRaising",
+        "HealthMessagesAwarenessRaising": "alerts.eventTypes.subtypes.healthMessagesAwarenessRaising",
         "Referral": "alerts.eventTypes.subtypes.referral",
         "Isolation": "alerts.eventTypes.subtypes.isolation",
         "ProvidedORS": "alerts.eventTypes.subtypes.providedORS",
         "AnimalsDisposed": "alerts.eventTypes.subtypes.AnimalsDisposed",
-        "SafeDignifiedBurials": "alerts.eventTypes.subtypes.SafeDignifiedBurials",
+        "SafeDignifiedBurials": "alerts.eventTypes.subtypes.safeDignifiedBurials",
         "CommunityMeeting": "alerts.eventTypes.subtypes.communityMeeting",
         "AssistedInvestigation": "alerts.eventTypes.subtypes.assistedInvestigation",
-        "CleanupFogging": "alerts.eventTypes.subtypes.cleanupAndOrFogging",
+        "CleanupFogging": "alerts.eventTypes.subtypes.cleanupFogging",
         "Other": "alerts.eventTypes.subtypes.other",
       },
       sex: {
@@ -1037,10 +1049,12 @@ export const stringKeys = {
     downloadDirectly: "headManagerConsents.downloadDirectly"
   },
   common: {
-    buttons:{
+    buttons: {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
-      update: "common.buttons.update"
+      update: "common.buttons.update",
+      goBack: "common.buttons.goBack",
+      tryAgain: "common.buttons.tryAgain"
     },
     boolean: {
       true: "common.true",
@@ -1062,11 +1076,15 @@ export const stringKeys = {
     needsImprovement: "translations.needsImprovement"
   },
   feedback: {
+    title: "feedback.title",
     send: "feedback.send",
     submit: "feedback.submit",
-    dialogTitle: "feedback.dialogTitle",
-    dialogDescription: "feedback.dialogDescription",
-    thankYou: "feedback.thankYou"
+    description: "feedback.description",
+    placeholder: "feedback.placeholder",
+    thankYouTitle: "feedback.thankYouTitle",
+    thankYouDescription: "feedback.thankYouDescription",
+    errorTitle: "feedback.errorTitle",
+    errorDescription: "feedback.errorDescription",
   },
 };
 

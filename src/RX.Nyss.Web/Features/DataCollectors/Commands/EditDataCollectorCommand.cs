@@ -93,7 +93,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Commands
                 dataCollector.DisplayName = request.DisplayName;
                 dataCollector.PhoneNumber = request.PhoneNumber;
                 dataCollector.AdditionalPhoneNumber = request.AdditionalPhoneNumber;
-                dataCollector.BirthGroupDecade = request.BirthGroupDecade;
                 dataCollector.Sex = request.Sex;
                 dataCollector.Supervisor = supervisor;
                 dataCollector.HeadSupervisor = headSupervisor;

@@ -34,7 +34,11 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public string LastReportRegion { get; set; }
 
         public string LastReportZone { get; set; }
+
         public string Investigation { get; set; }
+
         public string Outcome { get; set; }
+
+        public string PublicHealthActionTaken { get; set; }
     }
 }

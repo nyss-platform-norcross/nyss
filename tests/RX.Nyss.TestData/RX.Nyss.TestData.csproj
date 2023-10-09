@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MockQueryable.NSubstitute" Version="6.0.1" />
-    <PackageReference Include="Telerivet.NET" Version="1.5.1" />
+    <PackageReference Include="MockQueryable.NSubstitute" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

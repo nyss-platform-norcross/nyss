@@ -23,7 +23,7 @@ function* openNationalSocietyCorrectReportsList({ nationalSocietyId }) {
     yield openNationalSocietyReportsModule(nationalSocietyId);
 
     const filtersData = yield call(http.get, `/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
-    const filters = (yield select(state => state.nationalSocietyReports.correctReportsFilters)) ||
+    const filters =
     {
       dataCollectorType: DataCollectorType.human,
       healthRisks: [],

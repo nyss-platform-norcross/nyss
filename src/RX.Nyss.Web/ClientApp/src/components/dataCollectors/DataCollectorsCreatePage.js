@@ -81,7 +81,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       displayName: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human), validators.maxLength(100)],
       sex: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       supervisorId: [validators.required],
-      birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.phoneNumber, validators.maxLength(20)],
       additionalPhoneNumber: [validators.phoneNumber, validators.maxLength(20)]
     };
@@ -92,7 +91,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       displayName: createRef(),
       sex: createRef(),
       supervisorId: createRef(),
-      birthGroupDecade: createRef(),
       phoneNumber: createRef(),
       additionalPhoneNumber: createRef(),
       deployed: createRef(),
@@ -220,20 +218,23 @@ const DataCollectorsCreatePageComponent = (props) => {
             </Grid>
           )}
 
+
           {type === dataCollectorType.human && (<Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
-              field={form.fields.birthGroupDecade}
-              name="birthGroupDecade"
-              fieldRef={form.fields.birthGroupDecade.ref}
-            >
-              {birthDecades.map(decade => (
-                <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                  {parseBirthDecade(decade)}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>)}
+            <div hidden={true}>
+              <SelectField
+                label={strings(stringKeys.dataCollectors.form.birthYearGroup)}
+                field={form.fields.birthGroupDecade}
+                name="birthGroupDecade"
+                fieldRef={form.fields.birthGroupDecade.ref}
+              >
+                {birthDecades.map(decade => (
+                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                    {parseBirthDecade(decade)}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </div>
+            </Grid>)}
 
           <Grid item xs={12}>
             <PhoneInputField
@@ -272,8 +273,9 @@ const DataCollectorsCreatePageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
-          <Grid item xs={12}>
+          <Grid item xs={12} container justifyContent="space-between" alignItems="center">
             <Typography variant="h6">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
+            <Button className={styles.addAnotherLocation} color='primary' variant="outlined" onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
           </Grid>
 
           {locations.map((location, i) => (
@@ -286,9 +288,6 @@ const DataCollectorsCreatePageComponent = (props) => {
               isOnlyLocation={locations.length === 1}
               defaultLocation={centerLocation}
               regions={props.regions}
-              initialDistricts={[]}
-              initialVillages={[]}
-              initialZones={[]}
               isDefaultCollapsed={false}
               removeLocation={removeDataCollectorLocation}
               allLocations={locations}
@@ -296,11 +295,11 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           ))}
 
-          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
         </Grid>
 
-        <FormActions className={formStyles.shrinked}>
+        <FormActions>
           <CancelButton
+            variant="outlined"
             onClick={() => props.goToList(props.projectId)}
           >
             {strings(stringKeys.form.cancel)}

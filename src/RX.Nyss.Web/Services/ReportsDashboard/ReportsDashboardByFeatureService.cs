@@ -93,7 +93,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new ReportByFeaturesAndDateResponseDto
                 {
-                    Period = x.Period.ToString("dd/MM", CultureInfo.InvariantCulture),
+                    Period = x.Period.ToString("dd/MM/yy", CultureInfo.InvariantCulture),
                     CountFemalesAtLeastFive = x.CountFemalesAtLeastFive,
                     CountFemalesBelowFive = x.CountFemalesBelowFive,
                     CountMalesAtLeastFive = x.CountMalesAtLeastFive,

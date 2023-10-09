@@ -2,10 +2,10 @@ import styles from "./CancelButton.module.scss";
 import PropTypes from "prop-types";
 import { Button } from "@material-ui/core";
 
-export const CancelButton = ({ onClick, children }) => {
+export const CancelButton = ({ onClick, children, variant }) => {
   return (
     <Button
-      variant="text"
+      variant={variant ? variant : "text"}
       color="primary"
       onClick={onClick}
       className={styles.regular}

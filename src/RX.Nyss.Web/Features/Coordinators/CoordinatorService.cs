@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.Coordinators
     {
         Task<Result> Create(int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto);
         Task<Result<GetCoordinatorResponseDto>> Get(int coordinatorId);
-        Task<Result> Edit(int coordinatorId, EditCoordinatorRequestDto editCoordinatorRequestDto);
+        Task<Result> Edit(int coordinatorId, CreateCoordinatorRequestDto editCoordinatorRequestDto);
         Task<Result> Delete(int coordinatorId);
     }
 
@@ -101,26 +101,43 @@ namespace RX.Nyss.Web.Features.Coordinators
             return new Result<GetCoordinatorResponseDto>(coordinator, true);
         }
 
-        public async Task<Result> Edit(int coordinatorId, EditCoordinatorRequestDto editCoordinatorRequestDto)
+        public async Task<Result> Edit(int coordinatorId, CreateCoordinatorRequestDto editCoordinatorRequestDto)
         {
             try
             {
                 var user = await _nationalSocietyUserService.GetNationalSocietyUser<CoordinatorUser>(coordinatorId);
+                var oldEmail = user.EmailAddress;
+                if (user == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+                else
+                {
+                    user.Name = editCoordinatorRequestDto.Name;
+                    user.EmailAddress = editCoordinatorRequestDto.Email;
+                    user.PhoneNumber = editCoordinatorRequestDto.PhoneNumber;
+                    user.Organization = editCoordinatorRequestDto.Organization;
+                    user.AdditionalPhoneNumber = editCoordinatorRequestDto.AdditionalPhoneNumber;
+                    user.IsFirstLogin = oldEmail != editCoordinatorRequestDto.Email ?  true : false;
+                    var organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
 
-                user.Name = editCoordinatorRequestDto.Name;
-                user.PhoneNumber = editCoordinatorRequestDto.PhoneNumber;
-                user.Organization = editCoordinatorRequestDto.Organization;
-                user.AdditionalPhoneNumber = editCoordinatorRequestDto.AdditionalPhoneNumber;
+                    var userLink = await _dataContext.UserNationalSocieties
+                        .Where(un => un.UserId == coordinatorId && un.NationalSociety.Id == organization.NationalSocietyId)
+                        .SingleOrDefaultAsync();
 
-                var organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+                    userLink.Organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+                    await _dataContext.SaveChangesAsync();
 
-                var userLink = await _dataContext.UserNationalSocieties
-                    .Where(un => un.UserId == coordinatorId && un.NationalSociety.Id == organization.NationalSocietyId)
-                    .SingleOrDefaultAsync();
+                }
 
-                userLink.Organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+                if (oldEmail != editCoordinatorRequestDto.Email)
+                {
+                    var identityUser = await _identityUserRegistrationService.EditIdentityUser(oldEmail, editCoordinatorRequestDto.Email);
+                    string securityStamp;
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                    await _verificationEmailService.SendVerificationEmail(user, securityStamp);
+                }
 
-                await _dataContext.SaveChangesAsync();
                 return Success();
             }
             catch (ResultException e)

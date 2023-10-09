@@ -104,35 +104,36 @@ public class ReportService : IReportService
             .SingleOrDefaultAsync();
 
         var result = baseQuery.Select(r => new ReportListResponseDto
-            {
-                Id = r.Id,
-                IsAnonymized = r.DataCollector != null && (isSupervisor || isHeadSupervisor
+        {
+            Id = r.Id,
+            IsAnonymized = isSupervisor || isHeadSupervisor
                     ? (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id != currentUserId)
                     || (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUserId)
                     : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
-                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id)),
-                OrganizationName = r.NationalSociety.NationalSocietyUsers
-                    .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
+                        nsu => (nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id)
+                            || (nsu.UserId == r.DataCollector.HeadSupervisor.Id && nsu.OrganizationId == currentUserOrganization.Id)),
+            OrganizationName = r.NationalSociety.NationalSocietyUsers
+                    .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id || nsu.UserId == r.DataCollector.HeadSupervisor.Id)
                     .Select(nsu => nsu.Organization.Name)
                     .FirstOrDefault(),
-                DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
-                HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+            DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
+            HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                     .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                     .Select(lc => lc.Name)
                     .SingleOrDefault(),
-                IsActivityReport = r.Report.ProjectHealthRisk != null && (r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
-                    || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98),
-                IsValid = r.Report != null,
-                Region = r.Village.District.Region.Name,
-                District = r.Village.District.Name,
-                Village = r.Village.Name,
-                Zone = r.Zone.Name,
-                DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+            IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
+                    || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
+            IsValid = r.Report != null,
+            Region = r.Village.District.Region.Name,
+            District = r.Village.District.Name,
+            Village = r.Village.Name,
+            Zone = r.Zone.Name,
+            DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
                     ? r.DataCollector.Name
                     : r.DataCollector.DisplayName,
-                SupervisorName = r.DataCollector.Supervisor.Name,
-                PhoneNumber = r.Sender,
-                Alert = r.Report.ReportAlerts
+            SupervisorName = r.DataCollector.Supervisor.Name ?? r.DataCollector.HeadSupervisor.Name,
+            PhoneNumber = r.Sender,
+            Alert = r.Report.ReportAlerts
                     .OrderByDescending(ra => ra.AlertId)
                     .Select(ra => new ReportListAlert
                     {
@@ -141,23 +142,23 @@ public class ReportService : IReportService
                         ReportWasCrossCheckedBeforeEscalation = ra.Report.AcceptedAt < ra.Alert.EscalatedAt || ra.Report.RejectedAt < ra.Alert.EscalatedAt
                     })
                     .FirstOrDefault(),
-                ReportId = r.ReportId,
-                ReportType = r.Report.ReportType,
-                Message = r.Text,
-                CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
-                CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
-                CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
-                ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
-                DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
-                Status = r.Report.Status != null
+            ReportId = r.ReportId,
+            ReportType = r.Report.ReportType,
+            Message = r.Text,
+            CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
+            CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+            CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
+            CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+            ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
+            DeathCount = r.Report.DataCollectionPointCase.DeathCount,
+            FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+            Status = r.Report.Status != null
                     ? r.Report.Status
                     : ReportStatus.New,
-                ReportErrorType = r.ErrorType,
-                DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text,
-                IsCorrected = r.MarkedAsCorrectedAtUtc != null,
-            })
+            ReportErrorType = r.ErrorType,
+            DataCollectorIsDeleted = r.DataCollector != null && r.DataCollector.Name == Anonymization.Text,
+            IsCorrected = r.MarkedAsCorrectedAtUtc != null,
+        })
             //ToDo: order base on filter.OrderBy property
             .OrderBy(r => r.DateTime, filter.SortAscending);
 

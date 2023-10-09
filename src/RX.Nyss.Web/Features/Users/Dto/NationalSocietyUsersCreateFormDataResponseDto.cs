@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Users.Dto
 
     public class NationalSocietyUsersEditFormDataResponseDto
     {
-        public string Email { get; set; }
+        //public string Email { get; set; }
         public string CountryCode { get; set; }
 
         public Role Role { get; set; }

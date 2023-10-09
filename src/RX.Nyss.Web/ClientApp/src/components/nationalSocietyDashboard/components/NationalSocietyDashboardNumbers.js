@@ -18,7 +18,7 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
   );
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} data-printable={true}>
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.dashboard.numbers.reportCountTitle)} />

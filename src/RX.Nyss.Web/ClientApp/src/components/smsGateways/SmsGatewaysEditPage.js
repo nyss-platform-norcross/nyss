@@ -12,7 +12,7 @@ import CancelButton from "../common/buttons/cancelButton/CancelButton";
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import { Loading } from '../common/loading/Loading';
-import { smsGatewayTypes, smsEagle, telervet } from "./logic/smsGatewayTypes";
+import { smsGatewayTypes, smsEagle, smsGateway, telervet } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';

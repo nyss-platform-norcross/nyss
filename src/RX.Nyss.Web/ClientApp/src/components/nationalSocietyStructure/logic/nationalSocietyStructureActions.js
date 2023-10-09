@@ -12,10 +12,8 @@ import {
   CREATE_ZONE,
   EDIT_ZONE,
   REMOVE_ZONE,
-  UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS
 } from "./nationalSocietyStructureConstants";
 
-export const updateExpandedItems = (items) => ({ type: UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS, items });
 
 export const openStructure = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_STRUCTURE.INVOKE, nationalSocietyId }),

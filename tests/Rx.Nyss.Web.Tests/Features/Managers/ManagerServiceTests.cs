@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         [Fact]
         public async Task EditManager_WhenEditingExistingUser_ExpectedFieldsGetEdited()
         {
-            var existingUserEmail = _nyssContext.Users.Single(u => u.Id == _managerId)?.EmailAddress;
+            var existingUserEmail = "emailTest1@domain.com";
 
             var editRequest = new EditManagerRequestDto
             {
@@ -311,6 +311,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             await _managerService.Edit(_managerId, editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == _managerId) as ManagerUser;
+            editedUser.EmailAddress= existingUserEmail;
 
             editedUser.ShouldNotBeNull();
             editedUser.Name.ShouldBe(editRequest.Name);

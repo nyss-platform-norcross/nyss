@@ -4,6 +4,7 @@
     {
         Unknown,
         SmsEagle,
-        Telerivet
+        Telerivet,
+        SmsGateway
     }
 }

@@ -1,5 +1,7 @@
 import styles from './DataCollectorLocationItem.module.scss';
 import { Button, Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import { useState, useReducer, useEffect, useRef, useCallback } from 'react';
 import { stringKeys, strings } from '../../../strings';
 import { useMount } from '../../../utils/lifecycle';
@@ -10,17 +12,26 @@ import { ConditionalCollapse } from '../../common/conditionalCollapse/Conditiona
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import SelectField from '../../forms/SelectField';
 import { getFormDistricts, getFormVillages, getFormZones } from '../logic/dataCollectorsService';
+import { set } from '../../../utils/cache';
+
+const useStyles = makeStyles({
+  alert: {
+    width: '26rem',
+  },
+});
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones, 
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, isOnlyLocation, regions, initialDistricts, initialVillages, initialZones,
   defaultLocation, isDefaultCollapsed, removeLocation, allLocations, rtl }) => {
+  const classes = useStyles();
+
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [defaultCollapsed, setDefaultCollapsed] = useState(isDefaultCollapsed);
-  const [districts, setDistricts] = useState(initialDistricts || []);
-  const [villages, setVillages] = useState(initialVillages || []);
-  const [zones, setZones] = useState(initialZones || []);
+  const [districts, setDistricts] = useState(initialDistricts || null);
+  const [villages, setVillages] = useState(initialVillages || null);
+  const [zones, setZones] = useState(initialZones || null);
 
   const locationCardRef = useRef(null);
   const getLocationCardRef = useCallback(node => locationCardRef, []);
@@ -97,9 +108,8 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     form.fields[`locations_${locationNumber}_villageId`].update('', true);
     form.fields[`locations_${locationNumber}_zoneId`].update('', true);
 
-    setDistricts([]);
-    setVillages([]);
-    setZones([]);
+    setVillages(null);
+    setZones(null);
 
     getFormDistricts(regionId, setDistricts);
   }
@@ -109,8 +119,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     form.fields[`locations_${locationNumber}_villageId`].update('', true);
     form.fields[`locations_${locationNumber}_zoneId`].update('', true);
 
-    setVillages([]);
-    setZones([]);
+    setZones(null);
 
     getFormVillages(districtId, setVillages);
   }
@@ -120,16 +129,14 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
     form.fields[`locations_${locationNumber}_zoneId`].update('', true);
     location.villageId = villageId;
 
-    setZones([]);
-
     getFormZones(villageId, setZones);
   }
 
   const renderCollapsedLocationData = () => {
-    const region = regions.find(r => r.id === parseInt(form.fields[`locations_${locationNumber}_regionId`].value));
-    const district = districts.find(d => d.id === parseInt(form.fields[`locations_${locationNumber}_districtId`].value));
-    const village = villages.find(v => v.id === parseInt(form.fields[`locations_${locationNumber}_villageId`].value));
-    const zone = zones.find(z => z.id === parseInt(form.fields[`locations_${locationNumber}_zoneId`].value));
+    const region = regions?.find(r => r.id === parseInt(form.fields[`locations_${locationNumber}_regionId`].value));
+    const district = districts?.find(d => d.id === parseInt(form.fields[`locations_${locationNumber}_districtId`].value));
+    const village = villages?.find(v => v.id === parseInt(form.fields[`locations_${locationNumber}_villageId`].value));
+    const zone = zones?.find(z => z.id === parseInt(form.fields[`locations_${locationNumber}_zoneId`].value));
 
     return `${!!region ? region.name : ''} ${!!district ? `> ${district.name}` : ''} ${!!village ? `> ${village.name}` : ''} ${!!zone ? `> ${zone.name}` : ''}`;
   }
@@ -198,7 +205,9 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                 </SelectField>
               </Grid>
 
+              {form.fields[`locations_${locationNumber}_regionId`] && form.fields[`locations_${locationNumber}_regionId`].value &&
               <Grid item xs={12}>
+                {districts && districts.length > 0 ?
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollectors.form.district)}
@@ -213,9 +222,16 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                     </MenuItem>
                   ))}
                 </SelectField>
-              </Grid>
+                :
+                <Alert variant="filled" severity="warning" className={classes.alert}>
+                  {strings(stringKeys.dataCollectors.form.alerts.noDistrictsAlert)}
+                </Alert>
+                }
+              </Grid>}
 
+              {form.fields[`locations_${locationNumber}_districtId`] && form.fields[`locations_${locationNumber}_districtId`].value &&
               <Grid item xs={12}>
+                {villages && villages.length > 0 ?
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollectors.form.village)}
@@ -230,9 +246,14 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                     </MenuItem>
                   ))}
                 </SelectField>
-              </Grid>
+                :
+                <Alert variant="filled" severity="warning" className={classes.alert}>
+                  {strings(stringKeys.dataCollectors.form.alerts.noVillagesAlert)}
+                </Alert>
+                }
+              </Grid>}
 
-              <Grid item xs={12}>
+              {zones && zones.length > 0 && <Grid item xs={12}>
                 <SelectField
                   className={styles.geoStructureSelectShrinked}
                   label={strings(stringKeys.dataCollectors.form.zone)}
@@ -250,7 +271,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, isLa
                     </MenuItem>
                   ))}
                 </SelectField>
-              </Grid>
+              </Grid>}
 
               <Grid item xs={12}>
                 <InputLabel className={styles.mapLabel}>{strings(stringKeys.dataCollectors.form.selectLocation)}</InputLabel>

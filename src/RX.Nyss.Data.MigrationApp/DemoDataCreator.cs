@@ -17,6 +17,7 @@ namespace RX.Nyss.Data.MigrationApp
             var usersToCreate = new (string roleName, string id, string name, string phone, int organizationId)[]
             {
                 ("DataConsumer", "6be5c384-6675-a7be-4c45-3cba40f7cd13", "Jane DataConsumer", "+1234561", 1),
+                ("HeadSupervisor", "5c3b91e6-9788-41a8-908c-bf4c3131b14a", "Daniel HeadSupervisor", "+1234555", 1),
                 ("GlobalCoordinator", "5f259e96-4200-0cbc-4fe6-90024dcb770a", "Kim GlobalCoordinator", "+1234562", 1),
                 ("Coordinator", "4f8cb17f-5851-4156-9997-e85324717129", "Corey Coordinator", "+123456278", 1),
                 ("Supervisor", "a076dd25-30d5-cbb2-4174-f73fda1524fa", "Bob Supervisor", "+1234563", 1),
@@ -46,8 +47,8 @@ namespace RX.Nyss.Data.MigrationApp
                 ("Supervisor", "12A420F5-BF48-479D-A391-4EA32118ADFE", "Silvia Supervisor", "+22345667", 6)
             };
 
-            var englishUsersToCreate = usersToCreate.Take(10).ToArray();
-            var frenchUsersToCreate = usersToCreate.Skip(10).Take(9).ToArray();
+            var englishUsersToCreate = usersToCreate.Take(11).ToArray();
+            var frenchUsersToCreate = usersToCreate.Skip(11).Take(9).ToArray();
             var spanishUsersToCreate = usersToCreate.TakeLast(9).ToArray();
 
             SeedIdentityUsers(dbConnectionString, usersToCreate, password);

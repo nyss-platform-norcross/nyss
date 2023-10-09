@@ -45,7 +45,7 @@ export const theme = (direction) => createTheme({
       main: "#333333",
       dark: "#3d5afe",
       contrastText: "#ffffff"
-    }
+    },
   },
   overrides: {
     MuiButton: {
@@ -56,6 +56,12 @@ export const theme = (direction) => createTheme({
       },
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
+      },
+      containedPrimary: {
+        boxShadow: 'none',
+        '&:hover': {
+            boxShadow: 'none',
+          },
       },
     },
     MuiMenu: {
@@ -77,7 +83,6 @@ export const theme = (direction) => createTheme({
       },
       elevation1: {
         boxShadow: "none",
-        background: '#FAFAFA',
         borderRadius: 0,
       }
     },
@@ -172,6 +177,14 @@ export const theme = (direction) => createTheme({
         fontSize: 16,
         color: "#737373"
       }
+    },
+    MuiTable: {
+      root: {
+        borderTop: "2px solid #f3f3f3",
+        borderLeft: "2px solid #f3f3f3",
+        borderRight: "2px solid #f3f3f3",
+        background: "#FFFFFF",
+      },
     },
     MuiTableCell: {
       root: {

@@ -46,10 +46,7 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                 strings["reports.list.district"],
                 strings["reports.list.village"],
                 strings["reports.list.zone"],
-                strings["reports.list.dataCollectorDisplayName"],
-                strings["reports.list.dataCollectorPhoneNumber"],
-                strings["reports.export.location"],
-                strings["reports.export.corrected"],
+                strings["reports.list.dataCollectorDisplayName"]
             };
 
         protected static IReadOnlyList<string> GetCorrectReportsColumnLabels(
@@ -75,19 +72,12 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                     strings["reports.list.malesAtLeastFive"],
                     strings["reports.list.femalesBelowFive"],
                     strings["reports.list.femalesAtLeastFive"],
-                    strings["reports.export.totalBelowFive"],
-                    strings["reports.export.totalAtLeastFive"],
-                    strings["reports.export.totalMale"],
-                    strings["reports.export.totalFemale"],
-                    strings["reports.export.total"],
+
                     strings["reports.export.referredCount"],
                     strings["reports.export.deathCount"],
                     strings["reports.export.fromOtherVillagesCount"],
-                    strings["reports.list.dataCollectorDisplayName"],
-                    strings["reports.list.dataCollectorPhoneNumber"],
-                    strings["reports.export.message"],
-                    strings["reports.export.location"],
-                    strings["reports.export.corrected"],
+                    strings["reports.list.dataCollectorDisplayName"]
+
                 };
             }
 
@@ -108,17 +98,8 @@ namespace RX.Nyss.Web.Features.Reports.Queries
                 strings["reports.list.malesAtLeastFive"],
                 strings["reports.list.femalesBelowFive"],
                 strings["reports.list.femalesAtLeastFive"],
-                strings["reports.export.totalBelowFive"],
-                strings["reports.export.totalAtLeastFive"],
-                strings["reports.export.totalMale"],
-                strings["reports.export.totalFemale"],
-                strings["reports.export.total"],
-                strings["reports.list.dataCollectorDisplayName"],
-                strings["reports.list.dataCollectorPhoneNumber"],
-                strings["reports.export.message"],
-                strings["reports.export.reportAlertId"],
-                strings["reports.export.location"],
-                strings["reports.export.corrected"],
+                strings["reports.list.dataCollectorDisplayName"]
+                
             };
         }
     }

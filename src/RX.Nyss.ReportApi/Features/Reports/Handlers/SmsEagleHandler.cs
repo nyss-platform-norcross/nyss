@@ -142,7 +142,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         DataCollector = reportData.DataCollector,
                         EpiWeek = epiDate.EpiWeek,
                         EpiYear = epiDate.EpiYear,
-                        PhoneNumber = sender,
+                        PhoneNumber = reportData.DataCollector.PhoneNumber,
                         Location = reportData.DataCollector?.DataCollectorLocations.Count == 1
                             ? reportData.DataCollector.DataCollectorLocations.First().Location
                             : null,

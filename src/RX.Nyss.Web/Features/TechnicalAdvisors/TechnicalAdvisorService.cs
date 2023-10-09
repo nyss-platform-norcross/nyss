@@ -112,34 +112,52 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             try
             {
                 var user = await _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>(technicalAdvisorId);
-
-                user.Name = editDto.Name;
-                user.PhoneNumber = editDto.PhoneNumber;
-                user.Organization = editDto.Organization;
-                user.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
-
-                if (editDto.OrganizationId.HasValue)
+                var oldEmail = user.EmailAddress;
+                if (user == null)
                 {
-                    var userLink = await _nyssContext.UserNationalSocieties
-                        .Where(un => un.UserId == technicalAdvisorId && un.NationalSociety.Id == editDto.NationalSocietyId)
-                        .SingleOrDefaultAsync();
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+                else
+                {
+                    user.Name = editDto.Name;
+                    user.EmailAddress = editDto.Email;
+                    user.PhoneNumber = editDto.PhoneNumber;
+                    user.Organization = editDto.Organization;
+                    user.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+                    user.IsFirstLogin = oldEmail != editDto.Email ? true : false;
 
-                    if (editDto.OrganizationId.Value != userLink.OrganizationId)
+                    if (editDto.OrganizationId.HasValue)
                     {
-                        var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
+                        var userLink = await _nyssContext.UserNationalSocieties
+                            .Where(un => un.UserId == technicalAdvisorId && un.NationalSociety.Id == editDto.NationalSocietyId)
+                            .SingleOrDefaultAsync();
 
-                        if (!validationResult.IsSuccess)
+                        if (editDto.OrganizationId.Value != userLink.OrganizationId)
                         {
-                            return validationResult;
-                        }
+                            var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
 
-                        userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                            if (!validationResult.IsSuccess)
+                            {
+                                return validationResult;
+                            }
+
+                            userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                        }
                     }
+
+                    await UpdateModem(user, editDto.ModemId, editDto.NationalSocietyId);
+
+                    await _nyssContext.SaveChangesAsync();
                 }
 
-                await UpdateModem(user, editDto.ModemId, editDto.NationalSocietyId);
+                if (oldEmail != editDto.Email)
+                {
+                    var identityUser = await _identityUserRegistrationService.EditIdentityUser(oldEmail, editDto.Email);
+                    string securityStamp;
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                    await _verificationEmailService.SendVerificationEmail(user, securityStamp);
+                }
 
-                await _nyssContext.SaveChangesAsync();
                 return Success();
             }
             catch (ResultException e)

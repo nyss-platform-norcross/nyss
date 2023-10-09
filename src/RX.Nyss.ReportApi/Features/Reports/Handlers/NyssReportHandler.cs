@@ -120,6 +120,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             DataCollector = dataCollector,
                             EpiWeek = epiDate.EpiWeek,
                             EpiYear = epiDate.EpiYear,
+                            PhoneNumber = dataCollector.PhoneNumber,
                             Location = dataCollector.DataCollectorLocations.Count == 1
                                 ? dataCollector.DataCollectorLocations.First().Location
                                 : null,

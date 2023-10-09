@@ -19,6 +19,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly INyssReportHandler _nyssReportHandler;
         private readonly ITelerivetHandler _telerivetHandler;
+        private readonly ISmsGatewayHandler _smsGatewayHandler;
         private readonly IEidsrReportHandler _eidsrReportHandler;
         private readonly ILoggerAdapter _loggerAdapter;
 
@@ -27,13 +28,15 @@ namespace RX.Nyss.ReportApi.Features.Reports
             ILoggerAdapter loggerAdapter,
             INyssReportHandler nyssReportHandler,
             ITelerivetHandler telerivetHandler,
-            IEidsrReportHandler eidsrReportHandler)
+            IEidsrReportHandler eidsrReportHandler,
+            ISmsGatewayHandler smsGatewayHandler)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
             _nyssReportHandler = nyssReportHandler;
             _telerivetHandler = telerivetHandler;
             _eidsrReportHandler = eidsrReportHandler;
+            _smsGatewayHandler = smsGatewayHandler;
         }
 
         public async Task<bool> ReceiveReport(Report report)
@@ -56,6 +59,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     break;
                 case ReportSource.Telerivet:
                     await _telerivetHandler.Handle(report.Content);
+                    break;
+                case ReportSource.SmsGateway:
+                    await _smsGatewayHandler.Handle(report.Content);
                     break;
                 default:
                     _loggerAdapter.Error($"Could not find a proper handler to handle a report '{report}'.");

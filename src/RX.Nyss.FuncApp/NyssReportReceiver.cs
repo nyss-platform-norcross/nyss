@@ -30,7 +30,7 @@ public class NyssReportReceiver
     }
 
     [FunctionName("EnqueueNyssReport")]
-    public async Task<IActionResult> EnqueueSmsEagleReport(
+    public async Task<IActionResult> EnqueueNyssReport(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueNyssReport")] HttpRequestMessage httpRequest,
         [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
     {
