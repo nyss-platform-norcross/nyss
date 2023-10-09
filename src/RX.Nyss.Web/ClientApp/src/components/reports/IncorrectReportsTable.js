@@ -1,4 +1,4 @@
-import styles from '../common/table/Table.module.scss';
+import styles from './ReportsTable.module.scss';
 import reportsTableStyles from './ReportsTable.module.scss';
 import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';

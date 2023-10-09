@@ -3,8 +3,9 @@ import { createTheme } from "@material-ui/core/styles";
 export const theme = (direction) => createTheme({
   direction: direction,
   typography: {
-    fontSize: 14,
-    fontFamily: ["Poppins", '"Helvetica Neue"', 'Arial'].join(','),
+    fontSize: "16px",
+    htmlFontSize: "16px",
+    fontFamily: 'Arial',
     body1: {
       color: "#333333"
     },
@@ -18,20 +19,29 @@ export const theme = (direction) => createTheme({
       marginBottom: 20
     },
     h2: {
-      fontSize: 22,
+      fontSize: "24px",
       fontWeight: 600,
       margin: "10px 0 30px"
     },
     h3: {
-      fontSize: 16,
+      fontSize: "18px",
       fontWeight: 600,
       margin: "10px 0 20px"
     },
-    h6: {
-      fontSize: 14,
+    h5: {
+      fontSize: "16px",
       fontWeight: 600,
       margin: "10px 0 10px"
-    }
+    },
+    h6: {
+      fontSize: "14px",
+      fontWeight: 600,
+      margin: "10px 0 10px"
+    },
+    subtitle1: {
+      fontSize: "14px",
+      margin: "10px 0 10px"
+    },
   },
   palette: {
     primary: {
@@ -52,11 +62,22 @@ export const theme = (direction) => createTheme({
       root: {
         padding: "7px 15px",
         textTransform: "none",
-        fontSize: 16
+        fontSize: "14px"
       },
       outlinedPrimary: {
         border: "2px solid #C02C2C !important"
       },
+      containedPrimary: {
+        boxShadow: 'none',
+        '&:hover': {
+            boxShadow: 'none',
+          },
+      },
+    },
+    MuiIconButton: {
+      root: {
+        fontSize: "22px",
+      }
     },
     MuiMenu: {
       paper: {
@@ -65,7 +86,7 @@ export const theme = (direction) => createTheme({
     },
     MuiBreadcrumbs: {
       root: {
-        fontSize: 16
+        fontSize: "14px",
       },
       separator: {
         paddingBottom: 2
@@ -82,7 +103,7 @@ export const theme = (direction) => createTheme({
     },
     MuiInput: {
       root: {
-        fontSize: "1rem",
+        fontSize: "14px",
         border: "1px solid #E4E1E0",
         backgroundColor: "#fff"
       },
@@ -128,7 +149,11 @@ export const theme = (direction) => createTheme({
       root: {
         marginRight: direction === 'ltr' ? '16px' : '-11px',
         marginLeft: direction === 'ltr' ? '-11px' : '16px'
-      }
+      },
+      label: {
+        fontSize: "14px"
+      },
+      fontSize: "24px",
     },
     MuiInputLabel: {
       root: {
@@ -168,7 +193,7 @@ export const theme = (direction) => createTheme({
         textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       primary: {
-        fontSize: 16,
+        fontSize: "16px",
         color: "#737373"
       }
     },
@@ -182,7 +207,7 @@ export const theme = (direction) => createTheme({
     },
     MuiTableCell: {
       root: {
-        fontSize: "1rem",
+        fontSize: "14px",
         textAlign: direction === 'ltr' ? 'left' : 'right'
       },
       head: {
@@ -213,7 +238,7 @@ export const theme = (direction) => createTheme({
     },
     MuiTab: {
       root: {
-        fontSize: "1rem !important",
+        fontSize: "13px !important",
         "&:hover": {
           backgroundColor: "rgba(0, 0, 0, 0.04)",
           opacity: 1
@@ -300,7 +325,7 @@ export const theme = (direction) => createTheme({
     },
     MuiTooltip: {
       tooltip: {
-        fontSize: '1rem',
+        fontSize: '16px',
         padding: '8px'
       }
     },
@@ -337,6 +362,9 @@ export const theme = (direction) => createTheme({
       icon: {
         marginLeft: direction === 'ltr' ? '5px' : '-6px',
         marginRight: direction === 'ltr' ? '-6px' : '5px'
+      },
+      label: {
+        fontSize: '12px',
       }
     },
     MuiFormHelperText: {

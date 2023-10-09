@@ -115,7 +115,13 @@ export const stringKeys = {
       addRegion: "nationalSociety.structure.addRegion",
       addDistrict: "nationalSociety.structure.addDistrict",
       addVillage: "nationalSociety.structure.addVillage",
-      addZone: "nationalSociety.structure.addZone"
+      addZone: "nationalSociety.structure.addZone",
+      locationHeader: {
+        region: "nationalSociety.structure.region",
+        district: "nationalSociety.structure.district",
+        village: "nationalSociety.structure.village",
+        zone: "nationalSociety.structure.zone"
+      },
     },
     setHead: {
       notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
@@ -1046,7 +1052,9 @@ export const stringKeys = {
     buttons: {
       add: "common.buttons.add",
       edit: "common.buttons.edit",
-      update: "common.buttons.update"
+      update: "common.buttons.update",
+      goBack: "common.buttons.goBack",
+      tryAgain: "common.buttons.tryAgain"
     },
     boolean: {
       true: "common.true",
@@ -1068,14 +1076,20 @@ export const stringKeys = {
     needsImprovement: "translations.needsImprovement"
   },
   feedback: {
+    title: "feedback.title",
     send: "feedback.send",
     submit: "feedback.submit",
-    dialogTitle: "feedback.dialogTitle",
-    dialogDescription: "feedback.dialogDescription",
-    thankYou: "feedback.thankYou"
+    description: "feedback.description",
+    placeholder: "feedback.placeholder",
+    thankYouTitle: "feedback.thankYouTitle",
+    thankYouDescription: "feedback.thankYouDescription",
+    errorTitle: "feedback.errorTitle",
+    errorDescription: "feedback.errorDescription",
   },
   sideMenu: {
-    account: "sideMenu.account"
+    account: "sideMenu.account",
+    general: "sideMenu.general",
+    nationalSocieties: "sideMenu.nationalSocieties",
   }
 };
 

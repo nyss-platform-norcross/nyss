@@ -72,6 +72,7 @@ import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { EidsrIntegrationPage } from "../eidsrIntegration/EidsrIntegrationPage";
 import { EidsrIntegrationEditPage } from "../eidsrIntegration/EidsrIntegrationEditPage";
+import { FeedbackPage } from '../feedback/FeedbackPage';
 
 export const App = ({ history }) => {
   const direction = useSelector(state => state.appData.direction);
@@ -140,6 +141,8 @@ export const App = ({ history }) => {
             <AuthRoute exact path='/suspecteddiseases' component={SuspectedDiseaseListPage} roles={accessMap.suspectedDiseases.list} />
             <AuthRoute exact path='/suspecteddiseases/add' component={SuspectedDiseaseCreatePage} roles={accessMap.suspectedDiseases.add} />
             <AuthRoute exact path='/suspecteddiseases/:suspecteddiseaseId/edit' component={SuspectedDiseaseEditPage} roles={accessMap.suspectedDiseases.edit} />
+
+            <AuthRoute exact path='/feedback' component={FeedbackPage} roles={accessMap.feedback.send} />
 
             <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
             <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />

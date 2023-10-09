@@ -5,7 +5,7 @@ import { Button, CircularProgress } from '@material-ui/core';
 import { withAccessRestriction } from "../../hasAccess/HasAccess";
 import AddIcon from '@material-ui/icons/Add';
 
-const TableActionsButtonComponent = ({ onClick, add, isFetching, children, variant, rtl }) => (
+const TableActionsButtonComponent = ({ onClick, add, isFetching, children, variant, rtl, style }) => (
   <Button
     onClick={onClick}
     startIcon={add && <AddIcon className={rtl ? styles.rtl : null} />}
@@ -13,6 +13,7 @@ const TableActionsButtonComponent = ({ onClick, add, isFetching, children, varia
     color="primary"
     className={styles.button}
     disabled={isFetching}
+    style={style}
   >
     {isFetching && <CircularProgress size={16} className={styles.progressIcon} />}
     {children}

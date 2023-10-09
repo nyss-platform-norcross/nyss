@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { List, ListItem, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Typography, makeStyles, Tooltip } from '@material-ui/core';
 import { RcIcon } from '../icons/RcIcon';
 import { logout } from '../../authentication/authActions';
-import { sendFeedback } from '../app/logic/appActions';
-import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import { strings, stringKeys } from '../../strings';
 
 const useStyles = makeStyles(() => ({
@@ -91,20 +89,12 @@ const useStyles = makeStyles(() => ({
 
 
 
-export const AccountSection = () => {
+export const AccountSection = ({handleItemClick}) => {
   const classes = useStyles()
   const dispatch = useDispatch();
 
-  const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
-  const isSendingFeedback = useSelector(state => state.appData.feedback.isSending);
-  const sendFeedbackResult = useSelector(state => state.appData.feedback.result);
   const user = useSelector(state => state.appData.user);
   const isSupervisor = user.roles.includes("Supervisor") || user.roles.includes("HeadSupervisor")
-
-
-  const handleFeedbackDialogClose = () => {
-    setFeedbackDialogOpened(false);
-  }
 
   const handleLogout = () => dispatch(logout.invoke());
 
@@ -143,7 +133,7 @@ export const AccountSection = () => {
               </Tooltip>
             </ListItemText>
           </ListItem>
-          <ListItem button onClick={() => setFeedbackDialogOpened(true)} className={classes.ListItem}>
+          <ListItem button onClick={() => handleItemClick({ url: "/feedback" })} className={classes.ListItem}>
             <ListItemIcon className={classes.ListItemIcon}>
               <RcIcon icon="Feedback" className={classes.ListItemText}/>
             </ListItemIcon>
@@ -159,12 +149,6 @@ export const AccountSection = () => {
               {strings(stringKeys.user.logout)}
             </ListItemText>
           </ListItem>
-          <FeedbackDialog
-          isOpened={feedbackDialogOpened}
-          close={handleFeedbackDialogClose}
-          sendFeedback={sendFeedback.invoke}
-          isSending={isSendingFeedback}
-          result={sendFeedbackResult} />
         </List>
         </AccordionDetails>
       </Accordion>
