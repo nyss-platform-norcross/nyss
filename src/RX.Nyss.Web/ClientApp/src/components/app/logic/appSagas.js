@@ -86,11 +86,11 @@ function* openModule({ path, params }) {
   const menuParams = { ...routeParams, ...params };
 
   const breadcrumb = getBreadcrumb(path, menuParams, user);
-  const topMenu = getMenu("/", menuParams, placeholders.topMenu, path, user);
+  const generalMenu = getMenu("/", menuParams, placeholders.generalMenu, path, user);
   const sideMenu = getMenu(path, menuParams, placeholders.leftMenu, path, user);
   const tabMenu = getMenu(path, menuParams, placeholders.tabMenu, path, user);
 
-  yield put(actions.openModule.success(path, menuParams, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
+  yield put(actions.openModule.success(path, menuParams, breadcrumb, generalMenu, sideMenu, tabMenu, params.title))
 }
 
 function* getAppData() {

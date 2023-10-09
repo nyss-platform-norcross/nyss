@@ -75,8 +75,8 @@ export const openModule = {
   invoke: (path, params) =>
     ({ type: actions.OPEN_MODULE.INVOKE, path, params}),
 
-  success: (path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title) =>
-    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title }),
+  success: (path, parameters, breadcrumb, generalMenu, sideMenu, tabMenu, title) =>
+    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, generalMenu, sideMenu, tabMenu, title }),
 
   failure: (message) =>
     ({ type: actions.OPEN_MODULE.FAILURE, message })

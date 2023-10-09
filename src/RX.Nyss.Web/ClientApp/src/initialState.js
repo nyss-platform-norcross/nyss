@@ -7,7 +7,7 @@ export const initialState = {
       path: null,
       parameters: {},
       breadcrumb: [],
-      topMenu: [],
+      generalMenu: [],
       tabMenu: [],
       sideMenu: []
     },
