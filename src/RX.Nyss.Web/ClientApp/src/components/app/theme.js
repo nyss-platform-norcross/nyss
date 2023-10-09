@@ -42,6 +42,10 @@ export const theme = (direction) => createTheme({
       fontSize: "14px",
       margin: "10px 0 10px"
     },
+    subtitle2: {
+      fontSize: "12px",
+      margin: "10px 0 10px"
+    },
   },
   palette: {
     primary: {

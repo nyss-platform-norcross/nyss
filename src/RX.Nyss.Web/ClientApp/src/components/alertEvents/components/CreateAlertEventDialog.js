@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Grid,
   MenuItem,
+  Typography,
   useMediaQuery,
   useTheme
 } from "@material-ui/core";
@@ -99,8 +100,10 @@ export const CreateAlertEventDialog = ({ close, alertId, openCreation, create })
   return !!form && (
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
 
-      <DialogTitle id="form-dialog-title">
-        {strings(stringKeys.common.buttons.add)}
+      <DialogTitle id="form-dialog-title" disableTypography>
+        <Typography variant="h5">
+          {strings(stringKeys.common.buttons.add)}
+        </Typography>
       </DialogTitle>
 
       <DialogContent>
