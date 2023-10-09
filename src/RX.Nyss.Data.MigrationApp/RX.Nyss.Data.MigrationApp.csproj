@@ -10,4 +10,8 @@
     <ProjectReference Include="..\RX.Nyss.Web\RX.Nyss.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Telerivet.NET" Version="1.5.1" />
+  </ItemGroup>
+
 </Project>

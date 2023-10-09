@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -6,9 +8,12 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Features.Common;
+using Telerivet.Client;
+
 
 namespace RX.Nyss.ReportApi.Services
 {
@@ -17,6 +22,7 @@ namespace RX.Nyss.ReportApi.Services
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false);
         Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message);
+        Task SendTelerivetSms(long number, string message);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -40,10 +46,16 @@ namespace RX.Nyss.ReportApi.Services
 
         public async Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message)
         {
+            //long number = 004798425349;
             if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
             {
                 var specifyModemWhenSending = gatewaySetting.Modems.Any();
                 await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message, specifyModemWhenSending);
+            }
+            else if (gatewaySetting.GatewayType == GatewayType.Telerivet)
+            {
+                _loggerAdapter.Info($"This is logger {gatewaySetting.EmailAddress}, {gatewaySetting.GatewayType}, {recipients.ToString()}, {message}");
+                await SendTelerivetSms(98425349, message);
             }
             else if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
             {
@@ -98,7 +110,9 @@ namespace RX.Nyss.ReportApi.Services
                     IotHubDeviceName = iotHubDeviceName,
                     PhoneNumber = recipient.PhoneNumber,
                     SmsMessage = smsMessage,
-                    ModemNumber = specifyModemWhenSending ? recipient.Modem : null
+                    ModemNumber = specifyModemWhenSending
+                        ? recipient.Modem
+                        : null
                 };
 
                 var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
@@ -109,8 +123,20 @@ namespace RX.Nyss.ReportApi.Services
 
                 return _sendSmsQueueSender.SendMessageAsync(message);
             }));
-    }
 
+        public async Task SendTelerivetSms(long number, string message)
+        {
+            var tr = new TelerivetAPI("_iN2i_VdAJFTIm5BYMzFmkANujPlTyFeENW0");
+                    var project = tr.InitProjectById("PJc4c294a93b50ec5c");
+
+
+                    // send message
+                    Message sent_msg = await project.SendMessageAsync(Util.Options(
+                        "content", message,
+                        "to_number", number
+                    ));
+                }
+    };
     public class SendEmailMessage
     {
         public Contact To { get; set; }

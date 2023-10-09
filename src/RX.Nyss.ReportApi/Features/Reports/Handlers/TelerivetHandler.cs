@@ -33,17 +33,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
     {
         private const string SenderParameterName = "from_number";
 
-        private const string TimestampParameterName = "timestamp";
+        private const string TimestampParameterName = "time_created";
 
         private const string TextParameterName = "content";
 
-        private const string IncomingMessageIdParameterName = "msgid";
+        private const string IncomingMessageIdParameterName = "time_updated";
 
         private const string OutgoingMessageIdParameterName = "oid";
 
         private const string ModemNumberParameterName = "modemno";
 
         private const string ApiKeyParameterName = "apikey";
+
+        private const string ProjectIdParameterName = "project_id";
 
         private readonly IReportMessageService _reportMessageService;
 
@@ -89,12 +91,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         {
             var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var sender = parsedQueryString[SenderParameterName];
-            var timestamp = parsedQueryString[TimestampParameterName];
+            var time_created = parsedQueryString[TimestampParameterName];
             var text = parsedQueryString[TextParameterName]?.Trim() ?? string.Empty;
-            var incomingMessageId = parsedQueryString[IncomingMessageIdParameterName].ParseToNullableInt();
+            var time_updated = parsedQueryString[IncomingMessageIdParameterName].ParseToNullableInt();
             var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
+            var projectId = parsedQueryString[ProjectIdParameterName].ParseToNullableInt();
 
             ErrorReportData errorReportData = null;
             AlertData alertData = null;
@@ -106,16 +109,17 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var rawReport = new RawReport
                 {
                     Sender = sender,
-                    Timestamp = timestamp,
+                    Timestamp = time_created,
                     ReceivedAt = _dateTimeProvider.UtcNow,
                     Text = text.Truncate(160),
-                    IncomingMessageId = incomingMessageId,
+                    IncomingMessageId = time_updated,
                     OutgoingMessageId = outgoingMessageId,
                     ModemNumber = modemNumber,
                     ApiKey = apiKey
                 };
 
-                var exists = await _nyssContext.RawReports.AnyAsync(r => r.IncomingMessageId == incomingMessageId && r.ApiKey == apiKey);
+
+                var exists = await _nyssContext.RawReports.AnyAsync(r => r.IncomingMessageId == time_updated && r.ApiKey == apiKey);
                 if (exists)
                 {
                     return;
@@ -172,8 +176,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 await _nyssContext.SaveChangesAsync();
                 transactionScope.Complete();
             }
-
-            await SendNotifications(sender, modemNumber, alertData, errorReportData, projectHealthRisk, gatewaySetting);
+            await SendNotifications(sender, modemNumber, projectId, alertData, errorReportData, projectHealthRisk, gatewaySetting);
         }
 
         public async Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId)
@@ -218,7 +221,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 gatewaySetting = await _reportValidationService.ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
-                var receivedAt = _reportValidationService.ParseTimestamp(timestamp);
+                var receivedAt = _reportValidationService.ParseTelerivetTimestamp(timestamp);
                 _reportValidationService.ValidateReceivalTime(receivedAt);
                 rawReport.ReceivedAt = receivedAt;
 
@@ -285,6 +288,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private async Task SendNotifications(
             string senderPhoneNumber,
             int? senderModemNumber,
+            int? projectId,
             AlertData alertData,
             ErrorReportData errorReportData,
             ProjectHealthRisk projectHealthRisk,
@@ -297,10 +301,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     new SendSmsRecipient
                     {
                         PhoneNumber = senderPhoneNumber,
-                        Modem = senderModemNumber
+                        //Modem = senderModemNumber
                     }
                 };
 
+                Console.WriteLine($"This is TELERIVET HANDLER {senderPhoneNumber}, {senderModemNumber}, {projectId}");
                 await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
 
                 if (alertData != null && alertData.Alert != null)
