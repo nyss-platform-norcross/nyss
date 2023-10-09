@@ -25,7 +25,6 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl }) => {
 }
 
 const mapStateToProps = state => ({
-  breadcrumb: state.appData.siteMap.breadcrumb,
   sideMenuOpen: state.appData.mobile.sideMenuOpen,
   directionRtl: state.appData.user.languageCode === 'ar'
 });

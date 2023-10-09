@@ -1,6 +1,5 @@
 import React from 'react';
 import { Header } from './Header';
-import { Breadcrumb } from './Breadcrumb';
 import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
 
@@ -30,8 +29,6 @@ export const Layout = ({ fillPage, children }) => {
 
         <div className={`${styles.pageContentContainer} ${fillPage ? styles.fillPage : null}`} id={pageContentId}>
           <div className={`${styles.pageContent} ${fillPage ? styles.fillPage : null}`}>
-            <Breadcrumb />
-
             <div className={fillPage ? styles.fillPage : null}>
               <TabMenu />
               {children}
