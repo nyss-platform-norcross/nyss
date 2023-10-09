@@ -19,11 +19,11 @@ namespace RX.Nyss.FuncApp;
 public class TelerivetReportReceiver
 {
 private const string ApiKeyQueryParameterName = "apikey";
-    private readonly ILogger<SmsEagleReportReceiver> _logger;
+    private readonly ILogger<TelerivetReportReceiver> _logger;
     private readonly IConfig _config;
     private readonly IReportPublisherService _reportPublisherService;
 
-    public TelerivetReportReceiver(ILogger<SmsEagleReportReceiver> logger, IConfig config, IReportPublisherService reportPublisherService)
+    public TelerivetReportReceiver(ILogger<TelerivetReportReceiver> logger, IConfig config, IReportPublisherService reportPublisherService)
     {
         _logger = logger;
         _config = config;
