@@ -11,7 +11,7 @@
 html {
     width: 100%;
     height: 100%;
-    font-size: 14px;
+    font-size: 16px;
 
     body {
         width: 100%;
@@ -21,7 +21,7 @@ html {
         color: #333333;
         background-color: #FCFCFC;
 
-        font-family: Poppins;
+        font-family: 'Arial';
 
         display: flex;
 
@@ -35,7 +35,7 @@ html {
 .leaflet-container {
   height: 400px;
   width: 100%;
-  font-family: Poppins;
+  font-family: 'Arial';
 }
 
 .leaflet-popup-close-button {
