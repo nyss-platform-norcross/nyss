@@ -49,6 +49,7 @@ const TabMenuComponent = ({ projectTabMenu, tabMenu, breadcrumb, push, currentUr
         <div className={styles.header}>{title || currentBreadcrumbItem.title}</div>
       }
       <Grid container justifyContent='center' style={{ width: "100%" }}>
+      {/* Only display project tab menu for all users other than data consumer since the role only has acces to project dashboard */}
       {projectTabMenu && projectTabMenu.length > 1 && (
         <Tabs
         value={projectTabMenu.indexOf(projectTabMenu.find(t => t.isActive))}
