@@ -26,7 +26,8 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath, authU
     .map(item => ({
       title: item.title(),
       url: getUrl(item.path, parameters),
-      isActive: breadcrumb.some(b => b.siteMapData.path === item.path)
+      isActive: breadcrumb.some(b => b.siteMapData.path === item.path),
+      icon: item.icon
     }))
 };
 

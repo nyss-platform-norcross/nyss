@@ -18,7 +18,8 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.list,
-    placeholderIndex: nationalSocietyLeftMenuOrder.projects
+    placeholderIndex: nationalSocietyLeftMenuOrder.projects,
+    icon: "Project"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects",

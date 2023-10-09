@@ -98,7 +98,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
                 return (
                   <ListItem key={`sideMenuItem_${item.title}`} className={item.isActive ? classes.ListItemActive : undefined} button onClick={() => handleItemClick(item)} >
                     <ListItemIcon className={classes.ListItemIconWrapper}>
-                      {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
+                      {item.icon && <RcIcon icon={item.icon} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
                     </ListItemIcon>
                     <ListItemText disablePadding primary={item.title} primaryTypographyProps={{'className': classes.SideMenuText }} />
                   </ListItem>
