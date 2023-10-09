@@ -8,7 +8,10 @@ import { strings, stringKeys } from '../../strings';
 
 const useStyles = makeStyles(() => ({
     AccordionContainer: {
-      width: "100%"
+      width: "100%",
+      position: "absolute",
+      bottom: 0,
+      zIndex: 1
     },
     Accordion: {
       backgroundColor: '#F4F4F4',
@@ -83,7 +86,8 @@ const useStyles = makeStyles(() => ({
     Account: {
       fontSize: 12,
       fontWeight: "bold",
-      margin: "0 0 8px 8px"
+      margin: "0 0 8px 8px",
+      background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)'
     },
 }));
 
