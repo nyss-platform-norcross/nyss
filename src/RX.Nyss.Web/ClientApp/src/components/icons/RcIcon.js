@@ -7,6 +7,9 @@ import { ReactComponent as SettingsSvg } from "../../assets/icons/Settings.svg"
 import { ReactComponent as UsersSvg } from "../../assets/icons/Users.svg"
 import { ReactComponent as ValidateAccountSvg } from "../../assets/icons/Validate-account.svg"
 import { ReactComponent as AlertSvg } from "../../assets/icons/Alert.svg"
+import { ReactComponent as CovidSvg} from "../../assets/icons/COVID-19.svg"
+import { ReactComponent as UrbanSvg} from "../../assets/icons/Urban.svg"
+import { ReactComponent as RemoteSupportSvg} from "../../assets/icons/Remote-support.svg"
 
 
 
@@ -28,6 +31,12 @@ export const RcIcon = ({ icon, ...props }) => {
       return <SvgIcon {...props} component={AlertSvg} viewBox="0 0 48 41" />
     case "Users2":
       return <SvgIcon {...props} component={UsersSvg} viewBox="0 0 48 36" />
+    case "HealthRisks":
+      return <SvgIcon {...props} component={CovidSvg} viewBox="0 0 22 20" />
+    case "NationalSocieties":
+      return <SvgIcon {...props} component={UrbanSvg} viewBox="0 0 22 20" />
+    case "GlobalCoordinators":
+      return <SvgIcon {...props} component={RemoteSupportSvg} viewBox="0 0 22 20" />
     default:
       return null
   }
