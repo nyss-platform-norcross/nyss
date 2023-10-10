@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
       },
     },
     AccordionExpanded: {
-      margin: 0
+      margin: "0 !important",
     },
     AccordionSummary: {
       backgroundColor: '#EDEDED',
@@ -86,7 +86,7 @@ const useStyles = makeStyles(() => ({
     Account: {
       fontSize: 12,
       fontWeight: "bold",
-      margin: "0 0 8px 8px",
+      padding: "8px 0 8px 8px",
       background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)'
     },
 }));
