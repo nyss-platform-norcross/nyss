@@ -83,7 +83,7 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
           <ListItemIcon className={classes.ListItemIconWrapper}>
             {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} `} />}
           </ListItemIcon>
-          <ListItemText disablePadding primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} className={classes.SideMenuTextWrapper}/>
+          <ListItemText primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} className={classes.SideMenuTextWrapper}/>
         </ListItem>
       )
     })}
