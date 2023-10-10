@@ -3,14 +3,14 @@ import styles from './Header.module.scss';
 import React from 'react';
 import { connect } from "react-redux";
 import { UserStatus } from './UserStatus';
-import { Icon } from '@material-ui/core';
+import { Icon, useMediaQuery } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
 const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) => {
 
   // Only return top header menu for supervisors and head supervisors since they will not have the sidemenu displayed. In addition, display top header for tablets and mobile devices for hamburger menu
-  const { innerWidth: width } = window;
-  if(!isSupervisor && width > 1280) return null;
+  const isFullScreen = useMediaQuery('(min-width:1280px)');
+  if(!isSupervisor && isFullScreen) return null;
 
   return (
     <div className={styles.header}>
