@@ -5,7 +5,7 @@ import * as actions from "./appActions";
 import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
 import { placeholders } from "../../../siteMapPlaceholders";
-import { getMenu } from "../../../utils/siteMapService";
+import { getHierarchy, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
 import { reloadPage } from "../../../utils/page";
 import * as localStorage from "../../../utils/localStorage";
@@ -77,8 +77,9 @@ function* openModule({ path, params }) {
   const topMenu = getMenu(menuParams, placeholders.topMenu, path, user);
   const sideMenu = getMenu(menuParams, placeholders.leftMenu, path, user);
   const tabMenu = getMenu(menuParams, placeholders.tabMenu, path, user);
+  const title = getHierarchy(path, menuParams, user).filter(b => !b.hidden).slice(-1)[0].title;
 
-  yield put(actions.openModule.success(path, menuParams, topMenu, sideMenu, tabMenu, params.title))
+  yield put(actions.openModule.success(path, menuParams, topMenu, sideMenu, tabMenu, title))
 }
 
 function* getAppData() {
