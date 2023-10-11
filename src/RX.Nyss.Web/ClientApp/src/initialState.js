@@ -9,6 +9,7 @@ export const initialState = {
       breadcrumb: [],
       topMenu: [],
       tabMenu: [],
+      projectTabMenu: [],
       sideMenu: []
     },
     mobile: {
