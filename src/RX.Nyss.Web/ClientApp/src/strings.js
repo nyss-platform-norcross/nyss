@@ -209,6 +209,8 @@ export const stringKeys = {
       editionTitle: "smsGateway.form.editionTitle",
       apiKey: "smsGateway.form.apiKey",
       gatewayType: "smsGateway.form.gatewayType",
+      telerivetApiKey: "smsGateway.form.telerivetApiKey",
+      telerivetProjectId: "smsGateway.form.telerivetProjectId",
       emailAddress: "smsGateway.form.emailAddress",
       useIotHub: "smsGateway.form.useIotHub",
       iotHubDeviceName: "smsGateway.form.iotHubDeviceName",

@@ -100,7 +100,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
                     <ListItemIcon className={classes.ListItemIconWrapper}>
                       {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
                     </ListItemIcon>
-                    <ListItemText disablePadding primary={item.title} primaryTypographyProps={{'className': classes.SideMenuText }} />
+                    <ListItemText disablepadding= "true" primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} />
                   </ListItem>
                 )
               })}

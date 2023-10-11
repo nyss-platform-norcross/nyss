@@ -16,6 +16,8 @@ namespace RX.Nyss.Web.Features.SmsGateways.Dto
         public string IotHubDeviceName { get; set; }
         public string ModemOneName { get; set; }
         public string ModemTwoName { get; set; }
+        public string TelerivetApiKey { get; set; }
+        public string TelerivetProjectId { get; set; }
 
         public class GatewaySettingRequestValidator : AbstractValidator<EditGatewaySettingRequestDto>
         {

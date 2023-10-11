@@ -32,6 +32,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: "",
       apiKey: uuidv4().replace(/-/g, ''),
       gatewayType: smsEagle || smsGateway || telerivet,
+      telerivetApiKey: "",
+      telerivetProjectId: "",
       emailAddress: "",
       useIotHub: false,
       iotHubDeviceName: "",
@@ -44,6 +46,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
+      telerivetApiKey: [validators.requiredWhen(tr => tr.gatewayType.toString() === telerivet)],
+      telerivetProjectId: [validators.requiredWhen(tp => tp.gatewayType.toString() === telerivet)],
       emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)],
       modemOneName: [validators.maxLength(100)],
@@ -88,6 +92,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
+      telerivetApiKey: values.gatewayType.toString() === telerivet ? values.telerivetApiKey : null,
+      telerivetProjectId: values.gatewayType.toString() === telerivet ? values.telerivetProjectId : null,
       emailAddress: values.emailAddress,
       iotHubDeviceName: values.useIotHub ? values.iotHubDeviceName : null,
       modemOneName: values.useDualModem ? values.modemOneName : null,
@@ -145,15 +151,6 @@ const SmsGatewaysCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.smsGateway.form.emailAddress)}
-              name="emailAddress"
-              field={form.fields.emailAddress}
-              inputMode={"email"}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
             <SelectInput
               label={strings(stringKeys.smsGateway.form.gatewayType)}
               name="gatewayType"
@@ -168,6 +165,29 @@ const SmsGatewaysCreatePageComponent = (props) => {
               ))}
             </SelectInput>
           </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.smsGateway.form.emailAddress)}
+              name="emailAddress"
+              field={form.fields.emailAddress}
+              inputMode={"email"}/>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.smsGateway.form.telerivetApiKey)}
+              name="telerivetApiKey"
+              field={form.fields.telerivetApiKey}/>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.smsGateway.form.telerivetProjectId)}
+              name="telerivetProjectId"
+              field={form.fields.telerivetProjectId}/>
+          </Grid>
+
           <Grid item xs={12}>
             <CheckboxField
               label={strings(stringKeys.smsGateway.form.useIotHub)}

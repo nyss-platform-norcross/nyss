@@ -296,17 +296,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         {
             if (errorReportData == null)
             {
-                var recipients = new List<SendSmsRecipient>
-                {
-                    new SendSmsRecipient
-                    {
-                        PhoneNumber = senderPhoneNumber,
-                        //Modem = senderModemNumber
-                    }
-                };
-
-                Console.WriteLine($"This is TELERIVET HANDLER {senderPhoneNumber}, {senderModemNumber}, {projectId}");
-                await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
+                var senderNumber =  long.Parse(senderPhoneNumber);
+                await _queuePublisherService.SendTelerivetSms(senderNumber,  projectHealthRisk.FeedbackMessage, gatewaySetting.TelerivetSendSmsApiKey,gatewaySetting.TelerivetProjectId);
 
                 if (alertData != null && alertData.Alert != null)
                 {
@@ -345,17 +336,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn($"No feedback message found for error type {errorReport.ReportErrorType}");
                 return;
             }
+            var senderNumber = long.Parse(errorReport.DataCollector.PhoneNumber);
 
-            var senderList = new List<SendSmsRecipient>
-            {
-                new SendSmsRecipient
-                {
-                    PhoneNumber = errorReport.DataCollector.PhoneNumber,
-                    Modem = errorReport.ModemNumber
-                }
-            };
-
-            await _queuePublisherService.SendSms(senderList, gatewaySetting, feedbackMessage);
+            await _queuePublisherService.SendTelerivetSms(senderNumber, feedbackMessage, gatewaySetting.TelerivetSendSmsApiKey, gatewaySetting.TelerivetProjectId);
         }
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)

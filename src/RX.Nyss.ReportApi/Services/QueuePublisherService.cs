@@ -22,7 +22,7 @@ namespace RX.Nyss.ReportApi.Services
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false);
         Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message);
-        Task SendTelerivetSms(long number, string message);
+        Task SendTelerivetSms(long number, string message, string apiKey, string projectId);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -46,16 +46,10 @@ namespace RX.Nyss.ReportApi.Services
 
         public async Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message)
         {
-            //long number = 004798425349;
             if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
             {
                 var specifyModemWhenSending = gatewaySetting.Modems.Any();
                 await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message, specifyModemWhenSending);
-            }
-            else if (gatewaySetting.GatewayType == GatewayType.Telerivet)
-            {
-                _loggerAdapter.Info($"This is logger {gatewaySetting.EmailAddress}, {gatewaySetting.GatewayType}, {recipients.ToString()}, {message}");
-                await SendTelerivetSms(98425349, message);
             }
             else if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
             {
@@ -124,18 +118,13 @@ namespace RX.Nyss.ReportApi.Services
                 return _sendSmsQueueSender.SendMessageAsync(message);
             }));
 
-        public async Task SendTelerivetSms(long number, string message)
+        public async Task SendTelerivetSms(long number, string message, string apiKey, string projectId)
         {
-            var tr = new TelerivetAPI("_iN2i_VdAJFTIm5BYMzFmkANujPlTyFeENW0");
-                    var project = tr.InitProjectById("PJc4c294a93b50ec5c");
-
-
-                    // send message
-                    Message sent_msg = await project.SendMessageAsync(Util.Options(
-                        "content", message,
-                        "to_number", number
-                    ));
-                }
+            var tr = new TelerivetAPI(apiKey);
+            var project = tr.InitProjectById(projectId);
+            // send message
+            Message sent_msg = await project.SendMessageAsync(Util.Options("content", message, "to_number", number));
+        }
     };
     public class SendEmailMessage
     {
