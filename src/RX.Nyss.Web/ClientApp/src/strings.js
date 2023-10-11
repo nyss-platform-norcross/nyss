@@ -1086,6 +1086,10 @@ export const stringKeys = {
     errorTitle: "feedback.errorTitle",
     errorDescription: "feedback.errorDescription",
   },
+  sideMenu: {
+    general: "sideMenu.general",
+    nationalSocieties: "sideMenu.nationalSocieties",
+  }
 };
 
 export const isStringKey = (key) =>
