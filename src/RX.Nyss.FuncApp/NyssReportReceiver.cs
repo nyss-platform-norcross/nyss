@@ -47,7 +47,7 @@ public class NyssReportReceiver
 
         if (string.IsNullOrWhiteSpace(httpRequestContent))
         {
-            _logger.Log(LogLevel.Warning, "Received an empty SMS Eagle report.");
+            _logger.Log(LogLevel.Warning, "Received an empty Nyss report.");
             return new BadRequestResult();
         }
 
