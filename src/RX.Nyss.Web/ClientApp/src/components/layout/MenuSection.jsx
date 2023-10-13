@@ -52,7 +52,7 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
       return (
         <ListItem key={`sideMenuItem_${item.title}`} className={`${classes.ListItem} ${item.isActive ? classes.ListItemActive : ''}`} button onClick={() => handleItemClick(item)} >
           <ListItemIcon className={classes.ListItemIconWrapper}>
-            {item.icon && <RcIcon icon={item.icon} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
+            {item.icon && <RcIcon icon={item.icon} className={`${classes.SideMenuIcon}`} />}
           </ListItemIcon>
           <ListItemText primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} className={classes.SideMenuTextWrapper}/>
         </ListItem>
