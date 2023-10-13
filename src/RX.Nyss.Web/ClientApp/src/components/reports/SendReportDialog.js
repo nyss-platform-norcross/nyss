@@ -10,7 +10,7 @@ import { strings, stringKeys } from '../../strings';
 import { useTheme, Grid, MenuItem, LinearProgress } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { Dialog, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
+import { Dialog, DialogContent, DialogTitle, Typography, useMediaQuery } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
@@ -44,7 +44,7 @@ export const SendReportDialog = ({ close, showMessage }) => {
     if (!formData) {
       return null;
     }
-    
+
     const fields = {
       dataCollector: null,
       gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
@@ -157,8 +157,8 @@ export const SendReportDialog = ({ close, showMessage }) => {
       form.fields.gatewayModemId.update("");
       setGatewayModemsDisabled(true);
     }
-  }  
-  
+  }
+
   const onDateChange = date => {
     const newDate = dayjs(date);
     setDate(newDate);
@@ -166,8 +166,8 @@ export const SendReportDialog = ({ close, showMessage }) => {
   }
 
   const validateTime = (value, newDate = null) =>
-    dayjs(`${(!!newDate ? newDate : date).format('YYYY-MM-DD')} ${value}`) > dayjs() 
-      ? strings(stringKeys.validation.timeNotInFuture) 
+    dayjs(`${(!!newDate ? newDate : date).format('YYYY-MM-DD')} ${value}`) > dayjs()
+      ? strings(stringKeys.validation.timeNotInFuture)
       : null;
 
   const onTimeChange = time => {
@@ -179,7 +179,11 @@ export const SendReportDialog = ({ close, showMessage }) => {
     <Fragment>
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
         {isFetching && <LinearProgress />}
-        <DialogTitle id="form-dialog-title">{strings(stringKeys.reports.sendReport.sendReport)}</DialogTitle>
+        <DialogTitle id="form-dialog-title">
+          <Typography variant="h5">
+            {strings(stringKeys.reports.sendReport.sendReport)}
+          </Typography>
+        </DialogTitle>
         <DialogContent>
           <Form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
