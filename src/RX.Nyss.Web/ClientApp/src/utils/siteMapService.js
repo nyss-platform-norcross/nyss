@@ -26,7 +26,8 @@ export const getMenu = (parameters, placeholder, currentPath, authUser) => {
     .map(item => ({
       title: item.title(),
       url: getUrl(item.path, parameters),
-      isActive: pathHierarchy.some(b => b.siteMapData.path === item.path)
+      isActive: pathHierarchy.some(b => b.siteMapData.path === item.path),
+      icon: item.icon
     }))
 };
 

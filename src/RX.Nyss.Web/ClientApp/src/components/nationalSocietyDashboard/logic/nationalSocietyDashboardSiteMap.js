@@ -10,6 +10,7 @@ export const nationalSocietyDashboardSiteMap = [
     title: () => strings(stringKeys.dashboard.title),
     access: accessMap.nationalSocieties.showDashboard,
     placeholder: placeholders.leftMenu,
-    placeholderIndex: nationalSocietyLeftMenuOrder.dashboard
+    placeholderIndex: nationalSocietyLeftMenuOrder.dashboard,
+    icon: "Dashboard"
   }
 ];
