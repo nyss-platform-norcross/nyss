@@ -9,6 +9,8 @@ import { useTheme, Drawer, Grid, useMediaQuery, makeStyles } from "@material-ui/
 import { toggleSideMenu } from '../app/logic/appActions';
 import { MenuSection } from './MenuSection';
 import { stringKeys, strings } from '../../strings';
+import { AccountSection } from './AccountSection';
+
 
 
 const useStyles = makeStyles(() => ({
@@ -60,13 +62,18 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='flex-start'>
+          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
+            <Grid container direction='column'>
             {generalMenu.length !== 0 && (
               <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
               )}
             {sideMenu.length !== 0 && (
-              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+              <Grid style={{ marginTop: 20 }}>
+                <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+              </Grid>
               )}
+            </Grid>
+            <AccountSection handleItemClick={handleItemClick}/>
           </Grid>
         </div>
       </Drawer>
