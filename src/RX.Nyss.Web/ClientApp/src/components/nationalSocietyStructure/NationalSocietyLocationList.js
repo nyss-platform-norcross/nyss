@@ -37,7 +37,7 @@ export const NationalSocietyLocationList = (props) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 16,
+      fontSize: "18px",
       color: theme.palette.text.primary,
     },
     background: {
@@ -59,11 +59,11 @@ export const NationalSocietyLocationList = (props) => {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      fontSize: 16
+      fontSize: "16px"
     },
     button: {
       marginTop: 10,
-      fontSize: "1rem"
+      fontSize: "14px"
     },
     icon: {
       marginLeft: 8,

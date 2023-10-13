@@ -14,8 +14,9 @@ export const nationalSocietiesSiteMap = [
   {
     path: "/nationalsocieties",
     title: () => strings(stringKeys.nationalSociety.title),
-    placeholder: placeholders.topMenu,
-    access: accessMap.nationalSocieties.list
+    placeholder: placeholders.generalMenu,
+    access: accessMap.nationalSocieties.list,
+    icon: "NationalSocieties"
   },
   {
     parentPath: "/nationalsocieties",

@@ -6,24 +6,17 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { Tabs, Tab } from '@material-ui/core';
 
-const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl, title }) => {
+const TabMenuComponent = ({ tabMenu, push, currentUrl, title }) => {
   const onItemClick = (item) => {
     push(item.url);
   };
-
-  if (!breadcrumb.length) {
-    return null;
-  }
-
-  const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
-  const currentBreadcrumbItem = breadcrumbVisibleItems[breadcrumbVisibleItems.length - 1];
 
   // http addresses are case insensitive so compare to-lower versions
   const showTabMenu = tabMenu.some(t => t.url.toLowerCase() === currentUrl.toLowerCase());
 
   return (
     <div className={styles.tabMenu}>
-      <div className={styles.header}>{title || currentBreadcrumbItem.title}</div>
+      <div className={styles.header}>{title}</div>
 
       {showTabMenu && (
         <Tabs
@@ -48,7 +41,6 @@ TabMenuComponent.propTypes = {
 
 const mapStateToProps = state => ({
   tabMenu: state.appData.siteMap.tabMenu,
-  breadcrumb: state.appData.siteMap.breadcrumb,
   title: state.appData.siteMap.title,
   currentUrl: state.appData.route.url
 });
