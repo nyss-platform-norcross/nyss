@@ -84,14 +84,6 @@ export const theme = (direction) => createTheme({
         maxHeight: 200
       }
     },
-    MuiBreadcrumbs: {
-      root: {
-        fontSize: "14px",
-      },
-      separator: {
-        paddingBottom: 2
-      }
-    },
     MuiPaper: {
       root: {
         border: "none",

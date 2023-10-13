@@ -5,7 +5,7 @@ import * as actions from "./appActions";
 import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
 import { placeholders } from "../../../siteMapPlaceholders";
-import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
+import { getHierarchy, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
 import { reloadPage } from "../../../utils/page";
 import * as localStorage from "../../../utils/localStorage";
@@ -62,17 +62,6 @@ function* switchStrings() {
   toggleStringsMode();
   yield delay(1);
 
-  const hasBreadcrumb = yield select(state => state.appData.siteMap.breadcrumb.length !== 0);
-
-  if (hasBreadcrumb) {
-    const pathAndParams = yield select(state => ({
-      path: state.appData.route.path,
-      params: state.appData.route.params
-    }));
-
-    yield openModule(pathAndParams);
-  }
-
   yield put(actions.setAppReady(true));
 }
 
@@ -85,12 +74,12 @@ function* openModule({ path, params }) {
   const routeParams = (route && route.params) || {};
   const menuParams = { ...routeParams, ...params };
 
-  const breadcrumb = getBreadcrumb(path, menuParams, user);
-  const generalMenu = getMenu("/", menuParams, placeholders.generalMenu, path, user);
-  const sideMenu = getMenu(path, menuParams, placeholders.leftMenu, path, user);
-  const tabMenu = getMenu(path, menuParams, placeholders.tabMenu, path, user);
+  const generalMenu = getMenu(menuParams, placeholders.generalMenu, path, user);
+  const sideMenu = getMenu(menuParams, placeholders.leftMenu, path, user);
+  const tabMenu = getMenu(menuParams, placeholders.tabMenu, path, user);
+  const title = getHierarchy(path, menuParams, user).filter(b => !b.hidden).slice(-1)[0].title;
 
-  yield put(actions.openModule.success(path, menuParams, breadcrumb, generalMenu, sideMenu, tabMenu, params.title))
+  yield put(actions.openModule.success(path, menuParams, generalMenu, sideMenu, tabMenu, title))
 }
 
 function* getAppData() {

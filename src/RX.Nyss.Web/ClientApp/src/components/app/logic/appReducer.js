@@ -77,7 +77,6 @@ export function appReducer(state = initialState.appData, action) {
         siteMap: {
           path: action.path,
           parameters: {},
-          breadcrumb: [],
           generalMenu: [],
           sideMenu: [],
           tabMenu: [],
@@ -91,7 +90,6 @@ export function appReducer(state = initialState.appData, action) {
         siteMap: {
           path: action.path,
           parameters: action.parameters,
-          breadcrumb: action.breadcrumb,
           generalMenu: action.generalMenu,
           sideMenu: action.sideMenu,
           tabMenu: action.tabMenu,
