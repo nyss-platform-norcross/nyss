@@ -11,6 +11,5 @@ export const projectDashboardSiteMap = [
     access: accessMap.projects.showDashboard,
     placeholder: placeholders.projectTabMenu,
     placeholderIndex: projectTabMenuOrder.dashboard,
-    icon: "Dashboard"
   }
 ];

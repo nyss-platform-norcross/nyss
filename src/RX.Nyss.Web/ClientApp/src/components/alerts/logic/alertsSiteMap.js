@@ -11,7 +11,6 @@ export const alertsSiteMap = [
     placeholder: placeholders.projectTabMenu,
     access: accessMap.alerts.list,
     placeholderIndex: projectTabMenuOrder.alerts,
-    icon: "Alerts"
   },
   {
     parentPath: "/projects/:projectId/alerts",
