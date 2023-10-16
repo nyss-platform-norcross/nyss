@@ -206,6 +206,7 @@ const LocationFilter = ({
         PaperProps={{
           className: styles.filterContainer,
         }}
+        style={{maxHeight: 400}}
       >
         <SelectAll
           isSelectAllEnabled={selectAll}
