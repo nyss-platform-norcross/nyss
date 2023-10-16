@@ -93,6 +93,7 @@ export function appReducer(state = initialState.appData, action) {
           generalMenu: action.generalMenu,
           sideMenu: action.sideMenu,
           tabMenu: action.tabMenu,
+          projectTabMenu: action.projectTabMenu,
           title: action.title
         }
       }

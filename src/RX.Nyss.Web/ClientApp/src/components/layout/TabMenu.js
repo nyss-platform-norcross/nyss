@@ -4,9 +4,27 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab, Grid, Typography, makeStyles } from '@material-ui/core';
 
-const TabMenuComponent = ({ tabMenu, push, currentUrl, title }) => {
+const useStyles = makeStyles({
+  nsHeader: {
+    color: "#4F4F4F",
+    fontSize: 16,
+    fontWeight: 400,
+    textAlign: "center"
+  },
+  projectHeader: {
+    color: "#000",
+    fontSize: 32,
+    fontWeight: 700,
+    textAlign: "center",
+    margin: "20px 0 20px 0"
+  }
+});
+
+const TabMenuComponent = ({ projectTabMenu, tabMenu, push, currentUrl, title, projectName, nationalSocietyName }) => {
+  const classes = useStyles()
+
   const onItemClick = (item) => {
     push(item.url);
   };
@@ -16,8 +34,28 @@ const TabMenuComponent = ({ tabMenu, push, currentUrl, title }) => {
 
   return (
     <div className={styles.tabMenu}>
-      <div className={styles.header}>{title}</div>
-
+      {nationalSocietyName && projectName ?
+        <>
+          <Typography className={classes.nsHeader}>{nationalSocietyName}</Typography>
+          <Typography className={classes.projectHeader}>{projectName}</Typography>
+        </> :
+        <div className={styles.header}>{title}</div>
+      }
+      <Grid container justifyContent='center' style={{ width: "100%" }}>
+      {/* Only display project tab menu for all users other than data consumer since the role only has acces to project dashboard */}
+      {projectTabMenu && projectTabMenu.length > 1 && (
+        <Tabs
+        value={projectTabMenu.indexOf(projectTabMenu.find(t => t.isActive))}
+        className={styles.projectTabs}
+        scrollButtons="auto"
+        indicatorColor="primary"
+        variant="scrollable">
+          {projectTabMenu.map(item => (
+            <Tab key={`tabMenu_${item.url}`} label={item.title} onClick={() => onItemClick(item)} />
+            ))}
+        </Tabs>
+      )}
+      </Grid>
       {showTabMenu && (
         <Tabs
           value={tabMenu.indexOf(tabMenu.find(t => t.isActive))}
@@ -40,6 +78,9 @@ TabMenuComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  nationalSocietyName: state.appData.siteMap.parameters.nationalSocietyName,
+  projectName: state.appData.siteMap.parameters.projectName,
+  projectTabMenu: state.appData.siteMap.projectTabMenu,
   tabMenu: state.appData.siteMap.tabMenu,
   title: state.appData.siteMap.title,
   currentUrl: state.appData.route.url
