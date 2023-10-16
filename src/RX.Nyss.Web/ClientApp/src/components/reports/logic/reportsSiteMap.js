@@ -10,7 +10,8 @@ export const reportsSiteMap = [
     title: () => strings(stringKeys.reports.title),
     placeholder: placeholders.projectTabMenu,
     access: accessMap.reports.list,
-    placeholderIndex: projectTabMenuOrder.reports
+    placeholderIndex: projectTabMenuOrder.reports,
+    icon: "Report"
   },
   {
     parentPath: "/projects/:projectId/reports",

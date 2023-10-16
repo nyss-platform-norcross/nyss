@@ -6,7 +6,6 @@ export const initialState = {
     siteMap: {
       path: null,
       parameters: {},
-      breadcrumb: [],
       generalMenu: [],
       tabMenu: [],
       projectTabMenu: [],

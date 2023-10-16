@@ -7,7 +7,8 @@ export const globalCoordinatorsSiteMap = [
     path: "/globalcoordinators",
     title: () => strings(stringKeys.globalCoordinator.title),
     placeholder: placeholders.generalMenu,
-    access: accessMap.globalCoordinators.list
+    access: accessMap.globalCoordinators.list,
+    icon: "GlobalCoordinators"
   },
   {
     parentPath: "/globalcoordinators",

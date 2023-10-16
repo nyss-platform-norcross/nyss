@@ -15,7 +15,8 @@ export const nationalSocietiesSiteMap = [
     path: "/nationalsocieties",
     title: () => strings(stringKeys.nationalSociety.title),
     placeholder: placeholders.generalMenu,
-    access: accessMap.nationalSocieties.list
+    access: accessMap.nationalSocieties.list,
+    icon: "NationalSocieties"
   },
   {
     parentPath: "/nationalsocieties",
@@ -41,7 +42,8 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.settings.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: nationalSocietyLeftMenuOrder.settings,
-    access: accessMap.nationalSocieties.edit
+    access: accessMap.nationalSocieties.edit,
+    icon: "Settings"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/settings",

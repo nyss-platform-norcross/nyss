@@ -3,8 +3,8 @@ import { createTheme } from "@material-ui/core/styles";
 export const theme = (direction) => createTheme({
   direction: direction,
   typography: {
-    fontSize: "16px",
-    htmlFontSize: "16px",
+    fontSize: 16,
+    htmlFontSize: 16,
     fontFamily: 'Arial',
     body1: {
       color: "#333333"
@@ -40,6 +40,10 @@ export const theme = (direction) => createTheme({
     },
     subtitle1: {
       fontSize: "14px",
+      margin: "10px 0 10px"
+    },
+    subtitle2: {
+      fontSize: "12px",
       margin: "10px 0 10px"
     },
   },
@@ -82,14 +86,6 @@ export const theme = (direction) => createTheme({
     MuiMenu: {
       paper: {
         maxHeight: 200
-      }
-    },
-    MuiBreadcrumbs: {
-      root: {
-        fontSize: "14px",
-      },
-      separator: {
-        paddingBottom: 2
       }
     },
     MuiPaper: {
@@ -153,7 +149,6 @@ export const theme = (direction) => createTheme({
       label: {
         fontSize: "14px"
       },
-      fontSize: "24px",
     },
     MuiInputLabel: {
       root: {

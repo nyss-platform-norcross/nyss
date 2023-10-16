@@ -10,6 +10,7 @@ export const projectDashboardSiteMap = [
     title: () => strings(stringKeys.dashboard.title),
     access: accessMap.projects.showDashboard,
     placeholder: placeholders.projectTabMenu,
-    placeholderIndex: projectTabMenuOrder.dashboard
+    placeholderIndex: projectTabMenuOrder.dashboard,
+    icon: "Dashboard"
   }
 ];

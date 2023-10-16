@@ -10,7 +10,8 @@ export const nationalSocietyUsersSiteMap = [
     title: () => strings(stringKeys.nationalSocietyUser.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: nationalSocietyLeftMenuOrder.userlist,
-    access: accessMap.nationalSocietyUsers.list
+    access: accessMap.nationalSocietyUsers.list,
+    icon: "Users"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/users",

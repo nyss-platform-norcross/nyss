@@ -18,7 +18,8 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.list,
-    placeholderIndex: nationalSocietyLeftMenuOrder.projects
+    placeholderIndex: nationalSocietyLeftMenuOrder.projects,
+    icon: "Project"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects",
@@ -38,7 +39,8 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.settingsRootTitle),
     placeholder: placeholders.projectTabMenu,
     access: accessMap.projects.showOverview,
-    placeholderIndex: projectTabMenuOrder.settings
+    placeholderIndex: projectTabMenuOrder.settings,
+    icon: "Settings"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
@@ -62,7 +64,7 @@ export const projectsSiteMap = [
     placeholder: placeholders.tabMenu,
     access: accessMap.projectAlertNotifications.list,
     placeholderIndex: 3,
-    middleStepOnly: true
+    middleStepOnly: true,
   },
   {
     parentPath: "/projects/:projectId/alertNotifications",

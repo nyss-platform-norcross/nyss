@@ -10,7 +10,8 @@ export const dataCollectorsSiteMap = [
     title: () => strings(stringKeys.dataCollectors.title),
     placeholder: placeholders.projectTabMenu,
     access: accessMap.dataCollectors.list,
-    placeholderIndex: projectTabMenuOrder.dataCollectors
+    placeholderIndex: projectTabMenuOrder.dataCollectors,
+    icon: "Users2"
   },
   {
     parentPath: "/projects/:projectId/datacollectors",

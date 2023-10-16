@@ -11,7 +11,8 @@ export const nationalSocietyReportsSiteMap = [
     title: () => strings(stringKeys.reports.nationalSocietyReportsTitle),
     placeholder: placeholders.leftMenu,
     access: accessMap.nationalSocietyReports.list,
-    placeholderIndex: nationalSocietyLeftMenuOrder.nationalSocietyReports
+    placeholderIndex: nationalSocietyLeftMenuOrder.nationalSocietyReports,
+    icon: "Report"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/reports",

@@ -22,19 +22,12 @@ const useStyles = makeStyles({
   }
 });
 
-const TabMenuComponent = ({ projectTabMenu, tabMenu, breadcrumb, push, currentUrl, title, projectName, nationalSocietyName }) => {
+const TabMenuComponent = ({ projectTabMenu, tabMenu, push, currentUrl, title, projectName, nationalSocietyName }) => {
   const classes = useStyles()
 
   const onItemClick = (item) => {
     push(item.url);
   };
-
-  if (!breadcrumb.length) {
-    return null;
-  }
-
-  const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
-  const currentBreadcrumbItem = breadcrumbVisibleItems[breadcrumbVisibleItems.length - 1];
 
   // http addresses are case insensitive so compare to-lower versions
   const showTabMenu = tabMenu.some(t => t.url.toLowerCase() === currentUrl.toLowerCase());
@@ -46,7 +39,7 @@ const TabMenuComponent = ({ projectTabMenu, tabMenu, breadcrumb, push, currentUr
           <Typography className={classes.nsHeader}>{nationalSocietyName}</Typography>
           <Typography className={classes.projectHeader}>{projectName}</Typography>
         </> :
-        <div className={styles.header}>{title || currentBreadcrumbItem.title}</div>
+        <div className={styles.header}>{title}</div>
       }
       <Grid container justifyContent='center' style={{ width: "100%" }}>
       {/* Only display project tab menu for all users other than data consumer since the role only has acces to project dashboard */}
@@ -89,7 +82,6 @@ const mapStateToProps = state => ({
   projectName: state.appData.siteMap.parameters.projectName,
   projectTabMenu: state.appData.siteMap.projectTabMenu,
   tabMenu: state.appData.siteMap.tabMenu,
-  breadcrumb: state.appData.siteMap.breadcrumb,
   title: state.appData.siteMap.title,
   currentUrl: state.appData.route.url
 });

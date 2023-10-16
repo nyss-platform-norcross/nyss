@@ -1087,6 +1087,7 @@ export const stringKeys = {
     errorDescription: "feedback.errorDescription",
   },
   sideMenu: {
+    account: "sideMenu.account",
     general: "sideMenu.general",
     nationalSocieties: "sideMenu.nationalSocieties",
   }
