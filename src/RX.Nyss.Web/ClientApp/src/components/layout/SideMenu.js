@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)',
+    background: '#F4F4F4',
   }
 }));
 
