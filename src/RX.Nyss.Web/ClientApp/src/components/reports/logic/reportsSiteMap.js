@@ -11,7 +11,6 @@ export const reportsSiteMap = [
     placeholder: placeholders.projectTabMenu,
     access: accessMap.reports.list,
     placeholderIndex: projectTabMenuOrder.reports,
-    icon: "Report"
   },
   {
     parentPath: "/projects/:projectId/reports",
