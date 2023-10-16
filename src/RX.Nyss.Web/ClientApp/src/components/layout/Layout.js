@@ -6,6 +6,7 @@ import { BaseLayout } from './BaseLayout';
 import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
 import { TabMenu } from './TabMenu';
+import ExpandButton from '../common/buttons/expandButton/ExpandButton';
 
 const pageContentId = "pageContent";
 
@@ -20,6 +21,7 @@ export const Layout = ({ fillPage, children }) => {
     <BaseLayout>
       <div className={styles.sideMenu}>
         <SideMenu />
+        <ExpandButton />
       </div>
       <div className={styles.mainContent}>
 

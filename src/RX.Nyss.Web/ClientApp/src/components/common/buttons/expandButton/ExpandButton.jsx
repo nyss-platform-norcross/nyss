@@ -4,12 +4,15 @@ import { ReactComponent as ExpandLeftSVG } from "../../../../assets/icons/Expand
 
 const useStyles = makeStyles({
   triangleBackground: {
-    height: 49,
-    width: 48,
-    padding: 5,
+    position: 'relative',
+    zIndex: 2,
+    right: 20,
+    top: 5,
+    height: 35,
+    width: 35,
     transform: 'rotate(45deg)',
     backgroundImage: 'linear-gradient(45deg, rgba(255,0,0,0) 50%, #F4F4F4 50%)',
-    borderRadius: '15px',
+    borderRadius: '10px',
     display: 'flex',
     justifyContent: 'center',
   },
@@ -27,7 +30,7 @@ export const ExpandButton = () => {
     <IconButton
       className={classes.button}
     >
-       <SvgIcon component={ExpandLeftSVG} viewBox="0 0 48 49"/>
+       <SvgIcon style={{fontSize: 18}} component={ExpandLeftSVG} viewBox="0 0 48 49"/>
     </IconButton>
     </div>
   );
