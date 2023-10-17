@@ -11,9 +11,9 @@ import { MenuSection } from './MenuSection';
 import { stringKeys, strings } from '../../strings';
 import { AccountSection } from './AccountSection';
 
+const drawerWidth = 240;
 
-
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   MenuContainer: {
     height: '100%',
     marginTop: '32px',
@@ -23,11 +23,37 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     height: '100%',
     background: '#F4F4F4',
-  }
+  },
+  drawer: {
+    zIndex: 1,
+    "@media (min-width: 1280px)": {
+      width: drawerWidth,
+    },
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  },
+  drawerOpen: {
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerClose: {
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+    width: theme.spacing(7) + 1,
+    [theme.breakpoints.up('sm')]: {
+      width: theme.spacing(9) + 3,
+    },
+  },
 }));
 
 
-const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isExpanded }) => {
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -43,41 +69,40 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
     toggleSideMenu(false);
   }
   return (
-    <div className={styles.drawer}>
-      <Drawer
-        variant={fullScreen ? "temporary" : "permanent"}
-        anchor={"left"}
-        open={!fullScreen || sideMenuOpen}
-        onClose={closeDrawer}
-        classes={{
-          paper: styles.drawer
-        }}
-        ModalProps={{
-          keepMounted: fullScreen
-        }}
-      >
-        <div className={classes.SideMenu}>
-          <div className={styles.sideMenuHeader}>
-            <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
-              <img src="/images/logo.svg" alt="Nyss logo" />
-            </Link>
-          </div>
-          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
-            <Grid container direction='column'>
-            {generalMenu.length !== 0 && (
-              <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
-              )}
-            {sideMenu.length !== 0 && (
-              <Grid style={{ marginTop: 20 }}>
-                <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
-              </Grid>
-              )}
-            </Grid>
-            <AccountSection handleItemClick={handleItemClick}/>
-          </Grid>
+    <Drawer
+      variant={fullScreen ? "temporary" : "permanent"}
+      anchor={"left"}
+      open={!fullScreen || sideMenuOpen}
+      onClose={closeDrawer}
+      className={`${classes.drawer} ${isExpanded ? classes.drawerOpen : classes.drawerClose }`}
+      classes={{
+        paper: isExpanded ? classes.drawerOpen : classes.drawerClose
+      }}
+      ModalProps={{
+        keepMounted: fullScreen
+      }}
+    >
+      <div className={classes.SideMenu}>
+        <div className={styles.sideMenuHeader}>
+          <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
+            <img src={isExpanded ? "/images/logo.svg" : "/images/logo-small.svg"} alt="Nyss logo" />
+          </Link>
         </div>
-      </Drawer>
-    </div>
+        <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
+          <Grid container direction='column'>
+          {generalMenu.length !== 0 && (
+            <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
+            )}
+          {sideMenu.length !== 0 && (
+            <Grid style={{ marginTop: 20 }}>
+              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+            </Grid>
+            )}
+          </Grid>
+          <AccountSection handleItemClick={handleItemClick}/>
+        </Grid>
+      </div>
+    </Drawer>
   );
 }
 

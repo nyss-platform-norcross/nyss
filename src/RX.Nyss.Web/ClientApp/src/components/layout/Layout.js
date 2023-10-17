@@ -24,7 +24,7 @@ export const Layout = ({ fillPage, children }) => {
   return (
     <BaseLayout>
       <div className={styles.sideMenu}>
-        <SideMenu />
+        <SideMenu isExpanded={isExpanded}/>
         <ExpandButton onClick={handleExpandClick} isExpanded={isExpanded}/>
       </div>
       <div className={styles.mainContent}>
