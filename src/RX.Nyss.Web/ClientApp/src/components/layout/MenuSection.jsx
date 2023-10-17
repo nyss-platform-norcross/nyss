@@ -35,20 +35,23 @@ const useStyles = makeStyles(() => ({
   Divider: {
     backgroundColor: '#B4B4B4',
   },
-
+  Hide: {
+    color: "transparent",
+    userSelect: "none"
+  }
 }));
 
-export const MenuSection = ({menuItems, handleItemClick, menuTitle}) => {
+export const MenuSection = ({menuItems, handleItemClick, menuTitle, isExpanded}) => {
   const classes = useStyles();
 
   return(
     <List component="nav" aria-label={`${menuTitle} navigation menu`}
       subheader={
       <>
-        <ListSubheader component="div" id={menuTitle} className={classes.SubHeader} disableGutters>
-        {menuTitle}
-      </ListSubheader>
-      <Divider className={classes.Divider}/>
+        <ListSubheader component="div" id={menuTitle} className={`${classes.SubHeader} ${!isExpanded && classes.Hide}`} disableGutters>
+          {menuTitle}
+        </ListSubheader>
+        <Divider className={classes.Divider}/>
       </>
     }>
     {menuItems.map((item) => {

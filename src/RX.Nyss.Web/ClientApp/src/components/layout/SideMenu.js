@@ -16,7 +16,7 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   MenuContainer: {
     height: '100%',
-    marginTop: '32px',
+    marginTop: '12px',
   },
   SideMenu: {
     display: 'flex',
@@ -47,9 +47,18 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'hidden',
     width: theme.spacing(7) + 1,
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9) + 3,
+      width: theme.spacing(9) + 2,
     },
   },
+  logo: {
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  image: {
+    height: "38px"
+  }
 }));
 
 
@@ -84,22 +93,22 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
     >
       <div className={classes.SideMenu}>
         <div className={styles.sideMenuHeader}>
-          <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
-            <img src={isExpanded ? "/images/logo.svg" : "/images/logo-small.svg"} alt="Nyss logo" />
+          <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
+            <img className={classes.image} src={isExpanded ? "/images/logo.svg" : "/images/logo-small.svg"} alt="Nyss logo" />
           </Link>
         </div>
         <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
           <Grid container direction='column'>
           {generalMenu.length !== 0 && (
-            <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
+            <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isExpanded}/>
             )}
           {sideMenu.length !== 0 && (
             <Grid style={{ marginTop: 20 }}>
-              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick} isExpanded={isExpanded}/>
             </Grid>
             )}
           </Grid>
-          <AccountSection handleItemClick={handleItemClick}/>
+          <AccountSection handleItemClick={handleItemClick} isExpanded={isExpanded}/>
         </Grid>
       </div>
     </Drawer>
