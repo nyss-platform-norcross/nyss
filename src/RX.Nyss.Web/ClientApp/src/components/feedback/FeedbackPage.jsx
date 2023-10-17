@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMount } from "../../utils/lifecycle";
 import * as appActions from "../app/logic/appActions";
 import { withLayout } from "../../utils/layout";
-import { Layout } from "../layout/Layout";
+import Layout from "../layout/Layout";
 import { connect } from "react-redux";
 import { Grid, Typography } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
@@ -64,7 +64,7 @@ const Feedback = ({ openModule, match, goBack }) => {
     if (!form.isValid()) {
       return;
     }
-    
+
     dispatch(
       sendFeedback.invoke({
         message: form.fields.message.value,
@@ -120,8 +120,8 @@ const Feedback = ({ openModule, match, goBack }) => {
             </SubmitButton>
           </Grid>
         </Grid>
-      )} 
-      
+      )}
+
       {hasSent && sendFeedbackResult === "ok" && (
         <Grid container justifyContent="center" spacing={7}>
           <Grid container direction="column" alignItems="center">
@@ -137,7 +137,7 @@ const Feedback = ({ openModule, match, goBack }) => {
           </Grid>
         </Grid>
       )}
-      
+
       {hasSent && sendFeedbackResult === "error" && (
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={7}>
             <Typography variant={"h1"} className={classes.title}>

@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React from 'react';
+import { connect } from "react-redux";
 import { Header } from './Header';
 import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
@@ -7,6 +8,7 @@ import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
 import { TabMenu } from './TabMenu';
 import ExpandButton from '../common/buttons/expandButton/ExpandButton';
+import { expandSideMenu } from '../app/logic/appActions';
 
 const pageContentId = "pageContent";
 
@@ -15,17 +17,16 @@ export const resetPageContentScroll = () => {
   element && element.scrollTo(0, 0)
 }
 
-export const Layout = ({ fillPage, children }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const LayoutComponent = ({ fillPage, children, isSideMenuExpanded, expandSideMenu }) => {
   const handleExpandClick = () => {
-    setIsExpanded(!isExpanded);
+    expandSideMenu(!isSideMenuExpanded);
   }
 
   return (
     <BaseLayout>
       <div className={styles.sideMenu}>
-        <SideMenu isExpanded={isExpanded}/>
-        <ExpandButton onClick={handleExpandClick} isExpanded={isExpanded}/>
+        <SideMenu isExpanded={isSideMenuExpanded}/>
+        <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
       </div>
       <div className={styles.mainContent}>
 
@@ -47,4 +48,13 @@ export const Layout = ({ fillPage, children }) => {
   );
 }
 
+const mapStateToProps = state => ({
+  isSideMenuExpanded: state.appData.isSideMenuExpanded
+});
+
+const mapDispatchToProps = {
+  expandSideMenu: expandSideMenu,
+};
+
+const Layout = connect(mapStateToProps, mapDispatchToProps)(LayoutComponent);
 export default Layout;

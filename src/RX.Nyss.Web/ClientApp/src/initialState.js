@@ -14,6 +14,7 @@ export const initialState = {
     mobile: {
       sideMenuOpen: false
     },
+    isSideMenuExpanded: true,
     message: null,
     moduleError: null,
     showStringsKeys: false,
