@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Header } from './Header';
 import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
@@ -16,12 +16,16 @@ export const resetPageContentScroll = () => {
 }
 
 export const Layout = ({ fillPage, children }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const handleExpandClick = () => {
+    setIsExpanded(!isExpanded);
+  }
 
   return (
     <BaseLayout>
       <div className={styles.sideMenu}>
         <SideMenu />
-        <ExpandButton />
+        <ExpandButton onClick={handleExpandClick} isExpanded={isExpanded}/>
       </div>
       <div className={styles.mainContent}>
 

@@ -21,14 +21,18 @@ const useStyles = makeStyles({
     transform: 'rotate(-45deg)',
     color: "#D52B1E",
   },
+  invertedButton: {
+    transform: 'rotate(135deg)',
+  },
 })
  
-export const ExpandButton = () => {
+export const ExpandButton = ({ onClick, isExpanded }) => {
   const classes = useStyles()
   return (
     <div className={classes.triangleBackground}>
-    <IconButton
-      className={classes.button}
+    <IconButton    
+      className={`${classes.button} ${isExpanded && classes.invertedButton}`}
+      onClick={onClick}
     >
        <SvgIcon style={{fontSize: 18}} component={ExpandLeftSVG} viewBox="0 0 48 49"/>
     </IconButton>
