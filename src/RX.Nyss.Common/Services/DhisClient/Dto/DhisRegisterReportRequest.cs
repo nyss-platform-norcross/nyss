@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RX.Nyss.Common.Services.DhisClient.Dto;
+﻿using System.Collections.Generic;
 using RX.Nyss.Web.Services.EidsrClient.Dto;
 
 namespace RX.Nyss.Common.Services.DhisClient.Dto;
@@ -43,11 +38,12 @@ public class DhisRegisterReportRequest
         var dataValues = new List<DhisRegisterReportRequestBody.DataValue>();
 
         AddDataElement(dataValues, template.LocationDataElementId, data.Location);
-        AddDataElement(dataValues, template.DateOfOnsetDataElementId, data.DateOfOnset);
-        AddDataElement(dataValues, template.PhoneNumberDataElementId, data.PhoneNumber);
         AddDataElement(dataValues, template.SuspectedDiseaseDataElementId, data.SuspectedDisease);
+        AddDataElement(dataValues, template.HealthRiskDataElementId, data.HealthRisk);
+        AddDataElement(dataValues, template.ReportStatusDataElementId, data.ReportStatus);
         AddDataElement(dataValues, template.GenderDataElementId, data.Gender);
-        AddDataElement(dataValues, template.EventTypeDataElementId, data.EventType);
+        AddDataElement(dataValues, template.AgeAtleastFiveDataElementId, data.AgeAtleastFive);
+        AddDataElement(dataValues, template.AgeBelowFiveDataElementId, data.AgeBelowFive);
 
         return dataValues;
     }
