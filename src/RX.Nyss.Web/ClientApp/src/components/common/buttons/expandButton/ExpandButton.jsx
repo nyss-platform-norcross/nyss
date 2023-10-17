@@ -18,19 +18,19 @@ const useStyles = makeStyles({
   },
   button: {
     padding: 0,
-    transform: 'rotate(-45deg)',
+    transform: 'rotate(135deg)',
     color: "#D52B1E",
   },
   invertedButton: {
-    transform: 'rotate(135deg)',
+    transform: 'rotate(-45deg)',
   },
 })
- 
+
 export const ExpandButton = ({ onClick, isExpanded }) => {
   const classes = useStyles()
   return (
     <div className={classes.triangleBackground}>
-    <IconButton    
+    <IconButton
       className={`${classes.button} ${isExpanded && classes.invertedButton}`}
       onClick={onClick}
     >
