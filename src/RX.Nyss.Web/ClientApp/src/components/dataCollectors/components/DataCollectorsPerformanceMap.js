@@ -51,18 +51,14 @@ const getAggregatedStatus = (info) => {
 }
 
 export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLocations, projectId, details, getMapDetails, detailsFetching }) => {
-  const [bounds, setBounds] = useState(null);
   const [center, setCenter] = useState(null);
+  const [bounds, setBounds] = useState(null);
 
   useEffect(() => {
-    const hasLocations = dataCollectorLocations.length > 1;
-    setBounds(hasLocations ? calculateBounds(dataCollectorLocations) : null)
-    setCenter(hasLocations ? null : { lat: centerLocation.latitude, lng: centerLocation.longitude })
-  }, [dataCollectorLocations, centerLocation])
-
-  if (!centerLocation) {
-    return null;
-  }
+    const hasLocations = dataCollectorLocations.length > 0;
+    setCenter(hasLocations ? { lat: centerLocation.latitude, lng: centerLocation.longitude }: null);
+    setBounds(hasLocations ? calculateBounds(dataCollectorLocations) : null);
+  }, [dataCollectorLocations, centerLocation]);
 
   const handleMarkerClick = e =>
     getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
