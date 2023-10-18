@@ -120,7 +120,8 @@ export const AccountSection = ({handleItemClick, isExpanded}) => {
     <div className={classes.AccordionContainer}>
       <Typography className={`${classes.Account} ${!isExpanded && classes.Hide}`}>{strings(stringKeys.sideMenu.account)}</Typography>
       <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
-        <Tooltip title={strings(stringKeys.sideMenu.account)}>
+      <Tooltip title={strings(stringKeys.sideMenu.account)}>
+        <div>
           <AccordionSummary
             className={classes.AccordionSummary}
             classes={{
@@ -136,8 +137,9 @@ export const AccountSection = ({handleItemClick, isExpanded}) => {
             
           {isExpanded && (
             <Typography className={classes.User}>{user.name}</Typography>
-          )}
+            )}
           </AccordionSummary>
+        </div>
         </Tooltip>
         <AccordionDetails className={classes.AccordionDetails}>
         <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
