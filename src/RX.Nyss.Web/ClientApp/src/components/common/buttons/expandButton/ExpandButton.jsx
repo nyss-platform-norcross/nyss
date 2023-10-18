@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, SvgIcon, makeStyles } from '@material-ui/core';
+import { IconButton, SvgIcon, makeStyles, useTheme, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as ExpandLeftSVG } from "../../../../assets/icons/Expand-left.svg"
 
 const useStyles = makeStyles({
@@ -27,7 +27,12 @@ const useStyles = makeStyles({
 })
 
 export const ExpandButton = ({ onClick, isExpanded }) => {
-  const classes = useStyles()
+  const classes = useStyles();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // The expanded button should only appear for larger screens
+  if (isSmallScreen) return null;
   return (
     <div className={classes.triangleBackground}>
     <IconButton
