@@ -18,13 +18,8 @@
         flex: 1;
         overflow-y: auto;
 
-        @media screen and (max-width: 1919px) {
-          max-width: calc(100vw - 220px);
-        }
+        max-width: 100vw;
 
-        @media screen and (max-width: 1279px) {
-          max-width: calc(100vw);
-        }
 
         .pageContent {
           margin: 20px 35px;
