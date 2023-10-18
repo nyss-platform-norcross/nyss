@@ -1,8 +1,10 @@
 .userStatus {
-    margin-left: 100px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    position: absolute;
+    right: 35px;
+    top: 20px;
 
     .userName {
       margin-right: 5px;
