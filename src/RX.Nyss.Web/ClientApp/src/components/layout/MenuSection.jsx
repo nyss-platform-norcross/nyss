@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, ListItemIcon, ListSubheader, Divider, makeStyles } from "@material-ui/core";
+import { List, ListItem, ListItemText, ListItemIcon, ListSubheader, Divider, makeStyles, Tooltip } from "@material-ui/core";
 import { RcIcon } from '../icons/RcIcon';
 
 const useStyles = makeStyles(() => ({
@@ -57,9 +57,11 @@ export const MenuSection = ({menuItems, handleItemClick, menuTitle, isExpanded})
     {menuItems.map((item) => {
       return (
         <ListItem key={`sideMenuItem_${item.title}`} className={`${classes.ListItem} ${item.isActive ? classes.ListItemActive : ''}`} button onClick={() => handleItemClick(item)} >
-          <ListItemIcon className={classes.ListItemIconWrapper}>
-            {item.icon && <RcIcon icon={item.icon} className={`${classes.SideMenuIcon}`} />}
-          </ListItemIcon>
+          <Tooltip title={item.title}>
+            <ListItemIcon className={classes.ListItemIconWrapper}>
+              {item.icon && <RcIcon icon={item.icon} className={`${classes.SideMenuIcon}`} />}
+            </ListItemIcon>
+          </Tooltip>
           <ListItemText primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} className={classes.SideMenuTextWrapper}/>
         </ListItem>
       )

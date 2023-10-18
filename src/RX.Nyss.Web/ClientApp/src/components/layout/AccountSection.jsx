@@ -120,21 +120,25 @@ export const AccountSection = ({handleItemClick, isExpanded}) => {
     <div className={classes.AccordionContainer}>
       <Typography className={`${classes.Account} ${!isExpanded && classes.Hide}`}>{strings(stringKeys.sideMenu.account)}</Typography>
       <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
-        <AccordionSummary
-          className={classes.AccordionSummary}
-          classes={{
-            root: classes.AccordionSummaryRoot,
-            content: `${classes.AccordionSummaryContent} ${!isExpanded && classes.AccordionSummaryContentCollapsed}`,
-            expanded: classes.AccordionSummaryExpanded,
-          }}
-          >
-          <RcIcon icon="UserCircle" style={{
-            fontSize: "24px",
-          }}/>
-        {isExpanded && (
-          <Typography className={classes.User}>{user.name}</Typography>
-        )}
-        </AccordionSummary>
+        <Tooltip title={strings(stringKeys.sideMenu.account)}>
+          <AccordionSummary
+            className={classes.AccordionSummary}
+            classes={{
+              root: classes.AccordionSummaryRoot,
+              content: `${classes.AccordionSummaryContent} ${!isExpanded && classes.AccordionSummaryContentCollapsed}`,
+              expanded: classes.AccordionSummaryExpanded,
+            }}
+            >
+            
+              <RcIcon icon="UserCircle" style={{
+                fontSize: "24px",
+              }}/>
+            
+          {isExpanded && (
+            <Typography className={classes.User}>{user.name}</Typography>
+          )}
+          </AccordionSummary>
+        </Tooltip>
         <AccordionDetails className={classes.AccordionDetails}>
         <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
           {isExpanded && (
@@ -154,19 +158,23 @@ export const AccountSection = ({handleItemClick, isExpanded}) => {
             </ListItem>
           )}
           <ListItem button onClick={() => handleItemClick({ url: "/feedback" })} className={classes.ListItem}>
-            <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
-              <RcIcon icon="Feedback" className={classes.ListItemText}/>
-            </ListItemIcon>
+            <Tooltip title={strings(stringKeys.feedback.send)}>
+              <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
+                <RcIcon icon="Feedback" className={classes.ListItemText}/>
+              </ListItemIcon>
+            </Tooltip>
             {isExpanded && (
               <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
               {strings(stringKeys.feedback.send)}
             </ListItemText>
             )}
           </ListItem>
-            <ListItem button onClick={handleLogout} className={classes.ListItem}>
-            <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
-              <RcIcon icon="Logout" className={classes.ListItemText}/>
-            </ListItemIcon>
+          <ListItem button onClick={handleLogout} className={classes.ListItem}>
+            <Tooltip title={strings(stringKeys.user.logout)}>
+              <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
+                <RcIcon icon="Logout" className={classes.ListItemText}/>
+              </ListItemIcon>
+            </Tooltip>
             {isExpanded && (
               <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
                 {strings(stringKeys.user.logout)}
