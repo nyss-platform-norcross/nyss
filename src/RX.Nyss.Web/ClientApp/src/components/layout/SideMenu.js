@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 
-const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSupervisor }) => {
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -42,6 +42,8 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
   const closeDrawer = () => {
     toggleSideMenu(false);
   }
+
+  if (isSupervisor) return null;
   return (
     <div className={styles.drawer}>
       <Drawer
@@ -87,7 +89,8 @@ SideMenuComponent.propTypes = {
 const mapStateToProps = state => ({
   generalMenu: state.appData.siteMap.generalMenu,
   sideMenu: state.appData.siteMap.sideMenu,
-  sideMenuOpen: state.appData.mobile.sideMenuOpen
+  sideMenuOpen: state.appData.mobile.sideMenuOpen,
+  isSupervisor: state.appData.user.roles.includes("Supervisor") || state.appData.user.roles.includes("HeadSupervisor")
 });
 
 const mapDispatchToProps = {
