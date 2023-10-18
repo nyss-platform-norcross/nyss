@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSideMenuExpanded }) => {
   const theme = useTheme();
   const classes = useStyles();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const userLanguageCode = useSelector(state => state.appData.user.languageCode);
 
@@ -79,22 +79,22 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
   }
   return (
     <Drawer
-      variant={fullScreen ? "temporary" : "permanent"}
+      variant={isSmallScreen ? "temporary" : "permanent"}
       anchor={"left"}
-      open={!fullScreen || sideMenuOpen}
+      open={!isSmallScreen || sideMenuOpen}
       onClose={closeDrawer}
-      className={`${classes.drawer} ${isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose }`}
+      className={`${classes.drawer} ${!isSmallScreen && (isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose)}`}
       classes={{
-        paper: isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose
+        paper: !isSmallScreen && (isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose)
       }}
       ModalProps={{
-        keepMounted: fullScreen
+        keepMounted: isSmallScreen
       }}
     >
       <div className={classes.SideMenu}>
         <div className={styles.sideMenuHeader}>
           <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
-            <img className={classes.image} src={isSideMenuExpanded ? "/images/logo.svg" : "/images/logo-small.svg"} alt="Nyss logo" />
+            <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
           </Link>
         </div>
         <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
