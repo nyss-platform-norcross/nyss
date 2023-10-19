@@ -166,7 +166,7 @@ export const AccountSection = ({handleItemClick, isExpanded}) => {
               </ListItemIcon>
             </Tooltip>
             {isExpanded && (
-              <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
+            <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
               {strings(stringKeys.feedback.send)}
             </ListItemText>
             )}
