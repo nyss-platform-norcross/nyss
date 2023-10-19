@@ -30,7 +30,10 @@ const useStyles = makeStyles((theme) => ({
       width: drawerWidth,
     },
     flexShrink: 0,
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
+    '& .MuiDrawer-paper': {
+      borderRight: 'none',
+    },
   },
   drawerOpen: {
     width: drawerWidth,
