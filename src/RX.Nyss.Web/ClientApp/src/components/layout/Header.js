@@ -1,13 +1,14 @@
 import styles from './Header.module.scss';
-
+import { Link } from 'react-router-dom'
 import React from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { UserStatus } from './UserStatus';
 import { Icon } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
-const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) =>
-  (
+const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervisor }) =>{
+  const userLanguageCode = useSelector(state => state.appData.user.languageCode);
+  return (
     <div className={styles.header}>
       {!isSupervisor && (
         <div className={styles.placeholder}>
@@ -16,12 +17,15 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervi
         </div>
       )}
       {isSupervisor && (
-        <div className={styles.user}>
-          <UserStatus />
-      </div>
+          <div className={styles.supervisorHeader}>
+            <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
+              <img src="/images/logo.svg" alt="Nyss logo"/>
+            </Link>
+            <UserStatus />
+          </div>
       )}
     </div>
-  );
+  )};
 
 const mapStateToProps = state => ({
   sideMenuOpen: state.appData.mobile.sideMenuOpen,
