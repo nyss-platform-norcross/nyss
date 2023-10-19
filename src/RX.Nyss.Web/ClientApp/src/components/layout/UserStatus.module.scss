@@ -1,8 +1,13 @@
+.userStatusContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
 .userStatus {
     cursor: pointer;
     display: flex;
     align-items: center;
-    margin-top: 20px;
     .userName {
       margin-right: 5px;
     }
