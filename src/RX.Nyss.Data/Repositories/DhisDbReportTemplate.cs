@@ -1,17 +1,16 @@
-﻿using RX.Nyss.Web.Services.EidsrClient.Dto;
+﻿namespace RX.Nyss.Data.Repositories;
 
-namespace RX.Nyss.Common.Services.DhisClient.Dto;
-public class DhisRegisterReportRequestTemplate
+public class DhisDbReportTemplate
 {
     public string Program { get; set; }
 
     public EidsrApiProperties EidsrApiProperties { get; set; }
 
-    public string ReportLocationDataElementId { get; set; }
-    
-    public string ReportSuspectedDiseaseDataElementId { get; set; }
+    public string ReportLocationDataElementId	{ get; set; }
 
     public string ReportHealthRiskDataElementId { get; set; }
+
+    public string ReportSuspectedDiseaseDataElementId	{ get; set; }
 
     public string ReportStatusDataElementId { get; set; }
 
