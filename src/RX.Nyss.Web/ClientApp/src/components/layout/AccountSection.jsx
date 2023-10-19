@@ -87,7 +87,7 @@ const useStyles = makeStyles(() => ({
       fontSize: 12,
       fontWeight: "bold",
       padding: "8px 0 8px 8px",
-      background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)'
+      backgroundColor: "#F1F1F1"
     },
 }));
 
