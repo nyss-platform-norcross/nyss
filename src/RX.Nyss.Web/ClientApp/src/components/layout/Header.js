@@ -22,8 +22,7 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu, directionRtl, isSupervi
       {isSupervisor && (
           <div className={styles.supervisorHeader}>
             <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
-              <img src={isSmallScreen ? "/images/logo-small.svg?cache=" + new Date().getTime()
-        : "/images/logo.svg?cache=" + new Date().getTime()} alt="Nyss logo"/>
+              <img src={isSmallScreen ? "/images/logo-small.svg?cache=" + new Date().getTime() : "/images/logo.svg?cache=" + new Date().getTime()} alt="Nyss logo"/>
             </Link>
             <UserStatus />
           </div>
