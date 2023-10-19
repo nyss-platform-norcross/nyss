@@ -104,7 +104,7 @@ const EidsrIntegrationPageComponent = (props) => {
             </Typography>
           </Grid>
 
-          <div hidden="true"><Grid item xs={12}>
+          <div hidden={true}><Grid item xs={12}>
             <Typography variant="h6">
               {strings(stringKeys.eidsrIntegration.form.phoneNumberDataElementId)}
             </Typography>
@@ -122,7 +122,7 @@ const EidsrIntegrationPageComponent = (props) => {
             </Typography>
           </Grid>
 
-          <div hidden="true"><Grid item xs={12}>
+          <div hidden={true}><Grid item xs={12}>
             <Typography variant="h6">
               {strings(stringKeys.eidsrIntegration.form.eventTypeDataElementId)}
             </Typography>
@@ -139,6 +139,71 @@ const EidsrIntegrationPageComponent = (props) => {
               { props.data.genderDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet) }
             </Typography>
           </Grid>
+
+          <Grid item xs={12}>
+            <hr className={styles.divider} />
+            <div className={styles.header}>
+              {strings("Data Elements for Reports")}
+            </div>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Location")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportLocationDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Health Risk")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportHealthRiskDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Suspected Disease")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportSuspectedDiseaseDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Status")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportStatusDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Gender")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportGenderDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Age At Least 5")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportAgeAtLeastFiveDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings("Report Age Below 5")}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.reportAgeBelowFiveDataElementId ?? strings(stringKeys.eidsrIntegration.form.dataNotSet)}
+            </Typography>
+          </Grid>
+
+
 
           <Grid item xs={12}>
             <hr className={styles.divider} />

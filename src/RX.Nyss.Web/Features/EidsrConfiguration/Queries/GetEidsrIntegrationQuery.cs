@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Features.EidsrConfiguration.Dto;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Features.EidsrConfiguration.Queries;
@@ -68,6 +65,14 @@ public class GetEidsrIntegrationQuery : IRequest<Result<EidsrIntegrationResponse
                 EventTypeDataElementId = eidsrConfiguration?.EventTypeDataElementId,
                 GenderDataElementId = eidsrConfiguration?.GenderDataElementId,
                 DistrictsWithOrganizationUnits = await GetDistrictsWithOrganizationUnits(request.Id),
+
+                ReportLocationDataElementId = eidsrConfiguration?.ReportLocationDataElementId,
+                ReportHealthRiskDataElementId = eidsrConfiguration?.ReportHealthRiskDataElementId,
+                ReportSuspectedDiseaseDataElementId = eidsrConfiguration?.ReportSuspectedDiseaseDataElementId,
+                ReportStatusDataElementId = eidsrConfiguration?.ReportStatusDataElementId,
+                ReportGenderDataElementId = eidsrConfiguration?.ReportGenderDataElementId,
+                ReportAgeAtLeastFiveDataElementId = eidsrConfiguration?.ReportAgeAtLeastFiveDataElementId,
+                ReportAgeBelowFiveDataElementId = eidsrConfiguration?.ReportAgeBelowFiveDataElementId,
             };
 
             return Result.Success(eidsrConfigurationDto);

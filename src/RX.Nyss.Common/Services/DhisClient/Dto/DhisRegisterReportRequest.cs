@@ -37,13 +37,13 @@ public class DhisRegisterReportRequest
     {
         var dataValues = new List<DhisRegisterReportRequestBody.DataValue>();
 
-        AddDataElement(dataValues, template.LocationDataElementId, data.Location);
-        AddDataElement(dataValues, template.SuspectedDiseaseDataElementId, data.SuspectedDisease);
-        AddDataElement(dataValues, template.HealthRiskDataElementId, data.HealthRisk);
+        AddDataElement(dataValues, template.ReportLocationDataElementId, data.ReportLocation);
+        AddDataElement(dataValues, template.ReportSuspectedDiseaseDataElementId, data.ReportSuspectedDisease);
+        AddDataElement(dataValues, template.ReportHealthRiskDataElementId, data.ReportHealthRisk);
         AddDataElement(dataValues, template.ReportStatusDataElementId, data.ReportStatus);
-        AddDataElement(dataValues, template.GenderDataElementId, data.Gender);
-        AddDataElement(dataValues, template.AgeAtleastFiveDataElementId, data.AgeAtleastFive);
-        AddDataElement(dataValues, template.AgeBelowFiveDataElementId, data.AgeBelowFive);
+        AddDataElement(dataValues, template.ReportGenderDataElementId, data.ReportGender);
+        AddDataElement(dataValues, template.ReportAgeAtLeastFiveDataElementId, data.ReportAgeAtleastFive);
+        AddDataElement(dataValues, template.ReportAgeBelowFiveDataElementId, data.ReportAgeBelowFive);
 
         return dataValues;
     }

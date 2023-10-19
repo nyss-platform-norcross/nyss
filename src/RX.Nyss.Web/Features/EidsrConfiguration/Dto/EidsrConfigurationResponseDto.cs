@@ -26,5 +26,19 @@ public class EidsrIntegrationResponseDto
 
     public string GenderDataElementId { get; set; }
 
+    public string ReportLocationDataElementId { get; set; }
+
+    public string ReportHealthRiskDataElementId { get; set; }
+
+    public string ReportSuspectedDiseaseDataElementId { get; set; }
+
+    public string ReportStatusDataElementId { get; set; }
+
+    public string ReportGenderDataElementId { get; set; }
+
+    public string ReportAgeAtLeastFiveDataElementId { get; set; }
+
+    public string ReportAgeBelowFiveDataElementId { get; set; }
+
     public List<DistrictsWithOrganizationUnits> DistrictsWithOrganizationUnits { get; set; }
 }
