@@ -18,9 +18,7 @@ export const Layout = ({ fillPage, children }) => {
 
   return (
     <BaseLayout>
-      <div className={styles.sideMenu}>
-        <SideMenu />
-      </div>
+      <SideMenu />
       <div className={styles.mainContent}>
         <Header />
         <div className={`${styles.pageContentContainer} ${fillPage ? styles.fillPage : null}`} id={pageContentId}>
