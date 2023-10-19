@@ -38,3 +38,18 @@
     margin-right: 15px;
   }
 }
+
+.supervisorHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between
+}
+
+.logo {
+  margin-top: 27px;
+  display:inline-block;
+
+  img {
+    height: 38px;
+  }
+}
