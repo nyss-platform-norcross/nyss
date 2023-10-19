@@ -48,6 +48,14 @@ const EidsrIntegrationEditPageComponent = (props) => {
       eventTypeDataElementId: props.data.eventTypeDataElementId ?? "",
       genderDataElementId: props.data.genderDataElementId ?? "",
       districtsWithOrganizationUnits: props.data.districtsWithOrganizationUnits ?? [],
+
+      reportLocationDataElementId: props.data.reportLocationDataElementId ?? "",
+      reportHealthRiskDataElementId: props.data.reportHealthRiskDataElementId ?? "",
+      reportSuspectedDiseaseDataElementId: props.data.reportSuspectedDiseaseDataElementId ?? "",
+      reportStatusDataElementId: props.data.reportStatusDataElementId ?? "",
+      reportGenderDataElementId: props.data.reportGenderDataElementId ?? "",
+      reportAgeAtLeastFiveDataElementId: props.data.reportAgeAtLeastFiveDataElementId ?? "",
+      reportAgeBelowFiveDataElementId: props.data.reportAgeBelowFiveDataElementId ?? "",
     };
 
     const validation = {
@@ -119,8 +127,15 @@ const EidsrIntegrationEditPageComponent = (props) => {
       eventTypeDataElementId: values.eventTypeDataElementId,
       genderDataElementId: values.genderDataElementId,
       districtsWithOrganizationUnits: values.districtsWithOrganizationUnits,
-    });
 
+      reportLocationDataElementId: values.reportLocationDataElementId,
+      reportHealthRiskDataElementId: values.reportHealthRiskDataElementId,
+      reportSuspectedDiseaseDataElementId: values.reportSuspectedDiseaseDataElementId,
+      reportStatusDataElementId: values.reportStatusDataElementId,
+      reportGenderDataElementId: values.reportGenderDataElementId,
+      reportAgeAtLeastFiveDataElementId: values.reportAgeAtLeastFiveDataElementId,
+      reportAgeBelowFiveDataElementId: values.reportAgeBelowFiveDataElementId,
+    });
   };
 
   if (props.isFetching || !form) {
@@ -137,10 +152,6 @@ const EidsrIntegrationEditPageComponent = (props) => {
 
         <Form fullWidth onSubmit={handleSubmit}>
           <Grid container spacing={2} direction="column">
-
-
-
-
             <Grid item xs={4}>
               <TextInputField
                 label={strings(stringKeys.eidsrIntegration.form.userName)}
@@ -193,11 +204,8 @@ const EidsrIntegrationEditPageComponent = (props) => {
                     {props?.program?.name} <CheckCircleIcon style={{color: 'green', fontSize: 'inherit'}}/>
                   </Typography>
                 }
-
               </Grid>
             </Grid>
-
-
             <Grid item xs={6}>
               <hr className={styles.divider} />
               <div className={styles.header}>
@@ -225,8 +233,8 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 name="dateOfOnsetDataElementId"
                 field={form.fields.dateOfOnsetDataElementId}
               />
-          </Grid>
-          <div hidden="true"><Grid item xs={4}>
+            </Grid>
+          <div hidden={true}><Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.phoneNumberDataElementId)}
@@ -242,7 +250,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 field={form.fields.suspectedDiseaseDataElementId}
               />
             </Grid>
-          <div hidden="true"><Grid item xs={4}>
+          <div hidden={true}><Grid item xs={4}>
               <TextInputField
                 disabled = {integrationEditingDisabled}
                 label={strings(stringKeys.eidsrIntegration.form.eventTypeDataElementId)}
@@ -257,25 +265,104 @@ const EidsrIntegrationEditPageComponent = (props) => {
                 name="genderDataElementId"
                 field={form.fields.genderDataElementId}
               />
-            </Grid>
+          </Grid>
 
 
 
 
-            <Grid item xs={6}>
-              <hr className={styles.divider} />
-              <div className={styles.header}>
+          <Grid item xs={6}>
+            <hr className={styles.divider} />
+            <div className={styles.header}>
+              {strings("Data Elements for Reports")}
+              {integrationEditingDisabled &&
+                <Tooltip title={strings(stringKeys.eidsrIntegration.form.testConnToContinue)}>
+                  <LiveHelpIcon fontSize="small" style={{ color: '#bbb' }} />
+                </Tooltip>
+              }
+            </div>
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Location")}
+              name="reportLocationDataElementId"
+              field={form.fields.reportLocationDataElementId}
+            />
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Health Risk")}
+              name="reportHealthRiskDataElementId"
+              field={form.fields.reportHealthRiskDataElementId}
+            />
+          </Grid>
+         
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Suspected Disease")}
+              name="reportSuspectedDiseaseDataElementId"
+              field={form.fields.reportSuspectedDiseaseDataElementId}
+            />
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Status")}
+              name="reportStatusDataElementId"
+              field={form.fields.reportStatusDataElementId}
+            />
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Gender")}
+              name="reportStatusDataElementId"
+              field={form.fields.reportGenderDataElementId}
+            />
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Age At Least 5")}
+              name="reportAgeAtLeastFiveDataElementId"
+              field={form.fields.reportAgeAtLeastFiveDataElementId}
+            />
+          </Grid>
+          
+          <Grid item xs={4}>
+            <TextInputField
+              disabled={integrationEditingDisabled}
+              label={strings("Report Age Below 5")}
+              name="reportAgeBelowFiveDataElementId"
+              field={form.fields.reportAgeBelowFiveDataElementId}
+            />
+          </Grid>
+
+
+
+
+
+          <Grid item xs={6}>
+            <hr className={styles.divider} />
+            <div className={styles.header}>
                 {strings(stringKeys.eidsrIntegration.form.districts)}
                 { integrationEditingDisabled &&
                   <Tooltip title={strings(stringKeys.eidsrIntegration.form.testConnToContinue)}>
                     <LiveHelpIcon fontSize="small" style={{color: '#bbb'}}/>
                   </Tooltip>
                 }
-              </div>
-            </Grid>
+            </div>
+          </Grid>
 
-            <Grid item md={6} xs={10}>
-              <div>
+          <Grid item md={6} xs={10}>
+            <div>
                 <EidsrIntegrationEditPageDistrictsComponent
                   districtsWithOrganizationUnits={form.fields.districtsWithOrganizationUnits.value}
                   integrationEditingDisabled={integrationEditingDisabled}
@@ -283,19 +370,17 @@ const EidsrIntegrationEditPageComponent = (props) => {
                   organisationUnitsIsFetching={props.organisationUnitsIsFetching}
                   onChange={(newValue)=>{updateDistrictsField(newValue)}}
                 />
-              </div>
-
-              <div className={styles.districtInput}>
+            </div>
+            <div className={styles.districtInput}>
                 <TextInputField
                   disabled = {integrationEditingDisabled}
                   label={strings(stringKeys.eidsrIntegration.form.districtsWithOrganizationUnits)}
                   name="districtsWithOrganizationUnits"
                   field={form.fields.districtsWithOrganizationUnits}
                 />
-              </div>
-            </Grid>
-
+            </div>
           </Grid>
+         </Grid>
 
           <FormActions>
             <CancelButton onClick={() => props.goToEidsrIntegration(props.nationalSocietyId)}>{ strings(stringKeys.form.cancel) }</CancelButton>
@@ -306,9 +391,7 @@ const EidsrIntegrationEditPageComponent = (props) => {
               </Tooltip>
             }
           </FormActions>
-
         </Form>
-
     </Fragment>
   );
 }

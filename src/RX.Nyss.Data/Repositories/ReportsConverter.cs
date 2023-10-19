@@ -9,6 +9,7 @@ namespace RX.Nyss.Data.Repositories;
 public interface IReportsConverter
 {
     List<EidsrDbReportData> ConvertReports(List<RawReport> reports, DateTime alertDate, int englishContentLanguageId);
+    List<DhisDbReportData> ConvertDhisReports(List<RawReport> reports, DateTime alertDate, int englishContentLanguageId);
 }
 
 public class ReportsConverter : IReportsConverter
@@ -39,6 +40,28 @@ public class ReportsConverter : IReportsConverter
         // generate aggregated reports - group them by the organisation unit associated with RawReport District
         return SquashReports(eidsrDbReportData);
     }
+
+    public List<DhisDbReportData> ConvertDhisReports(List<RawReport> reports, DateTime alertDate, int englishContentLanguageId)
+    {
+        var dhisDbReportData = new List<DhisDbReportData>();
+
+        // format for DHIS purposes data of the reports
+        foreach (var report in reports)
+        {
+            try
+            {
+                //dhisDbReportData.Add(ConvertSingleReport(report, alertDate, englishContentLanguageId));
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error during converting report to DHIS report, skipping malformed report.");
+            }
+        }
+
+        // generate aggregated reports - group them by the organisation unit associated with RawReport District
+        return SquashDhisReports(dhisDbReportData);
+    }
+
 
     private EidsrDbReportData ConvertSingleReport(RawReport rawReport, DateTime alertDate, int englishContentLanguageId)
     {
@@ -121,6 +144,31 @@ public class ReportsConverter : IReportsConverter
             })
             .ToList();
     }
+
+    private List<DhisDbReportData> SquashDhisReports(List<DhisDbReportData> reports)
+    {
+        return reports.GroupBy(x => new
+            {
+                x.OrgUnit,
+                x.EventDate
+            })
+            .Select(orgUnitGroup =>
+            {
+                return new DhisDbReportData
+                {
+                    /*OrgUnit = orgUnitGroup.Key.OrgUnit,
+                    EventDate = orgUnitGroup.Key.EventDate,
+                    Gender = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.Gender).ToList()),
+                    Location = CreateValuesAndString(orgUnitGroup.Select(x => x.Location).ToList()),
+                    EventType = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.EventType).ToList()),
+                    PhoneNumber = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.PhoneNumber).ToList()),
+                    SuspectedDisease = CreateValuesAndString(orgUnitGroup.Select(x => x.SuspectedDisease).ToList()),
+                    DateOfOnset = CreateValuesAndCountsString(orgUnitGroup.Select(x => x.DateOfOnset).ToList())*/
+                };
+            })
+            .ToList();
+    }
+
 
     private string CreateValuesAndCountsString(List<string> list)
     {

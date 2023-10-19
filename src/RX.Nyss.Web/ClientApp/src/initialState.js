@@ -100,6 +100,13 @@ export const initialState = {
         suspectedDiseaseDataElementId: null,
         eventTypeDataElementId: null,
         genderDataElementId: null,
+        reportLocationDataElementId: null,
+        reportHealthRiskDataElementId: null,
+        reportSuspectedDiseaseDataElementId: null,
+        reportStatusDataElementId: null,
+        reportGenderDataElementId: null,
+        reportAgeAtLeastFiveDataElementId: null,
+        reportAgeBelowFiveDataElementId: null
       },
     organisationUnits: [],
     organisationUnitsIsFetching: false,
