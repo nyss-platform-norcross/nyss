@@ -15,14 +15,14 @@ import { AccountSection } from './AccountSection';
 
 const useStyles = makeStyles(() => ({
   MenuContainer: {
-    height: '100%',
-    marginTop: '32px',
+    paddingTop: '12px',
+    backgroundColor: "#f1f1f1",
   },
   SideMenu: {
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    background: 'linear-gradient(90deg, #f1f1f1 90%, #ececec)',
+    backgroundColor: "#F1F1F1"
   }
 }));
 
@@ -62,8 +62,7 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
-          <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
-            <Grid container direction='column'>
+          <Grid container className={classes.MenuContainer} direction={'column'}>
             {generalMenu.length !== 0 && (
               <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
               )}
@@ -71,10 +70,9 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               <Grid style={{ marginTop: 20 }}>
                 <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
               </Grid>
-              )}
-            </Grid>
-            <AccountSection handleItemClick={handleItemClick}/>
+            )}
           </Grid>
+          <AccountSection handleItemClick={handleItemClick}/>
         </div>
       </Drawer>
     </div>
