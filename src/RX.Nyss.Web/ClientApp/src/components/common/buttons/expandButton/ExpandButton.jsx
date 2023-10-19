@@ -20,7 +20,10 @@ const useStyles = makeStyles({
     padding: 0,
     transform: 'rotate(135deg)',
     color: "#D52B1E",
-  },
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  }, 
   invertedButton: {
     transform: 'rotate(-45deg)',
   },
