@@ -30,7 +30,8 @@ const useStyles = makeStyles(() => ({
     lineHeight: '28px',
     fontSize: 12,
     fontWeight: "bold",
-    margin: "0 0 0px 8px"
+    margin: "0 0 0px 8px",
+    position: "relative"
   },
   Divider: {
     backgroundColor: '#B4B4B4',

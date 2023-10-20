@@ -17,14 +17,14 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   MenuContainer: {
-    height: '100%',
-    marginTop: '12px',
+    paddingTop: '12px',
+    backgroundColor: "#f1f1f1",
   },
   SideMenu: {
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    background: '#F4F4F4',
+    backgroundColor: '#F1F1F1',
     position: "relative",
   },
   drawer: {
@@ -109,8 +109,7 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
             <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
           </Link>
         </div>
-        <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
-          <Grid container direction='column'>
+        <Grid container className={classes.MenuContainer} direction={'column'}>
           {generalMenu.length !== 0 && (
             <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
             )}
@@ -119,9 +118,8 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
             </Grid>
             )}
-          </Grid>
-          <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
         </Grid>
+        <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
       </div>
     </Drawer>
   );

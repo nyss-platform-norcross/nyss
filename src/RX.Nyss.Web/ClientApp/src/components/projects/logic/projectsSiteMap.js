@@ -40,7 +40,6 @@ export const projectsSiteMap = [
     placeholder: placeholders.projectTabMenu,
     access: accessMap.projects.showOverview,
     placeholderIndex: projectTabMenuOrder.settings,
-    icon: "Settings"
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",

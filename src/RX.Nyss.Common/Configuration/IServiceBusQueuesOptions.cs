@@ -9,6 +9,7 @@ public interface IServiceBusQueuesOptions
     string RecalculateAlertsQueue { get; set; }
     string SendSmsQueue { get; set; }
     string EidsrReportQueue { get; set; }
+    string DhisReportQueue { get; set; }
 }
 
 public class ServiceBusQueuesOptions : IServiceBusQueuesOptions
@@ -20,6 +21,6 @@ public class ServiceBusQueuesOptions : IServiceBusQueuesOptions
     public string CheckAlertQueue { get; set; }
     public string RecalculateAlertsQueue { get; set; }
     public string SendSmsQueue { get; set; }
-
-    public string EidsrReportQueue { get; set; }
+    public string EidsrReportQueue { get; set; } //For Alerts
+    public string DhisReportQueue { get; set; } //For reports
 }
