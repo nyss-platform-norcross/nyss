@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 
-const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSupervisor }) => {
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -42,39 +42,45 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
   const closeDrawer = () => {
     toggleSideMenu(false);
   }
+
+  if (isSupervisor) return null;
   return (
-    <div className={styles.drawer}>
-      <Drawer
-        variant={fullScreen ? "temporary" : "permanent"}
-        anchor={"left"}
-        open={!fullScreen || sideMenuOpen}
-        onClose={closeDrawer}
-        classes={{
-          paper: styles.drawer
-        }}
-        ModalProps={{
-          keepMounted: fullScreen
-        }}
-      >
-        <div className={classes.SideMenu}>
-          <div className={styles.sideMenuHeader}>
-            <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
-              <img src="/images/logo.svg" alt="Nyss logo" />
-            </Link>
-          </div>
-          <Grid container className={classes.MenuContainer} direction={'column'}>
-            {generalMenu.length !== 0 && (
-              <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
-              )}
-            {sideMenu.length !== 0 && (
-              <Grid style={{ marginTop: 20 }}>
-                <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+    <div className={styles.sideMenu}>
+      <div className={styles.drawer}>
+        <Drawer
+          variant={fullScreen ? "temporary" : "permanent"}
+          anchor={"left"}
+          open={!fullScreen || sideMenuOpen}
+          onClose={closeDrawer}
+          classes={{
+            paper: styles.drawer
+          }}
+          ModalProps={{
+            keepMounted: fullScreen
+          }}
+        >
+          <div className={classes.SideMenu}>
+            <div className={styles.sideMenuHeader}>
+              <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
+                <img src="/images/logo.svg" alt="Nyss logo" />
+              </Link>
+            </div>
+            <Grid container className={classes.MenuContainer} direction={'column'} justifyContent='space-between'>
+              <Grid container direction='column'>
+              {generalMenu.length !== 0 && (
+                <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick}/>
+                )}
+              {sideMenu.length !== 0 && (
+                <Grid style={{ marginTop: 20 }}>
+                  <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick}/>
+                </Grid>
+                )}
               </Grid>
-            )}
-          </Grid>
-          <AccountSection handleItemClick={handleItemClick}/>
-        </div>
-      </Drawer>
+              <AccountSection handleItemClick={handleItemClick}/>
+            </Grid>
+          </div>
+        </Drawer>
+      </div>
     </div>
   );
 }
@@ -87,7 +93,8 @@ SideMenuComponent.propTypes = {
 const mapStateToProps = state => ({
   generalMenu: state.appData.siteMap.generalMenu,
   sideMenu: state.appData.siteMap.sideMenu,
-  sideMenuOpen: state.appData.mobile.sideMenuOpen
+  sideMenuOpen: state.appData.mobile.sideMenuOpen,
+  isSupervisor: state.appData.user.roles.includes("Supervisor") || state.appData.user.roles.includes("HeadSupervisor")
 });
 
 const mapDispatchToProps = {
