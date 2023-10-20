@@ -4,9 +4,9 @@ import { ReactComponent as ExpandLeftSVG } from "../../../../assets/icons/Expand
 
 const useStyles = makeStyles({
   triangleBackground: {
-    position: "fixed",
-    zIindex: 2,
-    left: 220,
+    position: "absolute",
+    zIndex: 1201,
+    right: -10,
     top: 5,
     height: 35,
     width: 35,

@@ -27,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#F1F1F1',
     position: "relative",
   },
+  SideMenuContent: {
+    overflowY: 'auto',
+    overflowX: 'hidden',
+  },
   drawer: {
     zIndex: 1,
     "@media (min-width: 1280px)": {
@@ -50,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    overflowX: 'hidden',
     width: theme.spacing(7) + 1,
     [theme.breakpoints.up('sm')]: {
       width: theme.spacing(9) + 2,
@@ -64,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     height: "38px"
+  },
+  overflowVisible: {
+    overflowY: 'visible',
   }
 }));
 
@@ -98,28 +104,35 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
       classes={{
         paper: !isSmallScreen && (isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose)
       }}
+      PaperProps={{
+        classes: {
+          root: classes.overflowVisible,
+        }
+      }}
       ModalProps={{
         keepMounted: isSmallScreen
       }}
     >
       <div className={classes.SideMenu}>
         <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
-        <div className={styles.sideMenuHeader}>
-          <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
-            <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
-          </Link>
+        <div className={classes.SideMenuContent}>
+          <div className={styles.sideMenuHeader}>
+            <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
+              <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
+            </Link>
+          </div>
+          <Grid container className={classes.MenuContainer} direction={'column'}>
+            {generalMenu.length !== 0 && (
+              <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
+              )}
+            {sideMenu.length !== 0 && (
+              <Grid style={{ marginTop: 20 }}>
+                <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
+              </Grid>
+              )}
+          </Grid>
+          <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
         </div>
-        <Grid container className={classes.MenuContainer} direction={'column'}>
-          {generalMenu.length !== 0 && (
-            <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
-            )}
-          {sideMenu.length !== 0 && (
-            <Grid style={{ marginTop: 20 }}>
-              <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
-            </Grid>
-            )}
-        </Grid>
-        <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
       </div>
     </Drawer>
   );
