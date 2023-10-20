@@ -24,7 +24,7 @@ export const UserStatusComponent = ({ push }) => {
   }
 
   return (
-    <div>
+    <div className={styles.userStatusContainer}>
       <div className={`${styles.userStatus} ${user.languageCode === 'ar' ? styles.rtl : ''}`} onClick={handleClick}>
         <div className={styles.userName}>{user.name}</div>
         <ArrowDropDownIcon color="primary" className={styles.arrow} />
