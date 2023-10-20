@@ -9,7 +9,9 @@ import { useTheme, Drawer, Grid, useMediaQuery, makeStyles } from "@material-ui/
 import { toggleSideMenu } from '../app/logic/appActions';
 import { MenuSection } from './MenuSection';
 import { stringKeys, strings } from '../../strings';
+import ExpandButton from '../common/buttons/expandButton/ExpandButton';
 import { AccountSection } from './AccountSection';
+import { expandSideMenu } from '../app/logic/appActions';
 
 const drawerWidth = 240;
 
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     height: '100%',
     background: '#F4F4F4',
+    position: "relative",
   },
   drawer: {
     zIndex: 1,
@@ -65,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSideMenuExpanded }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSideMenuExpanded, expandSideMenu }) => {
   const theme = useTheme();
   const classes = useStyles();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -80,6 +83,11 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
   const closeDrawer = () => {
     toggleSideMenu(false);
   }
+  
+  const handleExpandClick = () => {
+    expandSideMenu(!isSideMenuExpanded);
+  }
+
   return (
     <Drawer
       variant={isSmallScreen ? "temporary" : "permanent"}
@@ -95,6 +103,7 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
       }}
     >
       <div className={classes.SideMenu}>
+        <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
         <div className={styles.sideMenuHeader}>
           <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
             <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
@@ -127,12 +136,13 @@ const mapStateToProps = state => ({
   generalMenu: state.appData.siteMap.generalMenu,
   sideMenu: state.appData.siteMap.sideMenu,
   sideMenuOpen: state.appData.mobile.sideMenuOpen,
-  isSideMenuExpanded: state.appData.isSideMenuExpanded
+  isSideMenuExpanded: state.appData.isSideMenuExpanded,
 });
 
 const mapDispatchToProps = {
   push: push,
-  toggleSideMenu: toggleSideMenu
+  toggleSideMenu: toggleSideMenu,
+  expandSideMenu: expandSideMenu,
 };
 
 export const SideMenu = connect(mapStateToProps, mapDispatchToProps)(SideMenuComponent);

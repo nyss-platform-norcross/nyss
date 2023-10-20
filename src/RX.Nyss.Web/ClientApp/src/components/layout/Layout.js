@@ -3,11 +3,9 @@ import { connect } from "react-redux";
 import { Header } from './Header';
 import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
-
 import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
 import { TabMenu } from './TabMenu';
-import ExpandButton from '../common/buttons/expandButton/ExpandButton';
 import { expandSideMenu } from '../app/logic/appActions';
 
 const pageContentId = "pageContent";
@@ -18,15 +16,10 @@ export const resetPageContentScroll = () => {
 }
 
 const LayoutComponent = ({ fillPage, children, isSideMenuExpanded, expandSideMenu }) => {
-  const handleExpandClick = () => {
-    expandSideMenu(!isSideMenuExpanded);
-  }
-
   return (
     <BaseLayout>
       <div className={styles.sideMenu}>
         <SideMenu isExpanded={isSideMenuExpanded}/>
-        <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
       </div>
       <div className={styles.mainContent}>
 
