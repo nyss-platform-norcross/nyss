@@ -28,11 +28,12 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
   SideMenuContent: {
-    overflowY: 'auto',
     overflowX: 'hidden',
+    overflowY: 'auto',
+    scrollbarColor: '#B4B4B4 #F1F1F1',
   },
   drawer: {
-    zIndex: 1,
+    zIndex: 100,
     "@media (min-width: 1280px)": {
       width: drawerWidth,
     },
@@ -115,12 +116,12 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
     >
       <div className={classes.SideMenu}>
         <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
-        <div className={classes.SideMenuContent}>
-          <div className={styles.sideMenuHeader}>
+        <div className={styles.sideMenuHeader}>
             <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
               <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
             </Link>
           </div>
+        <div className={classes.SideMenuContent}>
           <Grid container className={classes.MenuContainer} direction={'column'}>
             {generalMenu.length !== 0 && (
               <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
@@ -131,8 +132,8 @@ const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu
               </Grid>
               )}
           </Grid>
-          <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
         </div>
+        <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
       </div>
     </Drawer>
   );

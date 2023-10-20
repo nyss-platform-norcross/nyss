@@ -2,7 +2,6 @@
     flex: 1;
     display: flex;
     flex-direction: row;
-
     .sideMenu {
         flex: 0 1 auto;
         display: flex;
@@ -16,15 +15,8 @@
 
     .pageContentContainer {
         flex: 1;
-        overflow-y: auto;
-
-        @media screen and (max-width: 1919px) {
-          max-width: calc(100vw - 220px);
-        }
-
-        @media screen and (max-width: 1279px) {
-          max-width: calc(100vw);
-        }
+        overflow: auto;
+        max-width: 100vw;
 
         .pageContent {
           padding: 20px 35px;
