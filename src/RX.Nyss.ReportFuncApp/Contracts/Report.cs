@@ -13,6 +13,7 @@
     {
         SmsEagle,
         Nyss,
+        Telerivet,
         SmsGateway
     }
 }

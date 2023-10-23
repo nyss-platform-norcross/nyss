@@ -16,6 +16,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
     {
         Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, int nationalSocietyId);
         DateTime ParseTimestamp(string timestamp);
+        DateTime ParseTelerivetTimestamp(string time_created);
         void ValidateReceivalTime(DateTime receivedAt);
         Task<GatewaySetting> ValidateGatewaySetting(string apiKey);
     }
@@ -152,6 +153,42 @@ namespace RX.Nyss.ReportApi.Features.Reports
             }
         }
 
+        public DateTime ParseTelerivetTimestamp(string time_created)
+        {
+            try
+            {
+                var formatProvider = CultureInfo.InvariantCulture;
+                //const string timestampFormat = "yyyyMMddHHmmss";
+
+                // time_created = 1673531164
+                var timeAsLong = (long)Convert.ToDouble(time_created);
+                var parsedSuccessfully = DateTimeOffset.FromUnixTimeSeconds(timeAsLong);
+                var parsedDateTime = parsedSuccessfully.UtcDateTime;
+
+                /*if (!time_created)
+                {
+                    throw new ReportValidationException($"Cannot parse timestamp '{time_created}' to datetime.");
+                }
+                // This needs to be a boolean //
+                */
+
+                var parsedTimestampInUtc = DateTime.SpecifyKind(parsedDateTime, DateTimeKind.Utc);
+
+                var diffToNow = parsedTimestampInUtc - _dateTimeProvider.UtcNow;
+                if (diffToNow > TimeSpan.FromMinutes(57) && diffToNow < TimeSpan.FromMinutes(63))
+                {
+                    _loggerAdapter.Warn($"Timestamp is {diffToNow.TotalHours:0.##} hour into the future, likely due to wrong timezone settings, please check eagle!");
+                    parsedTimestampInUtc = parsedTimestampInUtc.AddHours(-1);
+                }
+
+                return parsedTimestampInUtc;
+            }
+            catch (Exception e)
+            {
+                throw new ReportValidationException($"Cannot parse timestamp '{time_created}'. Exception: {e.Message} Stack trace: {e.StackTrace}", ReportErrorType.Gateway);
+            }
+        }
+
         public void ValidateReceivalTime(DateTime receivedAt)
         {
             const int maxAllowedPrecedenceInMinutes = 3;
@@ -174,7 +211,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 throw new ReportValidationException($"A gateway setting with API key '{apiKey}' does not exist.", ReportErrorType.Gateway);
             }
 
-            if (gatewaySetting.GatewayType != GatewayType.SmsEagle && gatewaySetting.GatewayType != GatewayType.SmsGateway) 
+            if (gatewaySetting.GatewayType != GatewayType.SmsEagle && gatewaySetting.GatewayType != GatewayType.SmsGateway && gatewaySetting.GatewayType != GatewayType.Telerivet) 
             {
                 throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}' or '{GatewayType.SmsGateway}'.", ReportErrorType.Gateway);
             }

@@ -1,2 +1,3 @@
 export const smsEagle = "SmsEagle";
-export const organizationTypes = [smsEagle];
+export const telerivet = "Telerivet";
+export const organizationTypes = [smsEagle,telerivet];

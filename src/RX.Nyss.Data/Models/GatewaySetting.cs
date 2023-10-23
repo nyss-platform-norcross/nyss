@@ -21,5 +21,9 @@ namespace RX.Nyss.Data.Models
 
         public string IotHubDeviceName { get; set; }
         public virtual ICollection<GatewayModem> Modems { get; set; }
+
+        public string TelerivetSendSmsApiKey { get; set; }
+
+        public string TelerivetProjectId { get; set; }
     }
 }

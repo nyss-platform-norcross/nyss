@@ -15,7 +15,7 @@
     "GeneralBlobContainerName": "nyss-blob-container"
   },
   "ReleaseName": "1.0.0.1",
-  "MaxContentLength": 500,
+  "MaxContentLength": 3000,
   "EnableResendingFeedbackMessages": false,
   "NumberOfMessagesToFetchForResending": 200,
   "MailConfig": {

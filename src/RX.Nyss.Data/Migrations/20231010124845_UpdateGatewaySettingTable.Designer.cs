@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -12,9 +13,10 @@ using RX.Nyss.Data;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20231010124845_UpdateGatewaySettingTable")]
+    partial class UpdateGatewaySettingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2197,27 +2199,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumberDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportAgeAtLeastFiveDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportAgeBelowFiveDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportGenderDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportHealthRiskDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportLocationDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportStatusDataElementId")
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("ReportSuspectedDiseaseDataElementId")
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("SuspectedDiseaseDataElementId")

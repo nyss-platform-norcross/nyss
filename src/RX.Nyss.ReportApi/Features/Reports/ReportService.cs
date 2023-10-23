@@ -18,6 +18,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
     {
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly INyssReportHandler _nyssReportHandler;
+        private readonly ITelerivetHandler _telerivetHandler;
         private readonly ISmsGatewayHandler _smsGatewayHandler;
         private readonly IEidsrReportHandler _eidsrReportHandler;
         private readonly ILoggerAdapter _loggerAdapter;
@@ -26,14 +27,15 @@ namespace RX.Nyss.ReportApi.Features.Reports
             ISmsEagleHandler smsEagleHandler,
             ILoggerAdapter loggerAdapter,
             INyssReportHandler nyssReportHandler,
+            ITelerivetHandler telerivetHandler,
             IEidsrReportHandler eidsrReportHandler,
             ISmsGatewayHandler smsGatewayHandler)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
             _nyssReportHandler = nyssReportHandler;
+            _telerivetHandler = telerivetHandler;
             _eidsrReportHandler = eidsrReportHandler;
-            //_nyssReportHandler = nyssReportHandler;
             _smsGatewayHandler = smsGatewayHandler;
         }
 
@@ -54,6 +56,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     break;
                 case ReportSource.Nyss:
                     await _nyssReportHandler.Handle(report.Content);
+                    break;
+                case ReportSource.Telerivet:
+                    await _telerivetHandler.Handle(report.Content);
                     break;
                 case ReportSource.SmsGateway:
                     await _smsGatewayHandler.Handle(report.Content);

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -6,9 +8,12 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Features.Common;
+using Telerivet.Client;
+
 
 namespace RX.Nyss.ReportApi.Services
 {
@@ -17,6 +22,7 @@ namespace RX.Nyss.ReportApi.Services
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false);
         Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message);
+        Task SendTelerivetSms(long number, string message, string apiKey, string projectId);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -98,7 +104,9 @@ namespace RX.Nyss.ReportApi.Services
                     IotHubDeviceName = iotHubDeviceName,
                     PhoneNumber = recipient.PhoneNumber,
                     SmsMessage = smsMessage,
-                    ModemNumber = specifyModemWhenSending ? recipient.Modem : null
+                    ModemNumber = specifyModemWhenSending
+                        ? recipient.Modem
+                        : null
                 };
 
                 var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
@@ -109,8 +117,15 @@ namespace RX.Nyss.ReportApi.Services
 
                 return _sendSmsQueueSender.SendMessageAsync(message);
             }));
-    }
 
+        public async Task SendTelerivetSms(long number, string message, string apiKey, string projectId)
+        {
+            var tr = new TelerivetAPI(apiKey);
+            var project = tr.InitProjectById(projectId);
+            // send message
+            Message sent_msg = await project.SendMessageAsync(Util.Options("content", message, "to_number", number));
+        }
+    };
     public class SendEmailMessage
     {
         public Contact To { get; set; }
