@@ -78,7 +78,7 @@ function* openModule({ path, params }) {
   const sideMenu = getMenu(menuParams, placeholders.leftMenu, path, user);
   const tabMenu = getMenu(menuParams, placeholders.tabMenu, path, user);
   const projectTabMenu = getMenu(menuParams, placeholders.projectTabMenu, path, user);
-  const title = getHierarchy(path, menuParams, user).filter(b => !b.hidden).slice(-1)[0].title;
+  const title = params.title || getHierarchy(path, menuParams, user).filter(b => !b.hidden).slice(-1)[0].title;
 
   yield put(actions.openModule.success(path, menuParams, generalMenu, sideMenu, tabMenu, projectTabMenu, title))
 }
