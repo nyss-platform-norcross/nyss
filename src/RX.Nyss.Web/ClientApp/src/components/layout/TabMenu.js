@@ -66,6 +66,9 @@ const TabMenuComponent = ({ projectTabMenu, tabMenu, push, currentUrl, title, pr
           ))}
         </Tabs>
       )}
+      {projectTabMenu && projectTabMenu.length > 0 && projectTabMenu.every(menuItem => menuItem.title !== title) && (
+        <div className={styles.header}>{title}</div>
+      )}
     </div>
   );
 }
