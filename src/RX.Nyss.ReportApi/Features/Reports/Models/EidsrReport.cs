@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.ReportApi.Features.Reports.Models;
 
-public class EidsrReport
+public class DhisReport
 {
-    public int? AlertId { get; set; }
+    public int? ReportId { get; set; }
 }

@@ -1,23 +1,6 @@
-.sideMenu {
-  flex: 1;
-  width: 221px;
-  background: linear-gradient(90deg, #F4F4F4 90%, #F4F4F4);
-}
-
 .sideMenuHeader {
   height: 80px;
-  border-bottom: 1px solid #d4d4d4;
   justify-content: left;
-
-  .logo {
-    margin-left: 35px;
-    margin-top: 27px;
-    display:inline-block;
-
-    img {
-      height: 38px;
-    }
-  }
 
   .logoDirectionRightToLeft {
     margin-right: 35px;
@@ -27,11 +10,5 @@
     img {
       height: 38px;
     }
-  }
-}
-
-.drawer {
-  @media screen and (min-width: 1280px) {
-    width: 221px;
   }
 }

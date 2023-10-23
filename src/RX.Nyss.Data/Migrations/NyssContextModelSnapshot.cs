@@ -2199,6 +2199,27 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<string>("PhoneNumberDataElementId")
                         .HasColumnType("varchar(256)");
 
+                    b.Property<string>("ReportAgeAtLeastFiveDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportAgeBelowFiveDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportGenderDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportHealthRiskDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportLocationDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportStatusDataElementId")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ReportSuspectedDiseaseDataElementId")
+                        .HasColumnType("varchar(256)");
+
                     b.Property<string>("SuspectedDiseaseDataElementId")
                         .HasColumnType("varchar(256)");
 

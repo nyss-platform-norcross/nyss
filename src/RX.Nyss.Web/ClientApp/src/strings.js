@@ -1088,6 +1088,11 @@ export const stringKeys = {
     errorTitle: "feedback.errorTitle",
     errorDescription: "feedback.errorDescription",
   },
+  sideMenu: {
+    account: "sideMenu.account",
+    general: "sideMenu.general",
+    nationalSocieties: "sideMenu.nationalSocieties",
+  }
 };
 
 export const isStringKey = (key) =>

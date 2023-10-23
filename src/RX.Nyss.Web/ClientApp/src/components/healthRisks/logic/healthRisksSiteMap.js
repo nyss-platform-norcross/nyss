@@ -6,8 +6,9 @@ export const healthRisksSiteMap = [
   {
     path: "/healthrisks",
     title: () => strings(stringKeys.healthRisk.title),
-    placeholder: placeholders.topMenu,
-    access: accessMap.healthRisks.list
+    placeholder: placeholders.generalMenu,
+    access: accessMap.healthRisks.list,
+    icon: "HealthRisks"
   },
   {
     path: "/healthrisks",

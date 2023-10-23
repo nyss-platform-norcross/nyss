@@ -37,7 +37,7 @@ const MultiSelectField = ({
         className={className}
         MenuProps={{
           PaperProps: {
-            style: { maxHeight: "fit-content" },
+            style: { maxHeight: 400 },
           },
           anchorOrigin: {
             horizontal: rtl ? "right" : "left",

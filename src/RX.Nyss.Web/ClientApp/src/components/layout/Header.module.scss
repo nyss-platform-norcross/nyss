@@ -1,10 +1,9 @@
 .header {
     display: flex;
     align-items: center;
-    height: 80px;
     padding-left: 35px;
     padding-right: 35px;
-    border-bottom: 1px solid #E0E0E0;
+    justify-content: flex-end;
 
     .placeholder {
         flex: 1;
@@ -19,7 +18,7 @@
 }
 
 .toggleMenu {
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
   @media screen and (min-width: 1280px) {
     display: none;
@@ -37,5 +36,20 @@
   &.rtl {
     margin-left: 0;
     margin-right: 15px;
+  }
+}
+
+.supervisorHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.logo {
+  margin-top: 20px;
+  display:inline-block;
+
+  img {
+    height: 38px;
   }
 }

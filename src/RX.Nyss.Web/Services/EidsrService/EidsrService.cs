@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.EidsrClient;
 using RX.Nyss.Common.Utils.DataContract;
@@ -8,6 +6,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Services.EidsrClient.Dto;
 using RX.Nyss.Web.Utils;
 
@@ -20,6 +19,8 @@ public interface IEidsrService
     Task<Result<EidsrProgramResponse>> GetProgram(EidsrApiProperties apiProperties, string programId);
 
     Task SendReportToEidsr(int alertId);
+
+    Task SendReportToDhis(int reportId);
 }
 
 public class EidsrService : IEidsrService
@@ -70,6 +71,18 @@ public class EidsrService : IEidsrService
         {
             _loggerAdapter.Error(e, $"Failed to SendReportToEidsr");
             throw new ResultException(ResultKey.Alert.EscalateAlert.EmailNotificationFailed);
+        }
+    }
+    public async Task SendReportToDhis(int reportId)
+    {
+        try
+        {
+            await _queueService.Send(_config.ServiceBusQueues.DhisReportQueue, new DhisReport { ReportId = reportId.ToString() });
+        }
+        catch (Exception e)
+        {
+            _loggerAdapter.Error(e, $"Failed to SendReportToDhis");
+            throw new ResultException(ResultKey.Report.ErrorType.Other);
         }
     }
 }

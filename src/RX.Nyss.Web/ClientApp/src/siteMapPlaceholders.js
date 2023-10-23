@@ -1,5 +1,6 @@
 export const placeholders = {
-  topMenu: "topMenu",
+  generalMenu: "generalMenu",
   leftMenu: "leftMenu",
-  tabMenu: "tabMenu"
+  tabMenu: "tabMenu",
+  projectTabMenu: "projectTabMenu"
 };

@@ -1,16 +1,16 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
-import { projectLeftMenuOrder } from "../../projects/logic/projectsSiteMap";
+import { projectTabMenuOrder } from "../../projects/logic/projectsSiteMap";
 
 export const dataCollectorsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/projects/:projectId/datacollectors",
     title: () => strings(stringKeys.dataCollectors.title),
-    placeholder: placeholders.leftMenu,
+    placeholder: placeholders.projectTabMenu,
     access: accessMap.dataCollectors.list,
-    placeholderIndex: projectLeftMenuOrder.dataCollectors
+    placeholderIndex: projectTabMenuOrder.dataCollectors,
   },
   {
     parentPath: "/projects/:projectId/datacollectors",

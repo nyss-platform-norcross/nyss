@@ -146,7 +146,7 @@ const DataCollectorsEditPageComponent = (props) => {
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid item xs={12}>
-          <Typography variant="h6">{strings(stringKeys.dataCollectors.filters.deployedMode)}</Typography>
+          <Typography variant="h5">{strings(stringKeys.dataCollectors.filters.deployedMode)}</Typography>
         </Grid>
 
         <Grid item xs={12}>
@@ -160,7 +160,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
 
         <Grid item xs={12}>
-          <Typography variant="h6">{strings(stringKeys.dataCollectors.form.personalia)}</Typography>
+          <Typography variant="h5">{strings(stringKeys.dataCollectors.form.personalia)}</Typography>
         </Grid>
 
         <Grid container spacing={2} className={formStyles.shrinked}>
@@ -237,7 +237,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
         <Grid container spacing={2} className={styles.locationsContainer}>
           <Grid item xs={12} container justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
+            <Typography variant="h5">{strings(stringKeys.dataCollectors.form.locationsHeader)}</Typography>
             <Button className={styles.addAnotherLocation} color='primary' variant="outlined" onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollectors.form.addLocation)}</Button>
           </Grid>
           {locations.map((location, i) => (

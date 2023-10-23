@@ -7,6 +7,7 @@ export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entiti
 export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
 export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status });
 export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, value });
+export const expandSideMenu = (value) => ({ type: actions.EXPAND_SIDE_MENU, value });
 export const goToTranslations = () => push(`/translations`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 export const stringsUpdated = (key, translations) => ({ type: actions.STRINGS_UPDATED, key, translations });
@@ -75,8 +76,8 @@ export const openModule = {
   invoke: (path, params) =>
     ({ type: actions.OPEN_MODULE.INVOKE, path, params}),
 
-  success: (path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title) =>
-    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title }),
+  success: (path, parameters, generalMenu, sideMenu, tabMenu, projectTabMenu, title) =>
+    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, generalMenu, sideMenu, tabMenu, projectTabMenu, title }),
 
   failure: (message) =>
     ({ type: actions.OPEN_MODULE.FAILURE, message })

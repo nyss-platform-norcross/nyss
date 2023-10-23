@@ -99,6 +99,14 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
                 EventTypeDataElementId = request.Body.EventTypeDataElementId,
                 GenderDataElementId = request.Body.GenderDataElementId,
                 NationalSocietyId = request.Id,
+
+                ReportLocationDataElementId = request.Body.ReportLocationDataElementId,
+                ReportHealthRiskDataElementId = request.Body.ReportHealthRiskDataElementId,
+                ReportSuspectedDiseaseDataElementId = request.Body.ReportSuspectedDiseaseDataElementId,
+                ReportStatusDataElementId = request.Body.ReportStatusDataElementId,
+                ReportGenderDataElementId = request.Body.ReportGenderDataElementId,
+                ReportAgeAtLeastFiveDataElementId = request.Body.ReportAgeAtLeastFiveDataElementId,
+                ReportAgeBelowFiveDataElementId = request.Body.ReportAgeBelowFiveDataElementId,
             };
 
             await _nyssContext.AddAsync(newEidsrConfiguration, cancellationToken);
@@ -124,6 +132,14 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
             eidsrConfiguration.SuspectedDiseaseDataElementId = request.Body.SuspectedDiseaseDataElementId;
             eidsrConfiguration.EventTypeDataElementId = request.Body.EventTypeDataElementId;
             eidsrConfiguration.GenderDataElementId = request.Body.GenderDataElementId;
+
+            eidsrConfiguration.ReportLocationDataElementId = request.Body.ReportLocationDataElementId;
+            eidsrConfiguration.ReportHealthRiskDataElementId = request.Body.ReportHealthRiskDataElementId;
+            eidsrConfiguration.ReportSuspectedDiseaseDataElementId = request.Body.ReportSuspectedDiseaseDataElementId;
+            eidsrConfiguration.ReportStatusDataElementId = request.Body.ReportStatusDataElementId;
+            eidsrConfiguration.ReportGenderDataElementId = request.Body.ReportGenderDataElementId;
+            eidsrConfiguration.ReportAgeAtLeastFiveDataElementId = request.Body.ReportAgeAtLeastFiveDataElementId;
+            eidsrConfiguration.ReportAgeBelowFiveDataElementId = request.Body.ReportAgeBelowFiveDataElementId;
 
             await UpdateEidsrOrganisationUnits(request.Id, request.Body.DistrictsWithOrganizationUnits, cancellationToken);
 
@@ -191,6 +207,20 @@ public class EditEidsrIntegrationCommand : IRequest<Result>
         public string EventTypeDataElementId { get; set; }
 
         public string GenderDataElementId { get; set; }
+
+        public string ReportLocationDataElementId { get; set; }
+
+        public string ReportHealthRiskDataElementId { get; set; }
+
+        public string ReportSuspectedDiseaseDataElementId { get; set; }
+
+        public string ReportStatusDataElementId { get; set; }
+
+        public string ReportGenderDataElementId { get; set; }
+
+        public string ReportAgeAtLeastFiveDataElementId { get; set; }
+
+        public string ReportAgeBelowFiveDataElementId { get; set; }
 
         public List<DistrictsWithOrganizationUnits> DistrictsWithOrganizationUnits { get; set; }
     }

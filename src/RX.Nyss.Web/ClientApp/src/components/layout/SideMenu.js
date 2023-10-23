@@ -5,63 +5,82 @@ import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 import { push } from "connected-react-router";
-import { useTheme, List, ListItem, ListItemText, ListItemIcon, Drawer, useMediaQuery, makeStyles } from "@material-ui/core";
+import { useTheme, Drawer, Grid, useMediaQuery, makeStyles } from "@material-ui/core";
 import { toggleSideMenu } from '../app/logic/appActions';
-import { RcIcon } from '../icons/RcIcon';
+import { MenuSection } from './MenuSection';
+import { stringKeys, strings } from '../../strings';
+import ExpandButton from '../common/buttons/expandButton/ExpandButton';
+import { AccountSection } from './AccountSection';
+import { expandSideMenu } from '../app/logic/appActions';
 
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-  SideMenuIcon: {
-    fontSize: '22px',
-    color: '#1E1E1E',
+  MenuContainer: {
+    paddingTop: '12px',
+    backgroundColor: "#f1f1f1",
   },
-  SideMenuIconActive: {
-    color: '#D52B1E',
+  SideMenu: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    backgroundColor: '#F1F1F1',
+    position: "relative",
   },
-  ListItemIconWrapper: {
-    minWidth: '20px',
+  SideMenuContent: {
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    scrollbarColor: '#B4B4B4 #F1F1F1',
   },
-  SideMenuText: {
-    color: '#1E1E1E',
-    fontSize: '16px',
-  },
-  ListItemActive: {
-    "& span": {
-      color: '#D52B1E',
-      fontWeight: '600',
+  drawer: {
+    zIndex: 100,
+    "@media (min-width: 1280px)": {
+      width: drawerWidth,
     },
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    '& .MuiDrawer-paper': {
+      borderRight: 'none',
+    },
+  },
+  drawerOpen: {
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerClose: {
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    width: theme.spacing(7) + 1,
+    [theme.breakpoints.up('sm')]: {
+      width: theme.spacing(9) + 2,
+    },
+  },
+  logo: {
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  image: {
+    height: "38px"
+  },
+  overflowVisible: {
+    overflowY: 'visible',
   }
 }));
 
 
-const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
+const SideMenuComponent = ({ generalMenu, sideMenu, sideMenuOpen, toggleSideMenu, push, isSideMenuExpanded, expandSideMenu, isSupervisor }) => {
   const theme = useTheme();
   const classes = useStyles();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const userLanguageCode = useSelector(state => state.appData.user.languageCode);
-
-  const mapPathToSideMenuIcon = (path) => {
-    if (path.includes('dashboard')) {
-      return "Dashboard"
-    } else if (path.includes('reports')) {
-      return "Report"
-    } else if (path.includes('users')) {
-      return "Users"
-    } else if (path.includes('settings')) {
-      return "Settings"
-    } else if (path.includes('datacollectors')) {
-      return "DataCollectors"
-    } else if (path.includes('alerts')) {
-      return "Alerts"
-    } else if (path.includes('overview')) {
-      return "Settings"
-    } else if (path.includes('projects')) {
-      return "Project"
-    } else {
-      return "Dashboard"
-    }
-  }
 
   const handleItemClick = (item) => {
     push(item.url);
@@ -71,43 +90,56 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
   const closeDrawer = () => {
     toggleSideMenu(false);
   }
-  return (
-    <div className={styles.drawer}>
-      <Drawer
-        variant={fullScreen ? "temporary" : "permanent"}
-        anchor={"left"}
-        open={!fullScreen || sideMenuOpen}
-        onClose={closeDrawer}
-        classes={{
-          paper: styles.drawer
-        }}
-        ModalProps={{
-          keepMounted: fullScreen
-        }}
-      >
-        <div className={styles.sideMenu}>
-          <div className={styles.sideMenuHeader}>
-            <Link to="/" className={userLanguageCode !== 'ar' ? styles.logo : styles.logoDirectionRightToLeft}>
-              <img src="/images/logo.svg" alt="Nyss logo" />
-            </Link>
-          </div>
+  
+  const handleExpandClick = () => {
+    expandSideMenu(!isSideMenuExpanded);
+  }
 
-          {sideMenu.length !== 0 && (
-            <List component="nav" className={styles.list} aria-label="Side navigation menu">
-              {sideMenu.map((item) => {
-                return (
-                  <ListItem key={`sideMenuItem_${item.title}`} className={item.isActive ? classes.ListItemActive : undefined} button onClick={() => handleItemClick(item)} >
-                    <ListItemIcon className={classes.ListItemIconWrapper}>
-                      {item.url && <RcIcon icon={mapPathToSideMenuIcon(item.url)} className={`${classes.SideMenuIcon} ${item.isActive ? classes.SideMenuIconActive : ''}`} />}
-                    </ListItemIcon>
-                    <ListItemText disablepadding= "true" primary={item.title} primaryTypographyProps={{ 'className': classes.SideMenuText }} />
-                  </ListItem>
-                )
-              })}
-            </List>
-          )}
-        </div>
-      </Drawer>
+  if (isSupervisor) return null;
+  return (
+    <div className={styles.sideMenu}>
+      <div className={styles.drawer}>
+        <Drawer
+          variant={isSmallScreen ? "temporary" : "permanent"}
+          anchor={"left"}
+          open={!isSmallScreen || sideMenuOpen}
+          onClose={closeDrawer}
+          className={`${classes.drawer} ${!isSmallScreen && (isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose)}`}
+          classes={{
+            paper: !isSmallScreen && (isSideMenuExpanded ? classes.drawerOpen : classes.drawerClose)
+          }}
+          PaperProps={{
+            classes: {
+              root: classes.overflowVisible,
+            }
+          }}
+          ModalProps={{
+            keepMounted: isSmallScreen
+          }}
+        >
+          <div className={classes.SideMenu}>
+            <ExpandButton onClick={handleExpandClick} isExpanded={isSideMenuExpanded}/>
+            <div className={styles.sideMenuHeader}>
+                <Link to="/" className={userLanguageCode !== 'ar' ? classes.logo : styles.logoDirectionRightToLeft}>
+                  <img className={classes.image} src={!isSideMenuExpanded && !isSmallScreen ? "/images/logo-small.svg" : "/images/logo.svg"} alt="Nyss logo" />
+                </Link>
+              </div>
+            <div className={classes.SideMenuContent}>
+              <Grid container className={classes.MenuContainer} direction={'column'}>
+                {generalMenu.length !== 0 && (
+                  <MenuSection menuTitle={strings(stringKeys.sideMenu.general)} menuItems={generalMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
+                  )}
+                {sideMenu.length !== 0 && (
+                  <Grid style={{ marginTop: 20 }}>
+                    <MenuSection menuTitle={strings(stringKeys.sideMenu.nationalSocieties)} menuItems={sideMenu} handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
+                  </Grid>
+                  )}
+              </Grid>
+            </div>
+            <AccountSection handleItemClick={handleItemClick} isExpanded={isSideMenuExpanded}/>
+          </div>
+        </Drawer>
+      </div>
     </div>
   );
 }
@@ -118,13 +150,17 @@ SideMenuComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  generalMenu: state.appData.siteMap.generalMenu,
   sideMenu: state.appData.siteMap.sideMenu,
-  sideMenuOpen: state.appData.mobile.sideMenuOpen
+  sideMenuOpen: state.appData.mobile.sideMenuOpen,
+  isSideMenuExpanded: state.appData.isSideMenuExpanded,
+  isSupervisor: state.appData.user.roles.includes("Supervisor") || state.appData.user.roles.includes("HeadSupervisor")
 });
 
 const mapDispatchToProps = {
   push: push,
-  toggleSideMenu: toggleSideMenu
+  toggleSideMenu: toggleSideMenu,
+  expandSideMenu: expandSideMenu,
 };
 
 export const SideMenu = connect(mapStateToProps, mapDispatchToProps)(SideMenuComponent);
