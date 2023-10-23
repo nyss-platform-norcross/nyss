@@ -2,7 +2,6 @@ import React from 'react';
 import { Header } from './Header';
 import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
-
 import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
 import { TabMenu } from './TabMenu';
@@ -14,8 +13,7 @@ export const resetPageContentScroll = () => {
   element && element.scrollTo(0, 0)
 }
 
-export const Layout = ({ fillPage, children }) => {
-
+const Layout = ({ fillPage, children }) => {
   return (
     <BaseLayout>
       <SideMenu />

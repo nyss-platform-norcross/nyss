@@ -2,16 +2,6 @@
   height: 80px;
   justify-content: left;
 
-  .logo {
-    margin-left: 35px;
-    margin-top: 27px;
-    display:inline-block;
-
-    img {
-      height: 38px;
-    }
-  }
-
   .logoDirectionRightToLeft {
     margin-right: 35px;
     margin-top: 27px;
@@ -20,11 +10,5 @@
     img {
       height: 38px;
     }
-  }
-}
-
-.drawer {
-  @media screen and (min-width: 1280px) {
-    width: 221px;
   }
 }

@@ -36,6 +36,9 @@ const useStyles = makeStyles(() => ({
       padding: "5px 0 5px 0",
       margin: "10px 0 10px 0",
     },
+    AccordionSummaryContentCollapsed: {
+      justifyContent: "center"
+    },
     AccordionSummaryRoot: {
       boxShadow: "0px -2px 2px 0px rgba(124, 124, 124, 0.20)",
       borderRadius: "8px 8px 0 0",
@@ -52,7 +55,9 @@ const useStyles = makeStyles(() => ({
     },
     ListItem: {
       color: "#1E1E1E",
-      padding: "8px 16px 8px 16px"
+      padding: "8px 16px 8px 16px",
+      display: "flex",
+      justifyContent: "center"
     },
     ListItemUser: {
       color: "#1E1E1E",
@@ -80,6 +85,9 @@ const useStyles = makeStyles(() => ({
       minWidth: "20px",
       paddingRight: "20px"
     },
+    ListItemIconCollapsed: {
+      paddingRight: "0px"
+    },
     User: {
       fontSize: 16
     },
@@ -89,11 +97,15 @@ const useStyles = makeStyles(() => ({
       padding: "8px 0 8px 8px",
       backgroundColor: "#F1F1F1"
     },
+    Hide: {
+      color: "transparent",
+      userSelect: "none"
+    }
 }));
 
 
 
-export const AccountSection = ({handleItemClick}) => {
+export const AccountSection = ({handleItemClick, isExpanded}) => {
   const classes = useStyles()
   const dispatch = useDispatch();
 
@@ -106,52 +118,70 @@ export const AccountSection = ({handleItemClick}) => {
 
   return (
     <div className={classes.AccordionContainer}>
-      <Typography className={classes.Account}>{strings(stringKeys.sideMenu.account)}</Typography>
+      <Typography className={`${classes.Account} ${!isExpanded && classes.Hide}`}>{strings(stringKeys.sideMenu.account)}</Typography>
       <Accordion square={false} className={classes.Accordion} classes={{ expanded: classes.AccordionExpanded }}>
-        <AccordionSummary
-          className={classes.AccordionSummary}
-          classes={{
-            root: classes.AccordionSummaryRoot,
-            content: classes.AccordionSummaryContent,
-            expanded: classes.AccordionSummaryExpanded,
-          }}
-          >
-          <RcIcon icon="UserCircle" style={{
-            fontSize: "24px",
-          }}/>
-          <Typography className={classes.User}>{user.name}</Typography>
-        </AccordionSummary>
+      <Tooltip title={strings(stringKeys.sideMenu.account)}>
+        <div>
+          <AccordionSummary
+            className={classes.AccordionSummary}
+            classes={{
+              root: classes.AccordionSummaryRoot,
+              content: `${classes.AccordionSummaryContent} ${!isExpanded && classes.AccordionSummaryContentCollapsed}`,
+              expanded: classes.AccordionSummaryExpanded,
+            }}
+            >
+            
+              <RcIcon icon="UserCircle" style={{
+                fontSize: "24px",
+              }}/>
+            
+          {isExpanded && (
+            <Typography className={classes.User}>{user.name}</Typography>
+            )}
+          </AccordionSummary>
+        </div>
+        </Tooltip>
         <AccordionDetails className={classes.AccordionDetails}>
         <List component="nav" className={classes.List} aria-label="Side navigation menu" disablePadding>
-          <ListItem className={classes.ListItemUser}>
-            <ListItemText className={classes.ListItemTextUserContainer}>
-              <Tooltip title={user.roles[0]}>
-                <Typography noWrap className={classes.ListItemTextUser}>
-                  {user.roles[0]}
-                </Typography>
-              </Tooltip>
-              <Tooltip title={user.email}>
-                <Typography noWrap className={classes.ListItemTextUser}>
-                  {user.email}
-                </Typography>
-              </Tooltip>
-            </ListItemText>
-          </ListItem>
+          {isExpanded && (
+            <ListItem className={classes.ListItemUser}>
+              <ListItemText className={classes.ListItemTextUserContainer}>
+                <Tooltip title={user.roles[0]}>
+                  <Typography noWrap className={classes.ListItemTextUser}>
+                    {user.roles[0]}
+                  </Typography>
+                </Tooltip>
+                <Tooltip title={user.email}>
+                  <Typography noWrap className={classes.ListItemTextUser}>
+                    {user.email}
+                  </Typography>
+                </Tooltip>
+              </ListItemText>
+            </ListItem>
+          )}
           <ListItem button onClick={() => handleItemClick({ url: "/feedback" })} className={classes.ListItem}>
-            <ListItemIcon className={classes.ListItemIcon}>
-              <RcIcon icon="Feedback" className={classes.ListItemText}/>
-            </ListItemIcon>
+            <Tooltip title={strings(stringKeys.feedback.send)}>
+              <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
+                <RcIcon icon="Feedback" className={classes.ListItemText}/>
+              </ListItemIcon>
+            </Tooltip>
+            {isExpanded && (
             <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
               {strings(stringKeys.feedback.send)}
             </ListItemText>
+            )}
           </ListItem>
           <ListItem button onClick={handleLogout} className={classes.ListItem}>
-            <ListItemIcon className={classes.ListItemIcon}>
-              <RcIcon icon="Logout" className={classes.ListItemText}/>
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
-              {strings(stringKeys.user.logout)}
-            </ListItemText>
+            <Tooltip title={strings(stringKeys.user.logout)}>
+              <ListItemIcon className={`${classes.ListItemIcon} ${!isExpanded && classes.ListItemIconCollapsed}`}>
+                <RcIcon icon="Logout" className={classes.ListItemText}/>
+              </ListItemIcon>
+            </Tooltip>
+            {isExpanded && (
+              <ListItemText classes={{ primary: classes.ListItemText, root: classes.ListItemTextWrapper }}>
+                {strings(stringKeys.user.logout)}
+              </ListItemText>
+            )}
           </ListItem>
         </List>
         </AccordionDetails>

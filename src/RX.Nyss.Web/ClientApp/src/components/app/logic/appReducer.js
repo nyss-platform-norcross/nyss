@@ -107,6 +107,12 @@ export function appReducer(state = initialState.appData, action) {
         }
       }
 
+    case actions.EXPAND_SIDE_MENU:
+      return {
+        ...state,
+        isSideMenuExpanded: action.value
+      }
+
     case actions.OPEN_MODULE.FAILURE:
       return {
         ...state,
