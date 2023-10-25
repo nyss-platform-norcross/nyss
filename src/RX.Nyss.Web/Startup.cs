@@ -61,6 +61,8 @@ public class Startup
             }
         });
 
+        //We should remove this 
+
         app.UseHttpsRedirection();
         app.UseSpaStaticFiles(new StaticFileOptions
         {
