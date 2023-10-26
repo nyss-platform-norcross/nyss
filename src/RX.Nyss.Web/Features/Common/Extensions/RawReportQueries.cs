@@ -63,11 +63,11 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             reports.Where(r => r.DataCollector != null);
 
         public static IQueryable<RawReport> FilterByArea(this IQueryable<RawReport> reports, AreaDto area) =>
-            area != null && area.RegionIds.Any()
+            area != null
                 ? reports.Where(r => area.RegionIds.Contains(r.Village.District.Region.Id)
-                    && area.DistrictIds.Contains(r.Village.District.Id)
-                    && area.VillageIds.Contains(r.Village.Id)
-                    && (r.Zone == null || area.ZoneIds.Contains(r.Zone.Id))
+                    || area.DistrictIds.Contains(r.Village.District.Id)
+                    || area.VillageIds.Contains(r.Village.Id)
+                    || area.ZoneIds.Contains(r.Zone.Id)
                     || (area.IncludeUnknownLocation && r.Village == null))
                 : reports;
 
