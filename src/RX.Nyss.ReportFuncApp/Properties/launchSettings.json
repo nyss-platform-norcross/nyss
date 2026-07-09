@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RX.Nyss.ReportFuncApp": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --pause-on-error"
+    }
+  }
+}

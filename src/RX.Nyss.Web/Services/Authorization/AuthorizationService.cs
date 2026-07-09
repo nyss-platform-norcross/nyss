@@ -1,0 +1,51 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Utils.Extensions;
+using System.Security.Claims;
+
+namespace RX.Nyss.Web.Services.Authorization
+{
+    public interface IAuthorizationService
+    {
+        bool IsCurrentUserInRole(Role role);
+        string? GetCurrentUserName();
+        bool IsCurrentUserInAnyRole(params Role[] roles);
+        Task<User?> GetCurrentUser();
+    }
+
+    public class AuthorizationService : IAuthorizationService
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INyssContext _nyssContext;
+
+        public AuthorizationService(
+            IHttpContextAccessor httpContextAccessor,
+            INyssContext nyssContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _nyssContext = nyssContext;
+        }
+
+        public async Task<User?> GetCurrentUser()
+        {
+            var userName = GetCurrentUserName();
+            if (userName == null) return null;
+            return await _nyssContext.Users.FilterAvailable().SingleOrDefaultAsync(u => u.EmailAddress == userName);
+        }
+
+        public string? GetCurrentUserName() =>
+            _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+
+        public bool IsCurrentUserInRole(Role role) =>
+            _httpContextAccessor.HttpContext?.User?.IsInRole(role.ToString()) ?? false;
+
+        public bool IsCurrentUserInAnyRole(params Role[] roles) =>
+            _httpContextAccessor.HttpContext?.User?.GetRoles()?.Any(userRole => roles.Any(role => role.ToString() == userRole)) ?? false;
+    }
+}

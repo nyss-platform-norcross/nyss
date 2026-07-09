@@ -1,0 +1,9 @@
+import { action } from "../../../utils/actions";
+
+export const OPEN_ORGANIZATIONS_LIST = action("OPEN_ORGANIZATIONS_LIST");
+export const GET_ORGANIZATIONS = action("GET_ORGANIZATIONS");
+export const OPEN_ORGANIZATION_CREATION = action("OPEN_ORGANIZATION_CREATION");
+export const CREATE_ORGANIZATION = action("CREATE_ORGANIZATION");
+export const OPEN_ORGANIZATION_EDITION = action("OPEN_ORGANIZATION_EDITION");
+export const EDIT_ORGANIZATION = action("EDIT_ORGANIZATION");
+export const REMOVE_ORGANIZATION = action("REMOVE_ORGANIZATION");

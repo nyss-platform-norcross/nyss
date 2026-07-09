@@ -1,0 +1,49 @@
+.userStatusContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.userStatus {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  .userName {
+    margin-right: 5px;
+  }
+
+  .arrow {
+    font-size: 24px;
+  }
+
+  &.rtl {
+    margin-left: unset;
+    margin-right: 100px;
+  }
+}
+
+.popover {
+  padding-top: 0;
+  padding-bottom: 15px;
+  li {
+    min-width: 200px;
+  }
+}
+
+.authCaption {
+  opacity: 1 !important;
+  padding: 0 !important;
+
+  > div {
+    margin: 0;
+  }
+}
+
+.fontIcon {
+  margin-right: 5px;
+
+  &.rtl {
+    margin-left: 5px;
+    margin-right: unset;
+  }
+}

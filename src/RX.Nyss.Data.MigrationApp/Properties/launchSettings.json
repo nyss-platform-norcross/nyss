@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "RX.Nyss.Data.MigrationApp": {
+      "commandName": "Project",
+      "commandLineArgs": "Server=(localdb)\\mssqllocaldb;Database=nyss-temp;Trusted_Connection=True;"
+    },
+    "Demo": {
+      "commandName": "Project",
+      "commandLineArgs": "Server=(localdb)\\mssqllocaldb;Database=nyss-temp;Trusted_Connection=True; createDemoData password=P@ssw0rd"
+    }
+  }
+}

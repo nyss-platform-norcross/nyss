@@ -1,0 +1,28 @@
+.loader {
+  text-align: center;
+  svg path,
+  svg rect {
+    fill: #c02c2c;
+  }
+
+  &.absolute {
+    position: absolute;
+    background: #ffffff94;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    > svg {
+      left: 50%;
+      top: 50%;
+      position: absolute;
+    }
+  }
+
+  &.top {
+    > svg {
+      top: 200px;
+    }
+  }
+}

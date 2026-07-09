@@ -1,0 +1,18 @@
+# Ignore artifacts:
+build
+coverage
+
+
+# Ignore markdown and yaml files
+**/*.md
+**/*.yml
+**/*.yaml
+**/*.js
+**/*.jsc
+**/*.scss
+# Ignore json files
+**/*.json
+
+
+# Ignore config folders
+.*/**

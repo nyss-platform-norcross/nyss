@@ -1,0 +1,119 @@
+:root {
+  --selected-flag-padding: 0 0 0 8px;
+  --flag-arrow-left: 20px;
+  --flag-arrow-right: 0;
+  --phone-input-padding-left: 48px;
+  --phone-input-padding-right: 0;
+  --selected-flag-option-margin-right: 7px;
+  --selected-flag-option-margin-left: 0;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-Regular.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-Bold.otf") format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-It.otf") format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-Semibold.otf") format('opentype');
+  font-weight: 600; /* Semibold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-SemiboldIt.otf") format('opentype');
+  font-weight: 600; /* Semibold */
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "MyriadPro";
+  src: url("../../assets/fonts/MyriadPro-LightIt.otf") format('opentype');
+  font-weight: 300; /* Light */
+  font-style: italic;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    color: #333333;
+    background-color: #fcfcfc;
+    font-family: "MyriadPro";
+    display: flex;
+
+    #root {
+      display: flex;
+      flex: 1;
+    }
+  }
+}
+
+.leaflet-container {
+  height: 400px;
+  width: 100%;
+  font-family: "MyriadPro";
+}
+
+.leaflet-popup-close-button {
+  display: none;
+}
+
+.leaflet-fade-anim .leaflet-popup {
+  transition: none;
+}
+
+.highcharts-container {
+  width: 100% !important;
+
+  svg {
+    width: 100%;
+  }
+}
+
+.ltr-numerals {
+  direction: ltr;
+}
+
+.react-tel-input > .flag-dropdown > .selected-flag {
+  padding: var(--selected-flag-padding);
+}
+
+.react-tel-input .selected-flag .arrow {
+  left: var(--flag-arrow-left);
+  right: var(--flag-arrow-right);
+}
+
+.react-tel-input .form-control {
+  padding-left: var(--phone-input-padding-left) !important;
+  padding-right: var(--phone-input-padding-right) !important;
+  direction: ltr;
+}
+
+.react-tel-input .country-list .flag {
+  margin-right: var(--selected-flag-option-margin-right) !important;
+  margin-left: var(--selected-flag-option-margin-left);
+}

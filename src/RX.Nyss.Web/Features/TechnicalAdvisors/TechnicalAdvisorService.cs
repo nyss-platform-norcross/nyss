@@ -1,0 +1,441 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
+using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Organizations;
+using RX.Nyss.Web.Features.TechnicalAdvisors.Dto;
+using RX.Nyss.Web.Features.Users;
+using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
+using static RX.Nyss.Common.Utils.DataContract.Result;
+
+namespace RX.Nyss.Web.Features.TechnicalAdvisors
+{
+    public interface ITechnicalAdvisorService
+    {
+        Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
+        Task<Result<GetTechnicalAdvisorResponseDto>> Get(int technicalAdvisorId, int nationalSocietyId);
+        Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editDto);
+        Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId);
+        Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId);
+    }
+
+    public class TechnicalAdvisorService : ITechnicalAdvisorService
+    {
+        private readonly ILoggerAdapter _loggerAdapter;
+        private readonly INyssContext _nyssContext;
+        private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
+        private readonly INationalSocietyUserService _nationalSocietyUserService;
+        private readonly IVerificationEmailService _verificationEmailService;
+        private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOrganizationService _organizationService;
+        private readonly IUserService _userService;
+
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext nyssContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService,
+            IOrganizationService organizationService, IUserService userService)
+        {
+            _identityUserRegistrationService = identityUserRegistrationService;
+            _nyssContext = nyssContext;
+            _loggerAdapter = loggerAdapter;
+            _nationalSocietyUserService = nationalSocietyUserService;
+            _verificationEmailService = verificationEmailService;
+            _deleteUserService = deleteUserService;
+            _authorizationService = authorizationService;
+            _organizationService = organizationService;
+            _userService = userService;
+        }
+
+        public async Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
+        {
+            try
+            {
+                string securityStamp;
+                TechnicalAdvisorUser user;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createTechnicalAdvisorRequestDto.Email, Role.TechnicalAdvisor);
+                    if (identityUser == null)
+                    {
+                        throw new ResultException(ResultKey.User.Registration.CreateError);
+                    }
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email!);
+                    user = await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
+
+                    transactionScope.Complete();
+                }
+
+                await _verificationEmailService.SendVerificationEmail(user, securityStamp);
+                return Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result ?? Error(ResultKey.User.Registration.CreateError);
+            }
+        }
+
+        public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId, int nationalSocietyId)
+        {
+            var technicalAdvisor = await _nyssContext.UserNationalSocieties
+                .FilterAvailable()
+                .Where(u => u.User != null && u.User.Role == Role.TechnicalAdvisor)
+                .Where(u => u.UserId == nationalSocietyUserId && u.NationalSocietyId == nationalSocietyId)
+                .Where(u => u.User is TechnicalAdvisorUser)
+                .Select(u => new
+                {
+                    Id = u.User!.Id,
+                    Name = u.User.Name ?? string.Empty,
+                    Role = u.User.Role,
+                    Email = u.User.EmailAddress ?? string.Empty,
+                    OrganizationId = u.Organization!.Id,
+                    PhoneNumber = u.User.PhoneNumber ?? string.Empty,
+                    AdditionalPhoneNumber = u.User.AdditionalPhoneNumber ?? string.Empty,
+                    Organization = u.User.Organization ?? string.Empty,
+                })
+                .SingleOrDefaultAsync();
+
+            if (technicalAdvisor == null)
+            {
+                _loggerAdapter.Debug($"Technical advisor with id {nationalSocietyUserId} was not found");
+                return Error<GetTechnicalAdvisorResponseDto>(ResultKey.User.Common.UserNotFound);
+            }
+
+            var modemId = await _nyssContext.Users
+                .OfType<TechnicalAdvisorUser>()
+                .Where(u => u.Id == nationalSocietyUserId)
+                .SelectMany(u => u.TechnicalAdvisorUserGatewayModems!)
+                .Where(x => x.GatewayModem.GatewaySetting!.NationalSocietyId == nationalSocietyId)
+                .Select(x => (int?)x.GatewayModemId)
+                .FirstOrDefaultAsync();
+
+            return new Result<GetTechnicalAdvisorResponseDto>(new GetTechnicalAdvisorResponseDto
+            {
+                Id = technicalAdvisor.Id,
+                Name = technicalAdvisor.Name,
+                Role = technicalAdvisor.Role,
+                Email = technicalAdvisor.Email,
+                OrganizationId = technicalAdvisor.OrganizationId,
+                PhoneNumber = technicalAdvisor.PhoneNumber,
+                AdditionalPhoneNumber = technicalAdvisor.AdditionalPhoneNumber,
+                Organization = technicalAdvisor.Organization,
+                ModemId = modemId
+            }, true);
+        }
+
+        public async Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editDto)
+        {
+            try
+            {
+                var user = await _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>(technicalAdvisorId);
+                if (user == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+
+                var oldEmail = user.EmailAddress;
+
+                await _userService.UpdateUserEmail(user, editDto.Email);
+                user.Name = editDto.Name;
+                user.PhoneNumber = editDto.PhoneNumber;
+                user.Organization = editDto.Organization;
+                user.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+
+                if (editDto.OrganizationId.HasValue)
+                {
+                    var userLink = await _nyssContext.UserNationalSocieties
+                        .Where(un => un.UserId == technicalAdvisorId && un.NationalSociety != null && un.NationalSociety.Id == editDto.NationalSocietyId)
+                        .SingleOrDefaultAsync();
+
+                    if (userLink != null && editDto.OrganizationId.Value != userLink.OrganizationId)
+                    {
+                        var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
+
+                        if (!validationResult.IsSuccess)
+                        {
+                            return validationResult;
+                        }
+
+                        userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                    }
+                }
+
+                await UpdateModem(user, editDto.ModemId, editDto.NationalSocietyId);
+
+                if (oldEmail != editDto.Email && !string.IsNullOrEmpty(editDto.Email) && !string.IsNullOrEmpty(oldEmail))
+                {
+                    var identityUser = await _identityUserRegistrationService.EditIdentityUser(oldEmail, editDto.Email);
+                    string securityStamp;
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email!);
+                    await _verificationEmailService.SendVerificationEmail(user, securityStamp);
+                }
+
+                await _nyssContext.SaveChangesAsync();
+
+                return Success();
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result ?? Error(ResultKey.User.Registration.UnknownError);
+            }
+        }
+
+        public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId)
+        {
+            try
+            {
+                await _deleteUserService.EnsureCanDeleteUser(technicalAdvisorId, Role.TechnicalAdvisor);
+
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId);
+
+                await _nyssContext.SaveChangesAsync();
+                transactionScope.Complete();
+                return Success();
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result ?? Error(ResultKey.User.Registration.UnknownError);
+            }
+        }
+
+        public async Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
+            await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
+
+        private async Task<TechnicalAdvisorUser> CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
+        {
+            var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
+            if (nationalSociety == null || nationalSociety.ContentLanguage == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            var defaultUserApplicationLanguage = await _nyssContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+
+            var user = new TechnicalAdvisorUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = createTechnicalAdvisorRequestDto.Name,
+                PhoneNumber = createTechnicalAdvisorRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createTechnicalAdvisorRequestDto.AdditionalPhoneNumber,
+                Organization = createTechnicalAdvisorRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage
+            };
+
+            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            if (createTechnicalAdvisorRequestDto.OrganizationId.HasValue)
+            {
+                userNationalSociety.Organization = await _nyssContext.Organizations
+                    .Where(o => o.Id == createTechnicalAdvisorRequestDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
+                    .SingleAsync();
+            }
+            else
+            {
+                var currentUser = await _authorizationService.GetCurrentUser();
+
+                userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
+                        .Where(uns => currentUser != null && uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                        .Select(uns => uns.Organization)
+                        .SingleOrDefaultAsync() ??
+                    await _nyssContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+            }
+
+            await AttachTechnicalAdvisorToModem(user, createTechnicalAdvisorRequestDto.ModemId, nationalSocietyId);
+
+            await _nyssContext.AddAsync(userNationalSociety);
+            await _nyssContext.SaveChangesAsync();
+            return user;
+        }
+
+        private async Task AttachTechnicalAdvisorToModem(TechnicalAdvisorUser user, int? modemId, int nationalSocietyId)
+        {
+            if (modemId.HasValue)
+            {
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.GatewaySetting != null && gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
+                {
+                    TechnicalAdvisorUser = user,
+                    GatewayModem = modem
+                };
+
+                user.TechnicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem> { technicalAdvisorModem };
+            }
+        }
+
+        private async Task UpdateModem(TechnicalAdvisorUser user, int? modemId, int nationalSocietyId)
+        {
+            if (!modemId.HasValue)
+            {
+                var existingModem = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                    .Where(tam => tam.TechnicalAdvisorUserId == user.Id
+                        && tam.GatewayModem != null
+                        && tam.GatewayModem.GatewaySetting != null
+                        && tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                    .FirstOrDefaultAsync();
+
+                if (existingModem != null)
+                {
+                    _nyssContext.TechnicalAdvisorUserGatewayModems.Remove(existingModem);
+                }
+
+                return;
+            }
+
+            var modem = await _nyssContext.GatewayModems
+                .FirstOrDefaultAsync(gm => gm.Id == modemId
+                    && gm.GatewaySetting != null
+                    && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (modem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            var existingModemForNationalSociety = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id
+                    && tam.GatewayModem != null
+                    && tam.GatewayModem.GatewaySetting != null
+                    && tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                .FirstOrDefaultAsync();
+
+            if (existingModemForNationalSociety != null)
+            {
+                _nyssContext.TechnicalAdvisorUserGatewayModems.Remove(existingModemForNationalSociety);
+            }
+
+            await _nyssContext.TechnicalAdvisorUserGatewayModems.AddAsync(new TechnicalAdvisorUserGatewayModem
+            {
+                TechnicalAdvisorUser = user,
+                GatewayModem = modem
+            });
+        }
+
+        private async Task RemoveModem(TechnicalAdvisorUser user, int nationalSocietyId)
+        {
+            var existingModem = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id
+                    && tam.GatewayModem != null
+                    && tam.GatewayModem.GatewaySetting != null
+                    && tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                .FirstOrDefaultAsync();
+
+            if (existingModem != null)
+            {
+                _nyssContext.TechnicalAdvisorUserGatewayModems.Remove(existingModem);
+            }
+        }
+
+        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
+            new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
+
+        private async Task DeleteFromNationalSociety(int nationalSocietyId, int technicalAdvisorId, bool allowHeadManagerDeletion = false)
+        {
+            var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
+
+            if (technicalAdvisor == null || technicalAdvisor.UserNationalSocieties == null || technicalAdvisor.IdentityUserId == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.UserNotFound);
+            }
+
+            var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
+
+            var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
+            if (nationalSocietyReferenceToRemove == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
+            }
+
+            _nyssContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
+
+            await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove, allowHeadManagerDeletion);
+            await RemoveModem(technicalAdvisor, nationalSocietyId);
+
+            var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
+            if (isUsersLastNationalSociety)
+            {
+                await _identityUserRegistrationService.DeleteIdentityUser(technicalAdvisor.IdentityUserId);
+                await AnonymizeTechnicalAdvisorWithAlertReferences(technicalAdvisorId);
+            }
+        }
+
+        private async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove, bool allowHeadManagerDeletion)
+        {
+            var organization = await _nyssContext.Organizations
+                .Include(o => o.PendingHeadManager)
+                .Include(o => o.HeadManager)
+                .Where(o => o.NationalSocietyId == nationalSocietyReferenceToRemove.NationalSocietyId && o.Id == nationalSocietyReferenceToRemove.OrganizationId)
+                .SingleOrDefaultAsync();
+
+            if (organization == null)
+            {
+                return;
+            }
+
+            if (organization.PendingHeadManager == technicalAdvisor)
+            {
+                organization.PendingHeadManager = null!;
+            }
+
+            if (organization.HeadManager == technicalAdvisor)
+            {
+                if (!allowHeadManagerDeletion)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
+                }
+
+                organization.HeadManager = null!;
+            }
+        }
+
+        private async Task AnonymizeTechnicalAdvisorWithAlertReferences(int technicalAdvisorId)
+        {
+            var technicalAdvisorUser = await _nyssContext.Users
+                .Where(u => u.Id == technicalAdvisorId)
+                .SingleOrDefaultAsync();
+
+            if (technicalAdvisorUser == null)
+            {
+                throw new ResultException(ResultKey.User.Deletion.UserNotFound);
+            }
+
+            technicalAdvisorUser.IdentityUserId = null;
+            technicalAdvisorUser.EmailAddress = Anonymization.Text;
+            technicalAdvisorUser.PhoneNumber = Anonymization.Text;
+            technicalAdvisorUser.AdditionalPhoneNumber = Anonymization.Text;
+            technicalAdvisorUser.Name = Anonymization.Text;
+            technicalAdvisorUser.DeletedAt = DateTime.UtcNow;
+        }
+    }
+}

@@ -1,0 +1,47 @@
+.filterHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.completenessBorderBottomColor {
+  border-bottom-color: #8c8c8c !important;
+}
+
+.completenessAlignmentAndBorder {
+  border-bottom-color: #8c8c8c !important;
+}
+
+.completeness {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.completenessTooltip {
+  margin-left: 5px;
+}
+
+.nameColumn {
+  min-width: 160px;
+  width: 5%;
+}
+
+.villageColumn {
+  min-width: 80px;
+  width: 5%;
+}
+
+.daysColumn {
+  min-width: 20px;
+  width: 5%;
+}
+
+.weekColumn {
+  width: 4%;
+}
+
+.phoneNumber {
+  direction: ltr;
+}

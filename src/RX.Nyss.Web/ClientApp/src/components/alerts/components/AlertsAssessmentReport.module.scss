@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  margin: 10px 0;
+
+  @media screen and (max-width: 1279px) {
+    flex-direction: column;
+  }
+}
+
+.key {
+  width: 150px;
+}
+
+.value {
+  font-weight: bold;
+}
+
+.form {
+  display: block !important;
+}
+
+.time {
+  font-weight: bold;
+  align-self: center;
+
+  @media screen and (max-width: 1279px) {
+    width: 100px;
+  }
+}
+
+.senderContainer {
+  display: flex;
+
+  @media screen and (max-width: 1279px) {
+    flex-direction: column;
+    margin-left: 10px;
+  }
+}
+
+.senderLabel {
+  margin: 0 10px;
+  white-space: nowrap;
+
+  @media screen and (max-width: 1279px) {
+    margin: 0;
+  }
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.indicator {
+  align-self: center;
+
+  &.rtl {
+    margin-right: unset;
+  }
+}
+
+.reportStatus {
+  font-weight: bold;
+}
+
+.progressIcon {
+  position: absolute;
+}

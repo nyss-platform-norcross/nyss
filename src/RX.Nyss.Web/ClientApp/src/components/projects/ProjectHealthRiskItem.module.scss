@@ -1,0 +1,16 @@
+.header {
+  display: inline;
+
+  &.healthRiskName {
+    margin-left: 10px !important;
+  }
+
+  &.healthRiskNameRtl {
+    margin-right: 10px !important;
+  }
+}
+
+.disabled {
+  color: #a0a0a0 !important;
+  font-size: 16px;
+}

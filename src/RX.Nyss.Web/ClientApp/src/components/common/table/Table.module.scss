@@ -1,0 +1,35 @@
+.clickableRow {
+  cursor: pointer;
+}
+
+.tableContainer {
+  position: relative;
+}
+.noDataInfo {
+  display: flex;
+  color: #a2a2a2;
+}
+
+.inactiveRow {
+  @extend .clickableRow;
+  > td {
+    color: #a2a2a2;
+  }
+}
+
+.stickyTable {
+  table {
+    border-collapse: separate;
+  }
+
+  th {
+    z-index: 1;
+    top: -1px;
+    position: sticky;
+    background: white;
+  }
+}
+
+.smallDeviceTableRow {
+  -webkit-text-size-adjust: none;
+}

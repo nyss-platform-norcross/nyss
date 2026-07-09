@@ -1,0 +1,25 @@
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Common.Services.StringsResources;
+
+public class StringsBlob
+{
+    public IEnumerable<Entry>? Strings { get; set; }
+
+    public class Entry
+    {
+        public string? Key { get; set; }
+
+        public string? DefaultValue { get; set; }
+
+        public bool NeedsImprovement { get; set; }
+
+        public IDictionary<string, string>? Translations { get; set; }
+
+        public string GetTranslation(string? languageCode) =>
+            (languageCode != null && Translations != null && Translations.TryGetValue(languageCode, out var translation)
+                ? translation
+                : null) ??
+            DefaultValue ?? Key ?? string.Empty;
+    }
+}

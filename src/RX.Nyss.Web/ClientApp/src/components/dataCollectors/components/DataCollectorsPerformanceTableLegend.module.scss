@@ -1,0 +1,13 @@
+.legend {
+  display: flex;
+  padding: 15px 10px;
+}
+
+.label {
+  margin-right: 15px;
+
+  &.rtl {
+    margin-right: unset;
+    margin-left: 15px;
+  }
+}

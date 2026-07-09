@@ -1,0 +1,36 @@
+.healthRisk {
+  h6 {
+    margin: 0px 0 10px;
+  }
+
+  .healthRiskTextArea {
+    margin-top: 10px;
+    word-break: break-word;
+    -ms-word-break: break-word;
+  }
+}
+
+.healthRiskCode {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.alertRuleData {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  margin-left: 5px !important;
+}
+
+.header {
+  display: inline;
+
+  &.healthRiskName {
+    font-size: 1.125rem;
+    margin-left: 10px;
+
+    &.rtl {
+      margin-left: unset;
+      margin-right: 10px;
+    }
+  }
+}
