@@ -92,9 +92,7 @@ Apple has released its own chip which uses ARM architecture and causes a problem
   "Server=localhost,1433\\;Database=Rx.Nyss.Db;User=sa;Password=YourStrong@Passw0rd;"
 ```
 
-- You can now connect to your Azure SQL Edge installation by using the details provided when launching the Docker image. It is recommended to connect to Azure Data Studio. Below is a screenshot of how to connect via Azure Data Studio. Use all the credentials from the image:
-
-<img src="data_storage.png" width="400">
+- You can now connect to your Azure SQL Edge installation by using the details provided when launching the Docker image. It is recommended to connect to Azure Data Studio. 
 
 - Ensure you have the ef core dotnet tool installed:
 
