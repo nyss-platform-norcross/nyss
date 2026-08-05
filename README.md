@@ -1,4 +1,4 @@
-<img src="https://dev.azure.com/RedCrossNorway/CBS/_git/CBS.Nyss?path=/src/RX.Nyss.Web/ClientApp/public/images/logo.svg" alt="The Nyss logo" width="200"/>
+<img src="https://github.com/nyss-platform-norcross/nyss/raw/main/src/RX.Nyss.Web/ClientApp/public/images/logo.svg" alt="The Nyss logo" width="200"/>
 
 ### Welcome to the repository for the new community-based surveillance solution, called _Nyss_!
 
