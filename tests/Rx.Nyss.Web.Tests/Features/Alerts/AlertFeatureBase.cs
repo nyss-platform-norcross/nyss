@@ -149,6 +149,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = AlertCreatedAt,
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
@@ -229,6 +230,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = AlertCreatedAt,
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
@@ -306,6 +308,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = new DateTime(2020, 1, 2),
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
@@ -383,6 +386,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = new DateTime(2020, 1, 3),
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
@@ -460,6 +464,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = new DateTime(2020, 1, 4),
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,

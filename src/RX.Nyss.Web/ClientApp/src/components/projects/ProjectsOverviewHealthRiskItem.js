@@ -127,7 +127,7 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk, rtl }) => {
                               className={styles.alertRuleData}
                               gutterBottom
                             >
-                              {projectHealthRisk.alertRuleDaysThreshold == 1
+                              {projectHealthRisk.alertRuleDaysThreshold === 1
                                 ? strings(stringKeys.project.form.alertRuleDay)
                                 : strings(
                                     stringKeys.project.form.alertRuleDays,

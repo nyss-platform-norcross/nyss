@@ -181,7 +181,6 @@ export const initialState = {
       isFetching: false,
     },
   },
-  projectDashboard: {},
   projectDashboard: {
     name: null,
     projectSummary: null,

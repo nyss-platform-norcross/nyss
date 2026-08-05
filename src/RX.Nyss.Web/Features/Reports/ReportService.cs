@@ -527,8 +527,7 @@ internal static class DashboardReportQuery
         reports
             .Where(r =>
                 r.ProjectHealthRisk != null &&
-                r.ProjectHealthRisk.HealthRisk != null &&
-                r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                r.ProjectHealthRisk.HealthRisk != null)
             .FilterByReportStatus(filters.ReportStatus)
             .FilterByKnownDataCollector()
             .FilterByArea(filters.Area)

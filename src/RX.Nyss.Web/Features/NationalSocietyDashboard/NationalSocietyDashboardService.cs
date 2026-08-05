@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId)
         {
-            var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, true);
+            var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, false);
 
             var organizations = await GetOrganizations(nationalSocietyId);
 

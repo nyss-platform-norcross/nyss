@@ -356,6 +356,7 @@ public class ReportServiceTests
                 ReportedCase = new ReportCase(),
                 DataCollectionPointCase = new DataCollectionPointCase(),
                 CreatedAt = new DateTime(2020, 1, 1),
+                ReceivedAt = new DateTime(2020, 1, 1),
                 IsTraining = isTraining,
                 Location = GetMockPoint(52.411269, 17.025807),
                 ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint

@@ -407,6 +407,7 @@ namespace RX.Nyss.Web.Tests.Features.AlertEvents
                                 Report = new Report
                                 {
                                     Id = ReportId,
+                                    ReceivedAt = AlertCreatedAt,
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,

@@ -93,7 +93,7 @@ public class ExportQuery : IRequest<byte[]>
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
                 .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
-                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate)
+                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate?.AddDays(1))
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
             var alertIds = await baseQuery
@@ -262,7 +262,7 @@ public class ExportQuery : IRequest<byte[]>
                     .Select(lc => lc.Name)
                     .FirstOrDefault(),
                 LastReport = a.AlertReports
-                    .OrderByDescending(ar => ar.Report.Id)
+                    .OrderByDescending(ar => ar.Report.ReceivedAt)
                     .Select(ar => new LastReportProjection
                     {
                         Timestamp = ar.Report.ReceivedAt,

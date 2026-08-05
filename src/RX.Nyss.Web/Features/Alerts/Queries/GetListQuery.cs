@@ -102,7 +102,7 @@ public class GetListQuery : IRequest<Result<PaginatedList<AlertListItemResponseD
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
                 .FilterByArea(filterRequestDto.Locations)
                 .FilterByStatus(filterRequestDto.Status)
-                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate)
+                .FilterByDate(filterRequestDto.StartDate, filterRequestDto.EndDate?.AddDays(1))
                 .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
@@ -126,7 +126,7 @@ public class GetListQuery : IRequest<Result<PaginatedList<AlertListItemResponseD
                     ReportCount = a.AlertReports.Count,
 
                     LastReport = a.AlertReports
-                        .OrderByDescending(ar => ar.Report.Id)
+                        .OrderByDescending(ar => ar.Report.ReceivedAt)
                         .Select(ar => new
                         {
                             ZoneName = ar.Report.RawReport.Zone != null

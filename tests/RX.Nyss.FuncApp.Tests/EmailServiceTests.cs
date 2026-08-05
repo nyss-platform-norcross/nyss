@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 using RX.Nyss.FuncApp.Services;
 using SendGrid.Helpers.Mail;
+using Shouldly;
 using Xunit;
 
 namespace RX.Nyss.FuncApp.Tests
@@ -29,7 +31,6 @@ namespace RX.Nyss.FuncApp.Tests
             _emailClientMock = Substitute.For<IEmailClient>();
             _whitelistValidator = Substitute.For<IWhitelistValidator>();
             _emailAttachmentServiceMock = Substitute.For<IEmailAttachmentService>();
-            // _emailClientMock = new SendGridEmailClient(_configurationMock, _emailAttachmentServiceMock);
             _emailService = new EmailService(
                 _loggerMock,
                 _configurationMock,
@@ -40,13 +41,23 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@test.com")]
-        public async Task SendEmail_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
+        public async Task SendEmail_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogDebug(string email)
         {
             // Act
             await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@test.com", "", _blobContainerClient);
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true), Arg.Any<BlobContainerClient>());
+            _loggerMock.ReceivedCalls()
+                .Where(call => call.GetMethodInfo().Name == nameof(ILogger.Log))
+                .Select(call => call.GetArguments())
+                .Any(args =>
+                    args.Length >= 3 &&
+                    args[0] is LogLevel level &&
+                    level == LogLevel.Debug &&
+                    args[2] != null &&
+                    args[2].ToString().Contains("SandboxMode: True"))
+                .ShouldBeTrue();
         }
 
         [Theory]
@@ -123,7 +134,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@test.com", "+4712345679")]
-        public async Task SendEmail_WhenPhoneNumberIsNotWhitelisted_ShouldNotSendEmail(string email, string phoneNumber)
+        public async Task SendEmail_WhenPhoneNumberIsNotWhitelisted_ShouldSendAsTextOnlyInSandboxMode(string email, string phoneNumber)
         {
             // Arrange
             _configurationMock.MailConfig.SendFeedbackSmsToAll = false;
@@ -131,6 +142,30 @@ namespace RX.Nyss.FuncApp.Tests
             user@test.com
             donald.duck@test.com
             some@email.no";
+            var phoneNumberWhitelist = "+4712345678";
+            _whitelistValidator.IsWhiteListedPhoneNumber(phoneNumberWhitelist, phoneNumber).Returns(false);
+
+            // Act
+            await _emailService.SendEmail(new SendEmailMessage
+            {
+                To = new Contact { Email = email },
+                Subject = phoneNumber,
+                SendAsTextOnly = true
+            }, whitelist, phoneNumberWhitelist, _blobContainerClient);
+
+            // Assert
+            await _emailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(true));
+            await _emailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
+        }
+
+        [Theory]
+        [InlineData("user@test.com", "+4712345678")]
+        public async Task SendEmail_WhenEnableFeedbackSmsIsFalse_ShouldNotSendTextOnlyEmail(string email, string phoneNumber)
+        {
+            // Arrange
+            _configurationMock.MailConfig.EnableFeedbackSms = false;
+            _configurationMock.MailConfig.SendFeedbackSmsToAll = true;
+            var whitelist = "user@test.com";
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
@@ -142,7 +177,8 @@ namespace RX.Nyss.FuncApp.Tests
             }, whitelist, phoneNumberWhitelist, _blobContainerClient);
 
             // Assert
-            await _emailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
+            await _emailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Any<bool>());
+            await _emailClientMock.DidNotReceive().SendEmail(Arg.Any<SendEmailMessage>(), Arg.Any<bool>(), Arg.Any<BlobContainerClient>());
         }
 
         [Theory]

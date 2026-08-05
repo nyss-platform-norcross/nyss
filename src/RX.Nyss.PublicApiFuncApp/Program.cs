@@ -12,6 +12,7 @@ public class Program
     public static void Main()
     {
         var host = new HostBuilder()
+            .ConfigureFunctionsWorkerDefaults()
             .ConfigureAppConfiguration((context, config) =>
             {
                 var currentDirectory = Directory.GetCurrentDirectory();
@@ -31,7 +32,8 @@ public class Program
                 services.ConfigureFunctionsApplicationInsights();
 
                 // Bind configuration
-                var nyssPublicApiFuncAppConfig = configuration.Get<NyssPublicApiFuncAppConfig>();
+                var nyssPublicApiFuncAppConfig = configuration.Get<NyssPublicApiFuncAppConfig>()
+                    ?? throw new InvalidOperationException("NyssPublicApiFuncAppConfig is not configured");
                 services.AddSingleton<IConfig>(nyssPublicApiFuncAppConfig);
             })
             .Build();

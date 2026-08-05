@@ -75,15 +75,16 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId)
         {
-            var healthRiskTypesWithoutActivity = new List<HealthRiskType>
+            var healthRiskTypes = new List<HealthRiskType>
             {
                 HealthRiskType.Human,
                 HealthRiskType.NonHuman,
-                HealthRiskType.UnusualEvent
+                HealthRiskType.UnusualEvent,
+                HealthRiskType.Activity
             };
 
             var organizations = await GetOrganizations(projectId);
-            var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
+            var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypes);
             var nationalSocietyId = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .Select(p => p.NationalSocietyId)

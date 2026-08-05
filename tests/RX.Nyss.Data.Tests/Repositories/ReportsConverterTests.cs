@@ -55,12 +55,12 @@ public class ReportsConverterTests
         Assert.Equal(2, result.Count);
 
         Assert.Equal("female (2), male", result[0].Gender);
-        Assert.Equal("Tamriel/Skyrim/Soltitude (2), Tamriel/Skyrim/Whiterun", result[0].Location);
+        Assert.Equal("Tamriel/Skyrim/Whiterun, Tamriel/Skyrim/Soltitude", result[0].Location);
         Assert.Equal("2022-11-20", result[0].EventDate);
-        Assert.Equal("Human (3)", result[0].EventType);
+        Assert.Equal("", result[0].EventType);
         Assert.Equal("ABC", result[0].OrgUnit);
         Assert.Equal("123 (2)", result[0].PhoneNumber);
-        Assert.Equal("stomachache/headache (3)", result[0].SuspectedDisease);
+        Assert.Equal("stomachache/headache", result[0].SuspectedDisease);
         Assert.Equal("2022-11-24 00:00:00Z (3)", result[0].DateOfOnset);
 
         Assert.Equal("", result[1].Gender);

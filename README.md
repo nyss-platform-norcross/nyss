@@ -12,7 +12,7 @@ Nyss is a reimplementation of [the previous CBS solution](https://github.com/IFR
 
 ### Prerequisites
 
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
 - [Microsoft Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator). Alternatively, especially if you are using mac/linux: [Azurite](https://github.com/azure/azurite)
 - [Microsoft Azure Storage Explorer](https://azure.microsoft.com/pl-pl/features/storage-explorer/)
@@ -21,7 +21,7 @@ Nyss is a reimplementation of [the previous CBS solution](https://github.com/IFR
 
 ### Mac Prerequisites (M1/M2)
 
-- [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - [Homebrew](https://brew.sh/)
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
